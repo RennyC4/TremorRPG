@@ -1,0 +1,1 @@
+quakerpg.exe -dedicated +map world +sv_public /quakerpg

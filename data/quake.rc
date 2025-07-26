@@ -16,11 +16,6 @@ exec settings.cfg
 
 stuffcmds
 
-//
-// load up immediately
-//
-
-map world_main
 
 //
 // set RenRacer defaults - be careful when changing these as things can break

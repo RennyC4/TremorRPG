@@ -253,7 +253,7 @@ void() help_menu =
 void() main_menu =
 {
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-	sui_text([0, 64], MENU_TEXT_LARGE, "Title Screen", [1, 1, 1], 1, 0);
+	sui_text([0, 64], MENU_TEXT_LARGE, "Quake RPG", [1, 1, 1], 1, 0);
 	
 	vector pos = [0, -24];
 	vector size = [120, 140];
@@ -265,7 +265,7 @@ void() main_menu =
 	
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	
-	my_button("mm_start", [0, 8], [size_x - 16, 20], "Start Game") ? localcmd("map test\n") : 0;
+	my_button("mm_start", [0, 8], [size_x - 16, 20], "Start Game") ? localcmd("map world\n") : 0;
 	my_button("mm_settings", [0, 8 + 24], [size_x - 16, 20], "Settings") ? current_menu = MENU_SETTINGS : 0;
 	my_button("mm_help", [0, 8 + 48], [size_x - 16, 20], "Help") ? current_menu = MENU_HELP : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
