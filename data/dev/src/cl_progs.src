@@ -7,4 +7,5 @@ sui_sys.qc
 client/cl_menu.qc
 client/cl_player.qc
 client/cl_hud.qc
+client/cl_login.qc
 client/cl_main.qc

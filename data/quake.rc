@@ -65,6 +65,7 @@ r_waterwarp 1
 v_cshift_water 0
 r_particledesc "classic high tsshaft"
 v_deathtilt 0
+cl_sendguid 1 // Needed otherwise you'll loose your online character on servers
 
 // this prevents data drops on dedicated servers / other real players
 sv_maxrate 0

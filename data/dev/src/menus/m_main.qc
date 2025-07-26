@@ -24,12 +24,10 @@ void(vector screensize) m_draw =
 	
 	if (target_conauto != cvar("vid_conautoscale")) localcmd(sprintf("vid_conautoscale %f\n", target_conauto));
 	
-	
 	sui_begin(screensize_x, screensize_y);
 	if (menu_active)
 		root_menu(screensize);
-		
-		
+
 	if (time < splash_time)
 	{
 		sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
@@ -71,7 +69,7 @@ void() m_open =
 float(float evtype, float scanx, float chary, float devid) Menu_InputEvent =
 {
 	float used = sui_input_event(evtype, scanx, chary, devid);
-	
+
 	if (evtype == IE_KEYDOWN && !used)
 	{
 		switch (scanx)
@@ -80,16 +78,18 @@ float(float evtype, float scanx, float chary, float devid) Menu_InputEvent =
 				m_close();
 				return TRUE;
 				break;
-			default: break;
+			default:
+				break;
 		}
 		string cmd = getkeybind(scanx);
 		switch (cmd)
 		{
-		case "togglemenu":
-			m_close();
-			return TRUE;
-			break;
-		default: break;
+			case "togglemenu":
+				m_close();
+				return TRUE;
+				break;
+			default:
+				break;
 		}
 	}
 	return FALSE;

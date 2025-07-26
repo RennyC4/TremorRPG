@@ -2160,3 +2160,8 @@ accessor filestream : float
 };
 #endif
 #pragma noref 0
+
+float MENU; // 1 = Login screen
+
+float MENU_OFF = 0;
+float MENU_LOGIN = 1;

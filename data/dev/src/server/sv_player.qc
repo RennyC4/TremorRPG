@@ -74,7 +74,7 @@ void() ClientConnect =
 void() PlayerSpawn =
 {
 	entity spawn_spot = get_spawn_point();
-	
+
 	self.classname = "player";
 	self.solid = SOLID_SLIDEBOX;
 	setmodel(self, "models/testplayer.iqm");
