@@ -7,3 +7,4 @@ sv_enemies.qc
 sv_triggers.qc
 sv_player.qc
 sv_main.qc
+sv_misc.qc
