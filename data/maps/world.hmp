@@ -16,15 +16,25 @@ _defaultgroundheight "0"
 _defaultwatertexture "water"
 _defaultwaterheight "4"
 }
+
 {
 classname info_player_start
-origin "0 0 1024" /*EDITME*/
+origin "0 0 75" /*EDITME*/
+angles "0 -90 0"
 }
 
 // house
 {
-classname setprop
+classname "setprop"
 model "bsps/house.bsp"
 origin "0 0 50"
+angles "0 0 0"
+}
+
+// monster (test)
+{
+classname "monster_test"
+model "models/testplayer.iqm"
+origin "-1111 439 255"
 angles "0 0 0"
 }

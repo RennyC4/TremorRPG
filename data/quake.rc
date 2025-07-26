@@ -27,7 +27,6 @@ scr_conspeed 9999
 crosshair 0
 cl_bob 0
 cl_rollangle 0
-volume 0.5
 sv_gameplayfix_qwplayerphysics 1
 sv_gameplayfix_findradiusdistancetobox 1
 //sv_nqplayerphysics 1
@@ -58,7 +57,6 @@ r_shadow_shadowmapping 1 // draw shadow maps (stencil is faster however)
 r_dynamic 0 // fixes odd ugly lighting
 r_shadows 2 // realtime shadows
 r_coronas 1
-musicvolume 0.75
 //sv_autooffload 0 // 1 = smoother performance? judderfest
 cl_lerp_smooth 1
 r_shadow_realtime_world 1

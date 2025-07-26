@@ -7,8 +7,7 @@ void() PlayerJump =
 {
 	if (!(self.flags & FL_ONGROUND))
 		return;
-
-	if ( !(self.flags & FL_JUMPRELEASED) )
+	if (!(self.flags & FL_JUMPRELEASED))
 		return;
 	
 	self.weaponframe = 0;
@@ -16,63 +15,73 @@ void() PlayerJump =
 	self.button2 = 0;
 };
 
+void() PlayerPrintLocation =
+{
+	string pos_x = ftos(self.origin_x);
+	string pos_y = ftos(self.origin_y);
+	string pos_z = ftos(self.origin_z);
+	
+	print("X: ", pos_x, "Y: ", pos_y, "Z: ", pos_z, "\n");
+};
+
 void() CheckImpulses =
 {
 	switch (self.impulse)
 	{
-	default: break;
+		case 1:
+			PlayerPrintLocation(); // Debugging for laying down entities
+		break;
+		default:
+			break;
 	}
 	self.impulse = 0;
 };
 
-vector() get_spawn_point =
+entity() get_spawn_point =
 {
 	entity spawnpoint = world;
 	spawnpoint = find(spawnpoint, classname, "info_player_start");
-
-	return spawnpoint.origin + '0 0 1';
+	return spawnpoint;
 };
 
 void() PlayerPreThink =
 {	
 	CheckImpulses();
 	makevectors(self.v_angle);
+
 	if(self.button0)
 	{
-		
+		// Write attack code
 	}
+
 	if(self.button2)
 	{
 		PlayerJump();
 	}
 	else
-	{
 		self.flags = self.flags | FL_JUMPRELEASED;
-	}
 };
 
-void() PlayerPostThink =
-{
-};
+void() PlayerPostThink = {};
+void() ClientKill = {};
 
-void() ClientKill =
-{
-};
-
-//called when a client connects to the server
 void() ClientConnect =
 {
-	// print("Client connect\n");
+	bprint(PRINT_HIGH, self.netname);
+	bprint(PRINT_HIGH, " has joined the realm.\n");
 };
 
 void() PlayerSpawn =
 {
+	entity spawn_spot = get_spawn_point();
+	
 	self.classname = "player";
 	self.solid = SOLID_SLIDEBOX;
 	setmodel(self, "models/testplayer.iqm");
 	self.movetype = MOVETYPE_WALK;
 	self.health = 100;
-	setorigin(self, get_spawn_point());
+	setorigin(self, spawn_spot.origin + '0 0 1');
+	self.angles = spawn_spot.angles;
 	self.fixangle = TRUE;
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 	self.view_ofs = [0, 0, 48];
@@ -87,21 +96,12 @@ void() PutClientInServer =
 void() ClientDisconnect =
 {
 	bprint(PRINT_HIGH, self.netname);
-	bprint(PRINT_HIGH, " has left the game.\n");
+	bprint(PRINT_HIGH, " has left the realm.\n");
 };
 
-
-void() SetNewParms =
-{
-};
-
-void() SetChangeParms =
-{
-};
-
-void() info_player_start =
-{
-};
+void() SetNewParms = {};
+void() SetChangeParms = {};
+void() info_player_start = {};
 
 void(float elapsedtime) SV_PausedTic =
 {
@@ -114,15 +114,12 @@ void(string command_string) SV_ParseClientCommand =
 	string cmd = argv(0);
 	switch (cmd)
 	{
-	default: break;
+		default: break;
 	}
 	clientcommand(self, command_string);
 };
-
 
 void() SV_RunClientCommand =
 {
 	runstandardplayerphysics(self);
 };
-
-
