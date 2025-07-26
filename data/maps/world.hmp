@@ -1,0 +1,22 @@
+{
+classname "worldspawn"
+message "main world"
+_sky "sky25_64"
+_fog 0.02
+_maxdrawdist 0 /*overrides fog distance (if greater)*/
+_segmentsize 1024 /*how big each section is. this affects texturing and resolutions*/
+_minxsegment -2048
+_minysegment -2048
+_maxxsegment 2048
+_maxysegment 2048
+_seed "4" /*for auto-gen plugins*/
+_exterior solid
+_defaultgroundtexture "grass"
+_defaultgroundheight "0"
+_defaultwatertexture "water"
+_defaultwaterheight "4"
+}
+{
+classname info_player_start
+origin "0 0 1024" /*EDITME*/
+}
