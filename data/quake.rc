@@ -1,0 +1,105 @@
+//
+// allow quake to run the mod
+//
+
+registered 1
+
+//
+// load user settings
+//
+
+exec settings.cfg
+
+//
+// stuff command line statements
+//
+
+stuffcmds
+
+//
+// load up immediately
+//
+
+map world_main
+
+//
+// set RenRacer defaults - be careful when changing these as things can break
+//
+
+sv_sound_land ""
+sv_sound_watersplash ""
+scr_conspeed 9999
+crosshair 0
+cl_bob 0
+cl_rollangle 0
+volume 0.5
+sv_gameplayfix_qwplayerphysics 1
+sv_gameplayfix_findradiusdistancetobox 1
+//sv_nqplayerphysics 1
+sv_bigcoords 1
+m_preset_chosen 1
+sys_clocktype 1 // Fix for odd game speed 
+//cl_lerp_maxinterval 0.3
+sv_autosave 0
+gl_blendsprites 1
+v_gunkick 1
+s_al_use_reverb 0
+cl_lerp_driftfrac 1
+seta m_preset_chosen 1
+snd_ignoregamespeed 1
+r_coronas_occlusion 1 // fix flicker corona effect
+r_sprite_backfacing 1 // oriented sprite fix
+r_keepimages 1 // skybox fix
+cfg_save_auto 1 // fte auto saves configs after certain times
+s_al_disable 2 // sound fix (disable OpenAL) for non-mono sounds
+r_meshpitch 1 // fix mesh pitch
+pr_droptofloorunits 99999 // match raisetoroof
+r_shadow_bumpscale_basetexture 1.75 // slight bump mapping with dlights
+r_hdr_framebuffer 1 // HDR on
+r_hdr_irisadaptation 1 // adapt to light/dark conditions
+r_hdr_irisadaptation_maxvalue 1.5 // adjustment value
+r_deluxemapping 0 // needs to be 0 with bumpscale base textures
+r_shadow_shadowmapping 1 // draw shadow maps (stencil is faster however)
+r_dynamic 0 // fixes odd ugly lighting
+r_shadows 2 // realtime shadows
+r_coronas 1
+musicvolume 0.75
+//sv_autooffload 0 // 1 = smoother performance? judderfest
+cl_lerp_smooth 1
+r_shadow_realtime_world 1
+r_renderscale 1 // higher breaks god rays and other screen effects
+r_waterwarp 1
+v_cshift_water 0
+r_particledesc "classic high tsshaft"
+v_deathtilt 0
+
+// this prevents data drops on dedicated servers / other real players
+sv_maxrate 0
+setinfo rate 0
+//
+
+sv_playerslots 250 // increase for more players
+
+//mod_terrain_shadows 1 // Broken
+mod_terrain_ambient 0
+
+// Fonts
+con_textfont "fonts/font"
+gl_font "fonts/font"
+vid_conautoscale 3
+
+//
+// bind regular quake stuff
+//
+
+bind "TAB" "+showscores"
+bind "`" "toggleconsole"
+bind "F12" "screenshot"
+bind "PAUSE" "pause"
+bind "f1" "help"
+bind "f9" "quit"
+
+//
+exec fte.cfg
+//exec haze.cfg
+//
