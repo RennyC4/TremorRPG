@@ -1,4 +1,4 @@
-../../../qwprogs.dat
+../../qwprogs.dat
 
 server/sv_defs.qc
 sh_customdefs.qc

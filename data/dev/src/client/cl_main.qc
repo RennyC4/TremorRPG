@@ -1,6 +1,16 @@
 void() CSQC_Ent_Remove = {remove(self);};
 void() CSQC_Shutdown = {};
 
+float(string key, string val) find_player_id =
+{
+	for (int currentindex = 0; currentindex < maxclients; currentindex++)
+	{
+		if (getplayerkeyvalue(currentindex, key) == val)
+			return currentindex;
+	}
+	return -1;
+};
+
 noref void(float apiver, string enginename, float enginever) CSQC_Init =
 {
 	drawfont = loadfont("", "Courier Prime Code", "12,16,24,32,64,72,128,256,512", -1, 0, 0);
@@ -9,7 +19,7 @@ noref void(float apiver, string enginename, float enginever) CSQC_Init =
 
 noref void() CSQC_WorldLoaded =
 {
-	MENU = MENU_LOGIN; // First login, display login window
+	MENU = MENU_LOGIN; // first login, display login window
 };
 
 noref void(float isnew) CSQC_Ent_Update =
@@ -40,18 +50,18 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	
 	sui_begin(g_width, g_height);
 	
-	// Insert your own sui code here even for CSQC
-	// Make sure to uncomment sui_input_event as well.
+	// Insert your own sui code here, make sure to uncomment sui_input_event as well
 	if (MENU != MENU_OFF)
 	{
-		// Enable mouse cursor when menus are active
-		setcursormode(TRUE,"gfx/xhair", [16, 16], cvar("vid_conautoscale"));
+		setcursormode(TRUE,"gfx/xhair", [16, 16], cvar("vid_conautoscale")); // enable mouse cursor when menus are active
 
 		if (MENU == MENU_LOGIN)
-			CSQC_LoginScreen();
+			User_LoginScreen();
 	}
 	else
-		setcursormode(FALSE,"",0,0);
+	{
+		setcursormode(FALSE,"", 0, 0);
+	}
 
 	//
 	//
@@ -107,16 +117,6 @@ void() CSQC_Parse_Event =
 		break;
 	}
 };
-
-float(string key, string val) find_player_id =
-{
-	for (int currentindex = 0; currentindex < maxclients; currentindex++)
-	{
-		if (getplayerkeyvalue(currentindex, key) == val)
-			return currentindex;
-	}
-	return -1;
-}
 
 void(string printmsg, float printlvl) CSQC_Parse_Print =
 {

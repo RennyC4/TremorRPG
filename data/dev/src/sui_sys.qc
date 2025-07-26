@@ -382,7 +382,7 @@ void(vector pos, float is_mouse = TRUE) _sui_mouse_move =
 	{
 		if (!_cursor_is_mouse_active)
 		{
-			printf("mouse moved to %v\n", pos);
+			//printf("mouse moved to %v\n", pos);
 			_cursor_mouse_activate_accum += vlen(pos - old_pos);
 			if (_cursor_mouse_activate_accum > 10)
 				activate_mouse_cursor();

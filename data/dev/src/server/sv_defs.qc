@@ -1687,3 +1687,5 @@ accessor filestream : float
 };
 #endif
 #pragma noref 0
+
+.string player_guid;

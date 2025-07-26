@@ -64,7 +64,9 @@ void(entity adding) player_chain_add =
 		print("Trying to adding an entity into player chain while it already is in chain!\n");
 		return;
 	}
-	if (player_chain_head) player_chain_head.player_chain_prev = adding;
+	if (player_chain_head)
+		player_chain_head.player_chain_prev = adding;
+
 	adding.player_chain_next = player_chain_head;
 	player_chain_head = adding;
 };
@@ -77,9 +79,10 @@ void(entity removing) player_chain_remove =
 		player_chain_head = removing.player_chain_next;
 	}
 	
-	if (removing.player_chain_next) removing.player_chain_next.player_chain_prev = removing.player_chain_prev;
-	if (removing.player_chain_prev) removing.player_chain_prev.player_chain_next = removing.player_chain_next;
+	if (removing.player_chain_next)
+		removing.player_chain_next.player_chain_prev = removing.player_chain_prev;
+	if (removing.player_chain_prev)
+		removing.player_chain_prev.player_chain_next = removing.player_chain_next;
 	removing.player_chain_next = world;
 	removing.player_chain_prev = world;
 };
-

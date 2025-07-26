@@ -20,8 +20,8 @@ void() PlayerPrintLocation =
 	string pos_x = ftos(self.origin_x);
 	string pos_y = ftos(self.origin_y);
 	string pos_z = ftos(self.origin_z);
-	
-	print("X: ", pos_x, "Y: ", pos_y, "Z: ", pos_z, "\n");
+
+	print("Coord: ", pos_x, " ", pos_y, " ", pos_z, "\n");
 };
 
 void() CheckImpulses =
@@ -49,15 +49,13 @@ void() PlayerPreThink =
 	CheckImpulses();
 	makevectors(self.v_angle);
 
-	if(self.button0)
+	if (self.button0)
 	{
 		// Write attack code
 	}
 
-	if(self.button2)
-	{
+	if (self.button2)
 		PlayerJump();
-	}
 	else
 		self.flags = self.flags | FL_JUMPRELEASED;
 };
@@ -67,6 +65,7 @@ void() ClientKill = {};
 
 void() ClientConnect =
 {
+	player_chain_remove(self);
 	bprint(PRINT_HIGH, self.netname);
 	bprint(PRINT_HIGH, " has joined the realm.\n");
 };
@@ -90,7 +89,16 @@ void() PlayerSpawn =
 void() PutClientInServer =
 {
 	player_chain_add(self);
-	PlayerSpawn();
+
+	self.player_guid = infokey(self, INFOKEY_P_GUID);
+	if (!self.player_guid)
+	{
+		sprint(self, PRINT_HIGH, "please set cl_sendguid to 1\n");
+		dropclient(self);
+		return;
+	}
+	else
+		PlayerSpawn();
 };
 
 void() ClientDisconnect =
