@@ -704,7 +704,6 @@ float(float scan) sui_input_is_back =
 	return FALSE;
 }
 
-
 float(float char, float scan) _sui_add_input =
 {
 	// TODO check if input was listened, return FALSE if not

@@ -1,6 +1,4 @@
-
 float menu_active;
-
 float splash_time;
 
 void() m_init =
@@ -16,9 +14,8 @@ vector() randomofs = { return [random() - 0.5, random() - 0.5] * 2; };
 
 void(vector screensize) m_draw =
 {
-//	clearscene();
+	//	clearscene();
 
-	
 	vector realsize = getproperty(VF_SCREENPSIZE);
 	float target_conauto = 2;
 	if (realsize_y < 600) target_conauto = 1;
@@ -56,7 +53,6 @@ void(vector screensize) m_draw =
 	}
 
 	sui_menu_nav();
-	
 	sui_end();
 };
 
@@ -104,18 +100,17 @@ float(string cmd) m_consolecommand =
 	tokenize(cmd);
 	switch (argv(0))
 	{
-	default: break;
+		default: break;
 	}
-
 	return FALSE;
 };
 
 void(float wantmode) m_toggle =
 {
-	if (menu_active) m_close();
-	else m_open();
+	if (menu_active)
+		m_close();
+	else
+		m_open();
 };
 
-void() m_shutdown =
-{
-};
+void() m_shutdown = {};

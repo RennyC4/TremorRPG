@@ -1,4 +1,3 @@
-
 /*
 setprop - put down buildings on terrain
 */

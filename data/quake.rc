@@ -93,6 +93,7 @@ bind "F12" "screenshot"
 bind "PAUSE" "pause"
 bind "f1" "help"
 bind "f9" "quit"
+bind "esc" "togglemenu"
 
 //
 exec fte.cfg

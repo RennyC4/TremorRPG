@@ -21,7 +21,8 @@ void() input_tester =
 	{
 		printme = strcat(printme, chr2str(char));
 	}
-	if (printme != "") printf("INPUT: %s\n", printme); 
+	if (printme != "")
+		printf("INPUT: %s\n", printme); 
 };
 
 void(string id, vector pos, vector size, float maxlen, __inout string text, __inout float cursor) text_input_control =
@@ -59,7 +60,6 @@ void(string id, vector pos, vector size, float maxlen, __inout string text, __in
 	}
 	sui_reset_clip();
 	sui_pop_frame();
-	
 	sui_pop_frame();
 };
 
@@ -70,15 +70,14 @@ float(string id, vector pos, vector size, string text) my_button =
 	basecolor = sui_is_held(id) ? MENU_BUTTON - MENU_DARKEN * 0.1 : basecolor;
 	sui_fill([0, 0], size, basecolor, 0.6, 0);
 	sui_border_box([0, 0], size, 1, MENU_BUTTON_BORDER, 0.4, 0);
-	
+
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_text([0, 0], MENU_TEXT_SMALL, text, MENU_TEXT_1, 1, 0);	
 	sui_action_element([0, 0], size, id, sui_noop);
 	sui_pop_frame();
-	
+
 	return sui_is_clicked(id);
 };
-
 
 void(string id, vector pos, vector size, vector minmaxsteps, __inout float value) my_slider =
 {
@@ -121,7 +120,7 @@ name_command bindlist[] =
 	{ "Left", "+moveleft" },
 	{ "Right", "+moveright" },
 	{ "Jump", "+jump" },
-	{ "Jump1", "+jump" },
+	{ "Attack", "+attack" },
 	{ "Jump2", "+jump" },
 	{ "Jump3", "+jump" },
 	{ "Jump4", "+jump" },
@@ -142,10 +141,9 @@ void(string id, vector pos, vector size, string name, string command) bind_butto
 	sui_text([6, 0], MENU_TEXT_SMALL, name, MENU_TEXT_1, 1, 0);
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_CENTER]);
 	sui_text([-6, 0], MENU_TEXT_SMALL, key, MENU_TEXT_1, 1, 0);
-	
+
 	sui_pop_frame();
 };
-
 
 void(string id, vector pos, vector size, __inout vector scrollofs) bind_list =
 {
@@ -161,7 +159,6 @@ void(string id, vector pos, vector size, __inout vector scrollofs) bind_list =
 	sui_list_view_end();	
 };
 
-
 float current_menu;
 const float MENU_MAIN = 1;
 const float MENU_SETTINGS = 2;
@@ -172,18 +169,17 @@ void() settings_menu =
 {
 	vector pos = [0, 0];
 	vector size = [360, 280];
-	
+
 	sui_push_frame(pos, size);
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
-	
+
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	sui_text([0, 4], MENU_TEXT_MEDIUM, "Settings", MENU_TEXT_1, 1, 0);
 
-	
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	
+
 	float xpos = 8;
 	float ypos = 32;
 	float width = size_x * 0.5 - 8 * 2;
@@ -192,7 +188,7 @@ void() settings_menu =
 	ypos += 32 + 4;
 	cvar_slider([xpos, ypos], [width, 32], [0, 1], "musicvolume", "Music Volume", "%.2f");
 	ypos += 32 + 4 + 8;
-	
+
 	sui_text([xpos, ypos], MENU_TEXT_SMALL, "Video", MENU_TEXT_1, 1, 0);
 	ypos += 16;
 	my_button("fs_btn", [xpos, ypos], [width, 20], "Fullscreen") ? localcmd("vid_fullscreen 2; vid_restart\n") : 0;
@@ -204,7 +200,7 @@ void() settings_menu =
 
 	ypos = 32;
 	xpos = 8 + width + 8 + 8;
-	
+
 	sui_text([xpos, ypos], MENU_TEXT_SMALL, "Controls", MENU_TEXT_1, 1, 0);
 	ypos += 16;
 	bind_list("bindlist", [xpos, ypos], [width, 160], binds_scroll);
@@ -228,19 +224,19 @@ void() help_menu =
 {
 	vector pos = [0, 0];
 	vector size = [360, 280];
-	
+
 	sui_push_frame(pos, size);
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
-	
+
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	sui_text([0, 4], MENU_TEXT_MEDIUM, "Help", MENU_TEXT_1, 1, 0);
-	
+
 	float xpos = 0;
 	float ypos = 32;
 	sui_text([xpos, ypos], MENU_TEXT_SMALL, "Bunch of Help and About", MENU_TEXT_1, 1, 0);
-	
+
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
 	my_button("hlp_back", [-8, -8], [80, 20], "Back") ? current_menu = MENU_MAIN : 0;
 
@@ -265,9 +261,10 @@ void() main_menu =
 	
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	
-	my_button("mm_start", [0, 8], [size_x - 16, 20], "Start Game") ? localcmd("map world\n") : 0;
-	my_button("mm_settings", [0, 8 + 24], [size_x - 16, 20], "Settings") ? current_menu = MENU_SETTINGS : 0;
-	my_button("mm_help", [0, 8 + 48], [size_x - 16, 20], "Help") ? current_menu = MENU_HELP : 0;
+	my_button("mm_start", [0, 8], [size_x - 16, 20], "Local Game") ? localcmd("map world\n") : 0;
+	my_button("mm_connect", [0, 8 +24], [size_x - 16, 20], "Play Online") ? localcmd("connect /quakerpg\n") : 0; // rennyc
+	my_button("mm_settings", [0, 8 + 48], [size_x - 16, 20], "Settings") ? current_menu = MENU_SETTINGS : 0;
+	my_button("mm_help", [0, 8 + 72], [size_x - 16, 20], "Help") ? current_menu = MENU_HELP : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
 	my_button("mm_quit", [0, -8], [size_x - 16, 20], "Quit") ? localcmd("quit\n") : 0;
 	sui_pop_frame();	
@@ -275,6 +272,7 @@ void() main_menu =
 	sui_set_default_kb_focus("mm_start");
 };
 
+void() m_close;
 void(vector size) root_menu =
 {
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
