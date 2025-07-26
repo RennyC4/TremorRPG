@@ -1,5 +1,6 @@
-../../menu.dat
-m_defs.qc
+../../../menu.dat
+
+menus/m_defs.qc
 sui_sys.qc
-m_menu.qc
-m_main.qc
+menus/m_menu.qc
+menus/m_main.qc

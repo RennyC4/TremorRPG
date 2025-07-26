@@ -1,1 +1,1 @@
-quakerpg.exe -dedicated +map world +sv_public /quakerpg
+quakerpg.exe -dedicated +mapcluster world +sv_public /quakerpg

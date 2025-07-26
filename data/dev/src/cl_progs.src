@@ -1,9 +1,10 @@
 ../../csprogs.dat
-cl_defs.qc
+
+client/cl_defs.qc
 sh_customdefs.qc
-cl_customdefs.qc
+client/cl_customdefs.qc
 sui_sys.qc
-cl_menu.qc
-cl_player.qc
-cl_hud.qc
-cl_main.qc
+client/cl_menu.qc
+client/cl_player.qc
+client/cl_hud.qc
+client/cl_main.qc
