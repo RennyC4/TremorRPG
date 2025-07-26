@@ -2161,7 +2161,9 @@ accessor filestream : float
 #endif
 #pragma noref 0
 
-float MENU; // 1 = Login screen
+string LOGIN_NAME; // Users login name
+float cursor;
 
+float MENU; // 1 = Login screen
 float MENU_OFF = 0;
 float MENU_LOGIN = 1;

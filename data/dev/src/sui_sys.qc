@@ -1048,14 +1048,12 @@ void() sui_end =
 void(vector pos, vector size, vector color, float alpha, float flags) sui_fill =
 {
 	sui_transform_box(pos, size);
-	
 	drawfill(pos, size, color, alpha, flags);
 };
 
 void(vector pos, vector size, string pic, vector color, float alpha, float flags) sui_pic =
 {
 	sui_transform_box(pos, size);
-	
 	drawpic(pos, pic, size, color, alpha, flags);
 };
 
@@ -1073,7 +1071,6 @@ void(vector pos, vector size, float width, vector color, float alpha, float flag
 	drawfill([pos_x + size_x - width, pos_y + width], [width, size_y - width * 2], color, alpha, flags);
 };
 
-
 void(vector pos, vector size, string text, vector color, float alpha, float flags) sui_text =
 {
 	sui_transform_box(pos, [stringwidth(text, 1, size), size_y]);
@@ -1082,7 +1079,6 @@ void(vector pos, vector size, string text, vector color, float alpha, float flag
 };
 
 void(float index, vector click_ratios) sui_noop = {};
-
 void(float value) sui_slider_noop = {};
 
 float(string id, vector pos, vector size, vector minmaxsteps, float value, void(float value) action) sui_slidercontrol =
@@ -1135,7 +1131,6 @@ void(string id, vector pos, vector size, __inout string text, __inout float curs
 		while(sui_get_input(char, scan)) sui_handle_text_input(char, scan, text, cursor);
 	}
 };
-
 
 void(string id, vector size, vector contentsize, __inout vector offset, vector scrollbar_widths) sui_scrollbar =
 {

@@ -30,8 +30,43 @@ float(string id, vector pos, vector size, string text) my_button =
 	return sui_is_clicked(id);
 };
 
-string LOGIN_NAME;
-float cursor;
+void(string id, vector pos, vector size, float maxlen, __inout string text, __inout float cursor) text_input_control =
+{
+	vector textsize = [size_y - 4, size_y - 4];
+	sui_push_frame(pos, size);
+	vector basecolor = sui_is_hovered(id) ? MENU_BG_DARK + MENU_HIGHLIGHT * 0.08 : MENU_BG_DARK; 
+	sui_fill([0, 0], size, basecolor, 0.6, 0);
+	
+	sui_text_input(id, [0, 0], size, text, cursor);
+	
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	float focused = sui_is_last_clicked(id);
+	// Under focus
+	focused ? sui_border_box([0, 0], size, 1, MENU_BORDER, 0.6, 0) : 0;	
+	
+	sui_push_frame([2, 0], [size_x - 4, size_y - 4]);
+	
+	float cursorx;
+	if (stringwidth(text, 1, textsize) > size_x - 4)
+	{
+		sui_clip_to_frame();
+		cursorx = 0;
+		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_CENTER]);
+		sui_text([0, 0], textsize, text, MENU_TEXT_1, 1, 0);
+	}
+	else
+	{
+		cursorx = stringwidth(substring(text, 0, cursor), 1, textsize);
+		sui_text([0, 0], textsize, text, MENU_TEXT_1, 1, 0);
+	}
+	if (focused) 
+	{
+		sui_fill([cursorx, 0], [2, textsize_y], MENU_TEXT_1, fabs(sin(time * 4)), 0);
+	}
+	sui_reset_clip();
+	sui_pop_frame();
+	sui_pop_frame();
+};
 
 // Character login screen / Creation
 void() CSQC_LoginScreen =
@@ -51,15 +86,15 @@ void() CSQC_LoginScreen =
 
 	sui_text([size_x / 3.5, size_y - 115], MENU_TEXT_MEDIUM, "User Name", MENU_TEXT_MEDIUM, 1, 0);
 
+	// Login / New character buttons
 	my_button("login_login", [25, size_y - 55], [size_x - 60, 40], "Login") ? MENU = MENU_OFF : 0;
 	my_button("login_newchar", [0, size_y], [size_x, 40], "New Character") ? MENU = MENU_OFF : 0;
-	
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	my_button("login_quit", [g_width / 2.18, g_height / 2.25], [40, 40], "Quit") ? localcmd("quit\n") : 0;
+
 	// Name Entry
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_fill([0, 0], '220 25 0', MENU_BG_DARK, 0.75, 0);
-	sui_text_input("1", [0, 0], [220, 25], LOGIN_NAME, cursor); // RennyC: Not sure how this works yet
-	sui_border_box([0, 0], '220 25 0', 2, MENU_BORDER, 0.3, 0);
-
-	// Quit button
-	my_button("login_quit", [g_width / 2.18, g_height / 2.25], [40, 40], "Quit") ? localcmd("quit\n") : 0;
+	sui_fill([0, 0], '240 25 0', MENU_BG_DARK, 0.75, 0);
+	text_input_control("name_entry", [0, 0], [240, 25], 24, LOGIN_NAME, cursor);
+	sui_border_box([0, 0], '240 25 0', 2, MENU_BORDER, 0.3, 0);
 };

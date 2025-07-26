@@ -42,7 +42,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	
 	// Insert your own sui code here even for CSQC
 	// Make sure to uncomment sui_input_event as well.
-
 	if (MENU != MENU_OFF)
 	{
 		// Enable mouse cursor when menus are active
@@ -54,6 +53,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		setcursormode(FALSE,"",0,0);
 
+	//
 	//
 
 	sui_menu_nav();
