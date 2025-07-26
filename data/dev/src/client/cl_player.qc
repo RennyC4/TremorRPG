@@ -1,5 +1,3 @@
-
-
 void() CSQC_Input_Frame =
 {
 	input_movevalues_x = bound(-350, input_movevalues_x, 350);
