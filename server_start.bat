@@ -1,1 +1,1 @@
-server.exe +mapcluster world +sv_public /quakerpg
+server.exe +mapcluster world
