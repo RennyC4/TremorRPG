@@ -1689,3 +1689,10 @@ accessor filestream : float
 #pragma noref 0
 
 .string player_guid;
+.vector player_lastpos; // last position before disconnect
+
+//
+// Send stats to CSQC 
+//
+
+#define STAT_GUID 32

@@ -65,7 +65,6 @@ void() ClientKill = {};
 
 void() ClientConnect =
 {
-	player_chain_remove(self);
 	bprint(PRINT_HIGH, self.netname);
 	bprint(PRINT_HIGH, " has joined the realm.\n");
 };
@@ -103,6 +102,7 @@ void() PutClientInServer =
 
 void() ClientDisconnect =
 {
+	player_chain_remove(self);
 	bprint(PRINT_HIGH, self.netname);
 	bprint(PRINT_HIGH, " has left the realm.\n");
 };

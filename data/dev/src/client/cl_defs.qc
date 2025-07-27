@@ -2163,8 +2163,16 @@ accessor filestream : float
 
 string LOGIN_NAME; // users login name
 float cursor;
+entity csqcplayerent;
+string nameforplayerent;
 
 float MENU;
 float MENU_OFF = 0;
 float MENU_LOGIN = 1;
 float MENU_CHARACTER = 2; // user info screen
+
+//
+// Grab stats from SSQC 
+//
+
+#define STAT_GUID 32

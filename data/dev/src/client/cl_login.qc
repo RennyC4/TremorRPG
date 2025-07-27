@@ -2,15 +2,40 @@
 
 void() User_ResumeCharacter =
 {
+	string line;
+
 	if (!LOGIN_NAME)
 	{
-		print("Please enter a character name!\n");
+		print("Please enter your past character name\n");
 		return;
 	}
 	else
 	{
-		localcmd("name ", LOGIN_NAME, "\n");
-		MENU = MENU_OFF;
+		string player_guid = getstats(STAT_GUID);
+
+		float v = fopen(LOGIN_NAME, FILE_READ);
+		if (v >= 0) // User exists
+		{
+			// Get first line (guid) from file
+			if (line = fgets(v))
+				fclose(v);
+
+			if (line == player_guid) // Compare guid from file & user
+			{
+				localcmd("name ", LOGIN_NAME, "\n");
+				nameforplayerent = getplayerkeyvalue(csqcplayerent.entnum-1, "name");
+				MENU = MENU_OFF;
+				return;
+			}
+			else
+				print("Server GUID does not match players\n");
+			return;
+		}
+		else
+		{
+			print("Character doesn't exist!\n");
+			return;
+		}
 	}
 };
 
@@ -18,13 +43,32 @@ void() User_NewCharacter =
 {
 	if (!LOGIN_NAME)
 	{
-		print("Please enter a character name!\n");
+		print("Please enter a new character name!\n");
 		return;
 	}
 	else
 	{
-		localcmd("name ", LOGIN_NAME, "\n");
-		MENU = MENU_OFF;
+		float v = fopen(LOGIN_NAME, FILE_READ);
+		if (v >= 0) // User exists
+		{
+			print ("That characters name is already taken\n");
+			return;
+		}
+		else
+		{
+			localcmd("name ", LOGIN_NAME, "\n");
+			nameforplayerent = getplayerkeyvalue(csqcplayerent.entnum-1, "name");
+
+			// Write new user data
+			float v = fopen(LOGIN_NAME, FILE_WRITE);
+			if (v >= 0)
+			{
+				string player_guid = getstats(STAT_GUID);
+				fputs(v, player_guid, "\n");
+				fclose(v);
+			}
+			MENU = MENU_OFF;
+		}
 	}
 };
 
@@ -48,7 +92,7 @@ void() User_LoginScreen =
 	my_button("login_login", [25, size_y - 55], [size_x - 60, 40], "Login") ? User_ResumeCharacter() : 0;
 	my_button("login_newchar", [0, size_y], [size_x, 40], "New Character") ? User_NewCharacter() : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	my_button("login_quit", [g_width / 2.18, g_height / 2.25], [40, 40], "Quit") ? localcmd("quit\n") : 0;
+	my_button("login_quit", [g_width / 2.18, g_height / 2.25], [40, 40], "Quit") ? localcmd("disconnect\n") : 0;
 
 	// Name Entry
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
