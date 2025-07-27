@@ -1,4 +1,5 @@
 // Character login screen / Creation
+// nameforplayerent = getplayerkeyvalue(csqcplayerent.entnum-1, "name");
 
 void() User_ResumeCharacter =
 {
@@ -10,35 +11,7 @@ void() User_ResumeCharacter =
 		return;
 	}
 	else
-	{
-		string player_guid = getstats(STAT_GUID);
-
-		string savename = strcat(LOGIN_NAME, "_cl");
-		float v = fopen(savename, FILE_READ);
-		if (v >= 0) // User exists
-		{
-			// Get first line (guid) from file
-			if (line = fgets(v))
-				fclose(v);
-
-			if (line == player_guid) // Compare guid from file & user
-			{
-				localcmd("name ", LOGIN_NAME, "\n");
-				//nameforplayerent = getplayerkeyvalue(csqcplayerent.entnum-1, "name");
-				sendevent("ResumeCharacter", "");
-				MENU = MENU_OFF;
-				return;
-			}
-			else
-				print("Server GUID does not match players\n");
-			return;
-		}
-		else
-		{
-			print("Character doesn't exist!\n");
-			return;
-		}
-	}
+		sendevent("ResumeCharacter", "s", LOGIN_NAME);
 };
 
 void() User_NewCharacter =
@@ -49,32 +22,7 @@ void() User_NewCharacter =
 		return;
 	}
 	else
-	{
-		string savename = strcat(LOGIN_NAME, "_cl");
-		float v = fopen(savename, FILE_READ);
-		if (v >= 0) // User exists
-		{
-			print ("That characters name is already taken\n");
-			return;
-		}
-		else
-		{
-			localcmd("name ", LOGIN_NAME, "\n");
-			//nameforplayerent = getplayerkeyvalue(csqcplayerent.entnum-1, "name");
-
-			// Write new user data
-			float v = fopen(savename, FILE_WRITE);
-			if (v >= 0)
-			{
-				string player_guid = getstats(STAT_GUID);
-				fputs(v, player_guid, "\n");
-				fputs(v, LOGIN_NAME, "\n");
-				fclose(v);
-			}
-			sendevent("CreateNewCharacter", "");
-			MENU = MENU_OFF;
-		}
-	}
+		sendevent("CreateNewCharacter", "s", LOGIN_NAME);
 };
 
 void() User_LoginScreen =

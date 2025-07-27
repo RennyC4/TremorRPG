@@ -51,23 +51,21 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	sui_begin(g_width, g_height);
 	
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well
-	if (MENU != MENU_OFF)
+
+	float player_loggedin = getstatf(STAT_LOGGEDIN);
+	float player_menu = getstatf(STAT_MENU);
+	if (player_menu > 0)
 	{
 		setcursormode(TRUE,"gfx/xhair", [16, 16], cvar("vid_conautoscale")); // enable mouse cursor when menus are active
 
-		if (MENU == MENU_LOGIN)
+		if (player_menu == MENU_LOGIN)
 			User_LoginScreen();
 	}
 	else // Regular gameplay
 	{
-		// Enforce login name
-		nameforplayerent = getplayerkeyvalue(csqcplayerent.entnum-1, "name");
-		if (nameforplayerent != LOGIN_NAME)
-			localcmd("name ", LOGIN_NAME, "\n");
-
 		setcursormode(FALSE,"", 0, 0);
 	}
-
+	
 	//
 	//
 
@@ -88,7 +86,9 @@ float(string cmd) CSQC_ConsoleCommand =
 
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
-	if (!MENU)
+	float player_menu = getstatf(STAT_MENU);
+
+	if (!player_menu)
 	{
 		switch(evtype)
 		{

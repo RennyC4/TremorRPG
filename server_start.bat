@@ -1,1 +1,1 @@
-server.exe +mapcluster world
+server.exe +mapcluster world +sv_serverip 99.248.148.145

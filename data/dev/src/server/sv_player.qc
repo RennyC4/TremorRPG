@@ -1,7 +1,28 @@
-
 //
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc.
 //
+
+void() Player_SaveChar =
+{
+	float v = fopen(self.loginname, FILE_WRITE);
+	if (v >= 0)
+	{
+		fputs(v, self.guid, "\n");
+		fputs(v, self.loginname, "\n");
+
+		fputs(v, ftos(self.origin_x), "\n");
+		fputs(v, ftos(self.origin_y), "\n");
+		fputs(v, ftos(self.origin_z), "\n");
+
+		fputs(v, ftos(self.angles_x), "\n");
+		fputs(v, ftos(self.angles_y), "\n");
+		fputs(v, ftos(self.angles_z), "\n");
+
+		fclose(v);
+	}
+
+	print("Character Saved\n");
+};
 
 void() PlayerJump =
 {
@@ -20,8 +41,7 @@ void() PlayerPrintLocation =
 	string pos_x = ftos(self.origin_x);
 	string pos_y = ftos(self.origin_y);
 	string pos_z = ftos(self.origin_z);
-
-	print("Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
+	print(self.loginname, " Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
 };
 
 void() CheckImpulses =
@@ -58,6 +78,13 @@ void() PlayerPreThink =
 		PlayerJump();
 	else
 		self.flags = self.flags | FL_JUMPRELEASED;
+
+	// Enforce name
+	if (self.loggedin)
+	{
+		if (self.loginname != self.netname)
+			forceinfokey(self, "name", self.loginname);
+	}
 };
 
 void() PlayerPostThink = {};
@@ -83,17 +110,21 @@ void() PlayerSpawn =
 	self.fixangle = TRUE;
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 	self.view_ofs = [0, 0, 48];
-	self.player_loggedin = FALSE;
+
+	self.menu = TRUE;
+	self.loggedin = FALSE;
+	self.dimension_hit = player_dimension_hit;
+	self.dimension_solid = player_dimension_solid;
 };
 
 void() PutClientInServer =
 {
 	player_chain_add(self);
 
-	self.player_guid = infokey(self, INFOKEY_P_GUID);
-	if (!self.player_guid)
+	self.guid = infokey(self, INFOKEY_P_GUID);
+	if (!self.guid)
 	{
-		sprint(self, PRINT_HIGH, "please set cl_sendguid to 1\n");
+		sprint(self, PRINT_HIGH, "Please set cl_sendguid to 1\n");
 		dropclient(self);
 		return;
 	}
@@ -103,61 +134,54 @@ void() PutClientInServer =
 
 void() ClientDisconnect =
 {
-	if (self.player_guid) // valid player
-	{
-		// Write players last X, Y, Z into their data file on disconnect
-		string savename = strcat(self.netname, "_sv"); // add _sv to note that these are player server stats
+	if (self.guid && self.loggedin) // valid player, save character on disconnect
+		Player_SaveChar();
 
-		float v = fopen(savename, FILE_WRITE);
-		if (v >= 0)
-		{
-			fputs(v, ftos(self.origin_x), "\n");
-			fputs(v, ftos(self.origin_y), "\n");
-			fputs(v, ftos(self.origin_z), "\n");
-
-			fputs(v, ftos(self.angles_x), "\n");
-			fputs(v, ftos(self.angles_y), "\n");
-			fputs(v, ftos(self.angles_z), "\n");
-
-			fclose(v);
-		}
-	}
+	// clean up removed player
+	player_chain_remove(self);
+	setmodel (self, string_null);
+	self.solid = SOLID_NOT;
 
 	bprint(PRINT_HIGH, self.netname);
 	bprint(PRINT_HIGH, " has left the realm.\n");
-	player_chain_remove(self);
 };
 
 void() SetNewParms = {};
 void() SetChangeParms = {};
 void() info_player_start = {};
 
-void(float elapsedtime) SV_PausedTic =
+void(string LOGIN_NAME) CSEv_ResumeCharacter_s = 
 {
-	// if (elapsedtime > 2) setpause(0);
-};
-
-void(string command_string) SV_ParseClientCommand =
-{
-	tokenize(command_string);
-	string cmd = argv(0);
-	switch (cmd)
-	{
-		default: break;
-	}
-	clientcommand(self, command_string);
-};
-
-void() SV_RunClientCommand = {runstandardplayerphysics(self);};
-
-void() CSEv_ResumeCharacter = 
-{
-	// Grab stats from user server file
 	string line;
-	string loadname = strcat(self.netname, "_sv"); // add _sv to note that these are player server stats
-	float v = fopen(loadname, FILE_READ);
+	// Security check
+	float f = fopen(LOGIN_NAME, FILE_READ);
+	if (f >= 0)
+	{
+		self.guid = infokey(self, INFOKEY_P_GUID);
+	
+		if (line = fgets(f)) // grab guid from file
+		
+		if (line != self.guid) // Compare guid from file & user
+		{
+			print("Server GUID does not match players\n");
+			return;
+		}
+	}
+
+	// Passec security check
+	// Grab stats from user server file
+	float v = fopen(LOGIN_NAME, FILE_READ);
 	if (v >= 0)
 	{
+		if (line = fgets(v))
+			self.guid = line;
+			
+		if (line = fgets(v))
+		{
+			self.netname = line;
+			self.loginname = line;
+		}
+
 		if (line = fgets(v))
 			self.origin_x = stof(line);
 
@@ -180,12 +204,53 @@ void() CSEv_ResumeCharacter =
 		self.fixangle = TRUE;
 
 		fclose(v);
+
+		self.loggedin = TRUE;
+		self.menu = FALSE; // turn off menu in CSQC
 	}
-	self.player_loggedin = TRUE;
+	else
+		print("Character doesn't exist\n");
 };
 
-void() CSEv_CreateNewCharacter =
+void(string LOGIN_NAME) CSEv_CreateNewCharacter_s =
 {
-	self.player_loggedin = TRUE;
-	print ("Create new character called\n");
+	self.loginname = LOGIN_NAME; // Grab login name from CSQC
+
+	float v = fopen(self.loginname, FILE_READ);
+	if (v >= 0) // User exists
+	{
+		print ("That characters name is already taken\n");
+		return;
+	}
+	else
+	{
+		self.loggedin = TRUE;
+		self.menu = FALSE; // turn off menu in CSQC
+
+		self.level = 1;
+		self.exp = 0;
+
+		forceinfokey(self, "name", LOGIN_NAME);
+		Player_SaveChar();
+	}
 };
+
+
+//
+//
+//
+
+void(float elapsedtime) SV_PausedTic = {};
+
+void(string command_string) SV_ParseClientCommand =
+{
+	tokenize(command_string);
+	string cmd = argv(0);
+	switch (cmd)
+	{
+		default: break;
+	}
+	clientcommand(self, command_string);
+};
+
+void() SV_RunClientCommand = {runstandardplayerphysics(self);};

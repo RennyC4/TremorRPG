@@ -1688,8 +1688,14 @@ accessor filestream : float
 #endif
 #pragma noref 0
 
-.string player_guid;
-.float player_loggedin; // user successfully logged in
+.string guid; // guid security
+.float loggedin; // user successfully logged in
+.string loginname; // enforce this on the player
+.float menu; // menu boolean
+
+.float level;
+.float exp;
+.float exp_next;
 
 //
 // Send stats to CSQC 
@@ -1697,11 +1703,28 @@ accessor filestream : float
 
 // Unique identifier per user
 #define STAT_GUID 32
+#define STAT_LOGGEDIN 33
 // Origin
-#define STAT_PLAYER_X 33
-#define STAT_PLAYER_Y 34
-#define STAT_PLAYER_Z 35
+#define STAT_PLAYER_X 34
+#define STAT_PLAYER_Y 35
+#define STAT_PLAYER_Z 36
 // View angles
-#define STAT_PLAYER_ANGLE_X 36
-#define STAT_PLAYER_ANGLE_Y 37
-#define STAT_PLAYER_ANGLE_Z 38
+#define STAT_PLAYER_ANGLE_X 37
+#define STAT_PLAYER_ANGLE_Y 38
+#define STAT_PLAYER_ANGLE_Z 39
+
+#define STAT_MENU 40
+
+// Define bitmask constants
+#define FLAG_1 (1 << 0)  // 00000001
+#define FLAG_2 (1 << 1)  // 00000010
+#define FLAG_3 (1 << 2)  // 00000100
+#define FLAG_4 (1 << 3)  // 00001000
+#define FLAG_5 (1 << 4)  // 00010000
+#define FLAG_6 (1 << 5)  // 00100000
+#define FLAG_7 (1 << 6)  // 01000000
+#define FLAG_8 (1 << 7)  // 10000000
+
+float player_dimension_hit = FLAG_1;
+float player_dimension_solid = FLAG_2;
+string string_null = ""; 
