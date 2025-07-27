@@ -41,7 +41,13 @@ void() PlayerPrintLocation =
 	string pos_x = ftos(self.origin_x);
 	string pos_y = ftos(self.origin_y);
 	string pos_z = ftos(self.origin_z);
+
+	string ang_x = ftos(self.angles_x);
+	string ang_y = ftos(self.angles_y);
+	string ang_z = ftos(self.angles_z);
+
 	print(self.loginname, " Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
+	print(self.loginname, " Angles: ", ang_x, " ", ang_y, " ", ang_z, "\n");
 };
 
 void() CheckImpulses =

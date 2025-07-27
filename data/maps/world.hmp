@@ -20,15 +20,15 @@ _wateralpha "0.6"
 
 {
 classname info_player_start
-origin "0 0 75" /*EDITME*/
-angles "0 -90 0"
+origin "-3321 -1460 85" /*EDITME*/
+angles "0 -30 0"
 }
 
-// house
+// first town (Elderfen)
 {
 classname "setprop"
-model "bsps/house.bsp"
-origin "0 0 50"
+model "bsps/town1.bsp"
+origin "-2194 -2046 60"
 angles "0 0 0"
 }
 
@@ -36,6 +36,6 @@ angles "0 0 0"
 {
 classname "monster_test"
 model "models/testplayer.iqm"
-origin "-1111 439 255"
+origin "-1111 439 150"
 angles "0 0 0"
 }
