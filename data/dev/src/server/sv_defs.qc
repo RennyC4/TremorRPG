@@ -1689,10 +1689,19 @@ accessor filestream : float
 #pragma noref 0
 
 .string player_guid;
-.vector player_lastpos; // last position before disconnect
+.float player_loggedin; // user successfully logged in
 
 //
 // Send stats to CSQC 
 //
 
+// Unique identifier per user
 #define STAT_GUID 32
+// Origin
+#define STAT_PLAYER_X 33
+#define STAT_PLAYER_Y 34
+#define STAT_PLAYER_Z 35
+// View angles
+#define STAT_PLAYER_ANGLE_X 36
+#define STAT_PLAYER_ANGLE_Y 37
+#define STAT_PLAYER_ANGLE_Z 38

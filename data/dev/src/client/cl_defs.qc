@@ -2175,4 +2175,13 @@ float MENU_CHARACTER = 2; // user info screen
 // Grab stats from SSQC 
 //
 
+// Unique identifier per user
 #define STAT_GUID 32
+// Origin
+#define STAT_PLAYER_X 33
+#define STAT_PLAYER_Y 34
+#define STAT_PLAYER_Z 35
+// View angles
+#define STAT_PLAYER_ANGLE_X 36
+#define STAT_PLAYER_ANGLE_Y 37
+#define STAT_PLAYER_ANGLE_Z 38

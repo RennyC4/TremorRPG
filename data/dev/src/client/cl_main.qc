@@ -58,8 +58,13 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		if (MENU == MENU_LOGIN)
 			User_LoginScreen();
 	}
-	else
+	else // Regular gameplay
 	{
+		// Enforce login name
+		nameforplayerent = getplayerkeyvalue(csqcplayerent.entnum-1, "name");
+		if (nameforplayerent != LOGIN_NAME)
+			localcmd("name ", LOGIN_NAME, "\n");
+
 		setcursormode(FALSE,"", 0, 0);
 	}
 

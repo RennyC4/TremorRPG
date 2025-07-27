@@ -21,7 +21,7 @@ void() PlayerPrintLocation =
 	string pos_y = ftos(self.origin_y);
 	string pos_z = ftos(self.origin_z);
 
-	print("Coord: ", pos_x, " ", pos_y, " ", pos_z, "\n");
+	print("Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
 };
 
 void() CheckImpulses =
@@ -83,6 +83,7 @@ void() PlayerSpawn =
 	self.fixangle = TRUE;
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 	self.view_ofs = [0, 0, 48];
+	self.player_loggedin = FALSE;
 };
 
 void() PutClientInServer =
@@ -102,9 +103,29 @@ void() PutClientInServer =
 
 void() ClientDisconnect =
 {
-	player_chain_remove(self);
+	if (self.player_guid) // valid player
+	{
+		// Write players last X, Y, Z into their data file on disconnect
+		string savename = strcat(self.netname, "_sv"); // add _sv to note that these are player server stats
+
+		float v = fopen(savename, FILE_WRITE);
+		if (v >= 0)
+		{
+			fputs(v, ftos(self.origin_x), "\n");
+			fputs(v, ftos(self.origin_y), "\n");
+			fputs(v, ftos(self.origin_z), "\n");
+
+			fputs(v, ftos(self.angles_x), "\n");
+			fputs(v, ftos(self.angles_y), "\n");
+			fputs(v, ftos(self.angles_z), "\n");
+
+			fclose(v);
+		}
+	}
+
 	bprint(PRINT_HIGH, self.netname);
 	bprint(PRINT_HIGH, " has left the realm.\n");
+	player_chain_remove(self);
 };
 
 void() SetNewParms = {};
@@ -127,7 +148,44 @@ void(string command_string) SV_ParseClientCommand =
 	clientcommand(self, command_string);
 };
 
-void() SV_RunClientCommand =
+void() SV_RunClientCommand = {runstandardplayerphysics(self);};
+
+void() CSEv_ResumeCharacter = 
 {
-	runstandardplayerphysics(self);
+	// Grab stats from user server file
+	string line;
+	string loadname = strcat(self.netname, "_sv"); // add _sv to note that these are player server stats
+	float v = fopen(loadname, FILE_READ);
+	if (v >= 0)
+	{
+		if (line = fgets(v))
+			self.origin_x = stof(line);
+
+		if (line = fgets(v))
+			self.origin_y = stof(line);
+
+		if (line = fgets(v))
+			self.origin_z = stof(line);
+
+		if (line = fgets(v))
+			self.angles_x = stof(line);
+
+		if (line = fgets(v))
+			self.angles_y = stof(line);
+
+		if (line = fgets(v))
+			self.angles_z = stof(line);
+
+		setorigin (self, self.origin); // relink properly
+		self.fixangle = TRUE;
+
+		fclose(v);
+	}
+	self.player_loggedin = TRUE;
+};
+
+void() CSEv_CreateNewCharacter =
+{
+	self.player_loggedin = TRUE;
+	print ("Create new character called\n");
 };
