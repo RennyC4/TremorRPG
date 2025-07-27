@@ -262,7 +262,7 @@ void() main_menu =
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	
 	my_button("mm_start", [0, 8], [size_x - 16, 20], "Local Game") ? localcmd("map world\n") : 0;
-	my_button("mm_connect", [0, 8 +24], [size_x - 16, 20], "Play Online") ? localcmd("connect /quakerpg\n") : 0; // rennyc
+	my_button("mm_connect", [0, 8 +24], [size_x - 16, 20], "Play Online") ? localcmd("connect 99.248.148.145:27500\n") : 0; // rennyc
 	my_button("mm_settings", [0, 8 + 48], [size_x - 16, 20], "Settings") ? current_menu = MENU_SETTINGS : 0;
 	my_button("mm_help", [0, 8 + 72], [size_x - 16, 20], "Help") ? current_menu = MENU_HELP : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
