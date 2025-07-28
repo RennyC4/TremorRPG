@@ -1719,9 +1719,8 @@ const float TEREDIT_ENT_ADD = 28;
 const float TEREDIT_ENT_COUNT = 29;
 
 // deadflag values
-
-const float	DEAD_NO					= 0;
-const float	DEAD_DEAD				= 1;
+const float	DEAD_NO	  = 0;
+const float	DEAD_DEAD = 1;
 
 .void()		th_die;
 
@@ -1741,6 +1740,9 @@ const float	DEAD_DEAD				= 1;
 .float exp_next;
 .float gold; // player, for monsters (max amount of gold to give)
 .float gold_min; // for monsters (minimum amount of gold to give)
+.float skillpoints;
+.float attack_power_min; // player + monster damage
+.float attack_power_max; // player + monster damage
 
 //
 // Send stats to CSQC 
@@ -1749,10 +1751,12 @@ const float	DEAD_DEAD				= 1;
 // Unique identifier per user
 #define STAT_GUID 32
 #define STAT_LOGGEDIN 33
+
 // Origin
 #define STAT_PLAYER_X 34
 #define STAT_PLAYER_Y 35
 #define STAT_PLAYER_Z 36
+
 // View angles
 #define STAT_PLAYER_ANGLE_X 37
 #define STAT_PLAYER_ANGLE_Y 38

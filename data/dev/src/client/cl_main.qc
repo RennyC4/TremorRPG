@@ -51,7 +51,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	//does what you think it does
 	renderscene();
-	
+
 	sui_begin(g_width, g_height);
 	
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well

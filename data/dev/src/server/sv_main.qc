@@ -37,3 +37,35 @@ float(float min, float max) random_range =
 {
     return min + (random() * (max - min));
 };
+
+#define FOR_EACH_CLIENT(v) for(v = world; (v = findflags(v, flags, FL_CLIENT)) != world; )
+#define FOR_EACH_REALCLIENT(v) FOR_EACH_CLIENT(v) if(clienttype(v) == CLIENTTYPE_REAL)
+#define WORDWRAP_MAX 50
+
+
+void(entity targ, string msg_in) Say =
+{
+	string msg_string; 
+
+	if (msg_in == "" || msg_in == " ")
+		return;
+
+	msg_string = strzone(strcat("(say_msg)", targ.netname, "^7: ", msg_in));
+};
+
+void(string command_string) SV_ParseClientCommand =
+{
+	tokenize(command_string);
+	string cmd = argv(0);
+	switch (cmd)
+	{
+		case "say":
+			Say(self, substring(command_string, 4, strlen(command_string) - 1));
+		break;
+		default:
+			break;
+	}
+	clientcommand(self, command_string);
+};
+
+void() SV_RunClientCommand = {runstandardplayerphysics(self);};

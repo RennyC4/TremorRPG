@@ -1,4 +1,8 @@
 // Player HUD
+float MAX_CHATMSG = 6;
+string messagestack[MAX_CHATMSG];
+float messagestack_fade;
+float msg_alpha;
 
 void(float screenwidth, float screenheight) Draw_ZoneName =
 {

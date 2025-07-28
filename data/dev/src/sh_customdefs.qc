@@ -5,4 +5,5 @@
 void() precache_everything =
 {
 	precache_model("models/testplayer.iqm");
+	precache_sound("levelup.wav\n");
 };

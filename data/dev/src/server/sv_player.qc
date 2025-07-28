@@ -3,6 +3,12 @@
 //
 
 void() CSEv_Player_SaveChar;
+void() PlayerPostThink = {};
+void() ClientKill = {};
+void() SetNewParms = {};
+void() SetChangeParms = {};
+void(float elapsedtime) SV_PausedTic = {};
+void() info_player_start = {};
 
 void() PlayerJump =
 {
@@ -72,9 +78,6 @@ void() PlayerPreThink =
 	}
 };
 
-void() PlayerPostThink = {};
-void() ClientKill = {};
-
 void() ClientConnect =
 {
 	bprint(PRINT_HIGH, self.netname);
@@ -113,6 +116,7 @@ void(float type) PlayerSpawn =
 	}
 	else // Put actual player in
 	{
+		self.flags = FL_CLIENT;
 		self.classname = "player";
 		self.solid = SOLID_SLIDEBOX;
 		setmodel(self, "models/testplayer.iqm");
@@ -162,10 +166,6 @@ void() ClientDisconnect =
 	bprint(PRINT_HIGH, " has left the realm.\n");
 };
 
-void() SetNewParms = {};
-void() SetChangeParms = {};
-void() info_player_start = {};
-
 //
 // Saving / Loading / Character creation
 //
@@ -197,6 +197,7 @@ void() CSEv_Player_SaveChar =
 		fputs(v, ftos(self.exp), "\n");
 		fputs(v, ftos(self.exp_next), "\n");
 		fputs(v, ftos(self.gold), "\n");
+		fputs(v, ftos(self.skillpoints), "\n");
 
 		fclose(v);
 		print(self.loginname, " character saved\n");
@@ -277,6 +278,9 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.gold = stof(line);
 
+		if (line = fgets(v))
+			self.skillpoints = stof(line);
+
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
 
@@ -307,6 +311,7 @@ void(string LOGIN_NAME) CSEv_CreateNewCharacter_s =
 		self.level = 1;
 		self.exp = 0;
 		self.exp_next = 100;
+		self.skillpoints = 25; // 25 skill points new players can dump into stats
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		CSEv_Player_SaveChar();
@@ -317,18 +322,3 @@ void(string LOGIN_NAME) CSEv_CreateNewCharacter_s =
 //
 //
 //
-
-void(float elapsedtime) SV_PausedTic = {};
-
-void(string command_string) SV_ParseClientCommand =
-{
-	tokenize(command_string);
-	string cmd = argv(0);
-	switch (cmd)
-	{
-		default: break;
-	}
-	clientcommand(self, command_string);
-};
-
-void() SV_RunClientCommand = {runstandardplayerphysics(self);};
