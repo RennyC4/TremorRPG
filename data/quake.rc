@@ -72,7 +72,7 @@ sv_maxrate 0
 setinfo rate 0
 //
 
-sv_playerslots 250 // increase for more players
+sv_playerslots 255 // increase for more players
 
 // Turn these off if anything breaks
 mod_terrain_shadows 1 // Broken

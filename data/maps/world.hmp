@@ -1,7 +1,8 @@
 {
 classname "worldspawn"
 message "main world"
-_sky "sky25_64"
+//_sky "sky25_64"
+_sky "skyworld"
 _fog 0.02
 _maxdrawdist 0 /*overrides fog distance (if greater)*/
 _segmentsize 1024 /*how big each section is. this affects texturing and resolutions*/
@@ -41,6 +42,6 @@ angles "0 0 0"
 level "1"
 gold "10"
 gold_min "3"
-exp "10"
-exp_min "5"
+exp "25"
+exp_min "10"
 }
