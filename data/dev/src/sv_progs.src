@@ -3,6 +3,7 @@
 server/sv_defs.qc
 sh_customdefs.qc
 server/sv_customdefs.qc
+server/sv_expsys.qc
 server/sv_combat.qc
 server/sv_enemies.qc
 server/sv_triggers.qc

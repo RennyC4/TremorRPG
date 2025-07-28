@@ -1,5 +1,5 @@
 //
-//	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc.
+//	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
 void() Player_SaveChar =
@@ -18,11 +18,11 @@ void() Player_SaveChar =
 		fputs(v, ftos(self.angles_y), "\n");
 		fputs(v, ftos(self.angles_z), "\n");
 
-		// Save health
-		// Save max_health;
-		// Save level
-		// Save exp
-		// Save next level exp
+		fputs(v, ftos(self.health), "\n");
+		fputs(v, ftos(self.max_health), "\n");
+		fputs(v, ftos(self.level), "\n");
+		fputs(v, ftos(self.exp), "\n");
+		fputs(v, ftos(self.exp_next), "\n");
 
 		fclose(v);
 		print(self.loginname, " character saved\n");
@@ -140,8 +140,6 @@ void(float type) PlayerSpawn =
 		self.solid = SOLID_SLIDEBOX;
 		setmodel(self, "models/testplayer.iqm");
 
-		self.health = 100; // FIXME: Player health should be restored from character file, unless it's a new character
-		self.max_health = 100;
 		self.takedamage = DAMAGE_AIM;
 		self.movetype = MOVETYPE_WALK;
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
@@ -238,6 +236,21 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.angles_z = stof(line);
 
+		if (line = fgets(v))
+			self.health = stof(line);
+
+		if (line = fgets(v))
+			self.max_health = stof(line);
+
+		if (line = fgets(v))
+			self.level = stof(line);
+
+		if (line = fgets(v))
+			self.exp = stof(line);
+
+		if (line = fgets(v))
+			self.exp_next = stof(line);
+
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
 
@@ -264,6 +277,7 @@ void(string LOGIN_NAME) CSEv_CreateNewCharacter_s =
 		self.loggedin = TRUE;
 		self.menu = FALSE; // turn off menu in CSQC
 
+		self.health = self.max_health = 100;
 		self.level = 1;
 		self.exp = 0;
 
