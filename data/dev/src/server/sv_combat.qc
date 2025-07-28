@@ -27,7 +27,15 @@ void() DoAttack_Melee =
 
 void(entity targ, entity attacker) DoDeath = 
 {
-	print ("Do Target death routine\n");
+	if (targ.th_die)
+	{
+		targ.alpha = 0.1; // Removeme, just for testing
+		targ.deadflag = DEAD_DEAD;
+		targ.think = targ.th_die;
+		targ.nextthink = time;
+	}
+	else
+		print("Monster's th_die routine is missing\n");
 };
 
 void(entity targ, entity attacker, float damage) DoDamage =

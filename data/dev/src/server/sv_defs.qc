@@ -1277,7 +1277,9 @@ vector(vector v1, vector v2) crossproduct = #0:crossproduct; /* Part of FTE_QC_C
 		Small helper function to calculate the crossproduct of two vectors. */
 
 float(entity pusher, vector move, vector amove) pushmove = #0:pushmove;
-void(float action, optional vector pos, optional float radius, optional float quant, ...) terrain_edit = #278; /* Part of FTE_TERRAIN_MAP
+
+//void(float action, optional vector pos, optional float radius, optional float quant, ...) terrain_edit = #278; /* Part of FTE_TERRAIN_MAP */
+__variant(float action, optional vector pos, optional float radius, optional float quant, ...) terrain_edit = #278; /* Part of FTE_TERRAIN_MAP
 		Realtime terrain editing. Actions are the TEREDIT_ constants. */
 
 typedef struct
@@ -1688,12 +1690,48 @@ accessor filestream : float
 #endif
 #pragma noref 0
 
+const float TEREDIT_RELOAD = 0;
+const float TEREDIT_SAVE = 1;
+const float TEREDIT_SETHOLE = 2;
+const float TEREDIT_HEIGHT_SET = 3;
+const float TEREDIT_HEIGHT_SMOOTH = 4;
+const float TEREDIT_HEIGHT_SPREAD = 5;
+const float TEREDIT_HEIGHT_RAISE = 6;
+const float TEREDIT_HEIGHT_FLATTEN = 18;
+const float TEREDIT_HEIGHT_LOWER = 7;
+const float TEREDIT_TEX_KILL = 8;
+const float TEREDIT_TEX_GET = 9;
+const float TEREDIT_TEX_BLEND = 10;
+const float TEREDIT_TEX_UNIFY = 11;
+const float TEREDIT_TEX_NOISE = 12;
+const float TEREDIT_TEX_BLUR = 13;
+const float TEREDIT_TEX_REPLACE = 19;
+const float TEREDIT_TEX_SETMASK = 25;
+const float TEREDIT_WATER_SET = 14;
+const float TEREDIT_MESH_ADD = 15;
+const float TEREDIT_MESH_KILL = 16;
+const float TEREDIT_TINT = 17;
+const float TEREDIT_RESET_SECT = 20;
+const float TEREDIT_RELOAD_SECT = 21;
+const float TEREDIT_ENT_GET = 26;
+const float TEREDIT_ENT_SET = 27;
+const float TEREDIT_ENT_ADD = 28;
+const float TEREDIT_ENT_COUNT = 29;
+
+// deadflag values
+
+const float	DEAD_NO					= 0;
+const float	DEAD_DEAD				= 1;
+
+.void()		th_die;
+
 .string guid; // guid security
 .float loggedin; // user successfully logged in
 .string loginname; // enforce this on the player
 .float menu; // menu boolean
 .string radius_candamage; // TRUE, entity can be damaged by radius attacks
 .vector saveorigin; // used for monsters to save their inital spawn location
+.string music; // what track to play for the client
 
 .float level;
 .float exp;

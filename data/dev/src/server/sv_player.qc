@@ -148,6 +148,7 @@ void(float type) PlayerSpawn =
 		self.menu = FALSE;
 		self.loggedin = TRUE;
 		self.radius_candamage = "TRUE"; // uses string
+
 		self.dimension_hit = player_dimension_hit;
 		self.dimension_solid = player_dimension_solid;
 	}
