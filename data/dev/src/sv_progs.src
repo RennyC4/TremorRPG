@@ -5,7 +5,8 @@ sh_customdefs.qc
 server/sv_customdefs.qc
 server/sv_expsys.qc
 server/sv_combat.qc
-server/sv_enemies.qc
+server/sv_enemy_ai.qc
+server/sv_enemy.qc
 server/sv_triggers.qc
 server/sv_player.qc
 server/sv_main.qc

@@ -12,4 +12,6 @@ void() monster_test =
 	self.takedamage = DAMAGE_AIM;
 	self.classname = "monster";
 	self.colormod = '100 0 0'; // Red
+
+	self.saveorigin = self.origin; // stash initial spawn spot
 };

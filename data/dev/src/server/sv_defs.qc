@@ -1693,6 +1693,7 @@ accessor filestream : float
 .string loginname; // enforce this on the player
 .float menu; // menu boolean
 .string radius_candamage; // TRUE, entity can be damaged by radius attacks
+.vector saveorigin; // used for monsters to save their inital spawn location
 
 .float level;
 .float exp;
