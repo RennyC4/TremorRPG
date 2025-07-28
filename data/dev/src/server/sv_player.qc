@@ -18,10 +18,15 @@ void() Player_SaveChar =
 		fputs(v, ftos(self.angles_y), "\n");
 		fputs(v, ftos(self.angles_z), "\n");
 
-		fclose(v);
-	}
+		// Save health
+		// Save max_health;
+		// Save level
+		// Save exp
+		// Save next level exp
 
-	print("Character Saved\n");
+		fclose(v);
+		print(self.loginname, " character saved\n");
+	}
 };
 
 void() PlayerJump =
@@ -77,7 +82,7 @@ void() PlayerPreThink =
 
 	if (self.button0)
 	{
-		// Write attack code
+		// Write attack code, sv_combat.qc
 	}
 
 	if (self.button2)
@@ -102,30 +107,53 @@ void() ClientConnect =
 	bprint(PRINT_HIGH, " has joined the realm.\n");
 };
 
-void() PlayerSpawn =
+void(float type) PlayerSpawn =
 {
 	entity spawn_spot = get_spawn_point();
 
-	self.classname = "player";
-	self.solid = SOLID_SLIDEBOX;
-	setmodel(self, "models/testplayer.iqm");
+	if (!type) // Login screen
+	{
+		self.classname = "notloggedin";
+		self.solid = SOLID_NOT;
+		setmodel(self, string_null);
 
-	if (cvar("developer") == 1)
-		self.movetype = MOVETYPE_NOCLIP;
-	else
+		if (cvar("developer") == 1)
+			self.movetype = MOVETYPE_NOCLIP;
+		else
+			self.movetype = MOVETYPE_NONE;
+
+		self.health = 100;
+		self.max_health = 100;
+		setorigin(self, spawn_spot.origin + '0 0 1');
+		self.angles = spawn_spot.angles;
+		self.fixangle = TRUE;
+		setsize(self, [-0, -0, 0], [0, 0, 0]);
+		self.view_ofs = [0, 0, 48];
+
+		self.menu = TRUE;
+		self.loggedin = FALSE;
+		self.radius_candamage = "FALSE"; // uses string
+		self.dimension_hit = 0;
+		self.dimension_solid = 0;
+	}
+	else // Put actual player in
+	{
+		self.classname = "player";
+		self.solid = SOLID_SLIDEBOX;
+		setmodel(self, "models/testplayer.iqm");
+
+		self.health = 100; // FIXME: Player health should be restored from character file, unless it's a new character
+		self.max_health = 100;
 		self.movetype = MOVETYPE_WALK;
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
+		self.view_ofs = [0, 0, 48];
 
-	self.health = 100;
-	setorigin(self, spawn_spot.origin + '0 0 1');
-	self.angles = spawn_spot.angles;
-	self.fixangle = TRUE;
-	setsize(self, [-16, -16, 0], [16, 16, 56]);
-	self.view_ofs = [0, 0, 48];
-
-	self.menu = TRUE;
-	self.loggedin = FALSE;
-	self.dimension_hit = player_dimension_hit;
-	self.dimension_solid = player_dimension_solid;
+		self.menu = FALSE;
+		self.loggedin = TRUE;
+		self.radius_candamage = "TRUE"; // uses string
+		self.dimension_hit = player_dimension_hit;
+		self.dimension_solid = player_dimension_solid;
+	}
 };
 
 void() PutClientInServer =
@@ -140,7 +168,7 @@ void() PutClientInServer =
 		return;
 	}
 	else
-		PlayerSpawn();
+		PlayerSpawn(0);
 };
 
 void() ClientDisconnect =
@@ -179,7 +207,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		}
 	}
 
-	// Passec security check
+	// Passed security check
 	// Grab stats from user server file
 	float v = fopen(LOGIN_NAME, FILE_READ);
 	if (v >= 0)
@@ -216,8 +244,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 
 		fclose(v);
 
-		self.loggedin = TRUE;
-		self.menu = FALSE; // turn off menu in CSQC
+		PlayerSpawn(1); // Put player in game
 	}
 	else
 		print("Character doesn't exist\n");
@@ -243,6 +270,7 @@ void(string LOGIN_NAME) CSEv_CreateNewCharacter_s =
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		Player_SaveChar();
+		PlayerSpawn(1); // Put player in game
 	}
 };
 

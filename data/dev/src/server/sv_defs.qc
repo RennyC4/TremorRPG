@@ -1692,6 +1692,7 @@ accessor filestream : float
 .float loggedin; // user successfully logged in
 .string loginname; // enforce this on the player
 .float menu; // menu boolean
+.string radius_candamage; // TRUE, entity can be damaged by radius attacks
 
 .float level;
 .float exp;
