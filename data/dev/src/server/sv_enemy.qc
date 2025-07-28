@@ -1,9 +1,26 @@
 // Empty
 
+void() monster_respawn =
+{
+	self.solid = SOLID_SLIDEBOX;
+	self.deadflag = DEAD_NO;
+	self.takedamage = DAMAGE_AIM;
+	self.alpha = 1; // removeme
+	self.health = 100;
+	self.radius_candamage = "TRUE"; // uses string
+	setorigin (self, self.saveorigin); // respawn at initial spawn spot
+};
+
 void() monster_test_death =
 {
+	self.alpha = 0.1;
 	self.solid = SOLID_NOT;
 	self.deadflag = DEAD_DEAD;
+	self.takedamage = DAMAGE_NO;
+	self.radius_candamage = "FALSE"; // uses string
+
+	self.think = monster_respawn;
+	self.nextthink = time + 10;
 };
 
 void() monster_test =
@@ -15,8 +32,12 @@ void() monster_test =
 	self.health = 100;
 	self.takedamage = DAMAGE_AIM;
 	self.classname = "monster";
+	self.radius_candamage = "TRUE"; // uses string
 	self.colormod = '100 0 0'; // Red
 	self.th_die = monster_test_death;
+
+	if (!self.exp)
+		self.exp = 200; // removeme
 
 	self.saveorigin = self.origin; // stash initial spawn spot
 

@@ -25,11 +25,20 @@ void() DoAttack_Melee =
 	}
 };
 
+void(entity targ) Player_CheckLevelUp;
 void(entity targ, entity attacker) DoDeath = 
 {
+	if (attacker.classname == "player")
+	{
+		if (targ.exp)
+			attacker.exp += targ.exp; // give exp
+
+		print ("EXP Given: ", ftos(targ.exp), "\n");
+		Player_CheckLevelUp(attacker);			
+	}
+
 	if (targ.th_die)
 	{
-		targ.alpha = 0.1; // Removeme, just for testing
 		targ.deadflag = DEAD_DEAD;
 		targ.think = targ.th_die;
 		targ.nextthink = time;

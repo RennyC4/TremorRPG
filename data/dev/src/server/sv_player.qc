@@ -2,31 +2,20 @@
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
-void() Player_SaveChar =
+void() Player_SaveChar;
+
+void(entity targ) Player_CheckLevelUp =
 {
-	float v = fopen(self.loginname, FILE_WRITE);
-	if (v >= 0)
-	{
-		fputs(v, self.guid, "\n");
-		fputs(v, self.loginname, "\n");
+    if (targ.exp >= targ.exp_next)
+    {
+		//targ.exp -= targ.exp_next;
+		targ.level += 1;
+		print (targ.netname, " leveled up to level ", ftos(targ.level), "!\n");
 
-		fputs(v, ftos(self.origin_x), "\n");
-		fputs(v, ftos(self.origin_y), "\n");
-		fputs(v, ftos(self.origin_z), "\n");
-
-		fputs(v, ftos(self.angles_x), "\n");
-		fputs(v, ftos(self.angles_y), "\n");
-		fputs(v, ftos(self.angles_z), "\n");
-
-		fputs(v, ftos(self.health), "\n");
-		fputs(v, ftos(self.max_health), "\n");
-		fputs(v, ftos(self.level), "\n");
-		fputs(v, ftos(self.exp), "\n");
-		fputs(v, ftos(self.exp_next), "\n");
-
-		fclose(v);
-		print(self.loginname, " character saved\n");
-	}
+		targ.exp_next = 100 * (targ.level * targ.level * 1.5);
+		print ("Current EXP: ", ftos(targ.exp), "\n");
+		print ("EXP Needed: ", ftos(targ.exp_next), "\n");
+    }
 };
 
 void() PlayerJump =
@@ -41,7 +30,7 @@ void() PlayerJump =
 	self.button2 = 0;
 };
 
-void() PlayerPrintLocation =
+void() PlayerPrintStats =
 {
 	string pos_x = ftos(self.origin_x);
 	string pos_y = ftos(self.origin_y);
@@ -53,6 +42,7 @@ void() PlayerPrintLocation =
 
 	print(self.loginname, " Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
 	print(self.loginname, " Angles: ", ang_x, " ", ang_y, " ", ang_z, "\n");
+	print(self.loginname, " EXP: ", ftos(self.exp), " Needed: ", ftos(self.exp_next), "\n");
 };
 
 void() CheckImpulses =
@@ -60,7 +50,7 @@ void() CheckImpulses =
 	switch (self.impulse)
 	{
 		case 1:
-			PlayerPrintLocation(); // Debugging for laying down entities
+			PlayerPrintStats(); // Debugging
 		break;
 		default:
 			break;
@@ -151,6 +141,8 @@ void(float type) PlayerSpawn =
 
 		self.dimension_hit = player_dimension_hit;
 		self.dimension_solid = player_dimension_solid;
+		
+		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
 };
 
@@ -187,6 +179,39 @@ void() SetNewParms = {};
 void() SetChangeParms = {};
 void() info_player_start = {};
 
+//
+// Saving / Loading / Character creation
+//
+
+void() Player_SaveChar =
+{
+	float v = fopen(self.loginname, FILE_WRITE);
+	if (v >= 0)
+	{
+		fputs(v, self.guid, "\n");
+		fputs(v, self.loginname, "\n");
+		fputs(v, self.music, "\n");
+		fputs(v, self.message, "\n");
+
+		fputs(v, ftos(self.origin_x), "\n");
+		fputs(v, ftos(self.origin_y), "\n");
+		fputs(v, ftos(self.origin_z), "\n");
+
+		fputs(v, ftos(self.angles_x), "\n");
+		fputs(v, ftos(self.angles_y), "\n");
+		fputs(v, ftos(self.angles_z), "\n");
+
+		fputs(v, ftos(self.health), "\n");
+		fputs(v, ftos(self.max_health), "\n");
+		fputs(v, ftos(self.level), "\n");
+		fputs(v, ftos(self.exp), "\n");
+		fputs(v, ftos(self.exp_next), "\n");
+
+		fclose(v);
+		print(self.loginname, " character saved\n");
+	}
+};
+
 void(string LOGIN_NAME) CSEv_ResumeCharacter_s = 
 {
 	string line;
@@ -218,6 +243,12 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.netname = line;
 			self.loginname = line;
 		}
+
+		if (line = fgets(v))
+			self.music = line;
+
+		if (line = fgets(v))
+			self.message = line;
 
 		if (line = fgets(v))
 			self.origin_x = stof(line);
@@ -252,6 +283,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.exp_next = stof(line);
 
+
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
 
@@ -281,6 +313,7 @@ void(string LOGIN_NAME) CSEv_CreateNewCharacter_s =
 		self.health = self.max_health = 100;
 		self.level = 1;
 		self.exp = 0;
+		self.exp_next = 100;
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		Player_SaveChar();
