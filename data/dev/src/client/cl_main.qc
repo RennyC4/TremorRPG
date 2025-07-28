@@ -20,6 +20,9 @@ noref void(float apiver, string enginename, float enginever) CSQC_Init =
 noref void() CSQC_WorldLoaded =
 {
 	MENU = MENU_LOGIN; // first login, display login window
+
+	if (cvar("developer") == 1)
+		localcmd("sv_csqc_progname csaddon.dat\nrestart\n");
 };
 
 noref void(float isnew) CSQC_Ent_Update =
@@ -52,18 +55,21 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well
 
-	float player_loggedin = getstatf(STAT_LOGGEDIN);
-	float player_menu = getstatf(STAT_MENU);
-	if (player_menu > 0)
+	if (cvar("developer") == 0)
 	{
-		setcursormode(TRUE,"gfx/xhair", [16, 16], cvar("vid_conautoscale")); // enable mouse cursor when menus are active
+		float player_loggedin = getstatf(STAT_LOGGEDIN);
+		float player_menu = getstatf(STAT_MENU);
+		if (player_menu > 0)
+		{
+			setcursormode(TRUE,"gfx/xhair", [16, 16], cvar("vid_conautoscale")); // enable mouse cursor when menus are active
 
-		if (player_menu == MENU_LOGIN)
-			User_LoginScreen();
-	}
-	else // Regular gameplay
-	{
-		setcursormode(FALSE,"", 0, 0);
+			if (player_menu == MENU_LOGIN)
+				User_LoginScreen();
+		}
+		else // Regular gameplay
+		{
+			setcursormode(FALSE,"", 0, 0);
+		}
 	}
 	
 	//
@@ -88,7 +94,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
 	float player_menu = getstatf(STAT_MENU);
 
-	if (!player_menu)
+	if (!player_menu || cvar("developer") == 1)
 	{
 		switch(evtype)
 		{

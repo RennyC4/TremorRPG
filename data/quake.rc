@@ -74,8 +74,9 @@ setinfo rate 0
 
 sv_playerslots 250 // increase for more players
 
-//mod_terrain_shadows 1 // Broken
-mod_terrain_ambient 0
+// Turn these off if anything breaks
+mod_terrain_shadows 1 // Broken
+mod_terrain_ambient 1
 
 // Fonts
 con_textfont "fonts/font"
@@ -93,6 +94,7 @@ bind "PAUSE" "pause"
 bind "f1" "help"
 bind "f9" "quit"
 bind "esc" "togglemenu"
+bind "k" "toggle ca_show" // developer 1 csaddon.dat
 
 //
 exec fte.cfg

@@ -109,7 +109,12 @@ void() PlayerSpawn =
 	self.classname = "player";
 	self.solid = SOLID_SLIDEBOX;
 	setmodel(self, "models/testplayer.iqm");
-	self.movetype = MOVETYPE_WALK;
+
+	if (cvar("developer") == 1)
+		self.movetype = MOVETYPE_NOCLIP;
+	else
+		self.movetype = MOVETYPE_WALK;
+
 	self.health = 100;
 	setorigin(self, spawn_spot.origin + '0 0 1');
 	self.angles = spawn_spot.angles;
