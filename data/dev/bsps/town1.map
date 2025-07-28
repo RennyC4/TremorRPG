@@ -238,7 +238,7 @@
 // entity 1
 {
 "classname" "trigger_zone"
-"message" "Elderfen"
+"zonename" "Elderfen"
 "music" "sound/music/track01.ogg"
 // brush 0
 {
@@ -253,7 +253,7 @@
 // entity 2
 {
 "classname" "trigger_zone"
-"message" "Wilderness"
+"zonename" "Wilderness"
 "music" "sound/music/track02.ogg"
 // brush 0
 {
@@ -268,7 +268,7 @@
 // entity 3
 {
 "classname" "trigger_zone"
-"message" "Wilderness"
+"zonename" "Wilderness"
 "music" "sound/music/track02.ogg"
 // brush 0
 {

@@ -2,7 +2,7 @@
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
-void() Player_SaveChar;
+void() CSEv_Player_SaveChar;
 
 void(entity targ) Player_CheckLevelUp =
 {
@@ -164,7 +164,7 @@ void() PutClientInServer =
 void() ClientDisconnect =
 {
 	if (self.guid && self.loggedin) // valid player, save character on disconnect
-		Player_SaveChar();
+		CSEv_Player_SaveChar();
 
 	// clean up removed player
 	player_chain_remove(self);
@@ -183,15 +183,18 @@ void() info_player_start = {};
 // Saving / Loading / Character creation
 //
 
-void() Player_SaveChar =
+void() CSEv_Player_SaveChar =
 {
+	if (!self.guid || !self.loggedin) // invalid player
+		return;
+
 	float v = fopen(self.loginname, FILE_WRITE);
 	if (v >= 0)
 	{
 		fputs(v, self.guid, "\n");
 		fputs(v, self.loginname, "\n");
 		fputs(v, self.music, "\n");
-		fputs(v, self.message, "\n");
+		fputs(v, self.zonename, "\n");
 
 		fputs(v, ftos(self.origin_x), "\n");
 		fputs(v, ftos(self.origin_y), "\n");
@@ -206,6 +209,7 @@ void() Player_SaveChar =
 		fputs(v, ftos(self.level), "\n");
 		fputs(v, ftos(self.exp), "\n");
 		fputs(v, ftos(self.exp_next), "\n");
+		fputs(v, ftos(self.gold), "\n");
 
 		fclose(v);
 		print(self.loginname, " character saved\n");
@@ -248,7 +252,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.music = line;
 
 		if (line = fgets(v))
-			self.message = line;
+			self.zonename = line;
 
 		if (line = fgets(v))
 			self.origin_x = stof(line);
@@ -283,6 +287,8 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.exp_next = stof(line);
 
+		if (line = fgets(v))
+			self.gold = stof(line);
 
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
@@ -316,7 +322,7 @@ void(string LOGIN_NAME) CSEv_CreateNewCharacter_s =
 		self.exp_next = 100;
 
 		forceinfokey(self, "name", LOGIN_NAME);
-		Player_SaveChar();
+		CSEv_Player_SaveChar();
 		PlayerSpawn(1); // Put player in game
 	}
 };

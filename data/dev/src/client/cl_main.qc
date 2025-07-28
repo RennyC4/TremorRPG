@@ -1,5 +1,4 @@
 void() CSQC_Ent_Remove = {remove(self);};
-void() CSQC_Shutdown = {};
 
 float(string key, string val) find_player_id =
 {
@@ -132,4 +131,9 @@ void() CSQC_Parse_Event =
 void(string printmsg, float printlvl) CSQC_Parse_Print =
 {
 	print(printmsg);
+};
+
+noref void CSQC_Shutdown() =
+{
+	sendevent("Player_SaveChar", "");
 };

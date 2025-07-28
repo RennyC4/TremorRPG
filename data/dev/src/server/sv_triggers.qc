@@ -7,18 +7,17 @@ void() trigger_zone_touch =
 	if (other.classname != "player")
 		return;
 
-	if (other.message != self.message || self.music != self.music)
-		print ("Sent zone information to player\n"); // just print once for debugging
+//	if (other.zonename != self.zonename || self.music != self.music)
+//		print ("Sent zone information to player\n"); // just print once for debugging
 
 	if (other.music != self.music)
 	{
 		other.music = self.music;
 		stuffcmd (other, sprintf("music %s\n", self.music));
 	}
-	if (other.message != self.message)
-		other.message = self.message;
+	if (other.zonename != self.zonename)
+		other.zonename = self.zonename;
 
-	//print (self.music, "\n");
 	// TODO: PVP Flag stuff
 };
 

@@ -1730,12 +1730,16 @@ const float	DEAD_DEAD				= 1;
 .string loginname; // enforce this on the player
 .float menu; // menu boolean
 .string radius_candamage; // TRUE, entity can be damaged by radius attacks
-.vector saveorigin; // used for monsters to save their inital spawn location
+.vector saveorigin; // used for monsters to save their inital spawn location and patrol near it
 .string music; // what track to play for the client
+.string zonename; // name of zone player is in
 
 .float level;
-.float exp;
+.float exp; // player, for monsters (maximum aount of exp to give)
+.float exp_min; // for monsters (minimum amount of exp to give)
 .float exp_next;
+.float gold; // player, for monsters (max amount of gold to give)
+.float gold_min; // for monsters (minimum amount of gold to give)
 
 //
 // Send stats to CSQC 
