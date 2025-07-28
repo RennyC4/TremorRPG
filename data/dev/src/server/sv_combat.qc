@@ -30,11 +30,8 @@ void(entity targ, entity attacker) DoDeath =
 {
 	if (attacker.classname == "player")
 	{
-		if (targ.exp)
-			attacker.exp += targ.exp; // give exp
-
-		print ("EXP Given: ", ftos(targ.exp), "\n");
-		Player_CheckLevelUp(attacker);			
+		GiveExperience(attacker, targ.exp_min, targ.exp);
+		GiveGold(attacker, targ.gold_min, targ.gold);
 	}
 
 	if (targ.th_die)

@@ -11,7 +11,7 @@ void() monster_respawn =
 	setorigin (self, self.saveorigin); // respawn at initial spawn spot
 };
 
-void() monster_test_death =
+void() monster_death =
 {
 	self.alpha = 0.1;
 	self.solid = SOLID_NOT;
@@ -23,7 +23,7 @@ void() monster_test_death =
 	self.nextthink = time + 10;
 };
 
-void() monster_test =
+void() set_monster =
 {
 	precache_model(self.model);
 
@@ -34,7 +34,7 @@ void() monster_test =
 	self.classname = "monster";
 	self.radius_candamage = "TRUE"; // uses string
 	self.colormod = '100 0 0'; // Red
-	self.th_die = monster_test_death;
+	self.th_die = monster_death;
 
 	if (!self.exp)
 		self.exp = 200; // removeme

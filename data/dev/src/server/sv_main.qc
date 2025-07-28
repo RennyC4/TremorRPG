@@ -32,3 +32,8 @@ void() worldspawn =
 };
 
 void() SpectatorConnect = {};
+
+float(float min, float max) random_range =
+{
+    return min + (random() * (max - min));
+};

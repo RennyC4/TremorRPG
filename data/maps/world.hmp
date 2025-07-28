@@ -27,21 +27,21 @@ angles "0 -30 0"
 
 // first town (Elderfen)
 {
-classname "setprop"
+classname "set_prop"
 model "bsps/town1.bsp"
 origin "-2194 -2046 60"
 angles "0 0 0"
 }
 
-// monster (test)
+// monster
 {
-classname "monster_test"
+classname "set_monster"
 model "models/testplayer.iqm"
 origin "-1111 439 150"
 angles "0 0 0"
 level "1"
+exp "50"
+exp_min "25"
 gold "10"
 gold_min "3"
-exp "25"
-exp_min "10"
 }

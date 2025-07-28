@@ -4,20 +4,6 @@
 
 void() CSEv_Player_SaveChar;
 
-void(entity targ) Player_CheckLevelUp =
-{
-    if (targ.exp >= targ.exp_next)
-    {
-		//targ.exp -= targ.exp_next;
-		targ.level += 1;
-		print (targ.netname, " leveled up to level ", ftos(targ.level), "!\n");
-
-		targ.exp_next = 100 * (targ.level * targ.level * 1.5);
-		print ("Current EXP: ", ftos(targ.exp), "\n");
-		print ("EXP Needed: ", ftos(targ.exp_next), "\n");
-    }
-};
-
 void() PlayerJump =
 {
 	if (!(self.flags & FL_ONGROUND))
@@ -43,6 +29,7 @@ void() PlayerPrintStats =
 	print(self.loginname, " Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
 	print(self.loginname, " Angles: ", ang_x, " ", ang_y, " ", ang_z, "\n");
 	print(self.loginname, " EXP: ", ftos(self.exp), " Needed: ", ftos(self.exp_next), "\n");
+	print(self.loginname, " Gold: ", ftos(self.gold), "\n");
 };
 
 void() CheckImpulses =
@@ -326,7 +313,6 @@ void(string LOGIN_NAME) CSEv_CreateNewCharacter_s =
 		PlayerSpawn(1); // Put player in game
 	}
 };
-
 
 //
 //

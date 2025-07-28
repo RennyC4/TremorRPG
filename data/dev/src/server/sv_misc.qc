@@ -2,7 +2,7 @@
 setprop - put down buildings on terrain
 */
 
-void() setprop =
+void() set_prop =
 {
     precache_model(self.model);
 
