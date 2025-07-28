@@ -2165,6 +2165,8 @@ string LOGIN_NAME; // users login name
 float cursor;
 entity csqcplayerent;
 string nameforplayerent;
+entity ZoneName_alpha;
+.float doalpha;
 
 float MENU;
 float MENU_OFF = 0;
@@ -2188,3 +2190,5 @@ float MENU_CHARACTER = 2; // user info screen
 #define STAT_PLAYER_ANGLE_Z 39
 
 #define STAT_MENU 40
+#define STAT_ZONENAME 41
+#define STAT_ZONENAME_TIME 42

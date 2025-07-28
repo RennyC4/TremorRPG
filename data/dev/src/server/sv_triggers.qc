@@ -16,7 +16,11 @@ void() trigger_zone_touch =
 		stuffcmd (other, sprintf("music %s\n", self.music));
 	}
 	if (other.zonename != self.zonename)
+	{
 		other.zonename = self.zonename;
+		if (other.zonename_finished < time)
+			other.zonename_finished = time + 3; // display in csqc hud
+	}
 
 	// TODO: PVP Flag stuff
 };

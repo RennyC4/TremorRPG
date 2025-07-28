@@ -1733,6 +1733,7 @@ const float	DEAD_DEAD				= 1;
 .vector saveorigin; // used for monsters to save their inital spawn location and patrol near it
 .string music; // what track to play for the client
 .string zonename; // name of zone player is in
+.float zonename_finished; // display on csqc hud
 
 .float level;
 .float exp; // player, for monsters (maximum aount of exp to give)
@@ -1758,6 +1759,8 @@ const float	DEAD_DEAD				= 1;
 #define STAT_PLAYER_ANGLE_Z 39
 
 #define STAT_MENU 40
+#define STAT_ZONENAME 41
+#define STAT_ZONENAME_TIME 42
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001
