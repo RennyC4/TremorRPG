@@ -1,8 +1,34 @@
 //
 // Main Damage routines
 //
+void(entity targ, entity attacker, float damage) DoDamage;
+.float attack_finished;
 
-void(entity targ, entity attacker) DoDeath = {};
+void() DoAttack_Melee =
+{
+	if (self.attack_finished < time)
+	{
+		vector source;
+
+		makevectors (self.v_angle);
+		source = self.origin + '0 0 16';
+		traceline (source, source + v_forward*64, FALSE, self);
+
+		if (trace_fraction == 1.0)
+			return;
+
+		if (trace_ent.takedamage)
+			DoDamage(trace_ent, self, 50);
+
+		print("Melee Swing\n");
+		self.attack_finished = time + 0.5;
+	}
+};
+
+void(entity targ, entity attacker) DoDeath = 
+{
+	print ("Do Target death routine\n");
+};
 
 void(entity targ, entity attacker, float damage) DoDamage =
 {

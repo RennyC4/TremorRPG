@@ -81,10 +81,7 @@ void() PlayerPreThink =
 	makevectors(self.v_angle);
 
 	if (self.button0)
-	{
-		// Write attack code, sv_combat.qc
-	}
-
+		DoAttack_Melee();
 	if (self.button2)
 		PlayerJump();
 	else
@@ -124,6 +121,7 @@ void(float type) PlayerSpawn =
 
 		self.health = 100;
 		self.max_health = 100;
+		self.takedamage = DAMAGE_NO;
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
 		self.fixangle = TRUE;
@@ -144,6 +142,7 @@ void(float type) PlayerSpawn =
 
 		self.health = 100; // FIXME: Player health should be restored from character file, unless it's a new character
 		self.max_health = 100;
+		self.takedamage = DAMAGE_AIM;
 		self.movetype = MOVETYPE_WALK;
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];

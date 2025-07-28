@@ -9,6 +9,7 @@ void() monster_test =
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_WALK;
 	self.health = 100;
+	self.takedamage = DAMAGE_AIM;
 	self.classname = "monster";
 	self.colormod = '100 0 0'; // Red
 };
