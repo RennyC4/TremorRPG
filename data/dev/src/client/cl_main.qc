@@ -21,7 +21,7 @@ noref void() CSQC_WorldLoaded =
 	MENU = MENU_LOGIN; // first login, display login window
 
 	if (cvar("developer") == 1)
-		localcmd("sv_csqc_progname csaddon.dat\nrestart\n");
+		localcmd("sv_cheats 1\nsv_csqc_progname csaddon.dat\nrestart\n");
 };
 
 noref void(float isnew) CSQC_Ent_Update =

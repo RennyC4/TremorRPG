@@ -75,8 +75,8 @@ setinfo rate 0
 sv_playerslots 255 // increase for more players
 
 // Turn these off if anything breaks
-mod_terrain_shadows 1 // Broken
-mod_terrain_ambient 1
+mod_terrain_shadows 0 // Broken
+mod_terrain_ambient 0 // Broken
 
 // Fonts
 con_textfont "fonts/font"
