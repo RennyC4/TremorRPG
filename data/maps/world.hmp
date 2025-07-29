@@ -75,7 +75,7 @@ speed "25"
 {
 classname "set_monster"
 model "models/testplayer.iqm"
-origin "-592 282 121"
+origin "-592 282 135"
 angles "0 0 0"
 displayname "Bandit"
 max_health "14"

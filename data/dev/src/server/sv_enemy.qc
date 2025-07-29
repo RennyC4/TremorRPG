@@ -8,6 +8,7 @@ void() monster_respawn =
 	self.alpha = 1; // removeme
 	self.health = self.max_health;
 	self.radius_candamage = "TRUE"; // uses string
+	self.ai_mode = AI_IDLE; // return to idling
 
 	setorigin (self, self.saveorigin); // respawn at initial spawn spot
 
