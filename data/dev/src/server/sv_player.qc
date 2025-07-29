@@ -3,6 +3,8 @@
 //
 
 void() CSEv_Player_SaveChar;
+void(float type) PlayerSpawn;
+
 void() ClientKill = {};
 void() SetNewParms = {};
 void() SetChangeParms = {};
@@ -78,13 +80,30 @@ void() PlayerPreThink =
 void() PlayerPostThink = 
 {
 	if (self.button0)
-		DoAttack_Melee();
+	{
+		if (self.health < 1)
+		{
+			PlayerSpawn(2); // respawn
+			self.melee_finished = time + 1;
+		}
+		else
+			DoAttack_Melee();
+	}
 };
 
 void() ClientConnect =
 {
 	bprint(PRINT_HIGH, self.netname);
 	bprint(PRINT_HIGH, " has joined the realm.\n");
+};
+
+void() PlayerDeath =
+{
+	self.radius_candamage = "FALSE"; // uses string
+	self.movetype = MOVETYPE_TOSS;
+	self.view_ofs = [0, 0, 4];
+	centerprint (self, "You're Dead!\n");
+	self.respawn_finished = time + 5;
 };
 
 void(float type) PlayerSpawn =
@@ -114,15 +133,11 @@ void(float type) PlayerSpawn =
 		self.menu = TRUE;
 		self.loggedin = FALSE;
 		self.radius_candamage = "FALSE"; // uses string
-		self.dimension_hit = 0;
-		self.dimension_solid = 0;
 	}
-	else // Put actual player in
+	else if (type == 1) // put actual player in
 	{
-		self.flags = FL_CLIENT;
+		self.flags |= FL_CLIENT;
 		self.classname = "player";
-		self.solid = SOLID_SLIDEBOX;
-		setmodel(self, "models/testplayer.iqm");
 
 		self.takedamage = DAMAGE_AIM;
 		self.movetype = MOVETYPE_WALK;
@@ -133,9 +148,32 @@ void(float type) PlayerSpawn =
 		self.loggedin = TRUE;
 		self.radius_candamage = "TRUE"; // uses string
 
-		self.dimension_hit = player_dimension_hit;
-		self.dimension_solid = player_dimension_solid;
-		
+		self.solid = SOLID_SLIDEBOX;
+		self.flags |= FL_FINDABLE_NONSOLID;
+		self.th_die = PlayerDeath;
+
+		setmodel(self, "models/testplayer.iqm");
+
+		stuffcmd (self, sprintf("music %s\n", self.music));
+	}
+	else // respawning from death
+	{
+		self.melee_finished = time + 1; // prevent swing sound
+		self.classname = "player";
+		self.health = self.max_health;
+		self.takedamage = DAMAGE_AIM;
+		self.movetype = MOVETYPE_WALK;
+		self.view_ofs = [0, 0, 48];
+
+		self.radius_candamage = "TRUE"; // uses string
+		self.solid = SOLID_SLIDEBOX;
+		self.flags |= FL_FINDABLE_NONSOLID;
+
+		setorigin(self, spawn_spot.origin + '0 0 1');
+		self.angles = spawn_spot.angles;
+
+		setmodel(self, "models/testplayer.iqm");
+
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
 };
@@ -164,6 +202,7 @@ void() ClientDisconnect =
 	player_chain_remove(self);
 	setmodel (self, string_null);
 	self.solid = SOLID_NOT;
+	self.classname = "notloggedin";
 
 	bprint(PRINT_HIGH, self.netname);
 	bprint(PRINT_HIGH, " has left the realm.\n");

@@ -1736,6 +1736,8 @@ const float	DEAD_DEAD = 1;
 .float melee_finished;
 .string displayname; // display on csqc hud
 .float respawn_finished; // monster respawn time
+.float speed;
+.entity oldenemy;
 
 // player stats
 .float level;
@@ -1780,6 +1782,7 @@ const float	DEAD_DEAD = 1;
 #define FLAG_7 (1 << 6)  // 01000000
 #define FLAG_8 (1 << 7)  // 10000000
 
-float player_dimension_hit = FLAG_1;
-float player_dimension_solid = FLAG_2;
+//float player_dimension_hit = FLAG_1;
+//float player_dimension_solid = FLAG_2;
+
 string string_null = ""; 

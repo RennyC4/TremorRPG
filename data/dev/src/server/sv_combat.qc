@@ -6,27 +6,20 @@ void(entity targ, entity attacker, float damage) DoDamage;
 
 void() DoAttack_Melee =
 {
-	if (time < self.melee_finished)
+	if (self.melee_finished > time)
 		return;
-		
-	vector source;
 
 	// Calculate Damage
 	float damage = random_range(self.attack_power_min, self.attack_power_max);
 
-	makevectors (self.v_angle);
-	source = self.origin + '0 0 16';
-	traceline (source, source + v_forward*64, FALSE, self);
+	makevectors (self.angles);
+	vector source = self.origin + '0 0 16';
+	traceline (source, source + v_forward*64, MOVE_EVERYTHING, self);
 
-	if (trace_fraction == 1.0)
-		return;
+	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 
 	if (trace_ent.takedamage)
-	{
 		DoDamage(trace_ent, self, damage);
-		sprint(self, PRINT_HIGH, "You hit for ", ftos(damage), " damage\n");
-	}
-	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 
 	self.melee_finished = time + 1;
 };
@@ -47,7 +40,7 @@ void(entity targ, entity attacker) DoDeath =
 		targ.nextthink = time;
 	}
 	else
-		print("Monster's th_die routine is missing\n");
+		print(self.classname, "'s th_die routine is missing\n");
 };
 
 void(entity targ, entity attacker, float damage) DoDamage =
@@ -56,9 +49,21 @@ void(entity targ, entity attacker, float damage) DoDamage =
 		return;
 	if (targ.health < 1)
 		return;
+	if (targ.flags & FL_MONSTER && targ.ai_mode == AI_RUNBACK)
+		return;
 
 	if (damage > 0)
+	{
 		targ.health = targ.health - damage;
+
+		if (attacker.classname == "player")
+			sprint(attacker, PRINT_HIGH, "You hit for ", ftos(damage), " damage\n");
+		if (self.flags & FL_MONSTER)
+			sprint(targ, PRINT_HIGH, "You've taken ", ftos(damage), " damage\n");
+	}
+
+	if (targ.flags & FL_MONSTER) // Monster AI target switching when struck
+		targ.goalentity = targ.enemy = attacker; // Go after last attacker
 
 	if (targ.health <= 0)
 	{

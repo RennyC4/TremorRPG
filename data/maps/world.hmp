@@ -33,7 +33,7 @@ origin "-2194 -2046 60"
 angles "0 0 0"
 }
 
-// monster (bandit?)
+// monster (bandit lvl1)
 {
 classname "set_monster"
 model "models/testplayer.iqm"
@@ -49,4 +49,43 @@ gold_min "3"
 attack_power_min "5"
 attack_power_max "9"
 respawn_finished "10"
+speed "25"
+}
+
+// monster (bandit lvl1)
+{
+classname "set_monster"
+model "models/testplayer.iqm"
+origin "-2939 751 45"
+angles "0 0 0"
+displayname "Bandit"
+max_health "14"
+level "1"
+exp "50"
+exp_min "25"
+gold "10"
+gold_min "3"
+attack_power_min "5"
+attack_power_max "9"
+respawn_finished "10"
+speed "25"
+}
+
+// monster (bandit lvl1)
+{
+classname "set_monster"
+model "models/testplayer.iqm"
+origin "-592 282 121"
+angles "0 0 0"
+displayname "Bandit"
+max_health "14"
+level "1"
+exp "50"
+exp_min "25"
+gold "10"
+gold_min "3"
+attack_power_min "5"
+attack_power_max "9"
+respawn_finished "10"
+speed "25"
 }

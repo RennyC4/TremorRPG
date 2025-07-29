@@ -121,6 +121,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 		sui_input_event(evtype, scanx, chary, devid); // Should only be activated when menus are on
 		return TRUE;
 	}
+	return FALSE;
 };
 
 void() CSQC_Parse_Event =
