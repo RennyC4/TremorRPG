@@ -1733,7 +1733,11 @@ const float	DEAD_DEAD = 1;
 .string music; // what track to play for the client
 .string zonename; // name of zone player is in
 .float zonename_finished; // display on csqc hud
+.float melee_finished;
+.string displayname; // display on csqc hud
+.float respawn_finished; // monster respawn time
 
+// player stats
 .float level;
 .float exp; // player, for monsters (maximum aount of exp to give)
 .float exp_min; // for monsters (minimum amount of exp to give)

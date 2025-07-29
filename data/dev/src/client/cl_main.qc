@@ -13,9 +13,7 @@ float(string key, string val) find_player_id =
 noref void(float apiver, string enginename, float enginever) CSQC_Init =
 {
 	ZoneName_alpha = spawn();
-
 	drawfont = loadfont("", "Courier Prime Code", "12,16,24,32,64,72,128,256,512", -1, 0, 0);
-	precache_everything();
 };
 
 noref void() CSQC_WorldLoaded =

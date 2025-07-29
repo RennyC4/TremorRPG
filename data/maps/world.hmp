@@ -33,15 +33,20 @@ origin "-2194 -2046 60"
 angles "0 0 0"
 }
 
-// monster
+// monster (bandit?)
 {
 classname "set_monster"
 model "models/testplayer.iqm"
 origin "-1111 439 150"
 angles "0 0 0"
+displayname "Bandit"
+max_health "14"
 level "1"
 exp "50"
 exp_min "25"
 gold "10"
 gold_min "3"
+attack_power_min "5"
+attack_power_max "9"
+respawn_finished "10"
 }

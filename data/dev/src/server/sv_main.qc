@@ -27,7 +27,11 @@ void() SSQC_SendValuesToCSQC =
 
 void() worldspawn =
 {	
-	precache_everything();
+	precache_model("models/testplayer.iqm");
+
+	precache_sound ("levelup.wav");
+	precache_sound ("sword1.wav");
+
 	SSQC_SendValuesToCSQC();
 };
 
@@ -35,13 +39,11 @@ void() SpectatorConnect = {};
 
 float(float min, float max) random_range =
 {
-    return min + (random() * (max - min));
+    return ceil(min + (random() * (max - min)));
 };
 
 #define FOR_EACH_CLIENT(v) for(v = world; (v = findflags(v, flags, FL_CLIENT)) != world; )
 #define FOR_EACH_REALCLIENT(v) FOR_EACH_CLIENT(v) if(clienttype(v) == CLIENTTYPE_REAL)
-#define WORDWRAP_MAX 50
-
 
 void(entity targ, string msg_in) Say =
 {

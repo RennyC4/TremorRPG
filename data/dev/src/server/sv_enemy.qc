@@ -1,4 +1,4 @@
-// Empty
+// Enemies, most are defined in the maps themselves (hmp / bsp)
 
 void() monster_respawn =
 {
@@ -6,7 +6,7 @@ void() monster_respawn =
 	self.deadflag = DEAD_NO;
 	self.takedamage = DAMAGE_AIM;
 	self.alpha = 1; // removeme
-	self.health = 100;
+	self.health = self.max_health;
 	self.radius_candamage = "TRUE"; // uses string
 	setorigin (self, self.saveorigin); // respawn at initial spawn spot
 };
@@ -20,7 +20,7 @@ void() monster_death =
 	self.radius_candamage = "FALSE"; // uses string
 
 	self.think = monster_respawn;
-	self.nextthink = time + 10;
+	self.nextthink = time + self.respawn_finished;
 };
 
 void() set_monster =
@@ -29,7 +29,10 @@ void() set_monster =
 
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_STEP;
-	self.health = 100;
+	if (!self.max_health)
+		self.health = 1;
+	else
+		self.health = self.max_health;
 	self.takedamage = DAMAGE_AIM;
 	self.classname = "monster";
 	self.radius_candamage = "TRUE"; // uses string
@@ -37,7 +40,7 @@ void() set_monster =
 	self.th_die = monster_death;
 
 	if (!self.exp)
-		self.exp = 200; // removeme
+		self.exp = 1;
 
 	self.saveorigin = self.origin; // stash initial spawn spot
 

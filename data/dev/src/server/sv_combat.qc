@@ -1,28 +1,34 @@
 //
 // Main Damage routines
 //
+
 void(entity targ, entity attacker, float damage) DoDamage;
-.float attack_finished;
 
 void() DoAttack_Melee =
 {
-	if (self.attack_finished < time)
+	if (time < self.melee_finished)
+		return;
+		
+	vector source;
+
+	// Calculate Damage
+	float damage = random_range(self.attack_power_min, self.attack_power_max);
+
+	makevectors (self.v_angle);
+	source = self.origin + '0 0 16';
+	traceline (source, source + v_forward*64, FALSE, self);
+
+	if (trace_fraction == 1.0)
+		return;
+
+	if (trace_ent.takedamage)
 	{
-		vector source;
-
-		makevectors (self.v_angle);
-		source = self.origin + '0 0 16';
-		traceline (source, source + v_forward*64, FALSE, self);
-
-		if (trace_fraction == 1.0)
-			return;
-
-		if (trace_ent.takedamage)
-			DoDamage(trace_ent, self, 50);
-
-		print("Melee Swing\n");
-		self.attack_finished = time + 0.5;
+		DoDamage(trace_ent, self, damage);
+		sprint(self, PRINT_HIGH, "You hit for ", ftos(damage), " damage\n");
 	}
+	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
+
+	self.melee_finished = time + 1;
 };
 
 void(entity targ) Player_CheckLevelUp;

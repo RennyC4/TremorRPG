@@ -3,7 +3,6 @@
 //
 
 void() CSEv_Player_SaveChar;
-void() PlayerPostThink = {};
 void() ClientKill = {};
 void() SetNewParms = {};
 void() SetChangeParms = {};
@@ -58,13 +57,9 @@ entity() get_spawn_point =
 	return spawnpoint;
 };
 
+// Ran before physics
 void() PlayerPreThink =
 {	
-	CheckImpulses();
-	makevectors(self.v_angle);
-
-	if (self.button0)
-		DoAttack_Melee();
 	if (self.button2)
 		PlayerJump();
 	else
@@ -76,6 +71,14 @@ void() PlayerPreThink =
 		if (self.loginname != self.netname)
 			forceinfokey(self, "name", self.loginname);
 	}
+	CheckImpulses();
+};
+
+// Ran after physics
+void() PlayerPostThink = 
+{
+	if (self.button0)
+		DoAttack_Melee();
 };
 
 void() ClientConnect =
@@ -198,6 +201,8 @@ void() CSEv_Player_SaveChar =
 		fputs(v, ftos(self.exp_next), "\n");
 		fputs(v, ftos(self.gold), "\n");
 		fputs(v, ftos(self.skillpoints), "\n");
+		fputs(v, ftos(self.attack_power_min), "\n");
+		fputs(v, ftos(self.attack_power_max), "\n");
 
 		fclose(v);
 		print(self.loginname, " character saved\n");
@@ -281,8 +286,15 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.skillpoints = stof(line);
 
+		if (line = fgets(v))
+			self.attack_power_min = stof(line);
+
+		if (line = fgets(v))
+			self.attack_power_max = stof(line);
+
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
+		self.displayname = self.loginname;
 
 		fclose(v);
 
@@ -312,9 +324,12 @@ void(string LOGIN_NAME) CSEv_CreateNewCharacter_s =
 		self.exp = 0;
 		self.exp_next = 100;
 		self.skillpoints = 25; // 25 skill points new players can dump into stats
+		self.attack_power_min = 2;
+		self.attack_power_max = 6;
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		CSEv_Player_SaveChar();
+		self.displayname = self.loginname;
 		PlayerSpawn(1); // Put player in game
 	}
 };
