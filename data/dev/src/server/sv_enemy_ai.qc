@@ -145,7 +145,12 @@ void() monster_ai_think =
 		if (b > 50)
 		{
 			if (self.ai_runback_temp)
-			self.origin_z = self.ai_runback_temp.origin_z;
+			{
+				if (self.origin_z > self.ai_runback_temp.origin_z)
+					self.origin_z -= 1;
+				else
+					self.origin_z += 1;
+			}
 			self.movetype = MOVETYPE_NOCLIP; // cheating but eh
 			if (self.health != self.max_health)
 				self.health = self.max_health; // restore health on trip back

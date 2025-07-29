@@ -1727,6 +1727,7 @@ const float	DEAD_DEAD = 1;
 .string guid; // guid security
 .float loggedin; // user successfully logged in
 .string loginname; // enforce this on the player
+.string gender;
 .float menu; // menu boolean
 .string radius_candamage; // TRUE, entity can be damaged by radius attacks
 .vector saveorigin; // used for monsters to save their inital spawn location and patrol near it
@@ -1741,16 +1742,17 @@ const float	DEAD_DEAD = 1;
 
 // player stats
 .float level;
+.float skillpoints;
 .float exp; // player, for monsters (maximum aount of exp to give)
 .float exp_min; // for monsters (minimum amount of exp to give)
 .float exp_next;
 .float gold; // player, for monsters (max amount of gold to give)
 .float gold_min; // for monsters (minimum amount of gold to give)
-.float skillpoints;
 .float attack_power_min; // player + monster damage
 .float attack_power_max; // player + monster damage
+.float spell_power_min; // player + monster damage
+.float spell_power_max; // player + monster damage
 
-//
 // Send stats to CSQC 
 //
 

@@ -31,6 +31,7 @@ void() worldspawn =
 
 	precache_sound ("levelup.wav");
 	precache_sound ("sword1.wav");
+	precache_sound ("swordhit.wav");
 
 	SSQC_SendValuesToCSQC();
 };

@@ -2162,6 +2162,7 @@ accessor filestream : float
 #pragma noref 0
 
 string LOGIN_NAME; // users login name
+string LOGIN_GENDER; // create gender
 float cursor;
 entity csqcplayerent;
 string nameforplayerent;

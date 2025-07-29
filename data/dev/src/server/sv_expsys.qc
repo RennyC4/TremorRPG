@@ -6,6 +6,7 @@ void(entity targ) Player_CheckLevelUp =
     {
 		targ.level += 1;
 		targ.skillpoints += 5;
+		targ.max_health += 12;
 		sound (targ, CHAN_AUTO, "levelup.wav", 1, ATTN_NORM);
 		print (targ.netname, " leveled up to level ", ftos(targ.level), "!\n");
 

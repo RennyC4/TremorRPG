@@ -19,7 +19,10 @@ void() DoAttack_Melee =
 	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 
 	if (trace_ent.takedamage)
+	{
 		DoDamage(trace_ent, self, damage);
+		sound (trace_ent, CHAN_BODY, "swordhit.wav", 1, ATTN_NORM);
+	}
 
 	self.melee_finished = time + 1;
 };

@@ -34,9 +34,9 @@ void() PlayerPrintStats =
 	string ang_z = ftos(self.angles_z);
 
 	print(self.loginname, " Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
-	print(self.loginname, " Angles: ", ang_x, " ", ang_y, " ", ang_z, "\n");
-	print(self.loginname, " EXP: ", ftos(self.exp), " Needed: ", ftos(self.exp_next), "\n");
-	print(self.loginname, " Gold: ", ftos(self.gold), "\n");
+	print(self.loginname, " Angles: ", ang_x, " ", ang_y, "\n");
+	print("EXP: ", ftos(self.exp), " Needed: ", ftos(self.exp_next), "\n");
+	print("Gold: ", ftos(self.gold), "\n");
 };
 
 void() CheckImpulses =
@@ -62,6 +62,17 @@ entity() get_spawn_point =
 // Ran before physics
 void() PlayerPreThink =
 {	
+	if (self.button0)
+	{
+		if (self.health < 1)
+		{
+			PlayerSpawn(2); // respawn
+			self.melee_finished = time + 1;
+		}
+		else
+			DoAttack_Melee();
+	}
+
 	if (self.button2)
 		PlayerJump();
 	else
@@ -77,19 +88,7 @@ void() PlayerPreThink =
 };
 
 // Ran after physics
-void() PlayerPostThink = 
-{
-	if (self.button0)
-	{
-		if (self.health < 1)
-		{
-			PlayerSpawn(2); // respawn
-			self.melee_finished = time + 1;
-		}
-		else
-			DoAttack_Melee();
-	}
-};
+void() PlayerPostThink = {};
 
 void() ClientConnect =
 {
@@ -116,11 +115,7 @@ void(float type) PlayerSpawn =
 		self.solid = SOLID_NOT;
 		setmodel(self, string_null);
 
-		if (cvar("developer") == 1)
-			self.movetype = MOVETYPE_NOCLIP;
-		else
-			self.movetype = MOVETYPE_NONE;
-
+		self.movetype = MOVETYPE_WALK;
 		self.health = 100;
 		self.max_health = 100;
 		self.takedamage = DAMAGE_NO;
@@ -158,7 +153,8 @@ void(float type) PlayerSpawn =
 	}
 	else // respawning from death
 	{
-		self.melee_finished = time + 1; // prevent swing sound
+		self.melee_finished = time + 1; // prevent attack on respawn
+
 		self.classname = "player";
 		self.health = self.max_health;
 		self.takedamage = DAMAGE_AIM;
@@ -222,6 +218,7 @@ void() CSEv_Player_SaveChar =
 	{
 		fputs(v, self.guid, "\n");
 		fputs(v, self.loginname, "\n");
+		fputs(v, self.gender, "\n");
 		fputs(v, self.music, "\n");
 		fputs(v, self.zonename, "\n");
 
@@ -236,10 +233,10 @@ void() CSEv_Player_SaveChar =
 		fputs(v, ftos(self.health), "\n");
 		fputs(v, ftos(self.max_health), "\n");
 		fputs(v, ftos(self.level), "\n");
+		fputs(v, ftos(self.skillpoints), "\n");
 		fputs(v, ftos(self.exp), "\n");
 		fputs(v, ftos(self.exp_next), "\n");
 		fputs(v, ftos(self.gold), "\n");
-		fputs(v, ftos(self.skillpoints), "\n");
 		fputs(v, ftos(self.attack_power_min), "\n");
 		fputs(v, ftos(self.attack_power_max), "\n");
 
@@ -279,7 +276,9 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.netname = line;
 			self.loginname = line;
 		}
-
+		if (line = fgets(v))
+			self.gender = line;
+			
 		if (line = fgets(v))
 			self.music = line;
 
@@ -314,6 +313,9 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.level = stof(line);
 
 		if (line = fgets(v))
+			self.skillpoints = stof(line);
+
+		if (line = fgets(v))
 			self.exp = stof(line);
 
 		if (line = fgets(v))
@@ -321,9 +323,6 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 
 		if (line = fgets(v))
 			self.gold = stof(line);
-
-		if (line = fgets(v))
-			self.skillpoints = stof(line);
 
 		if (line = fgets(v))
 			self.attack_power_min = stof(line);
@@ -343,9 +342,10 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		print("Character doesn't exist\n");
 };
 
-void(string LOGIN_NAME) CSEv_CreateNewCharacter_s =
+void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 {
 	self.loginname = LOGIN_NAME; // Grab login name from CSQC
+	self.gender = LOGIN_GENDER; // Grab gender from CSQC
 
 	float v = fopen(self.loginname, FILE_READ);
 	if (v >= 0) // User exists
