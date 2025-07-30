@@ -64,7 +64,7 @@ void(entity targ, entity attacker, float damage) DoDamage =
 
 		if (attacker.classname == "player")
 			sprint(attacker, PRINT_HIGH, "You hit for ", ftos(damage), " damage\n");
-		if (self.flags & FL_MONSTER)
+		if (self.flags & FL_MONSTER && targ.classname == "player")
 			sprint(targ, PRINT_HIGH, "You've taken ", ftos(damage), " damage\n");
 	}
 
