@@ -1756,6 +1756,8 @@ const float	DEAD_DEAD = 1;
 .float attack_speed; // player + monster attack speed
 .float spell_power_min; // player + monster damage
 .float spell_power_max; // player + monster damage
+.float mana;
+.float max_mana;
 
 //
 // Send stats to CSQC 
@@ -1782,6 +1784,8 @@ const float	DEAD_DEAD = 1;
 // Player RPG stats
 #define STAT_HEALTH 43
 #define STAT_MAXHEALTH 44
+#define STAT_MANA 45
+#define STAT_MAXMANA 46
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

@@ -7,6 +7,8 @@ void(entity targ) Player_CheckLevelUp =
 		targ.level += 1;
 		targ.skillpoints += 5;
 		targ.max_health += 12;
+		targ.max_mana += 5;
+
 		sound (targ, CHAN_AUTO, "levelup.wav", 1, ATTN_NORM);
 		print (targ.netname, " leveled up to level ", ftos(targ.level), "!\n");
 
@@ -20,12 +22,11 @@ void(entity targ, float expmin, float expmax) GiveExperience =
 {
 	float amount = random_range(expmin, expmax);
 	targ.exp += amount; // give exp
-	print ("EXP Given: ", ftos(amount), "\n");
 	Player_CheckLevelUp(targ);
 };
 
 void(entity targ, float goldmin, float goldmax) GiveGold =
 {
 	float amount = random_range(goldmin, goldmax);
-	targ.gold += amount; // give exp
+	targ.gold += amount; // give gold
 };

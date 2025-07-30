@@ -2199,3 +2199,5 @@ float MENU_CHARACTER = 2; // user info screen
 // Player RPG stats
 #define STAT_HEALTH 43
 #define STAT_MAXHEALTH 44
+#define STAT_MANA 45
+#define STAT_MAXMANA 46

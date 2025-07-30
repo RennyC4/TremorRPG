@@ -26,6 +26,8 @@ void() SSQC_SendValuesToCSQC =
 
 	clientstat(STAT_HEALTH, EV_FLOAT, health);
 	clientstat(STAT_MAXHEALTH, EV_FLOAT, max_health);
+	clientstat(STAT_MANA, EV_FLOAT, mana);
+	clientstat(STAT_MAXMANA, EV_FLOAT, max_mana);
 };
 
 void() worldspawn =

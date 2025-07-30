@@ -76,6 +76,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 				ZoneName_alpha.doalpha = 0;
 
 			Draw_Health();
+			Draw_Mana();
 
 			setcursormode(FALSE,"", 0, 0);
 		}

@@ -33,9 +33,6 @@ void() PlayerPrintStats =
 	string ang_y = ftos(self.angles_y);
 	string ang_z = ftos(self.angles_z);
 
-	self.health = 9999;
-	self.max_health = 9999;
-	
 	print(self.loginname, " Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
 	print(self.loginname, " Angles: ", ang_x, " ", ang_y, "\n");
 	print("EXP: ", ftos(self.exp), " Needed: ", ftos(self.exp_next), "\n");
@@ -257,6 +254,8 @@ void() CSEv_Player_SaveChar =
 
 		fputs(v, ftos(self.health), "\n");
 		fputs(v, ftos(self.max_health), "\n");
+		fputs(v, ftos(self.mana), "\n");
+		fputs(v, ftos(self.max_mana), "\n");
 		fputs(v, ftos(self.level), "\n");
 		fputs(v, ftos(self.skillpoints), "\n");
 		fputs(v, ftos(self.exp), "\n");
@@ -336,6 +335,12 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.max_health = stof(line);
 
 		if (line = fgets(v))
+			self.mana = stof(line);
+
+		if (line = fgets(v))
+			self.max_mana = stof(line);
+
+		if (line = fgets(v))
 			self.level = stof(line);
 
 		if (line = fgets(v))
@@ -387,7 +392,9 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.loggedin = TRUE;
 		self.menu = FALSE; // turn off menu in CSQC
 
+		// Starting stats
 		self.health = self.max_health = 100;
+		self.mana = self.max_mana = 25;
 		self.level = 1;
 		self.exp = 0;
 		self.exp_next = 100;

@@ -42,8 +42,8 @@ void() Draw_Health =
 	string h1 = ftos(h);
 	string h2 = ftos(hmax);
 
-	drawstring (pos + '1 1', "Health ", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, "^1Health ", '8 8 0', '1 1 1', 1, 0);
+	drawstring (pos + '1 1', "Health", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, "^1Health", '8 8 0', '1 1 1', 1, 0);
 
 	drawstring (pos + '57 1', h1, '8 8 0', '0 0 0', 1, 0); // text shadow
 	drawstring (pos + '56 0', h1, '8 8 0', '1 1 1', 1, 0);
@@ -53,4 +53,40 @@ void() Draw_Health =
 
 	drawstring (pos + '116 1', h2, '8 8 0', '0 0 0', 1, 0); // text shadow
 	drawstring (pos + '115 0', h2, '8 8 0', '1 1 1', 1, 0);
+};
+
+void() Draw_Mana =
+{
+	float m = getstatf(STAT_MANA);
+	float mmax = getstatf(STAT_MAXMANA);
+	
+	//
+	// Draw Mana
+	//
+
+	vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
+
+	// Bar
+	vector mbar_size = '100 8 0';
+	vector mbar_border_size = mbar_size + '1.6 1.5 0';
+	vector mbarpos = pos - '-50 -10 0';
+	mbar_size_x = (m / mmax) * mbar_size_x; // keep bar updated
+
+	drawfill(mbarpos + '1 1 0', mbar_size, '0 0 1', 1, 0);
+
+	// Text
+	string m1 = ftos(m);
+	string m2 = ftos(mmax);
+
+	drawstring (pos + '0 12', "Mana ", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos + '-1 11', "^4Mana", '8 8 0', '1 1 1', 1, 0);
+
+	drawstring (pos + '57 12', m1, '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos + '56 11', m1, '8 8 0', '1 1 1', 1, 0);
+
+	drawstring (pos + '96 12', "/", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos + '95 11', "/", '8 8 0', '1 1 1', 1, 0);
+
+	drawstring (pos + '116 12', m2, '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos + '115 11', m2, '8 8 0', '1 1 1', 1, 0);
 };
