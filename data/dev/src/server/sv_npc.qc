@@ -1,6 +1,6 @@
-// Enemies, most are defined in the maps themselves (hmp / bsp)
+// NPCs, most are defined in the maps themselves (hmp / bsp)
 
-void() monster_respawn =
+void() npc_respawn =
 {
 	self.solid = SOLID_TRIGGER;
 	self.deadflag = DEAD_NO;
@@ -16,11 +16,8 @@ void() monster_respawn =
 	self.nextthink = time + 0.1;
 };
 
-void() monster_death =
+void() npc_death =
 {
-	if (self.ai_runback_temp)
-		remove(self.ai_runback_temp);
-
 	self.goalentity = self.enemy = world; // reset targets
 
 	self.alpha = 0.1;
@@ -33,18 +30,9 @@ void() monster_death =
 	self.nextthink = time + self.respawn_finished;
 };
 
-void() set_monster =
+void() set_npc =
 {
-	if (self.model)
-		precache_model(self.model); // model
-	if (self.noise)
-		precache_sound(self.noise); // sight sound
-	if (self.noise1)
-		precache_sound(self.noise1); // attack sound
-	if (self.noise2)
-		precache_sound(self.noise3); // pain sound
-	if (self.noise3)
-		precache_sound(self.noise3); // death sound
+	precache_model(self.model);
 
 	self.solid = SOLID_TRIGGER;
 	self.movetype = MOVETYPE_STEP;
@@ -52,17 +40,14 @@ void() set_monster =
 		self.health = 1;
 	else
 		self.health = self.max_health;
-	self.takedamage = DAMAGE_AIM;
-	self.classname = "monster";
-	self.radius_candamage = "TRUE"; // uses string
-	self.colormod = '100 0 0'; // Red
-	self.flags |= FL_MONSTER;
-	self.th_die = monster_death;
+	self.takedamage = DAMAGE_NO;
+	self.classname = "npc";
+	self.radius_candamage = "FALSE"; // uses string
+	self.colormod = '100 100 0'; // Yellow
 
-	if (!self.exp)
-		self.exp = 1;
-	if (!self.noise)
-		self.noise = "monsters/sight1.wav";
+	//self.th_die = npc_death;
+
+	self.exp = 0;
 
 	self.saveorigin = self.origin + v_up * 1; // stash initial spawn spot
 
@@ -71,6 +56,6 @@ void() set_monster =
 
 	self.flags |= FL_FINDABLE_NONSOLID;
 
-	self.think = monster_ai_think;
-	self.nextthink = time + 0.1;
+//	self.think = monster_ai_think;
+//	self.nextthink = time + 0.1;
 };

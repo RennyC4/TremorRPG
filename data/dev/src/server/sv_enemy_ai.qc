@@ -51,6 +51,9 @@ void() monster_ai_melee =
 {
 	if (self.melee_finished < time)
 	{
+		if (self.noise1)
+			sound (self, CHAN_VOICE, self.noise1, 1, ATTN_NORM);
+
 		DoAttack_Melee();
 	}
 
@@ -84,9 +87,10 @@ void() monster_ai_think =
 		{
 			if (vlen(targ.origin - self.origin) <= 650 && targ.health > 0)
 			{
+				if (self.noise)
+					sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
 				self.goalentity = self.enemy = targ;
 				self.ai_mode = AI_CHASE;
-				print ("Monster woke up to chase player!\n");
 			}
 		}
 	}

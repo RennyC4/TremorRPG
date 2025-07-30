@@ -38,6 +38,9 @@ void(entity targ, entity attacker) DoDeath =
 
 	if (targ.th_die)
 	{
+		if (targ.noise3) // death sound
+			sound (targ, CHAN_VOICE, targ.noise3, 1, ATTN_NORM);
+
 		targ.deadflag = DEAD_DEAD;
 		targ.think = targ.th_die;
 		targ.nextthink = time;
@@ -65,8 +68,14 @@ void(entity targ, entity attacker, float damage) DoDamage =
 			sprint(targ, PRINT_HIGH, "You've taken ", ftos(damage), " damage\n");
 	}
 
-	if (targ.flags & FL_MONSTER) // Monster AI target switching when struck
+	// Monster stuff
+	if (targ.flags & FL_MONSTER)
+	{
+		if (targ.noise2) // pain sound
+			sound (trace_ent, CHAN_VOICE, targ.noise2, 1, ATTN_NORM);
+
 		targ.goalentity = targ.enemy = attacker; // Go after last attacker
+	}
 
 	if (targ.health <= 0)
 	{
