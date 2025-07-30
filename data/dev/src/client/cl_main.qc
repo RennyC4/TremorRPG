@@ -77,6 +77,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 			Draw_Health();
 			Draw_Mana();
+			Draw_Stamina();
+			Draw_Exp();
 
 			setcursormode(FALSE,"", 0, 0);
 		}

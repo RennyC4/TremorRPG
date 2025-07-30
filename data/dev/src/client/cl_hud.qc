@@ -23,7 +23,7 @@ void() Draw_Health =
 {
 	float h = getstatf(STAT_HEALTH);
 	float hmax = getstatf(STAT_MAXHEALTH);
-	
+
 	//
 	// Draw Health
 	//
@@ -32,7 +32,6 @@ void() Draw_Health =
 
 	// Bar
 	vector hbar_size = '100 8 0';
-	vector hbar_border_size = hbar_size + '1.6 1.5 0';
 	vector hbarpos = pos - '-50 1 0';
 	hbar_size_x = (h / hmax) * hbar_size_x; // keep bar updated
 
@@ -42,8 +41,8 @@ void() Draw_Health =
 	string h1 = ftos(h);
 	string h2 = ftos(hmax);
 
-	drawstring (pos + '1 1', "Health", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, "^1Health", '8 8 0', '1 1 1', 1, 0);
+	drawstring (pos - '9 -1', "Health", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos - '10 0 0', "^1Health", '8 8 0', '1 1 1', 1, 0);
 
 	drawstring (pos + '57 1', h1, '8 8 0', '0 0 0', 1, 0); // text shadow
 	drawstring (pos + '56 0', h1, '8 8 0', '1 1 1', 1, 0);
@@ -59,7 +58,7 @@ void() Draw_Mana =
 {
 	float m = getstatf(STAT_MANA);
 	float mmax = getstatf(STAT_MAXMANA);
-	
+
 	//
 	// Draw Mana
 	//
@@ -68,7 +67,6 @@ void() Draw_Mana =
 
 	// Bar
 	vector mbar_size = '100 8 0';
-	vector mbar_border_size = mbar_size + '1.6 1.5 0';
 	vector mbarpos = pos - '-50 -10 0';
 	mbar_size_x = (m / mmax) * mbar_size_x; // keep bar updated
 
@@ -78,8 +76,8 @@ void() Draw_Mana =
 	string m1 = ftos(m);
 	string m2 = ftos(mmax);
 
-	drawstring (pos + '0 12', "Mana ", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos + '-1 11', "^4Mana", '8 8 0', '1 1 1', 1, 0);
+	drawstring (pos - '9 -12', "Mana", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos - '10 -11', "^4Mana", '8 8 0', '1 1 1', 1, 0);
 
 	drawstring (pos + '57 12', m1, '8 8 0', '0 0 0', 1, 0); // text shadow
 	drawstring (pos + '56 11', m1, '8 8 0', '1 1 1', 1, 0);
@@ -89,4 +87,44 @@ void() Draw_Mana =
 
 	drawstring (pos + '116 12', m2, '8 8 0', '0 0 0', 1, 0); // text shadow
 	drawstring (pos + '115 11', m2, '8 8 0', '1 1 1', 1, 0);
+};
+
+void() Draw_Stamina =
+{
+	float s = getstatf(STAT_STAMINA);
+	float smax = 100;
+
+	//
+	// Draw Stamina
+	//
+
+	vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
+
+	// Bar
+	vector sbar_size = '100 8 0';
+	vector sbarpos = pos - '-50 -21 0';
+	sbar_size_x = (s / smax) * sbar_size_x; // keep bar updated
+
+	drawfill(sbarpos + '1 1 0', sbar_size, '0 1 0', 1, 0);
+
+	// Text
+	string s1 = ftos(s);
+	string s2 = ftos(smax);
+
+	drawstring (pos - '9 -23', "Stamina", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos - '10 -22', "^2Stamina", '8 8 0', '1 1 1', 1, 0);
+
+	drawstring (pos + '57 23', s1, '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos + '56 22', s1, '8 8 0', '1 1 1', 1, 0);
+
+	drawstring (pos + '96 23', "/", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos + '95 22', "/", '8 8 0', '1 1 1', 1, 0);
+
+	drawstring (pos + '116 23', s2, '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos + '115 22', s2, '8 8 0', '1 1 1', 1, 0);
+};
+
+void() Draw_Exp =
+{
+
 };

@@ -9,6 +9,14 @@ void() DoAttack_Melee =
 	if (self.melee_finished > time)
 		return;
 
+	// Stamina
+	if (self.classname == "player")
+	{
+		if (self.stamina < 25)
+			return;
+		self.stamina -= 25;
+	}
+
 	// Calculate Damage
 	float damage = random_range(self.attack_power_min, self.attack_power_max);
 

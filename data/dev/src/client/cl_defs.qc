@@ -2201,3 +2201,4 @@ float MENU_CHARACTER = 2; // user info screen
 #define STAT_MAXHEALTH 44
 #define STAT_MANA 45
 #define STAT_MAXMANA 46
+#define STAT_STAMINA 47

@@ -1758,6 +1758,7 @@ const float	DEAD_DEAD = 1;
 .float spell_power_max; // player + monster damage
 .float mana;
 .float max_mana;
+.float stamina;
 
 //
 // Send stats to CSQC 
@@ -1786,6 +1787,7 @@ const float	DEAD_DEAD = 1;
 #define STAT_MAXHEALTH 44
 #define STAT_MANA 45
 #define STAT_MAXMANA 46
+#define STAT_STAMINA 47
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

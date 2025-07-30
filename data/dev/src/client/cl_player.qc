@@ -4,5 +4,3 @@ void() CSQC_Input_Frame =
 	input_movevalues_y = bound(-350, input_movevalues_y, 350);
 	input_movevalues_z = bound(-350, input_movevalues_z, 350);
 };
-
-

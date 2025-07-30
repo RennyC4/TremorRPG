@@ -93,8 +93,12 @@ void() PlayerPreThink =
 
 // Ran after physics
 .float healthregen_finished;
+.float staminaregen_finished;
 void() PlayerPostThink =
 {
+	if (!self.loggedin)
+		return;
+
 	if (!self.incombat)
 	{
 		// Non-combat health regeneration
@@ -105,6 +109,16 @@ void() PlayerPostThink =
 
 			self.healthregen_finished = time + 1;
 		}
+	}
+	// Stamina regeneration
+	if (self.staminaregen_finished < time)
+	{		
+		if (self.stamina < 100)
+			self.stamina += 1;
+		else
+			self.stamina = 100;
+
+		self.staminaregen_finished = time + 0.1;
 	}
 };
 
@@ -185,6 +199,7 @@ void(float type) PlayerSpawn =
 		self.radius_candamage = "TRUE"; // uses string
 		self.solid = SOLID_SLIDEBOX;
 		self.flags |= FL_FINDABLE_NONSOLID;
+		self.stamina = 100;
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
@@ -367,6 +382,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
 		self.displayname = self.loginname;
+		self.stamina = 100;
 
 		fclose(v);
 
@@ -398,6 +414,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.level = 1;
 		self.exp = 0;
 		self.exp_next = 100;
+		self.stamina = 100;
 		self.skillpoints = 25; // 25 skill points new players can dump into stats
 
 		// default starter weapon
