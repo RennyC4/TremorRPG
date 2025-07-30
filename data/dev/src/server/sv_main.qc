@@ -52,6 +52,16 @@ void() worldspawn =
 	//
 	//
 
+	//
+	// Setup Particles
+	//
+
+	PART_FOUNTAIN = particleeffectnum("fountain");
+
+	//
+	//
+	//
+
 	precache_model("models/testplayer.iqm");
 
 	precache_sound ("levelup.wav");

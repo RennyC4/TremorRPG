@@ -1690,6 +1690,8 @@ accessor filestream : float
 #endif
 #pragma noref 0
 
+string string_null = ""; 
+
 const float TEREDIT_RELOAD = 0;
 const float TEREDIT_SAVE = 1;
 const float TEREDIT_SETHOLE = 2;
@@ -1755,6 +1757,7 @@ const float	DEAD_DEAD = 1;
 .float spell_power_min; // player + monster damage
 .float spell_power_max; // player + monster damage
 
+//
 // Send stats to CSQC 
 //
 
@@ -1790,7 +1793,5 @@ const float	DEAD_DEAD = 1;
 #define FLAG_7 (1 << 6)  // 01000000
 #define FLAG_8 (1 << 7)  // 10000000
 
-//float player_dimension_hit = FLAG_1;
-//float player_dimension_solid = FLAG_2;
-
-string string_null = ""; 
+// Particle defs
+var float PART_FOUNTAIN;

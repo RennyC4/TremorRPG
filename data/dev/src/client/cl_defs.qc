@@ -2161,6 +2161,8 @@ accessor filestream : float
 #endif
 #pragma noref 0
 
+float framecount;
+
 string LOGIN_NAME; // users login name
 string LOGIN_GENDER; // create gender
 float cursor;

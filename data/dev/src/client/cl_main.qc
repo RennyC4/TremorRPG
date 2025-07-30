@@ -32,6 +32,8 @@ noref void(float isnew) CSQC_Ent_Update =
 // CALLED EVERY CLIENT RENDER FRAME
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
+	framecount = framecount + 1;
+
 	//clear and update our global screen resolution vars
 	clearscene();
 	g_width = width;
@@ -84,6 +86,9 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	sui_menu_nav();
 	sui_end();
+	
+	if (framecount == 10)
+		localcmd("exec haze.cfg\n");
 };
 
 float(string cmd) CSQC_ConsoleCommand =

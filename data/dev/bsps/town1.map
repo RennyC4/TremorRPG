@@ -696,7 +696,7 @@
 // entity 4
 {
 "classname" "part_fountain"
-"origin" "-224 160 72"
+"origin" "-224 160 56"
 }
 // entity 5
 {
@@ -1166,4 +1166,9 @@
 "origin" "792 -728 280"
 "model" "progs/flame.mdl"
 "frame" "1"
+}
+// entity 31
+{
+"classname" "misc_sound"
+"origin" "-224 160 72"
 }

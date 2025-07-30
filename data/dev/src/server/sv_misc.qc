@@ -27,10 +27,32 @@ void() set_prop =
 		if (substring(newent.model, 0, 1) == "*")
 			newent.model = sprintf("%s:%s", newent.model, oself.model);
 
+		precache_model(newent.classname);
 		newent.origin += oself.origin;
 		callfunction(self.classname); //gotta make sense of it by calling its spawn function
 		self = oself;
     }
+};
+
+//
+// part_foundain - particle effect for water foundtains
+//
+
+void() part_fountain_think =
+{
+	pointparticles(PART_FOUNTAIN, self.origin);
+	self.nextthink = time + 0.1;
+}
+
+void() part_fountain =
+{
+	precache_sound ("ambience/fountain.wav");
+	ambientsound(self.origin, "ambience/fountain.wav", 1, ATTN_STATIC);
+
+	setmodel(self, string_null);
+	self.think = part_fountain_think;
+	self.nextthink = time + 0.1;
+
 };
 
 /*
