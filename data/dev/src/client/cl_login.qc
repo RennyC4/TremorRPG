@@ -34,12 +34,12 @@ void(int what) SetGender =
 	if (!what)
 	{
 		print("Male selected\n");
-		LOGIN_GENDER = "male";
+		LOGIN_GENDER = "Male";
 	}
 	else
 	{
 		print("Female selected\n");
-		LOGIN_GENDER = "female";
+		LOGIN_GENDER = "Female";
 	}
 };
 

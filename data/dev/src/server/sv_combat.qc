@@ -12,9 +12,9 @@ void() DoAttack_Melee =
 	// Stamina
 	if (self.classname == "player")
 	{
-		if (self.stamina < 25)
+		if (self.stamina <= self.attack_stamina)
 			return;
-		self.stamina -= 25;
+		self.stamina -= self.attack_stamina;
 	}
 
 	// Calculate Damage

@@ -1754,11 +1754,14 @@ const float	DEAD_DEAD = 1;
 .float attack_power_min; // player + monster damage
 .float attack_power_max; // player + monster damage
 .float attack_speed; // player + monster attack speed
+.float attack_stamina; // player, how much stamina a weapon requires + drains
 .float spell_power_min; // player + monster damage
 .float spell_power_max; // player + monster damage
 .float mana;
 .float max_mana;
 .float stamina;
+.string main_hand; // string for main hand
+.string off_hand; // string for off hand
 
 //
 // Send stats to CSQC 
@@ -1788,6 +1791,8 @@ const float	DEAD_DEAD = 1;
 #define STAT_MANA 45
 #define STAT_MAXMANA 46
 #define STAT_STAMINA 47
+#define STAT_MAINHAND 48
+#define STAT_OFFHAND 49
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

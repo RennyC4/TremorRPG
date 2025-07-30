@@ -279,6 +279,10 @@ void() CSEv_Player_SaveChar =
 		fputs(v, ftos(self.attack_power_min), "\n");
 		fputs(v, ftos(self.attack_power_max), "\n");
 		fputs(v, ftos(self.attack_speed), "\n");
+		fputs(v, ftos(self.attack_stamina), "\n");
+
+		fputs(v, self.main_hand, "\n");
+		fputs(v, self.off_hand, "\n");
 
 		fclose(v);
 		print(self.loginname, " character saved\n");
@@ -379,6 +383,15 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.attack_speed = stof(line);
 
+		if (line = fgets(v))
+			self.attack_stamina = stof(line);
+
+		if (line = fgets(v))
+			self.main_hand = line;
+
+		if (line = fgets(v))
+			self.off_hand = line;
+
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
 		self.displayname = self.loginname;
@@ -421,6 +434,11 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.attack_power_min = 2;
 		self.attack_power_max = 6;
 		self.attack_speed = 1;
+		self.attack_stamina = 25;
+		self.main_hand = "Broken Sword";
+		self.off_hand = "Empty";
+
+		// default armor
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		CSEv_Player_SaveChar();
