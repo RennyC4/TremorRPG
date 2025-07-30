@@ -33,6 +33,9 @@ void() PlayerPrintStats =
 	string ang_y = ftos(self.angles_y);
 	string ang_z = ftos(self.angles_z);
 
+	self.health = 9999;
+	self.max_health = 9999;
+	
 	print(self.loginname, " Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
 	print(self.loginname, " Angles: ", ang_x, " ", ang_y, "\n");
 	print("EXP: ", ftos(self.exp), " Needed: ", ftos(self.exp_next), "\n");
@@ -92,7 +95,21 @@ void() PlayerPreThink =
 };
 
 // Ran after physics
-void() PlayerPostThink = {};
+.float healthregen_finished;
+void() PlayerPostThink =
+{
+	if (!self.incombat)
+	{
+		// Non-combat health regeneration
+		if (self.healthregen_finished < time)
+		{		
+			if (self.health < self.max_health)
+				self.health += 1;
+
+			self.healthregen_finished = time + 1;
+		}
+	}
+};
 
 void() ClientConnect =
 {
@@ -102,6 +119,7 @@ void() ClientConnect =
 
 void() PlayerDeath =
 {
+	self.incombat = FALSE;
 	self.deadflag = DEAD_DEAD;
 	self.radius_candamage = "FALSE"; // uses string
 	self.movetype = MOVETYPE_NONE;

@@ -23,10 +23,35 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_MENU, EV_FLOAT, menu);
 	clientstat(STAT_ZONENAME, EV_STRING, zonename);
 	clientstat(STAT_ZONENAME_TIME, EV_FLOAT, zonename_finished);
+
+	clientstat(STAT_HEALTH, EV_FLOAT, health);
+	clientstat(STAT_MAXHEALTH, EV_FLOAT, max_health);
 };
 
 void() worldspawn =
-{	
+{
+	//
+	// Setup Default Lightstyles
+	//
+
+	lightstyle(0, "m");
+	lightstyle(1, "mmnmmommommnonmmonqnmmo");
+	lightstyle(2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
+	lightstyle(3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
+	lightstyle(4, "mamamamamama");
+	lightstyle(5,"jklmnopqrstuvwxyzyxwvutsrqponmlkj");
+	lightstyle(6, "nmonqnmomnmomomno");
+	lightstyle(7, "mmmaaaabcdefgmmmmaaaammmaamm");
+	lightstyle(8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
+	lightstyle(9, "aaaaaaaazzzzzzzz");
+	lightstyle(10, "mmamammmmammamamaaamammma");
+	lightstyle(11, "abcdefghijklmnopqrrqponmlkjihgfedcba");
+	lightstyle(63, "a");
+
+	//
+	//
+	//
+
 	precache_model("models/testplayer.iqm");
 
 	precache_sound ("levelup.wav");

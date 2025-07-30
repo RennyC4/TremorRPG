@@ -11,4 +11,5 @@ server/sv_npc.qc
 server/sv_combat.qc
 server/sv_triggers.qc
 server/sv_player.qc
+math.qc
 server/sv_misc.qc

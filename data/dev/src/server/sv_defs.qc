@@ -1739,6 +1739,7 @@ const float	DEAD_DEAD = 1;
 .float respawn_finished; // monster respawn time
 .float speed;
 .entity oldenemy;
+.float incombat; // player is in combat
 
 // player stats
 .float level;
@@ -1774,6 +1775,10 @@ const float	DEAD_DEAD = 1;
 #define STAT_MENU 40
 #define STAT_ZONENAME 41
 #define STAT_ZONENAME_TIME 42
+
+// Player RPG stats
+#define STAT_HEALTH 43
+#define STAT_MAXHEALTH 44
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

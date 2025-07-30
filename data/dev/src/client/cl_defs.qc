@@ -2193,3 +2193,7 @@ float MENU_CHARACTER = 2; // user info screen
 #define STAT_MENU 40
 #define STAT_ZONENAME 41
 #define STAT_ZONENAME_TIME 42
+
+// Player RPG stats
+#define STAT_HEALTH 43
+#define STAT_MAXHEALTH 44

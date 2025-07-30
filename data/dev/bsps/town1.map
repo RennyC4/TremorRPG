@@ -695,7 +695,7 @@
 }
 // entity 4
 {
-"classname" "particle_emitter"
+"classname" "part_fountain"
 "origin" "-224 160 72"
 }
 // entity 5
@@ -1138,4 +1138,32 @@
 "color" "1 0.33333334 0"
 "light" "300"
 "_tb_group" "4"
+}
+// entity 27
+{
+"classname" "misc_model"
+"origin" "136 392 280"
+"model" "progs/flame.mdl"
+"frame" "1"
+}
+// entity 28
+{
+"classname" "misc_model"
+"origin" "-296 792 280"
+"model" "progs/flame.mdl"
+"frame" "1"
+}
+// entity 29
+{
+"classname" "misc_model"
+"origin" "-616 -24 280"
+"model" "progs/flame.mdl"
+"frame" "1"
+}
+// entity 30
+{
+"classname" "misc_model"
+"origin" "792 -728 280"
+"model" "progs/flame.mdl"
+"frame" "1"
 }

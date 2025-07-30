@@ -73,6 +73,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 			else
 				ZoneName_alpha.doalpha = 0;
 
+			Draw_Health();
+
 			setcursormode(FALSE,"", 0, 0);
 		}
 	}

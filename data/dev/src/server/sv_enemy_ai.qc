@@ -85,12 +85,13 @@ void() monster_ai_think =
 		// Patroling randomly, searching for players nearby
 		for (entity targ = world;(targ = find(targ, classname, "player"));)
 		{
-			if (vlen(targ.origin - self.origin) <= 650 && targ.health > 0)
+			if (vlen(targ.origin - self.origin) <= 500 && targ.health > 0)
 			{
 				if (self.noise)
 					sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
 				self.goalentity = self.enemy = targ;
 				self.ai_mode = AI_CHASE;
+				targ.incombat = TRUE; // flag player for combat
 			}
 		}
 	}
@@ -116,6 +117,8 @@ void() monster_ai_think =
 		{
 			if (infront(self.enemy) && (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE))
 			{
+				if (!self.enemy.incombat)
+					self.enemy.incombat = TRUE; // turn on during an attack incase another monster somehow flags it off
 				self.ai_mode = AI_ATTACK;
 				self.think = monster_ai_melee;
 				self.nextthink = time + 0.1;
@@ -140,6 +143,9 @@ void() monster_ai_think =
 				setorigin(self.ai_runback_temp, self.saveorigin);
 				self.goalentity = self.ai_runback_temp;
 			}
+			if (self.enemy)
+				self.enemy.incombat = FALSE;
+
 			self.enemy = world;
 			self.ai_mode = AI_RUNBACK;
 		}

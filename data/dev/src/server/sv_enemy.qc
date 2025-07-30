@@ -21,9 +21,12 @@ void() monster_death =
 	if (self.ai_runback_temp)
 		remove(self.ai_runback_temp);
 
+	if (self.enemy.incombat)
+		self.enemy.incombat = FALSE;
+
 	self.goalentity = self.enemy = world; // reset targets
 
-	self.alpha = 0.1;
+	self.alpha = 0.25;
 	self.solid = SOLID_NOT;
 	self.deadflag = DEAD_DEAD;
 	self.takedamage = DAMAGE_NO;
