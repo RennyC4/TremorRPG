@@ -4,6 +4,7 @@ const float AI_IDLE = 0;
 const float AI_CHASE = 1;
 const float AI_ATTACK = 2;
 const float AI_RUNBACK = 3;
+
 .float ai_mode;
 .float ai_patrolidle;
 .float ai_standstill;
@@ -47,6 +48,17 @@ float(entity targ) range =
 	return RANGE_FAR;
 };
 
+// this visible function returns TRUE even if sight line crossed contents (above and below water)
+float (entity targ) visible =
+{
+ 	traceline (self.origin, targ.origin, TRUE, self); // "true", see through other monsters
+
+	if (trace_fraction == 1)
+ 		return TRUE;
+	else
+	 	return FALSE;
+};
+
 void() monster_ai_melee =
 {
 	if (self.melee_finished < time)
@@ -85,7 +97,7 @@ void() monster_ai_think =
 		// Patroling randomly, searching for players nearby
 		for (entity targ = world;(targ = find(targ, classname, "player"));)
 		{
-			if (vlen(targ.origin - self.origin) <= 500 && targ.health > 0)
+			if (vlen(targ.origin - self.origin) <= 500 && targ.deadflag != DEAD_DEAD && visible(targ))
 			{
 				if (self.noise)
 					sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
@@ -177,7 +189,7 @@ void() monster_ai_think =
 			self.ai_mode = AI_IDLE;
 		}
 	}
-	
+
 	// Enemy dead
 	if (self.enemy && self.enemy.health <= 0)
 	{
