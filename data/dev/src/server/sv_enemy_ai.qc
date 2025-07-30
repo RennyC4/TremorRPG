@@ -73,6 +73,17 @@ void() monster_ai_melee =
 	self.nextthink = time + 0.1;
 };
 
+void() monster_ai_move =
+{
+	movetogoal(self.speed / 2);
+	walkmove(self.angles_y, self.speed / 2);
+
+	self.velocity = '0 0 0';
+	self.flags -= (self.flags & FL_ONGROUND);
+	vector forward = v_forward * 150;
+	self.velocity = forward;
+};
+
 // main monster ai execution function
 void() monster_ai_think =
 {
@@ -83,6 +94,7 @@ void() monster_ai_think =
 		// Randomly turn and move
 		if (self.ai_patrolidle < time)
 		{
+			self.angles_x = 0;
 			self.angles_y = random()*360;
 			self.ai_patrolidle = time + 3 + random()*6;
 			if (random() < 0.35)
@@ -117,13 +129,13 @@ void() monster_ai_think =
 		if (self.ai_mode != AI_RUNBACK)
 			self.ai_mode = AI_CHASE;
 
-		movetogoal(self.speed / 2);
-		walkmove(self.angles_y, self.speed / 2);
-
-		self.velocity = '0 0 0';
-		self.flags -= (self.flags & FL_ONGROUND);
-		vector forward = v_forward * 150;
-		self.velocity = forward;
+		if (self.enemy)
+		{
+			if (!(range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)) // Maintain a tiny bit of distance from enemy
+				monster_ai_move();
+		}
+		else
+			monster_ai_move();
 
 		if (self.enemy.flags & FL_CLIENT && self.enemy.classname == "player" && self.enemy.health > 0)
 		{

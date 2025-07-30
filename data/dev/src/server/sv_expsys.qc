@@ -10,11 +10,11 @@ void(entity targ) Player_CheckLevelUp =
 		targ.max_mana += 5;
 
 		sound (targ, CHAN_AUTO, "levelup.wav", 1, ATTN_NORM);
-		print (targ.netname, " leveled up to level ", ftos(targ.level), "!\n");
+		sprint (self, PRINT_HIGH, "Level ", ftos(targ.level), " reached!\n");
 
 		targ.exp_next = 100 * (targ.level * targ.level * 1.15);
-		print ("Current EXP: ", ftos(targ.exp), "\n");
-		print ("EXP Needed: ", ftos(targ.exp_next), "\n");
+//		print ("Current EXP: ", ftos(targ.exp), "\n");
+//		print ("EXP Needed: ", ftos(targ.exp_next), "\n");
     }
 };
 

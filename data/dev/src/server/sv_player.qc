@@ -33,10 +33,10 @@ void() PlayerPrintStats =
 	string ang_y = ftos(self.angles_y);
 	string ang_z = ftos(self.angles_z);
 
-	print(self.loginname, " Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
-	print(self.loginname, " Angles: ", ang_x, " ", ang_y, "\n");
-	print("EXP: ", ftos(self.exp), " Needed: ", ftos(self.exp_next), "\n");
-	print("Gold: ", ftos(self.gold), "\n");
+	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
+	sprint(self, PRINT_MEDIUM, "\nAngles: ", ang_x, " ", ang_y);
+	sprint(self, PRINT_HIGH, "\nEXP: ", ftos(self.exp), " Needed: ", ftos(self.exp_next));
+	sprint(self, PRINT_HIGH, "\nGold: ", ftos(self.gold), "\n");
 };
 
 void() CheckImpulses =
@@ -99,33 +99,36 @@ void() PlayerPostThink =
 	if (!self.loggedin)
 		return;
 
-	if (!self.incombat)
+	if (self.deadflag != DEAD_DEAD)
 	{
-		// Non-combat health regeneration
-		if (self.healthregen_finished < time)
-		{		
-			if (self.health < self.max_health)
-				self.health += 1;
+		if (!self.incombat)
+		{
+			// Non-combat health regeneration
+			if (self.healthregen_finished < time)
+			{		
+				if (self.health < self.max_health)
+					self.health += 1;
 
-			self.healthregen_finished = time + 1;
+				self.healthregen_finished = time + 1;
+			}
 		}
-	}
-	// Stamina regeneration
-	if (self.staminaregen_finished < time)
-	{		
-		if (self.stamina < 100)
-			self.stamina += 1;
-		else
-			self.stamina = 100;
+		// Stamina regeneration
+		if (self.staminaregen_finished < time)
+		{		
+			if (self.stamina < 100)
+				self.stamina += 1;
+			else
+				self.stamina = 100;
 
-		self.staminaregen_finished = time + 0.1;
+			self.staminaregen_finished = time + 0.1;
+		}
 	}
 };
 
 void() ClientConnect =
 {
 	bprint(PRINT_HIGH, self.netname);
-	bprint(PRINT_HIGH, " has joined the realm.\n");
+	bprint(PRINT_HIGH, " has joined the realm\n");
 };
 
 void() PlayerDeath =
@@ -302,7 +305,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		
 		if (line != self.guid) // Compare guid from file & user
 		{
-			print("Server GUID does not match players\n");
+			sprint(self, PRINT_HIGH, "Server GUID does not match players\n");
 			return;
 		}
 	}

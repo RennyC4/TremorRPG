@@ -9,7 +9,7 @@ void() set_prop =
 	self.angles = '0 0 0';
 	self.solid = SOLID_BSP;
     setmodel(self, self.model);
-	
+
 	// Obtain other ents inside .bsps
     int i;
     entity newent;
@@ -23,11 +23,10 @@ void() set_prop =
 			continue; //can happen when editing
 		self = newent = spawn();
 		parseentitydata(newent, strcat("{\n", entdata, "\n}")); //reads it into the entity
+		precache_model(newent.model);
 		//TODO: fix up inline model names
 		if (substring(newent.model, 0, 1) == "*")
 			newent.model = sprintf("%s:%s", newent.model, oself.model);
-
-		precache_model(newent.classname);
 		newent.origin += oself.origin;
 		callfunction(self.classname); //gotta make sense of it by calling its spawn function
 		self = oself;
@@ -52,7 +51,6 @@ void() part_fountain =
 	setmodel(self, string_null);
 	self.think = part_fountain_think;
 	self.nextthink = time + 0.1;
-
 };
 
 /*

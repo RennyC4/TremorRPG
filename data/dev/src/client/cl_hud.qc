@@ -19,6 +19,18 @@ void(float screenwidth, float screenheight) Draw_ZoneName =
 	drawstring(pos, zonename, '18 18', '.9 .1 0', (sin(ZoneName_alpha.doalpha*0.40)*1), 0);
 };
 
+void() Draw_CombatLog =
+{
+	vector pos = [0, -60];
+	vector size = [230, 100];
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
+	sui_push_frame(pos, size);
+
+	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+};
+
 void() Draw_Health =
 {
 	float h = getstatf(STAT_HEALTH);
@@ -124,7 +136,4 @@ void() Draw_Stamina =
 	drawstring (pos + '115 22', s2, '8 8 0', '1 1 1', 1, 0);
 };
 
-void() Draw_Exp =
-{
-
-};
+void() Draw_Exp = {};

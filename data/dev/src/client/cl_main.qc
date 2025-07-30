@@ -75,6 +75,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 			else
 				ZoneName_alpha.doalpha = 0;
 
+			Draw_CombatLog();
 			Draw_Health();
 			Draw_Mana();
 			Draw_Stamina();

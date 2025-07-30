@@ -24,8 +24,6 @@ void(string sendgender) User_NewCharacter =
 		print("Please select your gender!\n");
 		return;
 	}
-	print ("Send Gender: ", sendgender, "\n");
-
 	sendevent("CreateNewCharacter", "ss", LOGIN_NAME, sendgender);
 };
 

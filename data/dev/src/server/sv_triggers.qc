@@ -7,9 +7,6 @@ void() trigger_zone_touch =
 	if (other.classname != "player")
 		return;
 
-//	if (other.zonename != self.zonename || self.music != self.music)
-//		print ("Sent zone information to player\n"); // just print once for debugging
-
 	if (other.music != self.music)
 	{
 		other.music = self.music;
@@ -33,7 +30,6 @@ void() trigger_zone =
 
 	setmodel (self, self.model);
 	self.movetype = MOVETYPE_NONE;
-	self.modelindex = 0;
 	self.model = "";
 };
 
