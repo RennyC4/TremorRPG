@@ -24,7 +24,7 @@ void() DoAttack_Melee =
 		sound (trace_ent, CHAN_BODY, "swordhit.wav", 1, ATTN_NORM);
 	}
 
-	self.melee_finished = time + 1;
+	self.melee_finished = time + self.attack_speed;
 };
 
 void(entity targ) Player_CheckLevelUp;

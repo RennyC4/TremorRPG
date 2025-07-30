@@ -54,6 +54,7 @@ noise "monsters/sight1.wav" // sight sound
 noise1 "monsters/attack1.wav" // attack sound
 noise2 "monsters/pain1.wav" // pain sound
 noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
 }
 
 // monster (bandit lvl1)
@@ -73,6 +74,11 @@ attack_power_min "5"
 attack_power_max "9"
 respawn_finished "10"
 speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
 }
 
 // monster (bandit lvl1)
@@ -92,4 +98,9 @@ attack_power_min "5"
 attack_power_max "9"
 respawn_finished "10"
 speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
 }

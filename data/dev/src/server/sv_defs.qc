@@ -1750,6 +1750,7 @@ const float	DEAD_DEAD = 1;
 .float gold_min; // for monsters (minimum amount of gold to give)
 .float attack_power_min; // player + monster damage
 .float attack_power_max; // player + monster damage
+.float attack_speed; // player + monster attack speed
 .float spell_power_min; // player + monster damage
 .float spell_power_max; // player + monster damage
 

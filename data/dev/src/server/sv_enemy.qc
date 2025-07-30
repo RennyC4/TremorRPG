@@ -42,7 +42,7 @@ void() set_monster =
 	if (self.noise1)
 		precache_sound(self.noise1); // attack sound
 	if (self.noise2)
-		precache_sound(self.noise3); // pain sound
+		precache_sound(self.noise2); // pain sound
 	if (self.noise3)
 		precache_sound(self.noise3); // death sound
 

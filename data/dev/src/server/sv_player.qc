@@ -64,10 +64,14 @@ void() PlayerPreThink =
 {	
 	if (self.button0)
 	{
-		if (self.health < 1)
+		if (self.deadflag == DEAD_DEAD)
 		{
-			PlayerSpawn(2); // respawn
-			self.melee_finished = time + 1;
+			if (self.respawn_finished < time)
+			{
+				PlayerSpawn(2); // respawn
+				self.melee_finished = time + 1; // prevent attack on spawn
+				return;
+			}
 		}
 		else
 			DoAttack_Melee();
@@ -98,10 +102,11 @@ void() ClientConnect =
 
 void() PlayerDeath =
 {
+	self.deadflag = DEAD_DEAD;
 	self.radius_candamage = "FALSE"; // uses string
-	self.movetype = MOVETYPE_TOSS;
+	self.movetype = MOVETYPE_NONE;
 	self.view_ofs = [0, 0, 4];
-	centerprint (self, "You're Dead!\n");
+	centerprint (self, "/PYou're Dead!\n");
 	self.respawn_finished = time + 5;
 };
 
@@ -153,6 +158,7 @@ void(float type) PlayerSpawn =
 	}
 	else // respawning from death
 	{
+		centerprint (self, ""); // clear centerprint
 		self.melee_finished = time + 1; // prevent attack on respawn
 
 		self.classname = "player";
@@ -160,13 +166,14 @@ void(float type) PlayerSpawn =
 		self.takedamage = DAMAGE_AIM;
 		self.movetype = MOVETYPE_WALK;
 		self.view_ofs = [0, 0, 48];
-
+		self.deadflag = DEAD_NO;
 		self.radius_candamage = "TRUE"; // uses string
 		self.solid = SOLID_SLIDEBOX;
 		self.flags |= FL_FINDABLE_NONSOLID;
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
+		self.fixangle = TRUE;
 
 		setmodel(self, "models/testplayer.iqm");
 
@@ -239,6 +246,7 @@ void() CSEv_Player_SaveChar =
 		fputs(v, ftos(self.gold), "\n");
 		fputs(v, ftos(self.attack_power_min), "\n");
 		fputs(v, ftos(self.attack_power_max), "\n");
+		fputs(v, ftos(self.attack_speed), "\n");
 
 		fclose(v);
 		print(self.loginname, " character saved\n");
@@ -330,6 +338,9 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.attack_power_max = stof(line);
 
+		if (line = fgets(v))
+			self.attack_speed = stof(line);
+
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
 		self.displayname = self.loginname;
@@ -363,8 +374,11 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.exp = 0;
 		self.exp_next = 100;
 		self.skillpoints = 25; // 25 skill points new players can dump into stats
+
+		// default starter weapon
 		self.attack_power_min = 2;
 		self.attack_power_max = 6;
+		self.attack_speed = 1;
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		CSEv_Player_SaveChar();

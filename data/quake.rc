@@ -64,6 +64,8 @@ r_renderscale 1 // higher breaks god rays and other screen effects
 r_waterwarp 1
 v_cshift_water 0
 r_particledesc "classic high tsshaft"
+r_waterstyle 2
+//r_fullbright 0.35
 v_deathtilt 0
 cl_sendguid 1 // Needed otherwise you'll loose your online character on servers
 
