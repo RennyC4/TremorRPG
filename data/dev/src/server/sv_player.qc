@@ -405,7 +405,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		PlayerSpawn(1); // Put player in game
 	}
 	else
-		print("Character doesn't exist\n");
+		sprint(self, PRINT_HIGH, "Character doesn't exist\n");
 };
 
 void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =

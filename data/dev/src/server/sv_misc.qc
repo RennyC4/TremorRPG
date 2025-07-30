@@ -18,7 +18,7 @@ void() set_prop =
     for (i = 1; i < numents; i++)
     {
 		string entdata = (string)terrain_edit(TEREDIT_ENT_GET, (__variant)(int)i); // { classname foo origin "x y z" }
-		print(sprintf("ent %i: %S\n", i, entdata));
+		//print(sprintf("ent %i: %S\n", i, entdata));
 		if (!entdata)
 			continue; //can happen when editing
 		self = newent = spawn();
