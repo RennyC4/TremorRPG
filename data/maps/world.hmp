@@ -33,6 +33,14 @@ origin "-2194 -2046 60"
 angles "0 0 0"
 }
 
+// first bridge (Elderfen)
+{
+classname "set_prop"
+model "bsps/bridge1.bsp"
+origin "-1125 3535 55"
+angles "0 0 0"
+}
+
 // NPC
 {
 classname "set_npc"
