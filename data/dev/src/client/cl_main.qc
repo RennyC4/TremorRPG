@@ -24,11 +24,6 @@ noref void() CSQC_WorldLoaded =
 		localcmd("sv_cheats 1\nsv_csqc_progname csaddon.dat\nrestart\n");
 };
 
-noref void(float isnew) CSQC_Ent_Update =
-{
-	// printf("csqc ent update %f\n", isnew);
-};
-
 // CALLED EVERY CLIENT RENDER FRAME
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
@@ -75,7 +70,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 			else
 				ZoneName_alpha.doalpha = 0;
 
-			Draw_CombatLog();
+			Draw_EventLog();
 			Draw_Health();
 			Draw_Mana();
 			Draw_Stamina();
@@ -84,13 +79,13 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 			setcursormode(FALSE,"", 0, 0);
 		}
 	}
-	
+
 	//
 	//
 
 	sui_menu_nav();
 	sui_end();
-	
+
 	if (framecount == 10)
 		localcmd("exec haze.cfg\n");
 };
@@ -144,11 +139,6 @@ void() CSQC_Parse_Event =
 			printf("No action for byte %f\n", first);
 		break;
 	}
-};
-
-void(string printmsg, float printlvl) CSQC_Parse_Print =
-{
-	print(printmsg);
 };
 
 noref void CSQC_Shutdown() =

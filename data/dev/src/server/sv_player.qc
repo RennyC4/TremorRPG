@@ -59,6 +59,11 @@ entity() get_spawn_point =
 	return spawnpoint;
 };
 
+void SendStringToClient(entity player, string msg)
+{
+    WriteByte(MSG_ONE, 100); // 100 = custom message ID (choose a unique one)
+    WriteString(MSG_ONE, msg);
+}
 // Ran before physics
 void() PlayerPreThink =
 {	

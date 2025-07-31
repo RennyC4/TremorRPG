@@ -19,16 +19,59 @@ void(float screenwidth, float screenheight) Draw_ZoneName =
 	drawstring(pos, zonename, '18 18', '.9 .1 0', (sin(ZoneName_alpha.doalpha*0.40)*1), 0);
 };
 
-void() Draw_CombatLog =
+
+float MAX_EVENTLOG = 6;
+string messagestack[MAX_CHATMSG];
+
+void(string msg) push_message =
 {
-	vector pos = [0, -60];
+	float i = MAX_EVENTLOG - 1;
+	while (i > 0)
+	{
+		messagestack[i] = messagestack[i-1];
+		i--;
+	}
+	if (messagestack[MAX_CHATMSG - 1])
+		strunzone(messagestack[MAX_CHATMSG - 1]);
+
+	messagestack[i] = msg;
+};
+
+const float PRINT_LOW = 0;
+const float PRINT_MEDIUM = 1;
+const float PRINT_HIGH = 2;
+const float PRINT_CHAT = 3;
+
+/*
+noref void(string printmsg, float printlvl) CSQC_Parse_Print =
+{
+//	push_message(printmsg);
+};
+*/
+
+void() Draw_EventLog =
+{
+	vector pos = [0, -45];
 	vector size = [230, 100];
+	vector text_pos = pos + [2, 46];
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
 	sui_push_frame(pos, size);
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+
+	float i;
+	for(i=0; i <MAX_EVENTLOG; i++)
+	{
+		if (messagestack[i] != "")
+		{
+			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+			sui_text(text_pos, MENU_TEXT_SMALL, messagestack[i], MENU_TEXT_1, 1, 0);
+			text_pos_y += 8;
+		}
+	}
+	sui_pop_frame();
 };
 
 void() Draw_Health =
