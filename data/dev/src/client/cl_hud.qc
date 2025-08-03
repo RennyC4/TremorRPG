@@ -47,6 +47,10 @@ noref void(string printmsg, float printlvl) CSQC_Parse_Print =
 {
 //	push_message(printmsg);
 };
+
+//	con_printf("eventlog", "some test text\n"); // push message csqc
+//	con_draw("evenlog", pos, size, 8); // draw on screen
+//  conecho foo "text" // push message ssqc
 */
 
 void() Draw_EventLog =
@@ -208,12 +212,71 @@ void() Draw_Exp =
 };
 
 //
+// Reki's Code to draw 3D Objects properly on the HUD
+//
+
+void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
+{
+    clearscene();
+    setviewprop(VF_MIN, pos);
+    setviewprop(VF_SIZE, canvas_size);
+ 
+    setviewprop(VF_AFOV, 25);
+    setviewprop(VF_DRAWWORLD, FALSE);
+ 
+    setviewprop(VF_ORIGIN, [zoom, 0, 0]);
+    setviewprop(VF_ANGLES, '0 0 0');
+ 
+    addentity(ent);
+    renderscene();
+};
+
+//
+// 3D Character portrait
+//
+
+float Draw_3DDoll_Once;
+entity doll;
+void(vector pos) Draw_3DPDoll =
+{
+    if (!Draw_3DDoll_Once) // Call this one time so we're not spawning infinite head entities
+    {
+        Draw_3DDoll_Once = 1;
+ 
+		doll = spawn();
+        precache_model("models/player_m.iqm");
+		// TODO: Draw female player model
+        setmodel(doll, "models/player_m.iqm");
+        setorigin(doll, '0 0 0');
+		doll.angles_y -= 180;
+		doll.origin_z -= 35;
+    }
+	doll.angles_y += 0.1;
+	//entdraw(doll, pos, '150 250', -225);
+	entdraw(doll, pos, '150 250', -245);
+};
+
+//
 // Character stat screen + Skill point distribution
 //
 
 void() User_CharacterScreen =
 {
 	string disp_gender = getstats(STAT_GENDER);
+	float disp_level = getstatf(STAT_LEVEL);
+	float disp_exp =  getstatf(STAT_EXP);
+	float disp_neededexp =  getstatf(STAT_EXPNEEDED);
+	float disp_gold =  getstatf(STAT_GOLD);
+	float disp_skillpoints =  getstatf(STAT_SKILLPOINTS);
+	string disp_mainhand = getstats(STAT_MAINHAND);
+	string disp_offhand = getstats(STAT_OFFHAND);
+
+	float disp_attackmin = getstatf(STAT_ATTACKMIN);
+	float disp_attackmax = getstatf(STAT_ATTACKMAX);
+	float disp_attackspeed = getstatf(STAT_ATTACKSPEED);
+
+	string disp_armorname = getstats(STAT_ARMORNAME);
+	float disp_armorvalue = getstatf(STAT_ARMORVALUE);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -224,7 +287,107 @@ void() User_CharacterScreen =
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
+	// Display name, gender
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	string gname = strcat(disp_gender, " ^1", LOGIN_NAME);
-	sui_text([0, 4], MENU_TEXT_MEDIUM, gname, MENU_TEXT_1, 1, 0);
+	string displaystat = strcat(disp_gender, " ^1", LOGIN_NAME);
+	sui_text([0, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
+
+	// 3D Character box
+	pos_y += 10;
+	size = [125, 150];
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_border_box(pos, size, 2, MENU_BORDER, 0.3, 0);
+	sui_fill(pos, size, MENU_BG_DARK, 0.75, 0);
+
+	// Draw 3D doll model
+	pos = [37, -10];
+	Draw_3DPDoll(pos);
+
+	//Level, Experience, Next Experience
+	vector newpos = [25,30];
+
+	displaystat = strcat("^5Level: ^7", ftos(disp_level));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	displaystat = strcat("^5Exp: ^7", ftos(disp_exp));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	displaystat = strcat("^5Needed: ^7", ftos(disp_neededexp));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	displaystat = strcat("^5Gold: ^7", ftos(disp_gold));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	displaystat = strcat("^5Skill Points: ^7", ftos(disp_skillpoints));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 15;
+
+	displaystat = strcat("^5Main Hand ");
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+	
+	displaystat = strcat(disp_mainhand, " (^8", ftos(disp_attackmin), "-", ftos(disp_attackmax), "^7)");
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	float disp_dps = (disp_attackmin + disp_attackmax * 0.5) / disp_attackspeed; // calculate DPS
+	displaystat = strcat("^1DPS: ^7" , ftos(disp_dps));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 15;
+
+	displaystat = "^5Off Hand";
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+	
+	displaystat = disp_offhand;
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	displaystat = "^2Blocking: ^70";
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 15;
+
+	displaystat = strcat("^5Armor: ^7", disp_armorname, " (^2", ftos(disp_armorvalue), "^7)");
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	// Draw skill point box/frame/text
+	pos = [75, 0];
+	size = [250, 280];
+
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	sui_push_frame(pos, size);
+
+	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+
+	pos = [0, -15];
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	sui_text(pos, MENU_TEXT_MEDIUM, "^2Skills", MENU_TEXT_1, 1, 0);
 };

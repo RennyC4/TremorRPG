@@ -189,7 +189,8 @@ void(float type) PlayerSpawn =
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.th_die = PlayerDeath;
 
-		setmodel(self, "models/testplayer.iqm");
+		// TODO: Follow gender rule
+		setmodel(self, "models/player_m.iqm");
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
@@ -213,7 +214,8 @@ void(float type) PlayerSpawn =
 		self.angles = spawn_spot.angles;
 		self.fixangle = TRUE;
 
-		setmodel(self, "models/testplayer.iqm");
+		// TODO: Follow gender rule
+		setmodel(self, "models/player_m.iqm");
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
@@ -291,6 +293,9 @@ void() CSEv_Player_SaveChar =
 
 		fputs(v, self.main_hand, "\n");
 		fputs(v, self.off_hand, "\n");
+
+		fputs(v, self.armorname, "\n");
+		fputs(v, ftos(self.armorvalue), "\n");
 
 		fclose(v);
 		print(self.loginname, " character saved\n");
@@ -400,6 +405,12 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.off_hand = line;
 
+		if (line = fgets(v))
+			self.armorname = line;
+
+		if (line = fgets(v))
+			self.armorvalue = stof(line);
+
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
 		self.displayname = self.loginname;
@@ -429,7 +440,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.loggedin = TRUE;
 		self.menu = MENU_OFF; // turn off menu in CSQC
 
-		// Starting stats
+		// starting stats
 		self.health = self.max_health = 100;
 		self.mana = self.max_mana = 25;
 		self.level = 1;
@@ -443,10 +454,13 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.attack_power_max = 6;
 		self.attack_speed = 1;
 		self.attack_stamina = 25;
+		self.attack_type = 1; // Slashing weapons
 		self.main_hand = "Broken Sword";
 		self.off_hand = "Empty";
-
+		
 		// default armor
+		self.armorname = "Plain Clothes";
+		self.armorvalue = 0;
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		CSEv_Player_SaveChar();

@@ -1769,7 +1769,7 @@ const float MENU_CHARACTER = 2;
 .float attack_power_min; // player + monster damage
 .float attack_power_max; // player + monster damage
 .float attack_speed; // player + monster attack speed
-.float attack_type; // slash, pierce, bash, or unarmed
+.float attack_type; // 0 unarmed, 1 slash, 2 pierce, 3 bash
 .float attack_stamina; // player, how much stamina a weapon requires + drains
 .float spell_power_min; // player + monster damage
 .float spell_power_max; // player + monster damage
@@ -1780,6 +1780,8 @@ const float MENU_CHARACTER = 2;
 .string off_hand; // string for off hand
 
 .float blocking; // Player can block with shield WIP
+.string armorname;
+//.float armorvalue; (this is already defined)
 
 // skill point stats (level*10)+10 cap
 .float skill_unarmed;
@@ -1840,6 +1842,14 @@ const float MENU_CHARACTER = 2;
 #define STAT_EXPOLDNEEDED 53
 #define STAT_GOLD 54
 #define STAT_GENDER 55
+#define STAT_SKILLPOINTS 56
+
+#define STAT_ATTACKMIN 57
+#define STAT_ATTACKMAX 58
+#define STAT_ATTACKSPEED 59
+
+#define STAT_ARMORNAME 60
+#define STAT_ARMORVALUE 61
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

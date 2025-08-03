@@ -18,9 +18,6 @@ void() monster_respawn =
 
 void() monster_death =
 {
-	if (self.ai_runback_temp)
-		remove(self.ai_runback_temp);
-
 	if (self.enemy.incombat)
 		self.enemy.incombat = FALSE;
 

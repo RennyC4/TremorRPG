@@ -145,6 +145,9 @@ void() monster_ai_think =
 				self.enemy.incombat = FALSE;
 
 			self.goalentity = self.ai_runback_temp;
+			if (!self.goalentity)
+				print ("Error in monster ai\n");
+
 			self.enemy = world;
 			self.ai_mode = AI_RUNBACK;
 		}

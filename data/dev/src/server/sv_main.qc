@@ -39,6 +39,14 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_EXPOLDNEEDED, EV_FLOAT, exp_oldnext);
 	clientstat(STAT_GOLD, EV_FLOAT, gold);
 	clientstat(STAT_GENDER, EV_STRING, gender);
+	clientstat(STAT_SKILLPOINTS, EV_FLOAT, skillpoints);
+
+	clientstat(STAT_ATTACKMIN, EV_FLOAT, attack_power_min);
+	clientstat(STAT_ATTACKMAX, EV_FLOAT, attack_power_max);
+	clientstat(STAT_ATTACKSPEED, EV_FLOAT, attack_speed);
+
+	clientstat(STAT_ARMORNAME, EV_STRING, armorname);
+	clientstat(STAT_ARMORVALUE, EV_FLOAT, armorvalue);
 };
 
 void() worldspawn =
@@ -75,7 +83,7 @@ void() worldspawn =
 	//
 	//
 
-	precache_model("models/testplayer.iqm");
+	precache_model("models/player_m.iqm");
 
 	precache_sound ("levelup.wav");
 	precache_sound ("sword1.wav");
