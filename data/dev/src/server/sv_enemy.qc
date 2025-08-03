@@ -69,7 +69,7 @@ void() set_monster =
 
 	self.saveorigin = self.origin + v_up * 1; // stash initial spawn spot
 
-	setmodel(self, "models/testplayer.iqm"); // remove me
+	setmodel(self, self.model);
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 
 	self.flags |= FL_FINDABLE_NONSOLID;
