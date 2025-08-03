@@ -3,8 +3,9 @@ float splash_time;
 
 void() m_init =
 {
+	registercommand("menu_character", "Show your characters information\n");
+
 	splash_time = time + 2.5;
-	registercommand("togglemenu2");
 	// drawfont = loadfont("", "Courier Prime Code", "12,16,24,32,48,64,72,128,256,512", -1, 0, 0);
 	setcursormode(TRUE,"gfx/xhair", [16, 16], cvar("vid_conautoscale"));
 	current_menu = MENU_MAIN;

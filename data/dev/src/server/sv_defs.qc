@@ -1687,11 +1687,13 @@ accessor filestream : float
 	get string = fgets;
 	inline set string = {fputs(this,value);};
 };
+
 #endif
 #pragma noref 0
 
 string string_null = ""; 
 
+// Constants
 const float TEREDIT_RELOAD = 0;
 const float TEREDIT_SAVE = 1;
 const float TEREDIT_SETHOLE = 2;
@@ -1720,9 +1722,13 @@ const float TEREDIT_ENT_SET = 27;
 const float TEREDIT_ENT_ADD = 28;
 const float TEREDIT_ENT_COUNT = 29;
 
-// deadflag values
 const float	DEAD_NO	  = 0;
 const float	DEAD_DEAD = 1;
+
+const float ATTACKTYPE_UNARMED = 0;
+const float ATTACKTYPE_SLASH = 1;
+const float ATTACKTYPE_PIERCE = 2;
+const float ATTACKTYPE_BASH = 0;
 
 .void()		th_die;
 
@@ -1748,12 +1754,14 @@ const float	DEAD_DEAD = 1;
 .float skillpoints;
 .float exp; // player, for monsters (maximum aount of exp to give)
 .float exp_min; // for monsters (minimum amount of exp to give)
-.float exp_next;
+.float exp_oldnext; // for csqc exp bar hud
+.float exp_next; // player, needed exp for next level
 .float gold; // player, for monsters (max amount of gold to give)
 .float gold_min; // for monsters (minimum amount of gold to give)
 .float attack_power_min; // player + monster damage
 .float attack_power_max; // player + monster damage
 .float attack_speed; // player + monster attack speed
+.float attack_type; // slash, pierce, bash, or unarmed
 .float attack_stamina; // player, how much stamina a weapon requires + drains
 .float spell_power_min; // player + monster damage
 .float spell_power_max; // player + monster damage
@@ -1763,11 +1771,29 @@ const float	DEAD_DEAD = 1;
 .string main_hand; // string for main hand
 .string off_hand; // string for off hand
 
-// skill point stats
+.float blocking; // Player can block with shield WIP
+
+// skill point stats (level*10)+10 cap
+.float skill_unarmed;
 .float skill_slash;
 .float skill_pierce;
 .float skill_bash;
-.float skill_melee;
+.float skill_stealth;
+.float skill_offensivemagic;
+.float skill_defensivemagic;
+.float skill_neutralmagic;
+.float skill_endurance;
+.float skill_spellresist;
+.float skill_backstab;
+.float skill_archery;
+.float skill_healthregen;
+.float skill_manaregen;
+
+// job skills (wip)
+
+.float skill_mining;
+.float skill_fishing;
+.float skill_woodwork;
 
 //
 // Send stats to CSQC 
@@ -1799,6 +1825,12 @@ const float	DEAD_DEAD = 1;
 #define STAT_STAMINA 47
 #define STAT_MAINHAND 48
 #define STAT_OFFHAND 49
+
+#define STAT_LEVEL 50
+#define STAT_EXP 51
+#define STAT_EXPNEEDED 52
+#define STAT_EXPOLDNEEDED 53
+#define STAT_GOLD 54
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

@@ -20,6 +20,8 @@ noref void() CSQC_WorldLoaded =
 {
 	MENU = MENU_LOGIN; // first login, display login window
 
+	registercommand("show_character", "Display character information");
+
 	if (cvar("developer") == 1)
 		localcmd("sv_cheats 1\nsv_csqc_progname csaddon.dat\nrestart\n");
 };
@@ -90,14 +92,16 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		localcmd("exec haze.cfg\n");
 };
 
+// Registered console commands
 float(string cmd) CSQC_ConsoleCommand =
 {
 	tokenize(cmd);
-	switch(argv(0))
+	if (argv(0) == "show_character")
 	{
-		default:
-			return FALSE;
+		print("YO\n");
 	}
+	else
+		return FALSE;
 	return TRUE;
 };
 

@@ -179,4 +179,28 @@ void() Draw_Stamina =
 	drawstring (pos + '115 22', s2, '8 8 0', '1 1 1', 1, 0);
 };
 
-void() Draw_Exp = {};
+void() Draw_Exp = 
+{
+	float e = getstatf(STAT_EXP);
+	float e2 = getstatf(STAT_EXPNEEDED);
+	float e3 = getstatf(STAT_EXPOLDNEEDED);
+
+	float disp = e - e3;
+	float disp_max = e2 - e3;
+
+	//
+	// Draw Experience
+	//
+
+	vector pos;
+	pos_x = g_width * 0.0001;
+	pos_y = g_height * 0.99;
+
+	// Bar
+	vector ebar_size, ebar_size_max;
+	ebar_size_y = 8;
+	ebar_size_x = (disp / disp_max) * g_width; // keep bar updated
+
+	drawfill(pos + '1 1 0', ebar_size_x, '1 1 0', 0.25, 0);
+	drawfill(pos + '1 1 0', g_width, '1 1 0', 0.08, 0); // Full bar display
+};

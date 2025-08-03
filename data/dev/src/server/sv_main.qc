@@ -32,6 +32,12 @@ void() SSQC_SendValuesToCSQC =
 
 	clientstat(STAT_MAINHAND, EV_STRING, main_hand);
 	clientstat(STAT_OFFHAND, EV_STRING, off_hand);
+
+	clientstat(STAT_LEVEL, EV_FLOAT, level);
+	clientstat(STAT_EXP, EV_FLOAT, exp);
+	clientstat(STAT_EXPNEEDED, EV_FLOAT, exp_next);
+	clientstat(STAT_EXPOLDNEEDED, EV_FLOAT, exp_oldnext);
+	clientstat(STAT_GOLD, EV_FLOAT, gold);
 };
 
 void() worldspawn =
