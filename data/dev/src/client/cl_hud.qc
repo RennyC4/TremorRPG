@@ -195,12 +195,36 @@ void() Draw_Exp =
 	vector pos;
 	pos_x = g_width * 0.0001;
 	pos_y = g_height * 0.99;
+	pos_z = 0;
 
 	// Bar
 	vector ebar_size, ebar_size_max;
-	ebar_size_y = 8;
 	ebar_size_x = (disp / disp_max) * g_width; // keep bar updated
+	ebar_size_y = 8;
+	ebar_size_z = 0;
 
-	drawfill(pos + '1 1 0', ebar_size_x, '1 1 0', 0.25, 0);
+	drawfill(pos + '1 1 0', ebar_size, '1 1 0', 0.25, 0);
 	drawfill(pos + '1 1 0', g_width, '1 1 0', 0.08, 0); // Full bar display
+};
+
+//
+// Character stat screen + Skill point distribution
+//
+
+void() User_CharacterScreen =
+{
+	string disp_gender = getstats(STAT_GENDER);
+
+	vector pos = [25, 25];
+	vector size = [450, 325];
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_push_frame(pos, size);
+
+	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	string gname = strcat(disp_gender, " ^1", LOGIN_NAME);
+	sui_text([0, 4], MENU_TEXT_MEDIUM, gname, MENU_TEXT_1, 1, 0);
 };

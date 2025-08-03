@@ -157,7 +157,7 @@ void(float type) PlayerSpawn =
 		self.solid = SOLID_NOT;
 		setmodel(self, string_null);
 
-		self.movetype = MOVETYPE_WALK;
+		self.movetype = MOVETYPE_NONE;
 		self.health = 100;
 		self.max_health = 100;
 		self.takedamage = DAMAGE_NO;
@@ -167,7 +167,7 @@ void(float type) PlayerSpawn =
 		setsize(self, [-0, -0, 0], [0, 0, 0]);
 		self.view_ofs = [0, 0, 48];
 
-		self.menu = TRUE;
+		self.menu = MENU_LOGIN;
 		self.loggedin = FALSE;
 		self.radius_candamage = "FALSE"; // uses string
 	}
@@ -181,7 +181,7 @@ void(float type) PlayerSpawn =
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];
 
-		self.menu = FALSE;
+		self.menu = MENU_OFF;
 		self.loggedin = TRUE;
 		self.radius_candamage = "TRUE"; // uses string
 
@@ -427,7 +427,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 	else
 	{
 		self.loggedin = TRUE;
-		self.menu = FALSE; // turn off menu in CSQC
+		self.menu = MENU_OFF; // turn off menu in CSQC
 
 		// Starting stats
 		self.health = self.max_health = 100;

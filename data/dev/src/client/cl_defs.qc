@@ -2210,3 +2210,4 @@ float MENU_CHARACTER = 2; // user info screen
 #define STAT_EXPNEEDED 52
 #define STAT_EXPOLDNEEDED 53
 #define STAT_GOLD 54
+#define STAT_GENDER 55

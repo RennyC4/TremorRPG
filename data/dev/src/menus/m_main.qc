@@ -3,7 +3,7 @@ float splash_time;
 
 void() m_init =
 {
-	registercommand("menu_character", "Show your characters information\n");
+	registercommand("menu_character");
 
 	splash_time = time + 2.5;
 	// drawfont = loadfont("", "Courier Prime Code", "12,16,24,32,48,64,72,128,256,512", -1, 0, 0);

@@ -26,6 +26,6 @@ void() set_npc =
 
 	self.flags |= FL_FINDABLE_NONSOLID;
 
-	self.think = npc_ai_think;
-	self.nextthink = time + 0.1;
+//	self.think = npc_ai_think;
+//	self.nextthink = time + 0.1;
 };

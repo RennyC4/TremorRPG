@@ -1691,6 +1691,10 @@ accessor filestream : float
 #endif
 #pragma noref 0
 
+void(string cmdname, optional string desc) registercommand = #352; /*
+		Register the given console command, for easy console use.
+		Console commands that are later used will invoke CSQC_ConsoleCommand/m_consolecommand/ConsoleCmd according to module. */
+
 string string_null = ""; 
 
 // Constants
@@ -1728,7 +1732,11 @@ const float	DEAD_DEAD = 1;
 const float ATTACKTYPE_UNARMED = 0;
 const float ATTACKTYPE_SLASH = 1;
 const float ATTACKTYPE_PIERCE = 2;
-const float ATTACKTYPE_BASH = 0;
+const float ATTACKTYPE_BASH = 3;
+
+const float MENU_OFF = 0;
+const float MENU_LOGIN = 1;
+const float MENU_CHARACTER = 2;
 
 .void()		th_die;
 
@@ -1736,7 +1744,7 @@ const float ATTACKTYPE_BASH = 0;
 .float loggedin; // user successfully logged in
 .string loginname; // enforce this on the player
 .string gender;
-.float menu; // menu boolean
+.float menu; // menu float, send to CSQC
 .string radius_candamage; // TRUE, entity can be damaged by radius attacks
 .vector saveorigin; // used for monsters to save their inital spawn location and patrol near it
 .string music; // what track to play for the client
@@ -1831,6 +1839,7 @@ const float ATTACKTYPE_BASH = 0;
 #define STAT_EXPNEEDED 52
 #define STAT_EXPOLDNEEDED 53
 #define STAT_GOLD 54
+#define STAT_GENDER 55
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001
