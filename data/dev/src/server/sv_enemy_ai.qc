@@ -84,10 +84,25 @@ void() monster_ai_move =
 	self.velocity = forward;
 };
 
+void() monster_ai_spawnrunback =
+{
+	if (!self.ai_runback_temp)
+	{
+		self.ai_runback_temp = spawn();
+		self.ai_runback_temp.owner = self;
+		setmodel(self.ai_runback_temp, string_null);
+		setorigin(self.ai_runback_temp, self.origin);
+	}
+};
+
 // main monster ai execution function
 void() monster_ai_think =
 {
 	makevectors(self.angles);
+
+// Debugging
+//	string l = ftos(self.ai_mode);
+//	print(l, "\n");
 
 	if (self.ai_mode == AI_IDLE)
 	{
@@ -120,6 +135,45 @@ void() monster_ai_think =
 		}
 	}
 
+	// Keep track of saved origin
+	float b = vlen(self.origin - self.saveorigin);
+	if (self.ai_mode != AI_RUNBACK)
+	{
+		if (b >= 2000)
+		{
+			if (self.enemy)
+				self.enemy.incombat = FALSE;
+
+			self.goalentity = self.ai_runback_temp;
+			self.enemy = world;
+			self.ai_mode = AI_RUNBACK;
+		}
+	}
+	else // AI is jogging back close to spawn spot
+	{
+		if (b > 50)
+		{
+				if (self.origin_z > self.ai_runback_temp.origin_z)
+					self.origin_z -= 1;
+				else
+					self.origin_z += 1;
+
+			self.enemy = world;
+			self.goalentity = self.ai_runback_temp;
+			self.movetype = MOVETYPE_NOCLIP; // cheating but eh
+			if (self.health != self.max_health)
+				self.health = self.max_health; // restore health on trip back
+		}
+		else
+		{
+			setorigin(self, self.saveorigin);
+			self.enemy = world;
+			self.goalentity = world;
+			self.movetype = MOVETYPE_STEP;
+			self.ai_mode = AI_IDLE;
+		}
+	}
+
 	if (self.goalentity) 
 	{
 		vector view = vectoangles(self.goalentity.origin - self.origin);
@@ -128,14 +182,6 @@ void() monster_ai_think =
 
 		if (self.ai_mode != AI_RUNBACK)
 			self.ai_mode = AI_CHASE;
-
-		if (self.enemy)
-		{
-			if (!(range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)) // Maintain a tiny bit of distance from enemy
-				monster_ai_move();
-		}
-		else
-			monster_ai_move();
 
 		if (self.enemy.flags & FL_CLIENT && self.enemy.classname == "player" && self.enemy.health > 0)
 		{
@@ -150,59 +196,10 @@ void() monster_ai_think =
 			else
 				self.ai_mode = AI_CHASE;
 		}
+		monster_ai_move();
 	}
-
-	// Keep track of saved origin
-	float b = vlen(self.origin - self.saveorigin);
-	if (self.ai_mode != AI_RUNBACK)
-	{
-		if (b >= 2000)
-		{
-			if (!self.ai_runback_temp)
-			{
-				self.ai_runback_temp = spawn();
-
-				self.ai_runback_temp.owner = self;
-				setmodel(self.ai_runback_temp, string_null);
-				setorigin(self.ai_runback_temp, self.saveorigin);
-				self.goalentity = self.ai_runback_temp;
-			}
-			if (self.enemy)
-				self.enemy.incombat = FALSE;
-
-			self.enemy = world;
-			self.ai_mode = AI_RUNBACK;
-		}
-	}
-	else // AI is jogging back close to spawn spot
-	{
-		if (b > 50)
-		{
-			if (self.ai_runback_temp)
-			{
-				self.enemy = world;
-				self.goalentity = self.ai_runback_temp;
-				if (self.origin_z > self.ai_runback_temp.origin_z)
-					self.origin_z -= 1;
-				else
-					self.origin_z += 1;
-			}
-			self.movetype = MOVETYPE_NOCLIP; // cheating but eh
-			if (self.health != self.max_health)
-				self.health = self.max_health; // restore health on trip back
-		}
-		else
-		{
-			if (self.ai_runback_temp)
-			{
-				setorigin(self, self.ai_runback_temp.origin);
-				self.movetype = MOVETYPE_STEP;
-				remove(self.ai_runback_temp);
-			}
-			self.goalentity = self.enemy = world;
-			self.ai_mode = AI_IDLE;
-		}
-	}
+	else
+		self.ai_mode = AI_IDLE;
 
 	// Enemy dead
 	if (self.enemy && self.enemy.health <= 0)

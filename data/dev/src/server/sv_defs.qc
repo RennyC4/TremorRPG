@@ -1763,6 +1763,12 @@ const float	DEAD_DEAD = 1;
 .string main_hand; // string for main hand
 .string off_hand; // string for off hand
 
+// skill point stats
+.float skill_slash;
+.float skill_pierce;
+.float skill_bash;
+.float skill_melee;
+
 //
 // Send stats to CSQC 
 //

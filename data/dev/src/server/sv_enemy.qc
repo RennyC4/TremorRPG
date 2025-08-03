@@ -73,7 +73,8 @@ void() set_monster =
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 
 	self.flags |= FL_FINDABLE_NONSOLID;
-	
+	monster_ai_spawnrunback();
+
 	self.think = monster_ai_think;
 	self.nextthink = time + 0.1;
 };

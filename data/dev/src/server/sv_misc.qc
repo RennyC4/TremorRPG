@@ -23,10 +23,10 @@ void() set_prop =
 			continue; //can happen when editing
 		self = newent = spawn();
 		parseentitydata(newent, strcat("{\n", entdata, "\n}")); //reads it into the entity
-		precache_model(newent.model);
 		//TODO: fix up inline model names
 		if (substring(newent.model, 0, 1) == "*")
 			newent.model = sprintf("%s:%s", newent.model, oself.model);
+		precache_model(newent.model);
 		newent.origin += oself.origin;
 		callfunction(self.classname); //gotta make sense of it by calling its spawn function
 		self = oself;
