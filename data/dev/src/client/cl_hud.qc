@@ -212,7 +212,7 @@ void() Draw_Exp =
 };
 
 //
-// Reki's Code to draw 3D Objects properly on the HUD
+// Reki's Code to draw 3D objects on the HUD
 //
 
 void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
@@ -235,13 +235,11 @@ void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
 // 3D Character portrait
 //
 
-float Draw_3DDoll_Once;
 entity doll;
 void(vector pos) Draw_3DPDoll =
 {
-    if (!Draw_3DDoll_Once) // Call this one time so we're not spawning infinite head entities
+    if (!doll) // Call this one time so we're not spawning infinite head entities
     {
-        Draw_3DDoll_Once = 1;
  
 		doll = spawn();
         precache_model("models/player_m.iqm");
@@ -251,8 +249,7 @@ void(vector pos) Draw_3DPDoll =
 		doll.angles_y -= 180;
 		doll.origin_z -= 35;
     }
-	doll.angles_y += 0.1;
-	//entdraw(doll, pos, '150 250', -225);
+	doll.angles_y += 0.2;
 	entdraw(doll, pos, '150 250', -245);
 };
 
@@ -304,58 +301,58 @@ void() User_CharacterScreen =
 	Draw_3DPDoll(pos);
 
 	//Level, Experience, Next Experience
-	vector newpos = [25,30];
+	vector newpos = [2,30];
 
-	displaystat = strcat("^5Level: ^7", ftos(disp_level));
+	displaystat = strcat("^5Level:^7", ftos(disp_level));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Exp: ^7", ftos(disp_exp));
+	displaystat = strcat("^5Exp:^7", ftos(disp_exp));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Needed: ^7", ftos(disp_neededexp));
+	displaystat = strcat("^5Needed:^7", ftos(disp_neededexp));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Gold: ^7", ftos(disp_gold));
+	displaystat = strcat("^5Gold:^7", ftos(disp_gold));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Skill Points: ^7", ftos(disp_skillpoints));
+	displaystat = strcat("^5Skill Points:^7", ftos(disp_skillpoints));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
-	newpos_y += 15;
+	newpos_y += 12.5;
 
-	displaystat = strcat("^5Main Hand ");
+	displaystat = strcat("^5Main Hand:");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 	
-	displaystat = strcat(disp_mainhand, " (^8", ftos(disp_attackmin), "-", ftos(disp_attackmax), "^7)");
+	displaystat = strcat(disp_mainhand, "(^8", ftos(disp_attackmin), "-", ftos(disp_attackmax), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
 	float disp_dps = (disp_attackmin + disp_attackmax * 0.5) / disp_attackspeed; // calculate DPS
-	displaystat = strcat("^1DPS: ^7" , ftos(disp_dps));
+	displaystat = strcat("^1DPS:^7" , ftos(disp_dps));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
-	newpos_y += 15;
+	newpos_y += 12.5;
 
-	displaystat = "^5Off Hand";
+	displaystat = "^5Off Hand:";
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -367,13 +364,13 @@ void() User_CharacterScreen =
 
 	newpos_y += 10;
 
-	displaystat = "^2Blocking: ^70";
+	displaystat = "^2Blocking:^70";
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
-	newpos_y += 15;
+	newpos_y += 12.5;
 
-	displaystat = strcat("^5Armor: ^7", disp_armorname, " (^2", ftos(disp_armorvalue), "^7)");
+	displaystat = strcat("^5Armor:^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 

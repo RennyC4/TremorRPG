@@ -138,6 +138,7 @@ void() ClientConnect =
 
 void() PlayerDeath =
 {
+	self.menu = MENU_OFF; // flip all menus off
 	self.incombat = FALSE;
 	self.deadflag = DEAD_DEAD;
 	self.radius_candamage = "FALSE"; // uses string
