@@ -4,7 +4,6 @@
 
 void() CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
-
 void() ClientKill = {};
 void() SetNewParms = {};
 void() SetChangeParms = {};
@@ -17,7 +16,7 @@ void() PlayerJump =
 		return;
 	if (!(self.flags & FL_JUMPRELEASED))
 		return;
-	
+
 	self.weaponframe = 0;
 	self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
 	self.button2 = 0;
@@ -33,10 +32,8 @@ void() PlayerPrintStats =
 	string ang_y = ftos(self.angles_y);
 	string ang_z = ftos(self.angles_z);
 
-	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
-	sprint(self, PRINT_MEDIUM, "\nAngles: ", ang_x, " ", ang_y);
-	sprint(self, PRINT_HIGH, "\nEXP: ", ftos(self.exp), " Needed: ", ftos(self.exp_next));
-	sprint(self, PRINT_HIGH, "\nGold: ", ftos(self.gold), "\n");
+	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
+	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 };
 
 void() CheckImpulses =
@@ -97,8 +94,6 @@ void() PlayerPreThink =
 };
 
 // Ran after physics
-.float healthregen_finished;
-.float staminaregen_finished;
 void() PlayerPostThink =
 {
 	if (!self.loggedin)
@@ -157,15 +152,17 @@ void(float type) PlayerSpawn =
 		self.classname = "notloggedin";
 		self.solid = SOLID_NOT;
 		setmodel(self, string_null);
-
-		self.movetype = MOVETYPE_NONE;
+		if (cvar("developer") == 0)
+			self.movetype = MOVETYPE_NONE;
+		else
+			self.movetype = MOVETYPE_WALK;
 		self.health = 100;
 		self.max_health = 100;
 		self.takedamage = DAMAGE_NO;
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
 		self.fixangle = TRUE;
-		setsize(self, [-0, -0, 0], [0, 0, 0]);
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];
 
 		self.menu = MENU_LOGIN;
@@ -176,16 +173,13 @@ void(float type) PlayerSpawn =
 	{
 		self.flags |= FL_CLIENT;
 		self.classname = "player";
-
 		self.takedamage = DAMAGE_AIM;
 		self.movetype = MOVETYPE_WALK;
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];
-
 		self.menu = MENU_OFF;
 		self.loggedin = TRUE;
 		self.radius_candamage = "TRUE"; // uses string
-
 		self.solid = SOLID_SLIDEBOX;
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.th_die = PlayerDeath;
@@ -269,15 +263,12 @@ void() CSEv_Player_SaveChar =
 		fputs(v, self.gender, "\n");
 		fputs(v, self.music, "\n");
 		fputs(v, self.zonename, "\n");
-
 		fputs(v, ftos(self.origin_x), "\n");
 		fputs(v, ftos(self.origin_y), "\n");
 		fputs(v, ftos(self.origin_z), "\n");
-
 		fputs(v, ftos(self.angles_x), "\n");
 		fputs(v, ftos(self.angles_y), "\n");
 		fputs(v, ftos(self.angles_z), "\n");
-
 		fputs(v, ftos(self.health), "\n");
 		fputs(v, ftos(self.max_health), "\n");
 		fputs(v, ftos(self.mana), "\n");
@@ -291,14 +282,12 @@ void() CSEv_Player_SaveChar =
 		fputs(v, ftos(self.attack_power_max), "\n");
 		fputs(v, ftos(self.attack_speed), "\n");
 		fputs(v, ftos(self.attack_stamina), "\n");
-
 		fputs(v, self.main_hand, "\n");
 		fputs(v, self.off_hand, "\n");
-
 		fputs(v, self.armorname, "\n");
 		fputs(v, ftos(self.armorvalue), "\n");
-
 		fclose(v);
+
 		print(self.loginname, " character saved\n");
 	}
 };
@@ -310,10 +299,8 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	float f = fopen(LOGIN_NAME, FILE_READ);
 	if (f >= 0)
 	{
-		self.guid = infokey(self, INFOKEY_P_GUID);
-	
+		self.guid = infokey(self, INFOKEY_P_GUID);	
 		if (line = fgets(f)) // grab guid from file
-		
 		if (line != self.guid) // Compare guid from file & user
 		{
 			sprint(self, PRINT_HIGH, "Server GUID does not match players\n");
@@ -328,7 +315,6 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	{
 		if (line = fgets(v))
 			self.guid = line;
-			
 		if (line = fgets(v))
 		{
 			self.netname = line;
@@ -336,88 +322,62 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		}
 		if (line = fgets(v))
 			self.gender = line;
-			
 		if (line = fgets(v))
 			self.music = line;
-
 		if (line = fgets(v))
 			self.zonename = line;
-
 		if (line = fgets(v))
 			self.origin_x = stof(line);
-
 		if (line = fgets(v))
 			self.origin_y = stof(line);
-
 		if (line = fgets(v))
 			self.origin_z = stof(line);
-
 		if (line = fgets(v))
 			self.angles_x = stof(line);
-
 		if (line = fgets(v))
 			self.angles_y = stof(line);
-
 		if (line = fgets(v))
 			self.angles_z = stof(line);
-
 		if (line = fgets(v))
 			self.health = stof(line);
-
 		if (line = fgets(v))
 			self.max_health = stof(line);
-
 		if (line = fgets(v))
 			self.mana = stof(line);
-
 		if (line = fgets(v))
 			self.max_mana = stof(line);
-
 		if (line = fgets(v))
 			self.level = stof(line);
-
 		if (line = fgets(v))
 			self.skillpoints = stof(line);
-
 		if (line = fgets(v))
 			self.exp = stof(line);
-
 		if (line = fgets(v))
 			self.exp_next = stof(line);
-
 		if (line = fgets(v))
 			self.gold = stof(line);
-
 		if (line = fgets(v))
 			self.attack_power_min = stof(line);
-
 		if (line = fgets(v))
 			self.attack_power_max = stof(line);
-
 		if (line = fgets(v))
 			self.attack_speed = stof(line);
-
 		if (line = fgets(v))
 			self.attack_stamina = stof(line);
-
 		if (line = fgets(v))
 			self.main_hand = line;
-
 		if (line = fgets(v))
 			self.off_hand = line;
-
 		if (line = fgets(v))
 			self.armorname = line;
-
 		if (line = fgets(v))
 			self.armorvalue = stof(line);
+		fclose(v);
 
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
 		self.displayname = self.loginname;
 		self.stamina = 100;
-
-		fclose(v);
 
 		PlayerSpawn(1); // Put player in game
 	}
@@ -458,7 +418,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.attack_type = 1; // Slashing weapons
 		self.main_hand = "Broken Sword";
 		self.off_hand = "Empty";
-		
+
 		// default armor
 		self.armorname = "Plain Clothes";
 		self.armorvalue = 0;

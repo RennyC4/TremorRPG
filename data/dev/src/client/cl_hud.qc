@@ -1,6 +1,6 @@
 // Player HUD
-float MAX_CHATMSG = 6;
-string messagestack[MAX_CHATMSG];
+float MAX_MSG = 12; // IF this crashes go back to 6
+string messagestack[MAX_MSG];
 float messagestack_fade;
 float msg_alpha;
 
@@ -19,9 +19,8 @@ void(float screenwidth, float screenheight) Draw_ZoneName =
 	drawstring(pos, zonename, '18 18', '.9 .1 0', (sin(ZoneName_alpha.doalpha*0.40)*1), 0);
 };
 
-
-float MAX_EVENTLOG = 6;
-string messagestack[MAX_CHATMSG];
+float MAX_EVENTLOG = 12;
+string messagestack[MAX_EVENTLOG];
 
 void(string msg) push_message =
 {
@@ -31,8 +30,8 @@ void(string msg) push_message =
 		messagestack[i] = messagestack[i-1];
 		i--;
 	}
-	if (messagestack[MAX_CHATMSG - 1])
-		strunzone(messagestack[MAX_CHATMSG - 1]);
+	if (messagestack[MAX_EVENTLOG - 1])
+		strunzone(messagestack[MAX_EVENTLOG - 1]);
 
 	messagestack[i] = msg;
 };
@@ -78,6 +77,24 @@ void() Draw_EventLog =
 	sui_pop_frame();
 };
 
+void() Draw_InCombatorPVP =
+{
+	float incombat = getstatf(STAT_INCOMBAT);
+
+	if (!incombat) // only show when in combat or PVP flagged
+		return;
+
+	vector pos = [(g_width * 0.225), (g_height - 42)];
+	vector size = [35, 35];
+	//if (!pvp)
+	drawpic (pos, "progs/combat.png", size, '1 1 1', 1, 0);
+	
+// PVP Icon	
+//	drawpic (pos, "progs/combat.png", size, '1 .25 .25', 1, 0);
+		
+	//TODO: .colormod red for PVP flagged
+};
+
 void() Draw_Health =
 {
 	float h = getstatf(STAT_HEALTH);
@@ -87,7 +104,8 @@ void() Draw_Health =
 	// Draw Health
 	//
 
-	vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
+//	vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
+	vector pos = [(g_width * 0.015), (g_height - 36)];
 
 	// Bar
 	vector hbar_size = '100 8 0';
@@ -122,7 +140,8 @@ void() Draw_Mana =
 	// Draw Mana
 	//
 
-	vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
+	//vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
+	vector pos = [(g_width * 0.015), (g_height - 36)];
 
 	// Bar
 	vector mbar_size = '100 8 0';
@@ -157,7 +176,8 @@ void() Draw_Stamina =
 	// Draw Stamina
 	//
 
-	vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
+//	vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
+	vector pos = [(g_width * 0.015), (g_height - 36)];
 
 	// Bar
 	vector sbar_size = '100 8 0';

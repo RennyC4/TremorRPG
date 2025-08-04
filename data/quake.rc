@@ -29,11 +29,9 @@ cl_bob 0
 cl_rollangle 0
 sv_gameplayfix_qwplayerphysics 1
 sv_gameplayfix_findradiusdistancetobox 1
-//sv_nqplayerphysics 1
 sv_bigcoords 1
 m_preset_chosen 1
 sys_clocktype 1 // Fix for odd game speed 
-//cl_lerp_maxinterval 0.3
 sv_autosave 0
 gl_blendsprites 1
 v_gunkick 1
@@ -44,7 +42,6 @@ snd_ignoregamespeed 1
 r_coronas_occlusion 1 // fix flicker corona effect
 r_sprite_backfacing 1 // oriented sprite fix
 r_keepimages 1 // skybox fix
-cfg_save_auto 1 // fte auto saves configs after certain times
 s_al_disable 2 // sound fix (disable OpenAL) for non-mono sounds
 r_meshpitch 1 // fix mesh pitch
 pr_droptofloorunits 99999 // match raisetoroof
@@ -80,8 +77,8 @@ mod_terrain_shadows 0 // Broken
 mod_terrain_ambient 0 // Broken
 
 // Fonts
-con_textfont "fonts/font"
-gl_font "fonts/font"
+//con_textfont "fonts/font"
+//gl_font "fonts/font"
 vid_conautoscale 3
 
 //

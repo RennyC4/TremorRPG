@@ -1756,6 +1756,8 @@ const float MENU_CHARACTER = 2;
 .float speed;
 .entity oldenemy;
 .float incombat; // player is in combat
+.float healthregen_finished;
+.float staminaregen_finished;
 
 // player stats
 .float level;
@@ -1823,6 +1825,7 @@ const float MENU_CHARACTER = 2;
 #define STAT_PLAYER_ANGLE_Y 38
 #define STAT_PLAYER_ANGLE_Z 39
 
+// Misc
 #define STAT_MENU 40
 #define STAT_ZONENAME 41
 #define STAT_ZONENAME_TIME 42
@@ -1850,6 +1853,7 @@ const float MENU_CHARACTER = 2;
 
 #define STAT_ARMORNAME 60
 #define STAT_ARMORVALUE 61
+#define STAT_INCOMBAT 62
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

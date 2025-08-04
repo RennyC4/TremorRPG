@@ -15,24 +15,19 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_PLAYER_X, EV_FLOAT, origin_x);
 	clientstat(STAT_PLAYER_Y, EV_FLOAT, origin_y);
 	clientstat(STAT_PLAYER_Z, EV_FLOAT, origin_z);
-
 	clientstat(STAT_PLAYER_ANGLE_X, EV_FLOAT, angles_x);
 	clientstat(STAT_PLAYER_ANGLE_Y, EV_FLOAT, angles_y);
 	clientstat(STAT_PLAYER_ANGLE_Z, EV_FLOAT, angles_z);
-
 	clientstat(STAT_MENU, EV_FLOAT, menu);
 	clientstat(STAT_ZONENAME, EV_STRING, zonename);
 	clientstat(STAT_ZONENAME_TIME, EV_FLOAT, zonename_finished);
-
 	clientstat(STAT_HEALTH, EV_FLOAT, health);
 	clientstat(STAT_MAXHEALTH, EV_FLOAT, max_health);
 	clientstat(STAT_MANA, EV_FLOAT, mana);
 	clientstat(STAT_MAXMANA, EV_FLOAT, max_mana);
 	clientstat(STAT_STAMINA, EV_FLOAT, stamina);
-
 	clientstat(STAT_MAINHAND, EV_STRING, main_hand);
 	clientstat(STAT_OFFHAND, EV_STRING, off_hand);
-
 	clientstat(STAT_LEVEL, EV_FLOAT, level);
 	clientstat(STAT_EXP, EV_FLOAT, exp);
 	clientstat(STAT_EXPNEEDED, EV_FLOAT, exp_next);
@@ -40,13 +35,12 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_GOLD, EV_FLOAT, gold);
 	clientstat(STAT_GENDER, EV_STRING, gender);
 	clientstat(STAT_SKILLPOINTS, EV_FLOAT, skillpoints);
-
 	clientstat(STAT_ATTACKMIN, EV_FLOAT, attack_power_min);
 	clientstat(STAT_ATTACKMAX, EV_FLOAT, attack_power_max);
 	clientstat(STAT_ATTACKSPEED, EV_FLOAT, attack_speed);
-
 	clientstat(STAT_ARMORNAME, EV_STRING, armorname);
 	clientstat(STAT_ARMORVALUE, EV_FLOAT, armorvalue);
+	clientstat(STAT_INCOMBAT, EV_FLOAT, incombat);
 };
 
 void() worldspawn =

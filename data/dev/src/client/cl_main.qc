@@ -67,6 +67,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 				Draw_Mana();
 				Draw_Stamina();
 				Draw_Exp();
+				Draw_InCombatorPVP();
 			}
 		}
 		else // Regular gameplay
@@ -82,6 +83,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 			Draw_Mana();
 			Draw_Stamina();
 			Draw_Exp();
+			Draw_InCombatorPVP();
 
 			setcursormode(FALSE,"", 0, 0);
 		}
@@ -101,7 +103,9 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
 	float player_menu = getstatf(STAT_MENU);
 
-	if (player_menu != MENU_LOGIN || cvar("developer") == 1)
+	if (player_menu == MENU_CHARACTER)
+		return FALSE;
+	if (player_menu != MENU_LOGIN)
 	{
 		switch(evtype)
 		{
@@ -118,7 +122,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 		}
 		return FALSE;
 	}
-	else // disable player inputs when a menu is activated
+	else // disable player inputs under certain conditions
 	{
 		sui_input_event(evtype, scanx, chary, devid); // Should only be activated when menus are on
 		return TRUE;
