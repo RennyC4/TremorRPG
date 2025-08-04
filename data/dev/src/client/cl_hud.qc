@@ -259,6 +259,10 @@ void(vector pos) Draw_3DPDoll =
 
 void() User_CharacterScreen =
 {
+	float get_h = getstatf(STAT_HEALTH);
+	if (get_h <= 0)
+		return;
+
 	string disp_gender = getstats(STAT_GENDER);
 	float disp_level = getstatf(STAT_LEVEL);
 	float disp_exp =  getstatf(STAT_EXP);
