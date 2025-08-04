@@ -2183,22 +2183,18 @@ float MENU_CHARACTER = 2; // user info screen
 // Unique identifier per user
 #define STAT_GUID 32
 #define STAT_LOGGEDIN 33
-
 // Origin
 #define STAT_PLAYER_X 34
 #define STAT_PLAYER_Y 35
 #define STAT_PLAYER_Z 36
-
 // View angles
 #define STAT_PLAYER_ANGLE_X 37
 #define STAT_PLAYER_ANGLE_Y 38
 #define STAT_PLAYER_ANGLE_Z 39
-
 // Misc
 #define STAT_MENU 40
 #define STAT_ZONENAME 41
 #define STAT_ZONENAME_TIME 42
-
 // Player RPG stats
 #define STAT_HEALTH 43
 #define STAT_MAXHEALTH 44
@@ -2207,7 +2203,6 @@ float MENU_CHARACTER = 2; // user info screen
 #define STAT_STAMINA 47
 #define STAT_MAINHAND 48
 #define STAT_OFFHAND 49
-
 #define STAT_LEVEL 50
 #define STAT_EXP 51
 #define STAT_EXPNEEDED 52
@@ -2215,11 +2210,24 @@ float MENU_CHARACTER = 2; // user info screen
 #define STAT_GOLD 54
 #define STAT_GENDER 55
 #define STAT_SKILLPOINTS 56
-
 #define STAT_ATTACKMIN 57
 #define STAT_ATTACKMAX 58
 #define STAT_ATTACKSPEED 59
-
 #define STAT_ARMORNAME 60
 #define STAT_ARMORVALUE 61
 #define STAT_INCOMBAT 62
+// Player skill stats
+#define STAT_SKILL_UNARMED 62
+#define STAT_SKILL_SLASH 63
+#define STAT_SKILL_PIERCE 64
+#define STAT_SKILL_BASH 65
+#define STAT_SKILL_STEALTH 66
+#define STAT_SKILL_OFFENSIVEMAGIC 67
+#define STAT_SKILL_DEFENSIVEMAGIC 68
+#define STAT_SKILL_NEUTRALMAGIC 69
+#define STAT_SKILL_ENDURANCE 70
+#define STAT_SKILL_SPELLRESIST 71
+#define STAT_SKILL_BACKSTAB 72
+#define STAT_SKILL_ARCHERY 73
+#define STAT_SKILL_HEALTHREGEN 74
+#define STAT_SKILL_MANAREGEN 75

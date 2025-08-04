@@ -41,6 +41,22 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_ARMORNAME, EV_STRING, armorname);
 	clientstat(STAT_ARMORVALUE, EV_FLOAT, armorvalue);
 	clientstat(STAT_INCOMBAT, EV_FLOAT, incombat);
+	// Skills
+	clientstat(STAT_SKILL_UNARMED, EV_FLOAT, skill_unarmed);
+	clientstat(STAT_SKILL_SLASH, EV_FLOAT, skill_slash);
+	clientstat(STAT_SKILL_PIERCE, EV_FLOAT, skill_pierce);
+	clientstat(STAT_SKILL_BASH, EV_FLOAT, skill_bash);
+	clientstat(STAT_SKILL_STEALTH, EV_FLOAT, skill_stealth);
+	clientstat(STAT_SKILL_OFFENSIVEMAGIC, EV_FLOAT, skill_offensivemagic);
+	clientstat(STAT_SKILL_DEFENSIVEMAGIC, EV_FLOAT, skill_defensivemagic);
+	clientstat(STAT_SKILL_NEUTRALMAGIC, EV_FLOAT, skill_neutralmagic);
+	clientstat(STAT_SKILL_ENDURANCE, EV_FLOAT, skill_endurance);
+	clientstat(STAT_SKILL_SPELLRESIST, EV_FLOAT, skill_spellresist);
+	clientstat(STAT_SKILL_BACKSTAB, EV_FLOAT, skill_backstab);
+	clientstat(STAT_SKILL_ARCHERY, EV_FLOAT, skill_archery);
+	clientstat(STAT_SKILL_HEALTHREGEN, EV_FLOAT, skill_healthregen);
+	clientstat(STAT_SKILL_MANAREGEN, EV_FLOAT, skill_manaregen);
+	// Job Skills
 };
 
 void() worldspawn =
