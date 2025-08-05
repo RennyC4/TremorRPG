@@ -135,10 +135,4 @@ float(float min, float max) random_range =
     return ceil(min + (random() * (max - min)));
 };
 
-void (entity player, string msg) Update_EventLog =
-{
-	string msg2 = strzone(strcat("^7", msg, "\n"));
-	//sprint(player, PRINT_HIGH, msg2);
-};
-
 void() SV_RunClientCommand = {runstandardplayerphysics(self);};

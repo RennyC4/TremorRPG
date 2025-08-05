@@ -10,8 +10,10 @@ void(entity targ) Player_CheckLevelUp =
 		targ.max_mana += 5;
 
 		sound (targ, CHAN_AUTO, "levelup.wav", 1, ATTN_NORM);
-		sprint (self, PRINT_HIGH, "^3Level ", ftos(targ.level), " reached!\n");
-		
+		//sprint (self, PRINT_HIGH, "^3Level ", ftos(targ.level), " reached!\n");
+		string eventlog_print = (strcat("^3Level ", ftos(targ.level), " reached!\n"));
+		localcmd("conecho event ", eventlog_print, "\n"); // push eventlog console message
+		stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
 		targ.exp = targ.exp_oldnext = targ.exp_next; // cap exp on level up properly
 		targ.exp_next = 100 * (targ.level * targ.level * 1.15);
     }
@@ -28,4 +30,7 @@ void(entity targ, float goldmin, float goldmax) GiveGold =
 {
 	float amount = random_range(goldmin, goldmax);
 	targ.gold += amount; // give gold
+	//string eventlog_print = (strcat("^3Gold: ", ftos(amount), " ^7received!\n"));
+	string eventlog_print = (strcat("^3", ftos(amount), "^7 gold received!\n"));
+	stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
 };

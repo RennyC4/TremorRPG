@@ -69,11 +69,18 @@ void(entity targ, entity attacker, float damage) DoDamage =
 	if (damage > 0)
 	{
 		targ.health = targ.health - damage;
+		string eventlog_print;
 
 		if (attacker.classname == "player")
-			sprint(attacker, PRINT_HIGH, "You hit for ", ftos(damage), " damage\n");
+		{
+			eventlog_print = (strcat("You hit for ^2", ftos(damage), " ^7damage\n"));
+			stuffcmd (attacker, sprintf("conecho event %s\n", eventlog_print));
+		}
 		if (self.flags & FL_MONSTER && targ.classname == "player")
-			sprint(targ, PRINT_HIGH, "You've taken ", ftos(damage), " damage\n");
+		{
+			eventlog_print = (strcat("You've taken ^1", ftos(damage), " ^7damage\n"));
+			stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+		}
 	}
 
 	// Monster stuff

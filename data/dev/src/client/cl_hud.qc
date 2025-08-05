@@ -19,62 +19,27 @@ void(float screenwidth, float screenheight) Draw_ZoneName =
 	drawstring(pos, zonename, '18 18', '.9 .1 0', (sin(ZoneName_alpha.doalpha*0.40)*1), 0);
 };
 
-float MAX_EVENTLOG = 12;
-string messagestack[MAX_EVENTLOG];
-
-void(string msg) push_message =
-{
-	float i = MAX_EVENTLOG - 1;
-	while (i > 0)
-	{
-		messagestack[i] = messagestack[i-1];
-		i--;
-	}
-	if (messagestack[MAX_EVENTLOG - 1])
-		strunzone(messagestack[MAX_EVENTLOG - 1]);
-
-	messagestack[i] = msg;
-};
-
-const float PRINT_LOW = 0;
-const float PRINT_MEDIUM = 1;
-const float PRINT_HIGH = 2;
-const float PRINT_CHAT = 3;
-
-/*
-noref void(string printmsg, float printlvl) CSQC_Parse_Print =
-{
-//	push_message(printmsg);
-};
-
 //	con_printf("eventlog", "some test text\n"); // push message csqc
 //	con_draw("evenlog", pos, size, 8); // draw on screen
-//  conecho foo "text" // push message ssqc
-*/
+//  conecho foo "text" // push message (ssqc)
 
 void() Draw_EventLog =
 {
 	vector pos = [0, -45];
 	vector size = [230, 100];
-	vector text_pos = pos + [2, 46];
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
 	sui_push_frame(pos, size);
-
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
-
-	float i;
-	for(i=0; i <MAX_EVENTLOG; i++)
-	{
-		if (messagestack[i] != "")
-		{
-			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-			sui_text(text_pos, MENU_TEXT_SMALL, messagestack[i], MENU_TEXT_1, 1, 0);
-			text_pos_y += 8;
-		}
-	}
 	sui_pop_frame();
+
+	// Draw text
+	pos = [(g_width * 0.0001), (g_height - 146)];
+	size = [330, 100];
+	drawfont = loadfont("", "cour", "12", -1, 0, 0); // set font
+	con_draw("event", pos, size, 12);
+	drawfont = loadfont("", "Courier Prime Code", "12,16,24,32,64,72,128,256,512", -1, 0, 0); // set font back
 };
 
 void() Draw_InCombatorPVP =
@@ -84,7 +49,7 @@ void() Draw_InCombatorPVP =
 	if (!incombat) // only show when in combat or PVP flagged
 		return;
 
-	vector pos = [(g_width * 0.225), (g_height - 42)];
+	vector pos = [(g_width / 100 + 155), (g_height - 38)];
 	vector size = [35, 35];
 	//if (!pvp)
 	drawpic (pos, "progs/combat.png", size, '1 1 1', 1, 0);
