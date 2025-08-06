@@ -111,8 +111,11 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
 	float player_menu = getstatf(STAT_MENU);
 
-	if (player_menu == MENU_CHARACTER)
+	if (player_menu == MENU_CHARACTER) // Character screen
+	{
+		sui_input_event(evtype, scanx, chary, devid); // Should only be activated when menus are on
 		return FALSE;
+	}
 	if (player_menu != MENU_LOGIN)
 	{
 		switch(evtype)

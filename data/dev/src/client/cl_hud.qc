@@ -481,9 +481,16 @@ void() User_CharacterScreen =
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
+	//
 	// skill buttons for stat increases
+	//
+
+	newpos = [-5, 5]; // reset newpos
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	
+	// Sendevent this to SSQC
+	my_button("skillpoint_increase", newpos, [25, 10], "+");// ? User_AddSkillPoint(0) : 0;
 
 	sui_pop_frame();
 };
