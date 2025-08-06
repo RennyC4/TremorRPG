@@ -1,8 +1,10 @@
+//
 // Player HUD
-float MAX_MSG = 12; // IF this crashes go back to 6
-string messagestack[MAX_MSG];
-float messagestack_fade;
-float msg_alpha;
+//
+
+//	con_printf("eventlog", "some test text\n"); // push message csqc
+//	con_draw("evenlog", pos, size, 8); // draw on screen
+//  conecho foo "text" // push message (ssqc)
 
 void(float screenwidth, float screenheight) Draw_ZoneName =
 {
@@ -18,10 +20,6 @@ void(float screenwidth, float screenheight) Draw_ZoneName =
 	drawstring(pos + '1 1', zonename, '18 18', '0 0 0', (sin(ZoneName_alpha.doalpha*0.40)*1), 0); // shadow
 	drawstring(pos, zonename, '18 18', '.9 .1 0', (sin(ZoneName_alpha.doalpha*0.40)*1), 0);
 };
-
-//	con_printf("eventlog", "some test text\n"); // push message csqc
-//	con_draw("evenlog", pos, size, 8); // draw on screen
-//  conecho foo "text" // push message (ssqc)
 
 void() Draw_EventLog =
 {
@@ -53,10 +51,8 @@ void() Draw_InCombatorPVP =
 	vector size = [35, 35];
 	//if (!pvp)
 	drawpic (pos, "progs/combat.png", size, '1 1 1', 1, 0);
-	
-// PVP Icon	
-//	drawpic (pos, "progs/combat.png", size, '1 .25 .25', 1, 0);
-		
+	//else
+//	drawpic (pos, "progs/combat.png", size, '1 .25 .25', 1, 0); // PVP Icon	
 	//TODO: .colormod red for PVP flagged
 };
 
@@ -69,7 +65,6 @@ void() Draw_Health =
 	// Draw Health
 	//
 
-//	vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
 	vector pos = [(g_width * 0.015), (g_height - 36)];
 
 	// Bar
@@ -105,7 +100,6 @@ void() Draw_Mana =
 	// Draw Mana
 	//
 
-	//vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
 	vector pos = [(g_width * 0.015), (g_height - 36)];
 
 	// Bar
@@ -141,7 +135,6 @@ void() Draw_Stamina =
 	// Draw Stamina
 	//
 
-//	vector pos = [(g_width - stringwidth("", TRUE, '18 18 0'))/12-28, (g_height - 36)];
 	vector pos = [(g_width * 0.015), (g_height - 36)];
 
 	// Bar

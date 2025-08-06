@@ -18,7 +18,7 @@ noref void(float apiver, string enginename, float enginever) CSQC_Init =
 
 noref void() CSQC_WorldLoaded =
 {
-	registercommand("show_character");
+	registercommand("show_character", "Displays character information screen\n");
 
 	if (cvar("developer") == 1)
 		localcmd("sv_cheats 1\nsv_csqc_progname csaddon.dat\nrestart\n");
@@ -97,6 +97,14 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	if (framecount == 10)
 		localcmd("exec haze.cfg\n");
+};
+
+float(string strCommand) CSQC_ConsoleCommand =
+{
+	tokenize(strCommand);
+	if (argv(0) == "show_character")
+		sendevent("PlayerShowStats", "");
+	return FALSE;
 };
 
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =

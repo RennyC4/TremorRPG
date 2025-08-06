@@ -1697,6 +1697,7 @@ void(string cmdname, optional string desc) registercommand = #352; /*
 
 // Misc
 string string_null = ""; 
+float(float min, float max) random_range;
 
 // Function defs
 .void()		th_die;

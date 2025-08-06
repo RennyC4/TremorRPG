@@ -121,7 +121,7 @@ void() monster_ai_think =
 				walkmove(self.angles_y, self.speed / 4);
 		}
 
-		// Patroling randomly, searching for players nearby
+		// Patroling randomly, searching for players nearby - TODO: Stealth mechanic code
 		for (entity targ = world;(targ = find(targ, classname, "player"));)
 		{
 			if (vlen(targ.origin - self.origin) <= 500 && targ.deadflag != DEAD_DEAD && visible(targ))
@@ -212,6 +212,7 @@ void() monster_ai_think =
 		self.ai_mode = AI_IDLE;
 	}
 
+	// Debugging
 	//print ("Dist: ", ftos(b), "\n");
 
 	self.nextthink = time + 0.1;

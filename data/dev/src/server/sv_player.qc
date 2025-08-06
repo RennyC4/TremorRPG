@@ -22,6 +22,7 @@ void() PlayerJump =
 	self.button2 = 0;
 };
 
+// Used for placing objects in terrain mode
 void() PlayerPrintStats =
 {
 	string pos_x = ftos(self.origin_x);
@@ -34,6 +35,15 @@ void() PlayerPrintStats =
 
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
+};
+
+// called from CSQC ("show_character" console command)
+void() CSEv_PlayerShowStats = 
+{
+	if (self.menu == MENU_OFF)
+		self.menu = MENU_CHARACTER;
+	else
+		self.menu = MENU_OFF;
 };
 
 void() CheckImpulses =
@@ -137,7 +147,7 @@ void() PlayerDeath =
 	self.radius_candamage = "FALSE"; // uses string
 	self.movetype = MOVETYPE_NONE;
 	self.view_ofs = [0, 0, 4];
-	centerprint (self, "/PYou're Dead!\n");
+	centerprint (self, "/PYou're Dead!\n\nPress Attack to respawn\n");
 	self.respawn_finished = time + 5;
 };
 
