@@ -40,6 +40,9 @@ void() PlayerPrintStats =
 // called from CSQC ("show_character" console command)
 void() CSEv_PlayerShowStats = 
 {
+	if (self.deadflag != DEAD_NO)
+		return;
+
 	if (self.menu == MENU_OFF)
 		self.menu = MENU_CHARACTER;
 	else
@@ -289,6 +292,7 @@ void() CSEv_Player_SaveChar =
 		fputs(v, ftos(self.attack_power_min), "\n");
 		fputs(v, ftos(self.attack_power_max), "\n");
 		fputs(v, ftos(self.attack_speed), "\n");
+		fputs(v, ftos(self.attack_type), "\n");
 		fputs(v, ftos(self.attack_stamina), "\n");
 		fputs(v, self.main_hand, "\n");
 		fputs(v, self.off_hand, "\n");
@@ -371,6 +375,8 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.attack_speed = stof(line);
 		if (line = fgets(v))
+			self.attack_type = stof(line);
+		if (line = fgets(v))
 			self.attack_stamina = stof(line);
 		if (line = fgets(v))
 			self.main_hand = line;
@@ -423,7 +429,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.attack_power_max = 6;
 		self.attack_speed = 1;
 		self.attack_stamina = 25;
-		self.attack_type = 1; // Slashing weapons
+		self.attack_type = 1; // Slashing weapon
 		self.main_hand = "Broken Sword";
 		self.off_hand = "Empty";
 

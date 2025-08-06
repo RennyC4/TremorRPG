@@ -65,6 +65,10 @@ void(entity targ, entity attacker, float damage) DoDamage =
 		return;
 	if (targ.flags & FL_MONSTER && targ.ai_mode == AI_RUNBACK)
 		return;
+	if (targ.flags & FL_MONSTER && attacker.flags & FL_MONSTER) // prevent monster in-fighting
+		return;
+	if (damage <= 0)
+		damage = 1;
 
 	if (damage > 0)
 	{

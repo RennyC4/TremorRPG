@@ -106,6 +106,9 @@ void() monster_ai_think =
 
 	if (self.ai_mode == AI_IDLE)
 	{
+		if (self.health != self.max_health) // monsters have full health in patrol mode
+			self.health = self.max_health;
+
 		// Randomly turn and move
 		if (self.ai_patrolidle < time)
 		{
@@ -121,7 +124,7 @@ void() monster_ai_think =
 				walkmove(self.angles_y, self.speed / 4);
 		}
 
-		// Patroling randomly, searching for players nearby - TODO: Stealth mechanic code
+		// Patroling randomly, searching for players nearby - TODO: Stealth mechanic code using infront();
 		for (entity targ = world;(targ = find(targ, classname, "player"));)
 		{
 			if (vlen(targ.origin - self.origin) <= 500 && targ.deadflag != DEAD_DEAD && visible(targ))

@@ -38,6 +38,7 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_ATTACKMIN, EV_FLOAT, attack_power_min);
 	clientstat(STAT_ATTACKMAX, EV_FLOAT, attack_power_max);
 	clientstat(STAT_ATTACKSPEED, EV_FLOAT, attack_speed);
+	clientstat(STAT_ATTACKTYPE, EV_FLOAT, attack_type);
 	clientstat(STAT_ARMORNAME, EV_STRING, armorname);
 	clientstat(STAT_ARMORVALUE, EV_FLOAT, armorvalue);
 	clientstat(STAT_INCOMBAT, EV_FLOAT, incombat);

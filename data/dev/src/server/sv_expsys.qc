@@ -2,6 +2,7 @@
 // Experience / Leveling systems
 //
 
+.float levelup_finished;
 void(entity targ) Player_CheckLevelUp =
 {
     if (targ.exp >= targ.exp_next)
@@ -12,9 +13,10 @@ void(entity targ) Player_CheckLevelUp =
 		targ.max_mana += 5;
 
 		sound (targ, CHAN_AUTO, "levelup.wav", 1, ATTN_NORM);
+
 		string eventlog_print = (strcat("^3Level ", ftos(targ.level), " reached!\n"));
-		localcmd("conecho event ", eventlog_print, "\n"); // push eventlog console message
 		stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+
 		targ.exp = targ.exp_oldnext = targ.exp_next; // cap exp on level up properly
 		targ.exp_next = 100 * (targ.level * targ.level * 1.15);
     }

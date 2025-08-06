@@ -29,3 +29,18 @@ void() set_npc =
 //	self.think = npc_ai_think;
 //	self.nextthink = time + 0.1;
 };
+
+void() set_bonfire =
+{
+	precache_model("models/bonfire.iqm");
+	self.solid = SOLID_TRIGGER;
+	self.movetype = MOVETYPE_NONE;
+	self.takedamage = DAMAGE_NO;
+	self.classname = "bonfire";
+	self.radius_candamage = "FALSE"; // uses string
+	self.colormod = '10 0 0'; // Yellow
+
+	setmodel(self, "models/bonfire.iqm");
+	setsize(self, [-16, -16, 0], [16, 16, 56]);
+	setorigin(self, self.origin + v_up * 64);
+};

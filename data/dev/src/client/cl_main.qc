@@ -62,12 +62,12 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 				User_LoginScreen();
 			if (player_menu == MENU_CHARACTER)
 			{
-				User_CharacterScreen();
 				Draw_Health();
 				Draw_Mana();
 				Draw_Stamina();
 				Draw_Exp();
 				Draw_InCombatorPVP();
+				User_CharacterScreen();
 			}
 		}
 		else // Regular gameplay

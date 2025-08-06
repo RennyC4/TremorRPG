@@ -41,6 +41,13 @@ origin "-1125 3535 55"
 angles "0 0 0"
 }
 
+// first bonfire (near Elderfen mines)
+{
+classname "set_bonfire"
+origin "-2986 -1825 52"
+angles "0 0 0"
+}
+
 // NPC
 {
 classname "set_npc"

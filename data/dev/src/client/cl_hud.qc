@@ -2,9 +2,25 @@
 // Player HUD
 //
 
-//	con_printf("eventlog", "some test text\n"); // push message csqc
-//	con_draw("evenlog", pos, size, 8); // draw on screen
-//  conecho foo "text" // push message (ssqc)
+//
+// Reki's Code to draw 3D objects on the HUD
+//
+
+void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
+{
+    clearscene();
+    setviewprop(VF_MIN, pos);
+    setviewprop(VF_SIZE, canvas_size);
+ 
+    setviewprop(VF_AFOV, 25);
+    setviewprop(VF_DRAWWORLD, FALSE);
+ 
+    setviewprop(VF_ORIGIN, [zoom, 0, 0]);
+    setviewprop(VF_ANGLES, '0 0 0');
+ 
+    addentity(ent);
+    renderscene();
+};
 
 void(float screenwidth, float screenheight) Draw_ZoneName =
 {
@@ -190,26 +206,6 @@ void() Draw_Exp =
 };
 
 //
-// Reki's Code to draw 3D objects on the HUD
-//
-
-void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
-{
-    clearscene();
-    setviewprop(VF_MIN, pos);
-    setviewprop(VF_SIZE, canvas_size);
- 
-    setviewprop(VF_AFOV, 25);
-    setviewprop(VF_DRAWWORLD, FALSE);
- 
-    setviewprop(VF_ORIGIN, [zoom, 0, 0]);
-    setviewprop(VF_ANGLES, '0 0 0');
- 
-    addentity(ent);
-    renderscene();
-};
-
-//
 // 3D Character portrait
 //
 
@@ -241,6 +237,16 @@ void() User_CharacterScreen =
 	if (get_h <= 0)
 		return;
 
+	// darken screen
+	vector scrsz = [g_width, g_height];
+	drawfill('0 0', scrsz, '0 0 0', 0.65);
+
+	string displaystat;
+
+	//
+	// rpg stats
+	//
+
 	string disp_gender = getstats(STAT_GENDER);
 	float disp_level = getstatf(STAT_LEVEL);
 	float disp_exp =  getstatf(STAT_EXP);
@@ -249,11 +255,10 @@ void() User_CharacterScreen =
 	float disp_skillpoints =  getstatf(STAT_SKILLPOINTS);
 	string disp_mainhand = getstats(STAT_MAINHAND);
 	string disp_offhand = getstats(STAT_OFFHAND);
-
 	float disp_attackmin = getstatf(STAT_ATTACKMIN);
 	float disp_attackmax = getstatf(STAT_ATTACKMAX);
 	float disp_attackspeed = getstatf(STAT_ATTACKSPEED);
-
+	float disp_attacktype = getstatf(STAT_ATTACKTYPE);
 	string disp_armorname = getstats(STAT_ARMORNAME);
 	float disp_armorvalue = getstatf(STAT_ARMORVALUE);
 
@@ -268,7 +273,7 @@ void() User_CharacterScreen =
 
 	// Display name, gender
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	string displaystat = strcat(disp_gender, " ^1", LOGIN_NAME);
+	displaystat = strcat(disp_gender, " ^1", LOGIN_NAME);
 	sui_text([0, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
 
 	// 3D Character box
@@ -291,13 +296,7 @@ void() User_CharacterScreen =
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Exp:^7", ftos(disp_exp));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 10;
-
-	displaystat = strcat("^5Needed:^7", ftos(disp_neededexp));
+	displaystat = strcat("^5Exp:^7", ftos(disp_exp), " / ", ftos(disp_neededexp));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -321,14 +320,22 @@ void() User_CharacterScreen =
 
 	newpos_y += 10;
 	
-	displaystat = strcat(disp_mainhand, "(^8", ftos(disp_attackmin), "-", ftos(disp_attackmax), "^7)");
+	displaystat = strcat(disp_mainhand, " (^8", ftos(disp_attackmin), "-", ftos(disp_attackmax), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
 	float disp_dps = (disp_attackmin + disp_attackmax * 0.5) / disp_attackspeed; // calculate DPS
-	displaystat = strcat("^1DPS:^7" , ftos(disp_dps));
+
+	string displaystat2 = strcat("^5Type:^7" , ftos(disp_attacktype));
+	if (!disp_attacktype)			displaystat2 = "Unarmed";
+	else if (disp_attacktype == 1)  displaystat2 = "Slashing";
+	else if (disp_attacktype == 2)  displaystat2 = "Piercing";
+	else if (disp_attacktype == 4)  displaystat2 = "Bashing";
+	else displaystat2 = "Unknown";
+
+	displaystat = strcat("^1DPS:^7" , ftos(disp_dps), " (^8", displaystat2, "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -350,7 +357,7 @@ void() User_CharacterScreen =
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
-	newpos_y += 12.5;
+	newpos_y += 22;
 
 	displaystat = strcat("^5Armor:^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
@@ -369,4 +376,114 @@ void() User_CharacterScreen =
 	pos = [0, -15];
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 	sui_text(pos, MENU_TEXT_MEDIUM, "^2Skills", MENU_TEXT_1, 1, 0);
+
+	//
+	// skill stats
+	//
+
+	float disp_unarmed = getstatf(STAT_SKILL_UNARMED);
+	float disp_slashing = getstatf(STAT_SKILL_SLASH);
+	float disp_pierce = getstatf(STAT_SKILL_PIERCE);
+	float disp_bash = getstatf(STAT_SKILL_BASH);
+	float disp_stealth = getstatf(STAT_SKILL_STEALTH);
+	float disp_backstab = getstatf(STAT_SKILL_BACKSTAB);
+	float disp_offensivemagic = getstatf(STAT_SKILL_OFFENSIVEMAGIC);
+	float disp_defensivemagic = getstatf(STAT_SKILL_DEFENSIVEMAGIC);
+	float disp_neutralmagic = getstatf(STAT_SKILL_NEUTRALMAGIC);
+	float disp_endurance = getstatf(STAT_SKILL_ENDURANCE);
+	float disp_spellresist = getstatf(STAT_SKILL_SPELLRESIST);
+	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
+	float disp_healthregen = getstatf(STAT_SKILL_HEALTHREGEN);
+	float disp_manaregen = getstatf(STAT_SKILL_MANAREGEN);
+
+	// Draw skill point text
+	newpos = [5, 5];
+
+	displaystat = strcat("^5Unarmed:^7", ftos(disp_unarmed));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Slashing:^7", ftos(disp_slashing));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Piercing:^7", ftos(disp_pierce));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Bashing:^7", ftos(disp_bash));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	
+	newpos_y +=10;
+
+	displaystat = strcat("^5Stealth:^7", ftos(disp_stealth));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	
+	newpos_y +=10;
+
+	displaystat = strcat("^5Backstab:^7", ftos(disp_backstab));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	
+	newpos_y +=10;
+
+	displaystat = strcat("^5Offensive Magic:^7", ftos(disp_offensivemagic));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Defensive Magic:^7", ftos(disp_defensivemagic));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Neutral Magic:^7", ftos(disp_neutralmagic));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Endurance:^7", ftos(disp_endurance));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Spell Resist:^7", ftos(disp_spellresist));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Archery:^7", ftos(disp_archery));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Health Regeneration:^7", ftos(disp_healthregen));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Mana Regeneration:^7", ftos(disp_manaregen));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	// skill buttons for stat increases
+
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+
+	sui_pop_frame();
 };
