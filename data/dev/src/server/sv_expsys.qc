@@ -14,7 +14,7 @@ void(entity targ) Player_CheckLevelUp =
 
 		sound (targ, CHAN_AUTO, "levelup.wav", 1, ATTN_NORM);
 
-		string eventlog_print = (strcat("^3Level ", ftos(targ.level), " reached!\n+15 skill points"));
+		string eventlog_print = (strcat("^3Level ", ftos(targ.level), " reached! +15 SP\n"));
 		stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
 
 		targ.exp = targ.exp_oldnext = targ.exp_next; // cap exp on level up properly
