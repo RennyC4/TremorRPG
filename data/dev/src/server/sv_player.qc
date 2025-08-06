@@ -37,6 +37,45 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 };
 
+void(float which) CSEv_User_AddSkillPoint_f =
+{
+	if (self.skillpoints > 0)
+		self.skillpoints -= 1;
+	else
+		return; 
+
+	if (!which)
+		self.skill_unarmed += 0.1;
+	else if (which == 1)
+		self.skill_slash += 0.1;
+	else if (which == 2)
+		self.skill_pierce += 0.1;
+	else if (which == 3)
+		self.skill_bash += 0.1;
+	else if (which == 4)
+		self.skill_stealth += 0.1;
+	else if (which == 5)
+		self.skill_backstab += 0.1;
+	else if (which == 6)
+		self.skill_offensivemagic += 0.1;
+	else if (which == 7)
+		self.skill_defensivemagic += 0.1;
+	else if (which == 8)
+		self.skill_neutralmagic += 0.1;
+	else if (which == 9)
+		self.skill_endurance += 0.1;
+	else if (which == 10)
+		self.skill_spellresist += 0.1;
+	else if (which == 11)
+		self.skill_archery += 0.1;
+	else if (which == 12)
+		self.skill_healthregen += 0.1;
+	else if (which == 13)
+		self.skill_manaregen += 0.1;
+	else
+		print ("Skill doesn't exist\n");
+};
+
 // called from CSQC ("show_character" console command)
 void() CSEv_PlayerShowStats = 
 {
