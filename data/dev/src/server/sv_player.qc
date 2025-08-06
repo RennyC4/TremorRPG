@@ -412,6 +412,7 @@ void() CSEv_Player_SaveChar =
 	float v = fopen(self.loginname, FILE_WRITE);
 	if (v >= 0)
 	{
+		// stats
 		fputs(v, self.guid, "\n");
 		fputs(v, self.loginname, "\n");
 		fputs(v, self.gender, "\n");
@@ -441,8 +442,26 @@ void() CSEv_Player_SaveChar =
 		fputs(v, self.off_hand, "\n");
 		fputs(v, self.armorname, "\n");
 		fputs(v, ftos(self.armorvalue), "\n");
-		fclose(v);
+		//
 
+		// skills
+		fputs(v, ftos(self.skill_unarmed), "\n");
+		fputs(v, ftos(self.skill_slash), "\n");
+		fputs(v, ftos(self.skill_pierce), "\n");
+		fputs(v, ftos(self.skill_bash), "\n");
+		fputs(v, ftos(self.skill_stealth), "\n");
+		fputs(v, ftos(self.skill_backstab), "\n");
+		fputs(v, ftos(self.skill_offensivemagic), "\n");
+		fputs(v, ftos(self.skill_defensivemagic), "\n");
+		fputs(v, ftos(self.skill_neutralmagic), "\n");
+		fputs(v, ftos(self.skill_endurance), "\n");
+		fputs(v, ftos(self.skill_spellresist), "\n");
+		fputs(v, ftos(self.skill_archery), "\n");
+		fputs(v, ftos(self.skill_healthregen), "\n");
+		fputs(v, ftos(self.skill_manaregen), "\n");		
+		//
+
+		fclose(v);
 		print(self.loginname, " character saved\n");
 	}
 };
@@ -468,6 +487,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	float v = fopen(LOGIN_NAME, FILE_READ);
 	if (v >= 0)
 	{
+		// stats
 		if (line = fgets(v))
 			self.guid = line;
 		if (line = fgets(v))
@@ -529,6 +549,39 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.armorname = line;
 		if (line = fgets(v))
 			self.armorvalue = stof(line);
+		//
+
+		// skills
+		if (line = fgets(v))
+			self.skill_unarmed = stof(line);
+		if (line = fgets(v))
+			self.skill_slash = stof(line);
+		if (line = fgets(v))
+			self.skill_pierce = stof(line);
+		if (line = fgets(v))
+			self.skill_bash = stof(line);
+		if (line = fgets(v))
+			self.skill_stealth = stof(line);
+		if (line = fgets(v))
+			self.skill_backstab = stof(line);
+		if (line = fgets(v))
+			self.skill_offensivemagic = stof(line);
+		if (line = fgets(v))
+			self.skill_defensivemagic = stof(line);
+		if (line = fgets(v))
+			self.skill_neutralmagic = stof(line);
+		if (line = fgets(v))
+			self.skill_endurance = stof(line);
+		if (line = fgets(v))
+			self.skill_spellresist = stof(line);
+		if (line = fgets(v))
+			self.skill_archery = stof(line);
+		if (line = fgets(v))
+			self.skill_healthregen = stof(line);
+		if (line = fgets(v))
+			self.skill_manaregen = stof(line);
+		//
+
 		fclose(v);
 
 		setorigin (self, self.origin); // relink properly
