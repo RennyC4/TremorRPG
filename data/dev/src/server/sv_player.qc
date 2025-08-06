@@ -20,6 +20,9 @@ void() PlayerJump =
 	self.weaponframe = 0;
 	self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
 	self.button2 = 0;
+
+	if (self.menu == MENU_CHARACTER)
+		self.menu = MENU_OFF;
 };
 
 // Used for placing objects in terrain mode
@@ -37,43 +40,144 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 };
 
+// This is ugly / could be written better but eh
 void(float which) CSEv_User_AddSkillPoint_f =
 {
-	if (self.skillpoints > 0)
-		self.skillpoints -= 1;
-	else
-		return; 
+	if (self.skillpoints <= 0)
+		return;
 
+	float cap = (self.level * 10) + 10;
 	if (!which)
-		self.skill_unarmed += 0.1;
+	{
+		if (self.skill_unarmed < cap)
+		{
+			self.skill_unarmed += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 1)
-		self.skill_slash += 0.1;
+	{
+		if (self.skill_slash < cap)
+		{
+			self.skill_slash += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 2)
-		self.skill_pierce += 0.1;
+	{
+		if (self.skill_pierce < cap)
+		{
+			self.skill_pierce += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 3)
-		self.skill_bash += 0.1;
+	{
+		if (self.skill_unarmed < cap)
+		{
+			self.skill_bash += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 4)
-		self.skill_stealth += 0.1;
+	{
+		if (self.skill_stealth < cap)
+		{
+			self.skill_stealth += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 5)
-		self.skill_backstab += 0.1;
+	{
+		if (self.skill_backstab < cap)
+		{
+			self.skill_backstab += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 6)
-		self.skill_offensivemagic += 0.1;
+	{
+		if (self.skill_offensivemagic < cap)
+		{
+			self.skill_offensivemagic += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 7)
-		self.skill_defensivemagic += 0.1;
+	{
+		if (self.skill_defensivemagic < cap)
+		{
+			self.skill_defensivemagic += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 8)
-		self.skill_neutralmagic += 0.1;
+	{
+		if (self.skill_neutralmagic < cap)
+		{
+			self.skill_neutralmagic += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 9)
-		self.skill_endurance += 0.1;
+	{
+		if (self.skill_endurance < cap)
+		{
+			self.skill_endurance += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 10)
-		self.skill_spellresist += 0.1;
+	{
+		if (self.skill_spellresist < cap)
+		{
+			self.skill_spellresist += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 11)
-		self.skill_archery += 0.1;
+	{
+		if (self.skill_archery < cap)
+		{
+			self.skill_archery += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 12)
-		self.skill_healthregen += 0.1;
+	{
+		if (self.skill_healthregen < cap)
+		{
+			self.skill_healthregen += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else if (which == 13)
-		self.skill_manaregen += 0.1;
+	{
+		if (self.skill_manaregen < cap)
+		{
+			self.skill_manaregen += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else
-		print ("Skill doesn't exist\n");
+	{
+		print ("error: skill doesn't exist\n");
+		return;
+	}
 };
 
 // called from CSQC ("show_character" console command)
@@ -111,7 +215,7 @@ entity() get_spawn_point =
 // Ran before physics
 void() PlayerPreThink =
 {	
-	if (self.button0)
+	if (self.button0 && self.menu == MENU_OFF)
 	{
 		if (self.deadflag == DEAD_DEAD)
 		{
