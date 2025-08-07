@@ -228,7 +228,7 @@ void(vector pos) Draw_3DPDoll =
 };
 
 //
-// Character stat screen + Skill point distribution
+// Character stat screen + skill point distribution
 //
 
 void() User_CharacterScreen =
@@ -243,10 +243,7 @@ void() User_CharacterScreen =
 
 	string displaystat;
 
-	//
 	// rpg stats
-	//
-
 	string disp_gender = getstats(STAT_GENDER);
 	float disp_level = getstatf(STAT_LEVEL);
 	float disp_exp =  getstatf(STAT_EXP);
@@ -261,6 +258,21 @@ void() User_CharacterScreen =
 	float disp_attacktype = getstatf(STAT_ATTACKTYPE);
 	string disp_armorname = getstats(STAT_ARMORNAME);
 	float disp_armorvalue = getstatf(STAT_ARMORVALUE);
+	//skills
+	float disp_unarmed = getstatf(STAT_SKILL_UNARMED);
+	float disp_slash = getstatf(STAT_SKILL_SLASH);
+	float disp_pierce = getstatf(STAT_SKILL_PIERCE);
+	float disp_bash = getstatf(STAT_SKILL_BASH);
+	float disp_stealth = getstatf(STAT_SKILL_STEALTH);
+	float disp_backstab = getstatf(STAT_SKILL_BACKSTAB);
+	float disp_offensivemagic = getstatf(STAT_SKILL_OFFENSIVEMAGIC);
+	float disp_defensivemagic = getstatf(STAT_SKILL_DEFENSIVEMAGIC);
+	float disp_neutralmagic = getstatf(STAT_SKILL_NEUTRALMAGIC);
+	float disp_endurance = getstatf(STAT_SKILL_ENDURANCE);
+	float disp_spellresist = getstatf(STAT_SKILL_SPELLRESIST);
+	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
+	float disp_healthregen = getstatf(STAT_SKILL_HEALTHREGEN);
+	float disp_manaregen = getstatf(STAT_SKILL_MANAREGEN);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -327,6 +339,16 @@ void() User_CharacterScreen =
 	newpos_y += 10;
 
 	float disp_dps = (disp_attackmin + disp_attackmax * 0.5) / disp_attackspeed; // calculate DPS
+	
+	// add skill calculation to DPS
+	if (!disp_attacktype) // unarmed
+		disp_dps = disp_dps + (disp_unarmed * 0.1);
+	else if (disp_attacktype == 1) // slashing
+		disp_dps = disp_dps + (disp_slash * 0.1);
+	else if (disp_attacktype == 2) // piercing
+		disp_dps = disp_dps + (disp_pierce * 0.1);
+	else // bashing
+		disp_dps = disp_dps + (disp_bash * 0.1);
 
 	string displaystat2 = strcat("^5Type:^7" , ftos(disp_attacktype));
 	if (!disp_attacktype)			displaystat2 = "Unarmed";
@@ -381,21 +403,6 @@ void() User_CharacterScreen =
 	// skill stats
 	//
 
-	float disp_unarmed = getstatf(STAT_SKILL_UNARMED);
-	float disp_slashing = getstatf(STAT_SKILL_SLASH);
-	float disp_pierce = getstatf(STAT_SKILL_PIERCE);
-	float disp_bash = getstatf(STAT_SKILL_BASH);
-	float disp_stealth = getstatf(STAT_SKILL_STEALTH);
-	float disp_backstab = getstatf(STAT_SKILL_BACKSTAB);
-	float disp_offensivemagic = getstatf(STAT_SKILL_OFFENSIVEMAGIC);
-	float disp_defensivemagic = getstatf(STAT_SKILL_DEFENSIVEMAGIC);
-	float disp_neutralmagic = getstatf(STAT_SKILL_NEUTRALMAGIC);
-	float disp_endurance = getstatf(STAT_SKILL_ENDURANCE);
-	float disp_spellresist = getstatf(STAT_SKILL_SPELLRESIST);
-	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
-	float disp_healthregen = getstatf(STAT_SKILL_HEALTHREGEN);
-	float disp_manaregen = getstatf(STAT_SKILL_MANAREGEN);
-
 	// Draw skill point text
 	newpos = [5, 5];
 
@@ -405,7 +412,7 @@ void() User_CharacterScreen =
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Slashing:^7", ftos(disp_slashing));
+	displaystat = strcat("^5Slashing:^7", ftos(disp_slash));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 

@@ -12,18 +12,28 @@ void() DoAttack_Melee =
 	// Stamina
 	if (self.classname == "player")
 	{
-		if (self.stamina <= self.attack_stamina)
+		if (self.stamina < self.attack_stamina)
 			return;
 		self.stamina -= self.attack_stamina;
 	}
 
-	// Calculate Damage
+	// Calculate damage by weapon
 	float damage = random_range(self.attack_power_min, self.attack_power_max);
+
+	// add skill damage
+	float howmuch = 0.1;
+	if (!self.attack_type) // unarmed
+		damage = damage + (self.skill_unarmed * howmuch);
+	else if (self.attack_type == 1) // slash
+		damage = damage + (self.skill_slash * howmuch);
+	else if (self.attack_type == 2) // pierce
+		damage = damage + (self.skill_pierce * howmuch);
+	else // bashing
+		damage = damage + (self.skill_bash * howmuch);
 
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
-	traceline (source, source + v_forward*64, MOVE_EVERYTHING, self);
-
+	traceline (source, source + v_forward * 64, MOVE_EVERYTHING, self);
 	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 
 	if (trace_ent.takedamage)
@@ -49,7 +59,6 @@ void(entity targ, entity attacker) DoDeath =
 		if (targ.noise3) // death sound
 			sound (targ, CHAN_VOICE, targ.noise3, 1, ATTN_NORM);
 
-		targ.deadflag = DEAD_DEAD;
 		targ.think = targ.th_die;
 		targ.nextthink = time;
 	}
@@ -61,12 +70,13 @@ void(entity targ, entity attacker, float damage) DoDamage =
 {
 	if (!targ)
 		return;
-	if (targ.health < 1)
+	if (targ.health < 1 || targ.deadflag == DEAD_DEAD)
 		return;
 	if (targ.flags & FL_MONSTER && targ.ai_mode == AI_RUNBACK)
 		return;
 	if (targ.flags & FL_MONSTER && attacker.flags & FL_MONSTER) // prevent monster in-fighting
 		return;
+
 	if (damage <= 0)
 		damage = 1;
 
@@ -98,8 +108,8 @@ void(entity targ, entity attacker, float damage) DoDamage =
 
 	if (targ.health <= 0)
 	{
-		DoDeath(targ, attacker);
 		targ.deadflag = TRUE;
+		DoDeath(targ, attacker);
 	}
 };
 
