@@ -350,6 +350,10 @@ void() User_CharacterScreen =
 	else // bashing
 		disp_dps = disp_dps + (disp_bash * 0.1);
 
+	// TODO: Add remove extra digits
+	string dispfix_dps = ftos(disp_dps);
+	dispfix_dps = sprintf("%.2f", disp_dps); // cut down numbers
+
 	string displaystat2 = strcat("^5Type:^7" , ftos(disp_attacktype));
 	if (!disp_attacktype)			displaystat2 = "Unarmed";
 	else if (disp_attacktype == 1)  displaystat2 = "Slashing";
@@ -357,7 +361,7 @@ void() User_CharacterScreen =
 	else if (disp_attacktype == 4)  displaystat2 = "Bashing";
 	else displaystat2 = "Unknown";
 
-	displaystat = strcat("^1DPS:^7" , ftos(disp_dps), " (^8", displaystat2, "^7)");
+	displaystat = strcat("^1DPS:^7" , dispfix_dps, " (^8", displaystat2, "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
