@@ -36,8 +36,20 @@ void() DoAttack_Melee =
 	traceline (source, source + v_forward * 64, MOVE_EVERYTHING, self);
 	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 
-	if (trace_ent.takedamage)
+	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
 	{
+		// PVP
+		if (self.classname == "player" && trace_ent.classname == "player")
+		{
+			if (self.pvp != 1 || trace_ent.pvp != 1)
+				return;
+			else
+			{
+				self.incombat = trace_ent.incombat = TRUE; // Turn off health regen, flag players for incombat
+				self.incombat_finished = trace_ent.incombat_finished = time + 30; // keep players locked in combat
+			}
+		}
+
 		DoDamage(trace_ent, self, damage);
 		sound (trace_ent, CHAN_BODY, "swordhit.wav", 1, ATTN_NORM);
 	}
@@ -50,8 +62,12 @@ void(entity targ, entity attacker) DoDeath =
 {
 	if (attacker.classname == "player")
 	{
-		GiveExperience(attacker, targ.exp_min, targ.exp);
-		GiveGold(attacker, targ.gold_min, targ.gold);
+		if (targ.flags & FL_MONSTER)
+		{
+			GiveExperience(attacker, targ.exp_min, targ.exp);
+			GiveGold(attacker, targ.gold_min, targ.gold);
+		}
+		// TODO: PVP killing rewards
 	}
 
 	if (targ.th_die)
@@ -91,10 +107,22 @@ void(entity targ, entity attacker, float damage) DoDamage =
 			eventlog_print = (strcat("You hit for ^2", ftos(damage), " ^7damage\n"));
 			stuffcmd (attacker, sprintf("conecho event %s\n", eventlog_print));
 		}
-		if (self.flags & FL_MONSTER && targ.classname == "player")
+		if (targ.classname == "player")
 		{
 			eventlog_print = (strcat("You've taken ^1", ftos(damage), " ^7damage\n"));
 			stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+		}
+
+		// PVP
+		if (targ.classname == "player" && attacker.classname == "player")
+		{
+			if (targ.incombat_finished < time)
+			{
+				eventlog_print = (strcat("^1You engage in combat!\n"));
+				stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+				stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+				targ.incombat_finished = attacker.incombat_finished = time + 30;
+			}
 		}
 	}
 

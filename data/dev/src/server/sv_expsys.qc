@@ -26,6 +26,10 @@ void(entity targ, float expmin, float expmax) GiveExperience =
 {
 	float amount = random_range(expmin, expmax);
 	targ.exp += amount; // give exp
+
+	string eventlog_print = (strcat("^2", ftos(amount), "^7 exp received!\n"));
+	stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+
 	Player_CheckLevelUp(targ);
 };
 
@@ -33,6 +37,7 @@ void(entity targ, float goldmin, float goldmax) GiveGold =
 {
 	float amount = random_range(goldmin, goldmax);
 	targ.gold += amount; // give gold
+
 	string eventlog_print = (strcat("^3", ftos(amount), "^7 gold received!\n"));
 	stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
 };

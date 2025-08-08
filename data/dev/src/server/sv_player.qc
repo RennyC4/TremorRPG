@@ -36,8 +36,12 @@ void() PlayerPrintStats =
 	string ang_y = ftos(self.angles_y);
 	string ang_z = ftos(self.angles_z);
 
+	string disp_pvp = ftos(self.pvp);
+	string disp_incombat = ftos(self.incombat);
+
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
+	sprint(self, PRINT_HIGH, "PVP: ", disp_pvp, " Combat: ", disp_incombat, "\n");
 };
 
 // This is ugly / could be written better but eh
@@ -298,11 +302,32 @@ void() PlayerPostThink =
 
 			self.staminaregen_finished = time + 0.1;
 		}
-		if (self.pvp == 2 && self.pvpenable_finished < time)
+		// PVP
+		if (self.pvp == 2)
 		{
-			self.pvp = TRUE;
-			self.pvp_autoflagged = TRUE;
-			string eventlog_print = "^1You've been auto flagged for PVP!\n";
+			if (self.pvpenable_count >= 900) // change to 900
+			{
+				if (self.pvp_autoflagged == FALSE)
+				{
+					self.pvp = 1;
+					self.pvp_autoflagged = TRUE;
+					string eventlog_print = "^1You've been auto flagged for PVP!\n";
+					stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+				}
+			}
+			else // count
+			{
+				if (self.pvpenable_finished < time)
+				{
+					self.pvpenable_count += 1;
+					self.pvpenable_finished = time + 1;
+				}
+			}
+		}
+		if (self.incombat_finished < time && self.incombat)
+		{
+			self.incombat = FALSE;
+			eventlog_print = (strcat("^2You've left combat\n"));
 			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 		}
 	}
@@ -321,6 +346,7 @@ void() PlayerDeath =
 
 	self.menu = MENU_OFF; // flip all menus off
 	self.incombat = FALSE;
+	setmodel(self, string_null); // remove me when we get actual animations
 	self.deadflag = DEAD_DEAD;
 	self.radius_candamage = "FALSE"; // uses string
 	self.movetype = MOVETYPE_NONE;
@@ -366,7 +392,7 @@ void(float type) PlayerSpawn =
 		self.menu = MENU_OFF;
 		self.loggedin = TRUE;
 		self.radius_candamage = "TRUE"; // uses string
-		self.solid = SOLID_SLIDEBOX;
+		self.solid = SOLID_TRIGGER;
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.th_die = PlayerDeath;
 
@@ -387,10 +413,12 @@ void(float type) PlayerSpawn =
 		self.view_ofs = [0, 0, 48];
 		self.deadflag = DEAD_NO;
 		self.radius_candamage = "TRUE"; // uses string
-		self.solid = SOLID_SLIDEBOX;
+		self.solid = SOLID_TRIGGER;
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.stamina = 100;
 		self.pvp_autoflagged = FALSE;
+		self.pvp = 0;
+		self.incombat_finished = time;
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
@@ -476,6 +504,8 @@ void() CSEv_Player_SaveChar =
 		fputs(v, self.armorname, "\n");
 		fputs(v, ftos(self.armorvalue), "\n");
 		fputs(v, ftos(self.pvp), "\n");
+		fputs(v, ftos(self.pvpenable_count), "\n");
+		fputs(v, ftos(self.pvp_autoflagged), "\n");
 		//
 
 		// skills
@@ -585,6 +615,11 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.armorvalue = stof(line);
 		if (line = fgets(v))
 			self.pvp = stof(line);
+		if (line = fgets(v))
+			self.pvpenable_count = stof(line);
+		if (line = fgets(v))
+			self.pvp_autoflagged = stof(line);
+
 		//
 
 		// skills

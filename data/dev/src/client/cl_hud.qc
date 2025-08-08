@@ -64,7 +64,7 @@ void() Draw_InCombatorPVP =
 	vector pos = [(g_width / 100 + 155), (g_height - 38)];
 	vector size = [35, 35];
 
-	if (!pvp)
+	if (!pvp || pvp == 2)
 	{
 		if (incombat) // only show when in combat or PVP flagged
 			drawpic (pos, "progs/combat.png", size, '1 1 1', 1, 0);

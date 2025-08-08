@@ -18,11 +18,7 @@ void() monster_respawn =
 
 void() monster_death =
 {
-	if (self.enemy.incombat)
-		self.enemy.incombat = FALSE;
-
 	self.goalentity = self.enemy = world; // reset targets
-
 	self.alpha = 0.25;
 	self.solid = SOLID_NOT;
 	self.deadflag = DEAD_DEAD;

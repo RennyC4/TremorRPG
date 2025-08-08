@@ -134,6 +134,10 @@ void() monster_ai_think =
 				self.goalentity = self.enemy = targ;
 				self.ai_mode = AI_CHASE;
 				targ.incombat = TRUE; // flag player for combat
+				targ.incombat_finished = time + 15;
+				string eventlog_print = (strcat("^1You engage in combat!\n"));
+				stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+
 			}
 		}
 	}
@@ -144,9 +148,6 @@ void() monster_ai_think =
 	{
 		if (b >= 2000)
 		{
-			if (self.enemy)
-				self.enemy.incombat = FALSE;
-
 			self.goalentity = self.ai_runback_temp;
 			if (!self.goalentity)
 				print ("Error in monster ai\n");
@@ -194,7 +195,10 @@ void() monster_ai_think =
 			if (infront(self.enemy) && (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE))
 			{
 				if (!self.enemy.incombat)
+				{
 					self.enemy.incombat = TRUE; // turn on during an attack incase another monster somehow flags it off
+					self.enemy.incombat_finished = time + 15;
+				}
 				self.ai_mode = AI_ATTACK;
 				self.think = monster_ai_melee;
 				self.nextthink = time + 0.1;

@@ -1759,10 +1759,12 @@ const float MENU_CHARACTER = 2;
 .float speed;
 .entity oldenemy;
 .float incombat; // player is in combat
+.float incombat_finished; // timer to disable in combat flag
 .float healthregen_finished;
 .float staminaregen_finished;
 .float pvp; // player is flagged for pvp
 .float pvpenable_finished; // auto-flag for pvp
+.float pvpenable_count; // counter for saving
 .float pvp_autoflagged;
 
 // player stats
