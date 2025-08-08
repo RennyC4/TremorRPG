@@ -59,17 +59,18 @@ void() Draw_EventLog =
 void() Draw_InCombatorPVP =
 {
 	float incombat = getstatf(STAT_INCOMBAT);
-
-	if (!incombat) // only show when in combat or PVP flagged
-		return;
+	float pvp = getstatf(STAT_PVP);
 
 	vector pos = [(g_width / 100 + 155), (g_height - 38)];
 	vector size = [35, 35];
-	//if (!pvp)
-	drawpic (pos, "progs/combat.png", size, '1 1 1', 1, 0);
-	//else
-//	drawpic (pos, "progs/combat.png", size, '1 .25 .25', 1, 0); // PVP Icon	
-	//TODO: .colormod red for PVP flagged
+
+	if (!pvp)
+	{
+		if (incombat) // only show when in combat or PVP flagged
+			drawpic (pos, "progs/combat.png", size, '1 1 1', 1, 0);
+	}
+	else if (pvp == 1)
+		drawpic (pos, "progs/combat.png", size, '1 .25 .25', 1, 0); // PVP Icon	
 };
 
 void() Draw_Health =
@@ -350,7 +351,6 @@ void() User_CharacterScreen =
 	else // bashing
 		disp_dps = disp_dps + (disp_bash * 0.1);
 
-	// TODO: Add remove extra digits
 	string dispfix_dps = ftos(disp_dps);
 	dispfix_dps = sprintf("%.2f", disp_dps); // cut down numbers
 
@@ -527,6 +527,13 @@ void() User_CharacterScreen =
 	my_button("skillpoint_healthregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 12) : 0;
 	newpos_y +=10;
 	my_button("skillpoint_manaregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 13) : 0;
+
+	// PVP button
+	
+	newpos = [0, 0]; // reset newpos
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
+	my_button("pvp_toggle", newpos, [25, 25], "PVP") ? sendevent("User_TogglePVP", "") : 0;
 
 	sui_pop_frame();
 };

@@ -1761,6 +1761,9 @@ const float MENU_CHARACTER = 2;
 .float incombat; // player is in combat
 .float healthregen_finished;
 .float staminaregen_finished;
+.float pvp; // player is flagged for pvp
+.float pvpenable_finished; // auto-flag for pvp
+.float pvp_autoflagged;
 
 // player stats
 .float level;
@@ -1787,7 +1790,7 @@ const float MENU_CHARACTER = 2;
 .string armorname;
 //.float armorvalue; (this is already defined)
 
-// skill point stats (level*10)+10 cap
+// skill point stats
 .float skill_unarmed;
 .float skill_slash;
 .float skill_pierce;
@@ -1804,7 +1807,6 @@ const float MENU_CHARACTER = 2;
 .float skill_manaregen;
 
 // job skills (wip)
-
 .float skill_mining;
 .float skill_fishing;
 .float skill_woodwork;
@@ -1828,43 +1830,44 @@ const float MENU_CHARACTER = 2;
 #define STAT_MENU 40
 #define STAT_ZONENAME 41
 #define STAT_ZONENAME_TIME 42
+#define STAT_PVP 43
 // Player RPG stats
-#define STAT_HEALTH 43
-#define STAT_MAXHEALTH 44
-#define STAT_MANA 45
-#define STAT_MAXMANA 46
-#define STAT_STAMINA 47
-#define STAT_MAINHAND 48
-#define STAT_OFFHAND 49
-#define STAT_LEVEL 50
-#define STAT_EXP 51
-#define STAT_EXPNEEDED 52
-#define STAT_EXPOLDNEEDED 53
-#define STAT_GOLD 54
-#define STAT_GENDER 55
-#define STAT_SKILLPOINTS 56
-#define STAT_ATTACKMIN 57
-#define STAT_ATTACKMAX 58
-#define STAT_ATTACKSPEED 59
-#define STAT_ATTACKTYPE 60
-#define STAT_ARMORNAME 61
-#define STAT_ARMORVALUE 62
-#define STAT_INCOMBAT 63
+#define STAT_HEALTH 44
+#define STAT_MAXHEALTH 45
+#define STAT_MANA 46
+#define STAT_MAXMANA 47
+#define STAT_STAMINA 48
+#define STAT_MAINHAND 49
+#define STAT_OFFHAND 50
+#define STAT_LEVEL 51
+#define STAT_EXP 52
+#define STAT_EXPNEEDED 53
+#define STAT_EXPOLDNEEDED 54
+#define STAT_GOLD 55
+#define STAT_GENDER 56
+#define STAT_SKILLPOINTS 57
+#define STAT_ATTACKMIN 58
+#define STAT_ATTACKMAX 59
+#define STAT_ATTACKSPEED 60
+#define STAT_ATTACKTYPE 61
+#define STAT_ARMORNAME 62
+#define STAT_ARMORVALUE 63
+#define STAT_INCOMBAT 64
 // Player skill stats
-#define STAT_SKILL_UNARMED 64
-#define STAT_SKILL_SLASH 65
-#define STAT_SKILL_PIERCE 66
-#define STAT_SKILL_BASH 67
-#define STAT_SKILL_STEALTH 68
-#define STAT_SKILL_BACKSTAB 69
-#define STAT_SKILL_OFFENSIVEMAGIC 70
-#define STAT_SKILL_DEFENSIVEMAGIC 71
-#define STAT_SKILL_NEUTRALMAGIC 72
-#define STAT_SKILL_ENDURANCE 73
-#define STAT_SKILL_SPELLRESIST 74
-#define STAT_SKILL_ARCHERY 75
-#define STAT_SKILL_HEALTHREGEN 76
-#define STAT_SKILL_MANAREGEN 77
+#define STAT_SKILL_UNARMED 65
+#define STAT_SKILL_SLASH 66
+#define STAT_SKILL_PIERCE 67
+#define STAT_SKILL_BASH 68
+#define STAT_SKILL_STEALTH 69
+#define STAT_SKILL_BACKSTAB 70
+#define STAT_SKILL_OFFENSIVEMAGIC 71
+#define STAT_SKILL_DEFENSIVEMAGIC 72
+#define STAT_SKILL_NEUTRALMAGIC 73
+#define STAT_SKILL_ENDURANCE 74
+#define STAT_SKILL_SPELLRESIST 75
+#define STAT_SKILL_ARCHERY 76
+#define STAT_SKILL_HEALTHREGEN 77
+#define STAT_SKILL_MANAREGEN 78
 
 //Haggle?
 

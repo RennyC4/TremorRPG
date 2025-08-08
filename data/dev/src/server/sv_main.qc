@@ -21,6 +21,7 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_MENU, EV_FLOAT, menu);
 	clientstat(STAT_ZONENAME, EV_STRING, zonename);
 	clientstat(STAT_ZONENAME_TIME, EV_FLOAT, zonename_finished);
+	clientstat(STAT_PVP, EV_FLOAT, pvp);
 	clientstat(STAT_HEALTH, EV_FLOAT, health);
 	clientstat(STAT_MAXHEALTH, EV_FLOAT, max_health);
 	clientstat(STAT_MANA, EV_FLOAT, mana);

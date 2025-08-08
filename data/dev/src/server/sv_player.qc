@@ -36,7 +36,7 @@ void() PlayerPrintStats =
 	string ang_y = ftos(self.angles_y);
 	string ang_z = ftos(self.angles_z);
 
-	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z, "\n");
+	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 };
 
@@ -192,6 +192,30 @@ void() CSEv_PlayerShowStats =
 		self.menu = MENU_OFF;
 };
 
+// called from CSQC (PVP button)
+void() CSEv_User_TogglePVP_ =
+{
+	if (self.deadflag != DEAD_NO)
+		return;
+	if (self.pvp_autoflagged)
+		return;
+
+	string eventlog_print;
+
+	if (!self.pvp)
+	{
+		self.pvp = TRUE;
+		eventlog_print = (strcat("PVP: ^1Enabled"));
+		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+	}
+	else
+	{
+		eventlog_print = (strcat("PVP: ^2Disabled"));
+		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+		self.pvp = FALSE;
+	}
+};
+
 void() CheckImpulses =
 {
 	switch (self.impulse)
@@ -223,6 +247,7 @@ void() PlayerPreThink =
 			{
 				PlayerSpawn(2); // respawn
 				self.melee_finished = time + 1; // prevent attack on spawn
+				self.pvp_autoflagged = FALSE;
 				return;
 			}
 		}
@@ -272,6 +297,13 @@ void() PlayerPostThink =
 				self.stamina = 100;
 
 			self.staminaregen_finished = time + 0.1;
+		}
+		if (self.pvp == 2 && self.pvpenable_finished < time)
+		{
+			self.pvp = TRUE;
+			self.pvp_autoflagged = TRUE;
+			string eventlog_print = "^1You've been auto flagged for PVP!\n";
+			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 		}
 	}
 };
@@ -358,6 +390,7 @@ void(float type) PlayerSpawn =
 		self.solid = SOLID_SLIDEBOX;
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.stamina = 100;
+		self.pvp_autoflagged = FALSE;
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
@@ -442,6 +475,7 @@ void() CSEv_Player_SaveChar =
 		fputs(v, self.off_hand, "\n");
 		fputs(v, self.armorname, "\n");
 		fputs(v, ftos(self.armorvalue), "\n");
+		fputs(v, ftos(self.pvp), "\n");
 		//
 
 		// skills
@@ -549,6 +583,8 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.armorname = line;
 		if (line = fgets(v))
 			self.armorvalue = stof(line);
+		if (line = fgets(v))
+			self.pvp = stof(line);
 		//
 
 		// skills
@@ -632,6 +668,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		// default armor
 		self.armorname = "Plain Clothes";
 		self.armorvalue = 0;
+		self.pvp = FALSE;
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		CSEv_Player_SaveChar();

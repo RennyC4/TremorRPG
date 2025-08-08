@@ -1,5 +1,5 @@
 //
-// Main Damage routines
+// Damage routines
 //
 
 void(entity targ, entity attacker, float damage) DoDamage;
@@ -66,6 +66,7 @@ void(entity targ, entity attacker) DoDeath =
 		print(self.classname, "'s th_die routine is missing\n");
 };
 
+// Main damage function
 void(entity targ, entity attacker, float damage) DoDamage =
 {
 	if (!targ)

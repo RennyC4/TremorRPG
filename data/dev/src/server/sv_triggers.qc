@@ -7,6 +7,14 @@ void() trigger_zone_touch =
 	if (other.classname != "player")
 		return;
 
+	if (other.pvp != self.pvp)
+	{
+		other.pvp = self.pvp;
+		if (self.pvp == 2)
+			other.pvpenable_finished = time + 900; // countdown for pvp autoflag
+		else
+			other.pvpenable_finished = time;
+	}
 	if (other.music != self.music)
 	{
 		other.music = self.music;
@@ -18,8 +26,6 @@ void() trigger_zone_touch =
 		if (other.zonename_finished < time)
 			other.zonename_finished = time + 3; // display in csqc hud
 	}
-
-	// TODO: PVP Flag stuff
 };
 
 void() trigger_zone =
