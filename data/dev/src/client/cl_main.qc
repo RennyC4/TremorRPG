@@ -19,6 +19,7 @@ noref void(float apiver, string enginename, float enginever) CSQC_Init =
 noref void() CSQC_WorldLoaded =
 {
 	registercommand("show_character", "Displays character information screen\n");
+	registercommand("toggle_crouch", "Crouching & sneaking\n");
 
 	if (cvar("developer") == 1)
 		localcmd("sv_cheats 1\nsv_csqc_progname csaddon.dat\nrestart\n");
@@ -49,46 +50,11 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	sui_begin(g_width, g_height);
 	
+	
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well
-	if (cvar("developer") == 0)
-	{
-		float player_loggedin = getstatf(STAT_LOGGEDIN);
-		float player_menu = getstatf(STAT_MENU);
-		if (player_menu > 0)
-		{
-			setcursormode(TRUE,"gfx/xhair", [16, 16], cvar("vid_conautoscale")); // enable mouse cursor when menus are active
-
-			if (player_menu == MENU_LOGIN)
-				User_LoginScreen();
-			if (player_menu == MENU_CHARACTER)
-			{
-				Draw_Health();
-				Draw_Mana();
-				Draw_Stamina();
-				Draw_Exp();
-				Draw_InCombatorPVP();
-				User_CharacterScreen();
-			}
-		}
-		else // Regular gameplay
-		{
-			float zonedisplay_finished = getstatf(STAT_ZONENAME_TIME);
-			if (zonedisplay_finished > time)
-				Draw_ZoneName(g_width, g_height);
-			else
-				ZoneName_alpha.doalpha = 0;
-
-			Draw_EventLog();
-			Draw_Health();
-			Draw_Mana();
-			Draw_Stamina();
-			Draw_Exp();
-			Draw_InCombatorPVP();
-
-			setcursormode(FALSE,"", 0, 0);
-		}
-	}
-
+	
+	Player_Hud();
+	
 	//
 	//
 
@@ -104,6 +70,8 @@ float(string strCommand) CSQC_ConsoleCommand =
 	tokenize(strCommand);
 	if (argv(0) == "show_character")
 		sendevent("PlayerShowStats", "");
+	if (argv(0) == "toggle_crouch")
+		sendevent("PlayerCrouch", "");
 	return FALSE;
 };
 

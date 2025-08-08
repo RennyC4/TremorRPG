@@ -25,6 +25,11 @@ void() PlayerJump =
 		self.menu = MENU_OFF;
 };
 
+void() CSEv_PlayerCrouch =
+{
+	print("Crouching\n");
+};
+
 // Used for placing objects in terrain mode
 void() PlayerPrintStats =
 {
@@ -305,7 +310,7 @@ void() PlayerPostThink =
 		// PVP
 		if (self.pvp == 2)
 		{
-			if (self.pvpenable_count >= 900) // change to 900
+			if (self.pvpenable_count >= 900) // 15 minutes
 			{
 				if (self.pvp_autoflagged == FALSE)
 				{

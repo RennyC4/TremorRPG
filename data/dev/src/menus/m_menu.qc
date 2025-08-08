@@ -122,7 +122,7 @@ name_command bindlist[] =
 	{ "Jump", "+jump" },
 	{ "Attack", "+attack" },
 	{ "Stats", "show_character" },
-	{ "Jump3", "+jump" },
+	{ "Sneak", "toggle_crouch" },
 	{ "Jump4", "+jump" },
 	{ "Jump5", "+jump" },
 	{ "Jump6", "+jump" },
