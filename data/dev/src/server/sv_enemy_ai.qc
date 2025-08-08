@@ -27,6 +27,7 @@ float(entity targ) infront =
 	vector vec = normalize (targ.origin - self.origin);
 	float dot = vec * v_forward;
 
+	// TODO: Stealth skill stuff
 	if (dot > 0.45)
 		return TRUE;
 	return FALSE;
@@ -65,7 +66,8 @@ void() monster_ai_melee =
 	{
 		if (self.noise1)
 			sound (self, CHAN_VOICE, self.noise1, 1, ATTN_NORM);
-
+		if (self.enemy)
+			self.enemy.incombat_finished = time + 15;
 		DoAttack_Melee();
 	}
 

@@ -27,7 +27,25 @@ void() PlayerJump =
 
 void() CSEv_PlayerCrouch =
 {
-	print("Crouching\n");
+	if (!self.loggedin)
+		return;
+	if (self.deadflag == DEAD_DEAD || self.health <= 0)
+		return;
+
+	if (!self.crouch)
+	{
+		setsize(self, [-16, -16, 0], [16, 16, 28]);
+		self.view_ofs = [0, 0, 24];
+		self.crouch = TRUE;
+		self.maxspeed = 160;
+	}
+	else
+	{
+		self.crouch = FALSE;
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
+		self.view_ofs = [0, 0, 48];
+		self.maxspeed = 360;
+	}
 };
 
 // Used for placing objects in terrain mode
@@ -399,6 +417,8 @@ void(float type) PlayerSpawn =
 		self.radius_candamage = "TRUE"; // uses string
 		self.solid = SOLID_TRIGGER;
 		self.flags |= FL_FINDABLE_NONSOLID;
+		self.crouch = FALSE;
+		self.maxspeed = 360;
 		self.th_die = PlayerDeath;
 
 		// TODO: Follow gender rule
@@ -424,6 +444,8 @@ void(float type) PlayerSpawn =
 		self.pvp_autoflagged = FALSE;
 		self.pvp = 0;
 		self.incombat_finished = time;
+		self.crouch = FALSE;
+		self.maxspeed = 360;
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
@@ -709,6 +731,8 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.armorname = "Plain Clothes";
 		self.armorvalue = 0;
 		self.pvp = FALSE;
+
+		self.maxspeed = 360;
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		CSEv_Player_SaveChar();

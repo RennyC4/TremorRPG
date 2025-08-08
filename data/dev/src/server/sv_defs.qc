@@ -1766,6 +1766,7 @@ const float MENU_CHARACTER = 2;
 .float pvpenable_finished; // auto-flag for pvp
 .float pvpenable_count; // counter for saving
 .float pvp_autoflagged;
+.float crouch;
 
 // player stats
 .float level;
