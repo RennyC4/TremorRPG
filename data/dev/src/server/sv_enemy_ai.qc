@@ -1,4 +1,6 @@
+//
 // All monster and enemy AI functions are handled here
+//
 
 const float AI_IDLE = 0;
 const float AI_CHASE = 1;
@@ -21,15 +23,23 @@ float	RANGE_MID				= 3;
 float	RANGE_FAR				= 4;
 
 // returns 1 if the entity is in front (in sight) of self
-float(entity targ) infront =
+float(entity enemy, entity peaking) infront =
 {
-	makevectors (self.angles);
-	vector vec = normalize (targ.origin - self.origin);
+	makevectors (peaking.angles);
+	vector vec = normalize (enemy.origin - peaking.origin);
 	float dot = vec * v_forward;
 
-	// TODO: Stealth skill stuff
-	if (dot > 0.45)
+	if (!enemy.crouch)
 		return TRUE;
+	else
+	{
+		float howmuch = ((enemy.skill_stealth * 0.4) * 0.01); // value increases as players stealth stat is increased
+		if (dot > howmuch)
+		{
+			return TRUE;
+			print ("!!!\n");
+		}
+	}
 	return FALSE;
 };
 
@@ -77,6 +87,11 @@ void() monster_ai_melee =
 
 void() monster_ai_move =
 {
+	if (self.enemy)
+	{
+		if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
+			return; // keep AI slightly back from target
+	}
 	movetogoal(self.speed / 2);
 	walkmove(self.angles_y, self.speed / 2);
 
@@ -129,7 +144,7 @@ void() monster_ai_think =
 		// Patroling randomly, searching for players nearby - TODO: Stealth mechanic code using infront();
 		for (entity targ = world;(targ = find(targ, classname, "player"));)
 		{
-			if (vlen(targ.origin - self.origin) <= 500 && targ.deadflag != DEAD_DEAD && visible(targ))
+			if (vlen(targ.origin - self.origin) <= 500 && targ.deadflag != DEAD_DEAD && visible(targ) && infront(targ, self))
 			{
 				if (self.noise)
 					sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
@@ -194,7 +209,7 @@ void() monster_ai_think =
 
 		if (self.enemy.flags & FL_CLIENT && self.enemy.classname == "player" && self.enemy.health > 0)
 		{
-			if (infront(self.enemy) && (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE))
+			if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
 			{
 				if (!self.enemy.incombat)
 				{

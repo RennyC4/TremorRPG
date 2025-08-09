@@ -30,7 +30,7 @@ void() DoAttack_Melee =
 		damage = damage + (self.skill_pierce * howmuch);
 	else // bashing
 		damage = damage + (self.skill_bash * howmuch);
-
+	
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
 	traceline (source, source + v_forward * 64, MOVE_EVERYTHING, self);
@@ -48,6 +48,16 @@ void() DoAttack_Melee =
 				self.incombat = trace_ent.incombat = TRUE; // Turn off health regen, flag players for incombat
 				self.incombat_finished = trace_ent.incombat_finished = time + 30; // keep players locked in combat
 			}
+		}
+
+		// check & add backstab skill
+		if (!infront(self, trace_ent) && self.crouch && trace_ent.enemy != self)
+		{
+			float bs_damage = (self.skill_backstab * howmuch);
+			if (!bs_damage)
+				bs_damage = 1;
+			string eventlog_print = (strcat("^1Backstab! +", ftos(bs_damage), " damage !!\n"));
+			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 		}
 
 		DoDamage(trace_ent, self, damage);

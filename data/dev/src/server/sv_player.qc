@@ -37,6 +37,7 @@ void() CSEv_PlayerCrouch =
 		setsize(self, [-16, -16, 0], [16, 16, 28]);
 		self.view_ofs = [0, 0, 24];
 		self.crouch = TRUE;
+		self.alpha = 0.25;
 		self.maxspeed = 160;
 	}
 	else
@@ -44,6 +45,7 @@ void() CSEv_PlayerCrouch =
 		self.crouch = FALSE;
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];
+		self.alpha = 1;
 		self.maxspeed = 360;
 	}
 };
@@ -302,6 +304,8 @@ void() PlayerPostThink =
 	if (!self.loggedin)
 		return;
 
+	self.skill_stealth = 200;
+
 	if (self.deadflag != DEAD_DEAD)
 	{
 		if (!self.incombat)
@@ -418,6 +422,7 @@ void(float type) PlayerSpawn =
 		self.solid = SOLID_TRIGGER;
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.crouch = FALSE;
+		self.alpha = 1;
 		self.maxspeed = 360;
 		self.th_die = PlayerDeath;
 
@@ -445,6 +450,7 @@ void(float type) PlayerSpawn =
 		self.pvp = 0;
 		self.incombat_finished = time;
 		self.crouch = FALSE;
+		self.alpha = 1;
 		self.maxspeed = 360;
 
 		setorigin(self, spawn_spot.origin + '0 0 1');

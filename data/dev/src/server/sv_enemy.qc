@@ -19,6 +19,7 @@ void() monster_respawn =
 void() monster_death =
 {
 	self.goalentity = self.enemy = world; // reset targets
+	self.velocity = '0 0 0'; // slide fix
 	self.alpha = 0.25;
 	self.solid = SOLID_NOT;
 	self.deadflag = DEAD_DEAD;
