@@ -116,8 +116,13 @@ void(float which) CSEv_User_AddSkillPoint_f =
 	{
 		if (self.skill_stealth < cap)
 		{
-			self.skill_stealth += 1;
-			self.skillpoints -= 1;
+			if (self.skill_stealth < 225)  // 0.9 infront();, this is maxed out
+			{
+				self.skill_stealth += 1;
+				self.skillpoints -= 1;
+			}
+			else
+				sprint(self, PRINT_HIGH, "Stealth is maxed out\n");
 			return;
 		}
 	}
@@ -314,6 +319,7 @@ void() PlayerPostThink =
 				if (self.health < self.max_health)
 					self.health += 1;
 
+				// TODO: Skill health regen
 				self.healthregen_finished = time + 1;
 			}
 		}
@@ -325,6 +331,7 @@ void() PlayerPostThink =
 			else
 				self.stamina = 100;
 
+			// TODO: Skill endurance lowers stamina regen time
 			self.staminaregen_finished = time + 0.1;
 		}
 		// PVP
@@ -376,7 +383,7 @@ void() PlayerDeath =
 	self.radius_candamage = "FALSE"; // uses string
 	self.movetype = MOVETYPE_NONE;
 	self.view_ofs = [0, 0, 4];
-	centerprint (self, "/PYou're Dead!\n\nPress Attack to respawn\n");
+	centerprint (self, "/PYou're Dead!\n\n\n\nPress Attack to respawn\n");
 	self.respawn_finished = time + 5;
 };
 
