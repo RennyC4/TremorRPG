@@ -2170,6 +2170,7 @@ entity csqcplayerent;
 string nameforplayerent;
 entity ZoneName_alpha;
 .float doalpha;
+float showscores;
 
 float MENU;
 float MENU_OFF = 0;

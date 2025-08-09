@@ -10,3 +10,4 @@ client/cl_hud.qc
 client/cl_login.qc
 client/cl_player.qc
 client/cl_main.qc
+client/cl_scoreboard.qc

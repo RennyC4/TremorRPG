@@ -336,6 +336,10 @@ void() PlayerPostThink =
 	if (!self.loggedin)
 		return;
 
+	// HACK: Used to display level on the scoreboard
+	if (self.frags != self.level)
+		self.frags = self.level;
+
 	if (self.deadflag != DEAD_DEAD)
 	{
 		if (!self.incombat)
@@ -620,10 +624,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.guid = line;
 		if (line = fgets(v))
-		{
-			self.netname = line;
-			self.loginname = line;
-		}
+			self.netname = self.loginname = line;
 		if (line = fgets(v))
 			self.gender = line;
 		if (line = fgets(v))

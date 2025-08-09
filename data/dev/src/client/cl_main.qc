@@ -1,3 +1,10 @@
+//
+// CSQC - Main file
+//
+
+void() Hud_UpdateScores;
+void(vector virtmin, vector virtsize) Hud_Scoreboard;
+
 void() CSQC_Ent_Remove = {remove(self);};
 
 float(string key, string val) find_player_id =
@@ -18,6 +25,7 @@ noref void(float apiver, string enginename, float enginever) CSQC_Init =
 
 noref void() CSQC_WorldLoaded =
 {
+	registercommand("+showscores", "Show scoreboard");
 	registercommand("show_character", "Displays character information screen\n");
 	registercommand("toggle_crouch", "Crouching & sneaking\n");
 	registercommand("+use", "Use what is in front of player\n");
@@ -29,6 +37,8 @@ noref void() CSQC_WorldLoaded =
 // CALLED EVERY CLIENT RENDER FRAME
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
+	vector virtsize = [width, height];
+
 	framecount = framecount + 1;
 
 	//clear and update our global screen resolution vars
@@ -54,8 +64,14 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well
 	
-	Player_Hud();
-	
+	if (showscores)
+	{
+		Hud_UpdateScores();
+		Hud_Scoreboard('0 0 0', virtsize);
+	}
+	else
+		Player_Hud();
+
 	//
 	//
 
@@ -73,6 +89,10 @@ float(string strCommand) CSQC_ConsoleCommand =
 		sendevent("PlayerShowStats", "");
 	if (argv(0) == "toggle_crouch")
 		sendevent("PlayerCrouch", "");
+	if (argv(0) == "+showscores") // scoreboard
+		showscores = TRUE;
+	else
+		showscores = FALSE;
 	return FALSE;
 };
 
