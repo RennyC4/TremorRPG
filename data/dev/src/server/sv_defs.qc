@@ -1743,6 +1743,8 @@ const float MENU_OFF = 0;
 const float MENU_LOGIN = 1;
 const float MENU_CHARACTER = 2;
 
+.float button3_pressed;
+
 .string guid; // guid security
 .float loggedin; // user successfully logged in
 .string loginname; // enforce this on the player

@@ -122,7 +122,7 @@ void(float which) CSEv_User_AddSkillPoint_f =
 				self.skillpoints -= 1;
 			}
 			else
-				sprint(self, PRINT_HIGH, "Stealth is maxed out\n");
+				sprint(self, PRINT_HIGH, "Stealth skill is maxed out\n");
 			return;
 		}
 	}
@@ -270,6 +270,18 @@ entity() get_spawn_point =
 	return spawnpoint;
 };
 
+// Use button
+void() Player_Use =
+{
+	print ("Use button\n");
+	self.button3_pressed = TRUE;
+};
+
+// Block button
+void() Player_ShieldBlock =
+{
+};
+
 // Ran before physics
 void() PlayerPreThink =
 {	
@@ -289,10 +301,25 @@ void() PlayerPreThink =
 			DoAttack_Melee();
 	}
 
+	// Button1 we ignore
+
 	if (self.button2)
 		PlayerJump();
 	else
-		self.flags = self.flags | FL_JUMPRELEASED;
+		self.flags |= FL_JUMPRELEASED;
+
+	// Use button
+	if (self.button3)
+	{
+		if (!self.button3_pressed)
+			Player_Use();
+	}
+	else
+		self.button3_pressed = FALSE;
+	
+	// Block button
+	if (self.button4)
+		Player_ShieldBlock();
 
 	// Enforce name
 	if (self.loggedin)

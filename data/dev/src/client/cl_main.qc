@@ -20,6 +20,7 @@ noref void() CSQC_WorldLoaded =
 {
 	registercommand("show_character", "Displays character information screen\n");
 	registercommand("toggle_crouch", "Crouching & sneaking\n");
+	registercommand("+use", "Use what is in front of player\n");
 
 	if (cvar("developer") == 1)
 		localcmd("sv_cheats 1\nsv_csqc_progname csaddon.dat\nrestart\n");
