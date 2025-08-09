@@ -304,8 +304,6 @@ void() PlayerPostThink =
 	if (!self.loggedin)
 		return;
 
-	self.skill_stealth = 200;
-
 	if (self.deadflag != DEAD_DEAD)
 	{
 		if (!self.incombat)
