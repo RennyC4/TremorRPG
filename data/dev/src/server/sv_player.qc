@@ -425,6 +425,20 @@ void() PlayerPostThink =
 			eventlog_print = (strcat("^2You've left combat\n"));
 			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 		}
+
+		// Alpha transparency for crouch/sneaking
+		if (self.crouch && !self.bonfire)
+		{
+			self.alpha = 1 - (self.skill_stealth * 0.004);
+			if (self.alpha < 0.1)
+				self.alpha = 0.1;
+			self.effects |= EF_FLAG2; // Normally this is EF_ADDITIVE
+		}
+		else
+		{
+			self.alpha = 1;
+			self.effects &= ~EF_FLAG2;
+		}
 	}
 };
 
