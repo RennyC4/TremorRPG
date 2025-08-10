@@ -67,8 +67,6 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 	sprint(self, PRINT_HIGH, "PVP: ", disp_pvp, " Combat: ", disp_incombat, "\n");
-	
-	self.skill_healthregen = 240;
 };
 
 // This is ugly / could be written better but eh

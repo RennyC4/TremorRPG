@@ -34,7 +34,7 @@ float(entity enemy, entity peaking) infront =
 	else
 	{
 		float howmuch = ((enemy.skill_stealth * 0.4) * 0.01); // value increases as players stealth stat is increased
-		if (enemy.skill_stealth <= 25)
+		if (enemy.skill_stealth < 25)
 			return TRUE; // Put some points into stealth, otherwise you're easily spotted
 
 		if (dot > howmuch)

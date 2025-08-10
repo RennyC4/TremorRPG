@@ -51,7 +51,7 @@ void() DoAttack_Melee =
 			}
 		}
 
-		// check & add backstab skill
+		// check & add backstab skill damage
 		if (!infront(self, trace_ent) && self.crouch && trace_ent.enemy != self)
 		{
 			float bs_damage = (self.skill_backstab * howmuch);
