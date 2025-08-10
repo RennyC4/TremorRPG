@@ -226,7 +226,7 @@ void() monster_ai_think =
 		self.ai_mode = AI_IDLE;
 
 	// Enemy dead, or is using a bonfire
-	if (self.enemy && self.enemy.health <= 0 || self.enemy.bonfire == FALSE)
+	if (self.enemy && self.enemy.health <= 0 || self.enemy.bonfire == TRUE)
 	{
 		self.oldenemy = self.enemy; // stash last killed or lost to bonfire
 		self.enemy = self.goalentity = world;

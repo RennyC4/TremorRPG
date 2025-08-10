@@ -67,6 +67,8 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 	sprint(self, PRINT_HIGH, "PVP: ", disp_pvp, " Combat: ", disp_incombat, "\n");
+	
+	self.skill_healthregen = 240;
 };
 
 // This is ugly / could be written better but eh
@@ -355,6 +357,8 @@ void() PlayerPostThink =
 	if (!self.loggedin)
 		return;
 
+	float calc;
+
 	// HACK: Used to display level on the scoreboard
 	if (self.frags != self.level)
 		self.frags = self.level;
@@ -365,19 +369,19 @@ void() PlayerPostThink =
 		{
 			// Non-combat health regeneration
 			if (self.healthregen_finished < time)
-			{		
+			{
+				calc = 60 - (self.skill_healthregen * 0.25 + 0.1);
 				if (self.health < self.max_health)
 					self.health += 1;
-				else
-					self.healthregen_finished = time + 60 - (self.skill_healthregen * 0.25 + 0.1);
+				self.healthregen_finished = time + calc;
 			}
 			// Non-combat mana regeneration
 			if (self.manaregen_finished < time)
-			{		
+			{
+				calc = 60 - (self.skill_manaregen * 0.25 + 0.1);
 				if (self.mana < self.max_mana)
 					self.mana += 1;
-				else
-					self.manaregen_finished = time + 60 - (self.skill_manaregen * 0.25 + 0.1);
+				self.manaregen_finished = time + calc;
 			}
 		}
 		// Stamina regeneration
