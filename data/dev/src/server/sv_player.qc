@@ -2,7 +2,7 @@
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
-void() CSEv_Player_SaveChar;
+void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
 void() ClientKill = {};
 void() SetNewParms = {};
@@ -543,8 +543,8 @@ void() PutClientInServer =
 
 void() ClientDisconnect =
 {
-	if (self.guid && self.loggedin) // valid player, save character on disconnect
-		CSEv_Player_SaveChar();
+//	if (self.guid && self.loggedin) // valid player, save character on disconnect
+//		CSEv_Player_SaveChar();
 
 	// clean up removed player
 	player_chain_remove(self);
@@ -560,68 +560,68 @@ void() ClientDisconnect =
 // Saving / Loading / Character creation
 //
 
-void() CSEv_Player_SaveChar =
+void(entity targ) CSEv_Player_SaveChar =
 {
-	if (!self.guid || !self.loggedin) // invalid player
+	if (!targ.guid || !targ.loggedin) // invalid player
 		return;
 
-	float v = fopen(self.loginname, FILE_WRITE);
+	float v = fopen(targ.loginname, FILE_WRITE);
 	if (v >= 0)
 	{
 		// stats
-		fputs(v, self.guid, "\n");
-		fputs(v, self.loginname, "\n");
-		fputs(v, self.gender, "\n");
-		fputs(v, self.music, "\n");
-		fputs(v, self.zonename, "\n");
-		fputs(v, ftos(self.origin_x), "\n");
-		fputs(v, ftos(self.origin_y), "\n");
-		fputs(v, ftos(self.origin_z), "\n");
-		fputs(v, ftos(self.angles_x), "\n");
-		fputs(v, ftos(self.angles_y), "\n");
-		fputs(v, ftos(self.angles_z), "\n");
-		fputs(v, ftos(self.health), "\n");
-		fputs(v, ftos(self.max_health), "\n");
-		fputs(v, ftos(self.mana), "\n");
-		fputs(v, ftos(self.max_mana), "\n");
-		fputs(v, ftos(self.level), "\n");
-		fputs(v, ftos(self.skillpoints), "\n");
-		fputs(v, ftos(self.exp), "\n");
-		fputs(v, ftos(self.exp_next), "\n");
-		fputs(v, ftos(self.gold), "\n");
-		fputs(v, ftos(self.attack_power_min), "\n");
-		fputs(v, ftos(self.attack_power_max), "\n");
-		fputs(v, ftos(self.attack_speed), "\n");
-		fputs(v, ftos(self.attack_type), "\n");
-		fputs(v, ftos(self.attack_stamina), "\n");
-		fputs(v, self.main_hand, "\n");
-		fputs(v, self.off_hand, "\n");
-		fputs(v, self.armorname, "\n");
-		fputs(v, ftos(self.armorvalue), "\n");
-		fputs(v, ftos(self.pvp), "\n");
-		fputs(v, ftos(self.pvpenable_count), "\n");
-		fputs(v, ftos(self.pvp_autoflagged), "\n");
+		fputs(v, targ.guid, "\n");
+		fputs(v, targ.loginname, "\n");
+		fputs(v, targ.gender, "\n");
+		fputs(v, targ.music, "\n");
+		fputs(v, targ.zonename, "\n");
+		fputs(v, ftos(targ.origin_x), "\n");
+		fputs(v, ftos(targ.origin_y), "\n");
+		fputs(v, ftos(targ.origin_z), "\n");
+		fputs(v, ftos(targ.angles_x), "\n");
+		fputs(v, ftos(targ.angles_y), "\n");
+		fputs(v, ftos(targ.angles_z), "\n");
+		fputs(v, ftos(targ.health), "\n");
+		fputs(v, ftos(targ.max_health), "\n");
+		fputs(v, ftos(targ.mana), "\n");
+		fputs(v, ftos(targ.max_mana), "\n");
+		fputs(v, ftos(targ.level), "\n");
+		fputs(v, ftos(targ.skillpoints), "\n");
+		fputs(v, ftos(targ.exp), "\n");
+		fputs(v, ftos(targ.exp_next), "\n");
+		fputs(v, ftos(targ.gold), "\n");
+		fputs(v, ftos(targ.attack_power_min), "\n");
+		fputs(v, ftos(targ.attack_power_max), "\n");
+		fputs(v, ftos(targ.attack_speed), "\n");
+		fputs(v, ftos(targ.attack_type), "\n");
+		fputs(v, ftos(targ.attack_stamina), "\n");
+		fputs(v, targ.main_hand, "\n");
+		fputs(v, targ.off_hand, "\n");
+		fputs(v, targ.armorname, "\n");
+		fputs(v, ftos(targ.armorvalue), "\n");
+		fputs(v, ftos(targ.pvp), "\n");
+		fputs(v, ftos(targ.pvpenable_count), "\n");
+		fputs(v, ftos(targ.pvp_autoflagged), "\n");
 		//
 
 		// skills
-		fputs(v, ftos(self.skill_unarmed), "\n");
-		fputs(v, ftos(self.skill_slash), "\n");
-		fputs(v, ftos(self.skill_pierce), "\n");
-		fputs(v, ftos(self.skill_bash), "\n");
-		fputs(v, ftos(self.skill_stealth), "\n");
-		fputs(v, ftos(self.skill_backstab), "\n");
-		fputs(v, ftos(self.skill_offensivemagic), "\n");
-		fputs(v, ftos(self.skill_defensivemagic), "\n");
-		fputs(v, ftos(self.skill_neutralmagic), "\n");
-		fputs(v, ftos(self.skill_endurance), "\n");
-		fputs(v, ftos(self.skill_spellresist), "\n");
-		fputs(v, ftos(self.skill_archery), "\n");
-		fputs(v, ftos(self.skill_healthregen), "\n");
-		fputs(v, ftos(self.skill_manaregen), "\n");		
+		fputs(v, ftos(targ.skill_unarmed), "\n");
+		fputs(v, ftos(targ.skill_slash), "\n");
+		fputs(v, ftos(targ.skill_pierce), "\n");
+		fputs(v, ftos(targ.skill_bash), "\n");
+		fputs(v, ftos(targ.skill_stealth), "\n");
+		fputs(v, ftos(targ.skill_backstab), "\n");
+		fputs(v, ftos(targ.skill_offensivemagic), "\n");
+		fputs(v, ftos(targ.skill_defensivemagic), "\n");
+		fputs(v, ftos(targ.skill_neutralmagic), "\n");
+		fputs(v, ftos(targ.skill_endurance), "\n");
+		fputs(v, ftos(targ.skill_spellresist), "\n");
+		fputs(v, ftos(targ.skill_archery), "\n");
+		fputs(v, ftos(targ.skill_healthregen), "\n");
+		fputs(v, ftos(targ.skill_manaregen), "\n");		
 		//
 
 		fclose(v);
-		print(self.loginname, " character saved\n");
+		print(targ.loginname, " character saved\n");
 	}
 };
 
@@ -800,9 +800,9 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.maxspeed = 360;
 
 		forceinfokey(self, "name", LOGIN_NAME);
-		CSEv_Player_SaveChar();
 		self.displayname = self.loginname;
 		PlayerSpawn(1); // Put player in game
+		CSEv_Player_SaveChar(self); // Save on creation
 	}
 };
 

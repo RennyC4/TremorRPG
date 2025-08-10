@@ -90,6 +90,7 @@ void() worldspawn =
 	//
 
 	PART_FOUNTAIN = particleeffectnum("fountain");
+	PART_BONFIRE = particleeffectnum("bonfire");
 
 	//
 	//

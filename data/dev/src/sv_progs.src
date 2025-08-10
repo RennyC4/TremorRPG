@@ -7,9 +7,9 @@ server/sv_main.qc
 server/sv_expsys.qc
 server/sv_enemy_ai.qc
 server/sv_enemy.qc
-server/sv_npc.qc
 server/sv_combat.qc
 server/sv_triggers.qc
 server/sv_player.qc
+server/sv_npc.qc
 math.qc
 server/sv_misc.qc

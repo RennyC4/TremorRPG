@@ -141,5 +141,5 @@ void() CSQC_Parse_Event =
 
 noref void CSQC_Shutdown() =
 {
-	sendevent("Player_SaveChar", "");
+	//sendevent("Player_SaveChar", "");
 };

@@ -31,9 +31,15 @@ void() set_npc =
 };
 
 // TODO: Should update respawn location etc
+void() bonfire_think =
+{
+	pointparticles(PART_BONFIRE, self.origin);
+	self.nextthink = time + 0.1;
+};
+
 void() bonfire_use =
 {
-	if (self.user)
+	if (self.user && self.user.bonfire_finished < time)
 	{
 		if (self.user.bonfire == FALSE)
 		{
@@ -58,7 +64,10 @@ void() bonfire_use =
 			string eventlog_print = "^5You rest at the bonfire ...\n";
 			stuffcmd (self.user, sprintf("conecho event %s\nwf\n", eventlog_print));
 
+			CSEv_Player_SaveChar(self.user); // Save user character
+
 			self.user.bonfire = TRUE;
+			self.user.bonfire_finished = time + 3;
 		}
 		else
 		{
@@ -72,6 +81,8 @@ void() bonfire_use =
 			self.user.bonfire = FALSE;
 		}
 	}
+	self.think = bonfire_think;
+	self.nextthink = time + 0.1;
 };
 
 void() set_bonfire =
@@ -87,4 +98,7 @@ void() set_bonfire =
 	setmodel(self, "models/bonfire.iqm");
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 	setorigin(self, self.origin + v_up * 64);
+	
+	self.think = bonfire_think;
+	self.nextthink = time + 0.1;
 };

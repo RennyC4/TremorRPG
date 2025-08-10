@@ -1772,6 +1772,7 @@ const float MENU_CHARACTER = 2;
 .float pvp_autoflagged;
 .float crouch;
 .float bonfire;
+.float bonfire_finished; // prevent spam
 .entity user; // mainly used for th_use
 
 // player stats
@@ -1892,3 +1893,4 @@ const float MENU_CHARACTER = 2;
 
 // Particle defs
 var float PART_FOUNTAIN;
+var float PART_BONFIRE;
