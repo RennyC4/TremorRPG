@@ -236,5 +236,13 @@ void() monster_ai_think =
 	// Debugging
 	//print ("Dist: ", ftos(b), "\n");
 
+	// Blood effects
+	/*
+	if (self.bleeding_finished > time)
+		self.modelflags |= MF_GIB;
+	else
+		self.modelflags &= ~MF_GIB;
+	*/
+
 	self.nextthink = time + 0.1;
 };

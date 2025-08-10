@@ -1773,6 +1773,7 @@ const float MENU_CHARACTER = 2;
 .float crouch;
 .float bonfire;
 .float bonfire_finished; // prevent spam
+.float bleeding_finished; // blood effects
 .entity user; // mainly used for th_use
 
 // player stats

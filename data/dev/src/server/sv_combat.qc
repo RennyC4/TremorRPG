@@ -9,12 +9,13 @@ void() DoAttack_Melee =
 	if (self.melee_finished > time)
 		return;
 
-	// Stamina
+	// Stamina drain on swing
 	if (self.classname == "player")
 	{
+		float stamcalc = self.skill_endurance * 0.015; // calculation
 		if (self.stamina < self.attack_stamina)
 			return;
-		self.stamina -= self.attack_stamina;
+		self.stamina -= (self.attack_stamina - stamcalc);
 	}
 
 	// Calculate damage by weapon
@@ -30,7 +31,7 @@ void() DoAttack_Melee =
 		damage = damage + (self.skill_pierce * howmuch);
 	else // bashing
 		damage = damage + (self.skill_bash * howmuch);
-	
+
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
 	traceline (source, source + v_forward * 64, MOVE_EVERYTHING, self);

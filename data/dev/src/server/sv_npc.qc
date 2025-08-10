@@ -94,6 +94,7 @@ void() set_bonfire =
 	self.classname = "bonfire";
 	self.radius_candamage = "FALSE"; // uses string
 	self.th_use = bonfire_use;
+	self.effects = EF_DIMLIGHT;
 
 	setmodel(self, "models/bonfire.iqm");
 	setsize(self, [-16, -16, 0], [16, 16, 56]);

@@ -370,7 +370,7 @@ void() PlayerPostThink =
 			// Non-combat health regeneration
 			if (self.healthregen_finished < time)
 			{
-				calc = 60 - (self.skill_healthregen * 0.25 + 0.1);
+				calc = 60 - (self.skill_healthregen * 0.25);
 				if (self.health < self.max_health)
 					self.health += 1;
 				self.healthregen_finished = time + calc;
@@ -378,7 +378,7 @@ void() PlayerPostThink =
 			// Non-combat mana regeneration
 			if (self.manaregen_finished < time)
 			{
-				calc = 60 - (self.skill_manaregen * 0.25 + 0.1);
+				calc = 60 - (self.skill_manaregen * 0.25);
 				if (self.mana < self.max_mana)
 					self.mana += 1;
 				self.manaregen_finished = time + calc;
@@ -387,7 +387,9 @@ void() PlayerPostThink =
 		// Stamina regeneration
 		if (self.staminaregen_finished < time)
 		{		
-			if (self.stamina < 100)
+			calc = 0.1 - (self.skill_endurance * 0.0025);
+			
+			if (self.stamina < 99)
 				self.stamina += 1;
 			else
 				self.stamina = 100;

@@ -163,13 +163,22 @@ void() Draw_Stamina =
 
 	// Text
 	string s1 = ftos(s);
-	string s2 = ftos(smax);
+	string s2 = ftos(smax);	
+	string dispfix_stamina = sprintf("%.1f", s); // cut down numbers
 
 	drawstring (pos - '9 -23', "Stamina", '8 8 0', '0 0 0', 1, 0); // text shadow
 	drawstring (pos - '10 -22', "^2Stamina", '8 8 0', '1 1 1', 1, 0);
 
-	drawstring (pos + '57 23', s1, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos + '56 22', s1, '8 8 0', '1 1 1', 1, 0);
+	if (s < 100)
+	{
+		drawstring (pos + '57 23', dispfix_stamina, '8 8 0', '0 0 0', 1, 0); // text shadow
+		drawstring (pos + '56 22', dispfix_stamina, '8 8 0', '1 1 1', 1, 0);
+	}
+	else
+	{
+		drawstring (pos + '57 23', s1, '8 8 0', '0 0 0', 1, 0); // text shadow
+		drawstring (pos + '56 22', s1, '8 8 0', '1 1 1', 1, 0);
+	}
 
 	drawstring (pos + '96 23', "/", '8 8 0', '0 0 0', 1, 0); // text shadow
 	drawstring (pos + '95 22', "/", '8 8 0', '1 1 1', 1, 0);
