@@ -34,6 +34,9 @@ float(entity enemy, entity peaking) infront =
 	else
 	{
 		float howmuch = ((enemy.skill_stealth * 0.4) * 0.01); // value increases as players stealth stat is increased
+		if (enemy.skill_stealth <= 25)
+			return TRUE; // Put some points into stealth, otherwise you're easily spotted
+
 		if (dot > howmuch)
 			return TRUE;
 	}
@@ -235,14 +238,6 @@ void() monster_ai_think =
 
 	// Debugging
 	//print ("Dist: ", ftos(b), "\n");
-
-	// Blood effects
-	/*
-	if (self.bleeding_finished > time)
-		self.modelflags |= MF_GIB;
-	else
-		self.modelflags &= ~MF_GIB;
-	*/
 
 	self.nextthink = time + 0.1;
 };
