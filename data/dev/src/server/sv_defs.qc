@@ -1701,6 +1701,7 @@ float(float min, float max) random_range;
 
 // Function defs
 .void()		th_die;
+.void()		th_use; // for use key
 
 // Constants
 const float TEREDIT_RELOAD = 0;
@@ -1769,6 +1770,8 @@ const float MENU_CHARACTER = 2;
 .float pvpenable_count; // counter for saving
 .float pvp_autoflagged;
 .float crouch;
+.float bonfire;
+.entity user; // mainly used for th_use
 
 // player stats
 .float level;

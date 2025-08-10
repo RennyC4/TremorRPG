@@ -273,7 +273,16 @@ entity() get_spawn_point =
 // Use button
 void() Player_Use =
 {
-	print ("Use button\n");
+	makevectors (self.angles);
+	vector source = self.origin + '0 0 16';
+	traceline (source, source + v_forward * 64, MOVE_EVERYTHING, self);
+
+	if (trace_ent.th_use)
+	{
+		trace_ent.user = self;
+		trace_ent.think = trace_ent.th_use;
+		trace_ent.nextthink = time + 0.1;
+	}
 	self.button3_pressed = TRUE;
 };
 
