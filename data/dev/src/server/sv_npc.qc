@@ -68,6 +68,7 @@ void() bonfire_use =
 
 			self.user.bonfire = TRUE;
 			self.user.bonfire_finished = time + 3;
+			sound (self, CHAN_AUTO, "bonfire1.wav", 1, ATTN_NORM);
 		}
 		else
 		{
@@ -88,6 +89,8 @@ void() bonfire_use =
 void() set_bonfire =
 {
 	precache_model("models/bonfire.iqm");
+	precache_sound("bonfire1.wav");
+	
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_NONE;
 	self.takedamage = DAMAGE_NO;
