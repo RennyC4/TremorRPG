@@ -55,7 +55,7 @@ void() DoAttack_Melee =
 		if (!infront(self, trace_ent) && self.crouch && trace_ent.enemy != self)
 		{
 			float bs_damage = (self.skill_backstab * howmuch);
-			if (!bs_damage)
+			if (bs_damage < 1)
 				bs_damage = 1;
 			string eventlog_print = (strcat("^1Backstab! +", ftos(bs_damage), " damage !!\n"));
 			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));

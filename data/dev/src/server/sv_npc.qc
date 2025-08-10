@@ -90,7 +90,8 @@ void() set_bonfire =
 {
 	precache_model("models/bonfire.iqm");
 	precache_sound("bonfire1.wav");
-	
+	precache_sound("bonfire2.wav");
+
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_NONE;
 	self.takedamage = DAMAGE_NO;
@@ -102,7 +103,9 @@ void() set_bonfire =
 	setmodel(self, "models/bonfire.iqm");
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 	setorigin(self, self.origin + v_up * 64);
-	
+
+	ambientsound(self.origin, "bonfire2.wav", 1, ATTN_STATIC);
+
 	self.think = bonfire_think;
 	self.nextthink = time + 0.1;
 };
