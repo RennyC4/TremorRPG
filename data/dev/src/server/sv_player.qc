@@ -116,7 +116,7 @@ void(float which) CSEv_User_AddSkillPoint_f =
 	{
 		if (self.skill_stealth < cap)
 		{
-			if (self.skill_stealth < 225)  // 0.9 infront();, this is maxed out
+			if (self.skill_stealth < 225)  // 0.9 infront(); 1 is dumb, this is maxed out
 			{
 				self.skill_stealth += 1;
 				self.skillpoints -= 1;
@@ -193,8 +193,13 @@ void(float which) CSEv_User_AddSkillPoint_f =
 	{
 		if (self.skill_healthregen < cap)
 		{
-			self.skill_healthregen += 1;
-			self.skillpoints -= 1;
+			if (self.skill_healthregen < 240)
+			{
+				self.skill_healthregen += 1;
+				self.skillpoints -= 1;
+			}
+			else
+				sprint(self, PRINT_HIGH, "Health regeneration skill is maxed out\n");
 			return;
 		}
 	}
@@ -202,8 +207,13 @@ void(float which) CSEv_User_AddSkillPoint_f =
 	{
 		if (self.skill_manaregen < cap)
 		{
-			self.skill_manaregen += 1;
-			self.skillpoints -= 1;
+			if (self.skill_healthregen < 240)
+			{
+				self.skill_manaregen += 1;
+				self.skillpoints -= 1;
+			}
+			else
+				sprint(self, PRINT_HIGH, "Mana regeneration skill is maxed out\n");			
 			return;
 		}
 	}
@@ -358,9 +368,16 @@ void() PlayerPostThink =
 			{		
 				if (self.health < self.max_health)
 					self.health += 1;
-
-				// TODO: Skill health regen
-				self.healthregen_finished = time + 1;
+				else
+					self.healthregen_finished = time + 60 - (self.skill_healthregen * 0.25 + 0.1);
+			}
+			// Non-combat mana regeneration
+			if (self.manaregen_finished < time)
+			{		
+				if (self.mana < self.max_mana)
+					self.mana += 1;
+				else
+					self.manaregen_finished = time + 60 - (self.skill_manaregen * 0.25 + 0.1);
 			}
 		}
 		// Stamina regeneration
