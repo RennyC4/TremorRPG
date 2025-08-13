@@ -1773,7 +1773,6 @@ const float MENU_CHARACTER = 2;
 .float crouch;
 .float bonfire;
 .float bonfire_finished; // prevent spam
-.float bleeding_finished; // blood effects
 .entity user; // mainly used for th_use
 .float was_onground;
 
@@ -1783,7 +1782,7 @@ const float MENU_CHARACTER = 2;
 // Tuning constants (units are Quake units/sec for speed)
 float FALL_SOFT_SPEED    = 300;  
 float FALL_DAMAGE_SPEED  = 450;  // start dealing damage above this
-float FALL_SCALE         = 0.10; // damage per unit
+float FALL_SCALE         = 0.50; // damage per unit (was 0.10)
 float LAND_COOLDOWN      = 0.05; // small guard to prevent duplicate triggers
 // Optional multipliers:
 float FALL_WATER_MUL_LVL2 = 0.35;  // knee-deep or more (waterlevel >= 2)
@@ -1896,7 +1895,8 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define STAT_SKILL_HEALTHREGEN 77
 #define STAT_SKILL_MANAREGEN 78
 
-//Haggle?
+//Haggle
+//Climbing
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

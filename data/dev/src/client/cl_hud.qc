@@ -51,9 +51,12 @@ void() Draw_EventLog =
 	// Draw text
 	pos = [(g_width * 0.0001), (g_height - 146)];
 	size = [330, 100];
-	drawfont = loadfont("", "cour", "12", -1, 0, 0); // set font
+	//drawfont = loadfont("", "cour", "12", -1, 0, 0); // set font
+	if (drawfont != drawfont2)
+		drawfont = drawfont2;
 	con_draw("event", pos, size, 12);
-	drawfont = loadfont("", "Courier Prime Code", "12,16,24,32,64,72,128,256,512", -1, 0, 0); // set font back
+	if (drawfont != drawfont1)
+		drawfont = loadfont("", "Courier Prime Code", "12,16,24,32,64,72,128,256,512", -1, 0, 0); // set font back
 };
 
 void() Draw_InCombatorPVP =

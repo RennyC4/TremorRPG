@@ -2171,6 +2171,8 @@ string nameforplayerent;
 entity ZoneName_alpha;
 .float doalpha;
 float showscores;
+float drawfont1;
+float drawfont2;
 
 float MENU;
 float MENU_OFF = 0;

@@ -60,7 +60,14 @@ void() DoAttack_Melee =
 			string eventlog_print = (strcat("^1Backstab! +", ftos(bs_damage), " damage !!\n"));
 			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 		}
+		damage = ceil(damage); // round up final damage output
 
+		float i;
+		vector eye_level = [9, 0];
+		eye_level_z = self.view_ofs_z; // match up blood spray to attackers view by z
+
+		for (i=0; i < 2; i++)
+			te_blood(trace_ent.origin + eye_level, trace_ent.velocity, 12); // spawn blood
 		DoDamage(trace_ent, self, damage);
 		sound (trace_ent, CHAN_BODY, "swordhit.wav", 1, ATTN_NORM);
 	}
