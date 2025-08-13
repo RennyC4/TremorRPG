@@ -301,6 +301,75 @@ void() Player_ShieldBlock =
 {
 };
 
+//
+// Fall Damage
+//
+
+float() FallDamage_MediumMul =
+{
+    if (self.waterlevel >= 3)
+        return FALL_WATER_MUL_LVL3;
+    if (self.waterlevel >= 2)
+        return FALL_WATER_MUL_LVL2;
+    if (self.watertype == CONTENT_SLIME)
+        return FALL_SLIME_MUL;
+    if (self.watertype == CONTENT_LAVA)
+        return FALL_LAVA_MUL;
+    return 1; // normal air
+};
+
+void() FallDamage_Update =
+{
+    if (self.movetype == MOVETYPE_NOCLIP || self.health <= 0 || self.deadflag == DEAD_DEAD)
+    {
+        self.fall_maxspeed = 0;
+        self.was_onground = (self.flags & FL_ONGROUND) != 0;
+        return;
+    }
+
+    // While airborne, keep the *largest downward* speed seen this airtime
+    if (!(self.flags & FL_ONGROUND))
+    {
+        float down = -self.velocity_z; // positive when falling
+        if (down > self.fall_maxspeed)
+            self.fall_maxspeed = down;
+    }
+
+    // Landing
+    if ((self.flags & FL_ONGROUND) && !self.was_onground)
+    {
+        // small guard against multiple hits in the same frame slice
+        if (time - self.last_landtime > LAND_COOLDOWN)
+        {
+            float impact = self.fall_maxspeed;
+            float mul = FallDamage_MediumMul(); // cushion media reduces impact
+            impact *= mul;
+
+            // Reset for next airtime *before* any early exits
+            self.fall_maxspeed = 0;
+            self.last_landtime = time;
+
+            // Soft landing sound only
+            if (impact > FALL_SOFT_SPEED && impact <= FALL_DAMAGE_SPEED)
+            {
+				//sound (self, CHAN_BODY, "player/land1.wav", 1, ATTN_NORM);
+            }
+            // Damage
+            else if (impact > FALL_DAMAGE_SPEED)
+            {
+                float dmg = (impact - FALL_DAMAGE_SPEED) * FALL_SCALE;
+				//if (dmg > FALL_MAX_DAMAGE)
+				//	dmg = FALL_MAX_DAMAGE;
+				DoDamage(self, world, dmg);
+                // Hard landing sound
+                //sound (self, CHAN_BODY, "player/land2.wav", 1, ATTN_NORM);
+            }
+        }
+        self.fall_maxspeed = 0;
+    }
+    self.was_onground = (self.flags & FL_ONGROUND) != 0;
+};
+
 // Ran before physics
 void() PlayerPreThink =
 {	
@@ -438,6 +507,7 @@ void() PlayerPostThink =
 			self.effects &= ~EF_FLAG2;
 		}
 	}
+	FallDamage_Update();
 };
 
 void() ClientConnect =

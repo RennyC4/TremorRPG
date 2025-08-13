@@ -1775,6 +1775,22 @@ const float MENU_CHARACTER = 2;
 .float bonfire_finished; // prevent spam
 .float bleeding_finished; // blood effects
 .entity user; // mainly used for th_use
+.float was_onground;
+
+//
+.float fall_maxspeed;     // largest downward speed seen while airborne (positive value)
+.float last_landtime;     // optional cooldown to avoid double-hitting in same frame
+// Tuning constants (units are Quake units/sec for speed)
+float FALL_SOFT_SPEED    = 300;  
+float FALL_DAMAGE_SPEED  = 450;  // start dealing damage above this
+float FALL_SCALE         = 0.10; // damage per unit
+float LAND_COOLDOWN      = 0.05; // small guard to prevent duplicate triggers
+// Optional multipliers:
+float FALL_WATER_MUL_LVL2 = 0.35;  // knee-deep or more (waterlevel >= 2)
+float FALL_WATER_MUL_LVL3 = 0.10;  // submerged (waterlevel >= 3)
+float FALL_SLIME_MUL      = 0.50;  // slime cushions a bit
+float FALL_LAVA_MUL       = 0.25;  // lava cushions
+//
 
 // player stats
 .float level;
