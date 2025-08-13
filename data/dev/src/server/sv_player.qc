@@ -358,6 +358,8 @@ void() FallDamage_Update =
             else if (impact > FALL_DAMAGE_SPEED)
             {
                 float dmg = (impact - FALL_DAMAGE_SPEED) * FALL_SCALE;
+				dmg = ceil(dmg);
+
 				//if (dmg > FALL_MAX_DAMAGE)
 				//	dmg = FALL_MAX_DAMAGE;
 				DoDamage(self, world, dmg);
