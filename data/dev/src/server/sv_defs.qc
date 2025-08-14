@@ -1782,7 +1782,7 @@ const float MENU_CHARACTER = 2;
 // Tuning constants (units are Quake units/sec for speed)
 float FALL_SOFT_SPEED    = 300;  
 float FALL_DAMAGE_SPEED  = 450;  // start dealing damage above this
-float FALL_SCALE         = 0.50; // damage per unit (was 0.10)
+float FALL_SCALE         = 0.25; // damage per unit (was 0.10)
 float LAND_COOLDOWN      = 0.05; // small guard to prevent duplicate triggers
 // Optional multipliers:
 float FALL_WATER_MUL_LVL2 = 0.35;  // knee-deep or more (waterlevel >= 2)
