@@ -3,6 +3,7 @@
 //
 
 void() main = {};
+void() SpectatorConnect = {};
 
 //called for each frame that QC runs
 void() StartFrame = {};
@@ -58,6 +59,11 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_SKILL_ARCHERY, EV_FLOAT, skill_archery);
 	clientstat(STAT_SKILL_HEALTHREGEN, EV_FLOAT, skill_healthregen);
 	clientstat(STAT_SKILL_MANAREGEN, EV_FLOAT, skill_manaregen);
+	clientstat(STAT_SKILL_HAGGLE, EV_FLOAT, skill_haggle);
+	clientstat(STAT_SKILL_CLIMB, EV_FLOAT, skill_climb);
+	clientstat(STAT_SKILL_SWIM, EV_FLOAT, skill_swim);
+	clientstat(STAT_SKILL_ACROBATIC, EV_FLOAT, skill_acrobatic);
+
 	// Job Skills
 };
 
@@ -66,7 +72,6 @@ void() worldspawn =
 	//
 	// Setup Default Lightstyles
 	//
-
 	lightstyle(0, "m");
 	lightstyle(1, "mmnmmommommnonmmonqnmmo");
 	lightstyle(2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
@@ -80,20 +85,13 @@ void() worldspawn =
 	lightstyle(10, "mmamammmmammamamaaamammma");
 	lightstyle(11, "abcdefghijklmnopqrrqponmlkjihgfedcba");
 	lightstyle(63, "a");
-
-	//
-	//
 	//
 
 	//
 	// Setup Particles
 	//
-
 	PART_FOUNTAIN = particleeffectnum("fountain");
 	PART_BONFIRE = particleeffectnum("bonfire");
-
-	//
-	//
 	//
 
 	precache_model("models/player_m.iqm");
@@ -107,5 +105,4 @@ void() worldspawn =
 	SSQC_SendValuesToCSQC();
 };
 
-void() SpectatorConnect = {};
 void() SV_RunClientCommand = {runstandardplayerphysics(self);};

@@ -190,6 +190,42 @@ void(float which) CSEv_User_AddSkillPoint_f =
 			return;
 		}
 	}
+	else if (which == 14)
+	{
+		if (self.skill_haggle < cap)
+		{
+			self.skill_haggle += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
+	else if (which == 15)
+	{
+		if (self.skill_climb < cap)
+		{
+			self.skill_climb += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
+	else if (which == 16)
+	{
+		if (self.skill_swim < cap)
+		{
+			self.skill_swim += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
+	else if (which == 17)
+	{
+		if (self.skill_acrobatic < cap)
+		{
+			self.skill_acrobatic += 1;
+			self.skillpoints -= 1;
+			return;
+		}
+	}
 	else
 	{
 		print ("error: skill doesn't exist\n");

@@ -51,7 +51,6 @@ void() Draw_EventLog =
 	// Draw text
 	pos = [(g_width * 0.0001), (g_height - 146)];
 	size = [330, 100];
-	//drawfont = loadfont("", "cour", "12", -1, 0, 0); // set font
 	if (drawfont != drawfont2)
 		drawfont = drawfont2;
 	con_draw("event", pos, size, 12);
@@ -287,6 +286,12 @@ void() User_CharacterScreen =
 	float disp_healthregen = getstatf(STAT_SKILL_HEALTHREGEN);
 	float disp_manaregen = getstatf(STAT_SKILL_MANAREGEN);
 
+	float disp_haggle = getstatf(STAT_SKILL_HAGGLE);
+	float disp_climb = getstatf(STAT_SKILL_CLIMB);
+	float disp_swim = getstatf(STAT_SKILL_SWIM);
+	float disp_acrobatic = getstatf(STAT_SKILL_ACROBATIC);
+
+
 	vector pos = [25, 25];
 	vector size = [450, 325];
 
@@ -504,6 +509,30 @@ void() User_CharacterScreen =
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
+	newpos_y +=10;
+
+	displaystat = strcat("^5Haggling:^7", ftos(disp_haggle));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Climbing:^7", ftos(disp_climb));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Swimming:^7", ftos(disp_swim));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y +=10;
+
+	displaystat = strcat("^5Acrobatics:^7", ftos(disp_acrobatic));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
 	//
 	// skill buttons for stat increases
 	//
@@ -539,6 +568,14 @@ void() User_CharacterScreen =
 	my_button("skillpoint_healthregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 12) : 0;
 	newpos_y +=10;
 	my_button("skillpoint_manaregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 13) : 0;
+	newpos_y +=10;
+	my_button("skillpoint_haggling", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 14) : 0;
+	newpos_y +=10;
+	my_button("skillpoint_climbing", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 15) : 0;
+	newpos_y +=10;
+	my_button("skillpoint_swimming", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 16) : 0;
+	newpos_y +=10;
+	my_button("skillpoint_acrobatics", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 17) : 0;
 
 	// PVP button
 	

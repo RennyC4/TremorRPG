@@ -560,6 +560,10 @@ void(entity targ) CSEv_Player_SaveChar =
 		fputs(v, ftos(targ.skill_archery), "\n");
 		fputs(v, ftos(targ.skill_healthregen), "\n");
 		fputs(v, ftos(targ.skill_manaregen), "\n");		
+		fputs(v, ftos(targ.skill_haggle), "\n");		
+		fputs(v, ftos(targ.skill_climb), "\n");		
+		fputs(v, ftos(targ.skill_swim), "\n");		
+		fputs(v, ftos(targ.skill_acrobatic), "\n");		
 		//
 
 		fclose(v);
@@ -685,6 +689,14 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.skill_healthregen = stof(line);
 		if (line = fgets(v))
 			self.skill_manaregen = stof(line);
+		if (line = fgets(v))
+			self.skill_haggle = stof(line);
+		if (line = fgets(v))
+			self.skill_climb = stof(line);
+		if (line = fgets(v))
+			self.skill_swim = stof(line);
+		if (line = fgets(v))
+			self.skill_acrobatic = stof(line);
 		//
 
 		fclose(v);

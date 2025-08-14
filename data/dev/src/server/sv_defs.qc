@@ -1831,10 +1831,12 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float skill_archery;
 .float skill_healthregen;
 .float skill_manaregen;
-//Haggle (save money)
-//Climbing (can climb walls longer)
-//swimming (can swim longer, faster, less stamina drain)
-//acrobatics (higher jumping, lesser fall damage)
+//
+.float skill_haggle;
+.float skill_climb;
+.float skill_swim;
+.float skill_acrobatic;
+//
 
 // job skills (wip)
 .float skill_mining;
@@ -1899,6 +1901,10 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define STAT_SKILL_ARCHERY 76
 #define STAT_SKILL_HEALTHREGEN 77
 #define STAT_SKILL_MANAREGEN 78
+#define STAT_SKILL_HAGGLE 79
+#define STAT_SKILL_CLIMB 80
+#define STAT_SKILL_SWIM 81
+#define STAT_SKILL_ACROBATIC 82
 
 //Haggle
 //Climbing
