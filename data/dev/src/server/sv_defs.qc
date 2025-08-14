@@ -1831,11 +1831,16 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float skill_archery;
 .float skill_healthregen;
 .float skill_manaregen;
+//Haggle (save money)
+//Climbing (can climb walls longer)
+//swimming (can swim longer, faster, less stamina drain)
+//acrobatics (higher jumping, lesser fall damage)
 
 // job skills (wip)
 .float skill_mining;
 .float skill_fishing;
 .float skill_woodwork;
+.float skill_blacksmithing;
 
 //
 // Send stats to CSQC 

@@ -120,26 +120,29 @@ void(entity targ, entity attacker, float damage) DoDamage =
 		targ.health = targ.health - damage;
 		string eventlog_print;
 
-		if (attacker.classname == "player")
+		if (attacker != self)
 		{
-			eventlog_print = (strcat("You hit for ^2", ftos(damage), " ^7damage\n"));
-			stuffcmd (attacker, sprintf("conecho event %s\n", eventlog_print));
-		}
-		if (targ.classname == "player")
-		{
-			eventlog_print = (strcat("You've taken ^1", ftos(damage), " ^7damage\n"));
-			stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
-		}
-
-		// PVP
-		if (targ.classname == "player" && attacker.classname == "player")
-		{
-			if (targ.incombat_finished < time)
+			if (attacker.classname == "player")
 			{
-				eventlog_print = (strcat("^1You engage in combat!\n"));
-				stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+				eventlog_print = (strcat("You hit for ^2", ftos(damage), " ^7damage\n"));
+				stuffcmd (attacker, sprintf("conecho event %s\n", eventlog_print));
+			}
+			if (targ.classname == "player")
+			{
+				eventlog_print = (strcat("You've taken ^1", ftos(damage), " ^7damage\n"));
 				stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
-				targ.incombat_finished = attacker.incombat_finished = time + 30;
+			}
+
+			// PVP
+			if (targ.classname == "player" && attacker.classname == "player")
+			{
+				if (targ.incombat_finished < time)
+				{
+					eventlog_print = (strcat("^1You engage in combat!\n"));
+					stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+					stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+					targ.incombat_finished = attacker.incombat_finished = time + 30;
+				}
 			}
 		}
 	}

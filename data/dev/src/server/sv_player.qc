@@ -212,6 +212,17 @@ void() FallDamage_Update =
     self.was_onground = (self.flags & FL_ONGROUND) != 0;
 };
 
+void() WaterUpdate =
+{
+	if (self.waterlevel > 1)
+	{
+		if (self.stamina > 0)
+			self.stamina -= 1;
+		else
+			DoDamage(self, self, 1); // drowning
+	}
+};
+
 // Ran before physics
 void() PlayerPreThink =
 {	
@@ -349,6 +360,7 @@ void() PlayerPostThink =
 			self.effects &= ~EF_FLAG2;
 		}
 	}
+	WaterUpdate();
 	FallDamage_Update();
 };
 
