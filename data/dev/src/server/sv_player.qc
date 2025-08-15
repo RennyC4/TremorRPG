@@ -246,7 +246,7 @@ void() WaterUpdate =
 		if (self.stamina > 0)
 			self.stamina -= 1;
 		else
-			DoDamage(self, self, 1); // drowning
+			DoDamage(self, world, 1); // drowning
 	}
 };
 
