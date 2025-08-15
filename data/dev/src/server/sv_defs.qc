@@ -1775,6 +1775,7 @@ const float MENU_CHARACTER = 2;
 .float bonfire_finished; // prevent spam
 .entity user; // mainly used for th_use
 .float was_onground;
+.float climb_finished;
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)

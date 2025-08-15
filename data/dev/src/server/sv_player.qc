@@ -10,8 +10,35 @@ void() SetChangeParms = {};
 void(float elapsedtime) SV_PausedTic = {};
 void() info_player_start = {};
 
+void() PlayerClimb =
+{
+	makevectors (self.angles);
+	vector source = self.origin + '0 0 16';
+	traceline (source, source + v_forward * 24, MOVE_NORMAL, self);
+
+	if (trace_fraction == 1)
+		return;
+	if (self.climb_finished > time)
+		return;
+
+	// TODO: Climbing skill affects speed + stamina drain
+	if (trace_ent.solid == SOLID_BSP)
+	{
+		if (self.stamina > 0)
+		{
+			self.velocity = [0, 0];
+			self.velocity_z += 50;
+			self.stamina -= 1;
+		}
+		else
+			self.climb_finished = time + 3;
+	}
+};
+
 void() PlayerJump =
 {
+	PlayerClimb();
+
 	if (!(self.flags & FL_ONGROUND))
 		return;
 	if (!(self.flags & FL_JUMPRELEASED))

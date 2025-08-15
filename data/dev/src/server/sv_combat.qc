@@ -8,7 +8,6 @@ void() DoAttack_Melee =
 {
 	if (self.melee_finished > time)
 		return;
-
 	// Stamina drain on swing
 	if (self.classname == "player")
 	{
@@ -34,7 +33,7 @@ void() DoAttack_Melee =
 
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
-	traceline (source, source + v_forward * 64, MOVE_EVERYTHING, self);
+	traceline (source, source + v_forward * 64, MOVE_TRIGGERS, self);
 	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 
 	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
@@ -120,29 +119,26 @@ void(entity targ, entity attacker, float damage) DoDamage =
 		targ.health = targ.health - damage;
 		string eventlog_print;
 
-		if (attacker != self)
+		if (attacker.classname == "player")
 		{
-			if (attacker.classname == "player")
-			{
-				eventlog_print = (strcat("You hit for ^2", ftos(damage), " ^7damage\n"));
-				stuffcmd (attacker, sprintf("conecho event %s\n", eventlog_print));
-			}
-			if (targ.classname == "player")
-			{
-				eventlog_print = (strcat("You've taken ^1", ftos(damage), " ^7damage\n"));
-				stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
-			}
+			eventlog_print = (strcat("You hit for ^2", ftos(damage), " ^7damage\n"));
+			stuffcmd (attacker, sprintf("conecho event %s\n", eventlog_print));
+		}
+		if (targ.classname == "player")
+		{
+			eventlog_print = (strcat("You've taken ^1", ftos(damage), " ^7damage\n"));
+			stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+		}
 
-			// PVP
-			if (targ.classname == "player" && attacker.classname == "player")
+		// PVP
+		if (targ.classname == "player" && attacker.classname == "player")
+		{
+			if (targ.incombat_finished < time)
 			{
-				if (targ.incombat_finished < time)
-				{
-					eventlog_print = (strcat("^1You engage in combat!\n"));
-					stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
-					stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
-					targ.incombat_finished = attacker.incombat_finished = time + 30;
-				}
+				eventlog_print = (strcat("^1You engage in combat!\n"));
+				stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+				stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+				targ.incombat_finished = attacker.incombat_finished = time + 30;
 			}
 		}
 	}
