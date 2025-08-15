@@ -125,7 +125,7 @@ name_command bindlist[] =
 	{ "Sneak", "toggle_crouch" },
 	{ "Use", "+button3" },
 	{ "Block", "+button4" },
-//	{ "Jump6", "+jump" },
+	{ "Camera", "toggle_camera" },
 //	{ "Jump7", "+jump" },
 //	{ "Jump8", "+jump" },
 //	{ "Jump9", "+jump" },

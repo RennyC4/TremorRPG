@@ -44,6 +44,7 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_ARMORNAME, EV_STRING, armorname);
 	clientstat(STAT_ARMORVALUE, EV_FLOAT, armorvalue);
 	clientstat(STAT_INCOMBAT, EV_FLOAT, incombat);
+
 	// Skills
 	clientstat(STAT_SKILL_UNARMED, EV_FLOAT, skill_unarmed);
 	clientstat(STAT_SKILL_SLASH, EV_FLOAT, skill_slash);

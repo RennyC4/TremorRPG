@@ -2162,6 +2162,7 @@ accessor filestream : float
 #pragma noref 0
 
 float framecount;
+float pauseframe;
 
 string LOGIN_NAME; // users login name
 string LOGIN_GENDER; // create gender
@@ -2173,6 +2174,7 @@ entity ZoneName_alpha;
 float showscores;
 float drawfont1;
 float drawfont2;
+float camera_mode;
 
 float MENU;
 float MENU_OFF = 0;

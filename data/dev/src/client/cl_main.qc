@@ -32,6 +32,7 @@ noref void() CSQC_WorldLoaded =
 	registercommand("+showscores", "Show scoreboard");
 	registercommand("show_character", "Displays character information screen\n");
 	registercommand("toggle_crouch", "Crouching & sneaking\n");
+	registercommand("toggle_camera", "3rd person camera toggle\n");
 	registercommand("+use", "Use what is in front of player\n");
 
 	if (cvar("developer") == 1)
@@ -42,6 +43,7 @@ noref void() CSQC_WorldLoaded =
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
 	vector virtsize = [width, height];
+	float pause = serverkeyfloat(SERVERKEY_PAUSESTATE);
 
 	framecount = framecount + 1;
 
@@ -51,23 +53,20 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	g_height = height;
 
 	//disable quake status bar and quake crosshair
-	setproperty(VF_DRAWENGINESBAR, 0);	
+	setproperty(VF_DRAWENGINESBAR, 0);
 	setproperty(VF_DRAWCROSSHAIR, 0);
 
-	campos = getproperty(VF_ORIGIN);
-	camang = getproperty(VF_ANGLES);
+	//autoadd entities received from servers for drawing
+	addentities((intermission?0:MASK_VIEWMODEL)|MASK_ENGINE);
 
-	//autoadd entities received from servers for drawing	
-	addentities(MASK_ENGINE);
+	if (camera_mode)
+		Camera_Third();
 
 	//does what you think it does
 	renderscene();
 
-	sui_begin(g_width, g_height);
-	
-	
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well
-	
+	sui_begin(g_width, g_height);
 	if (showscores)
 	{
 		Hud_UpdateScores();
@@ -76,14 +75,19 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		Player_Hud();
 
-	//
-	//
-
 	sui_menu_nav();
 	sui_end();
 
+	//
+	//
+
 	if (framecount == 10)
 		localcmd("exec haze.cfg\n");
+
+	if (pause > 0)
+		pauseframe += 1;
+	else
+		pauseframe = 0;
 };
 
 float(string strCommand) CSQC_ConsoleCommand =
@@ -93,6 +97,13 @@ float(string strCommand) CSQC_ConsoleCommand =
 		sendevent("PlayerShowStats", "");
 	if (argv(0) == "toggle_crouch")
 		sendevent("PlayerCrouch", "");
+	if (argv(0) == "toggle_camera")
+	{
+		if (!camera_mode)
+			camera_mode = TRUE;
+		else
+			camera_mode = FALSE;
+	}
 	if (argv(0) == "+showscores") // scoreboard
 		showscores = TRUE;
 	else
