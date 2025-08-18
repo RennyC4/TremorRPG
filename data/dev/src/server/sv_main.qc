@@ -44,6 +44,7 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_ARMORNAME, EV_STRING, armorname);
 	clientstat(STAT_ARMORVALUE, EV_FLOAT, armorvalue);
 	clientstat(STAT_INCOMBAT, EV_FLOAT, incombat);
+	clientstat(STAT_BLOCKVALUE, EV_FLOAT, blockvalue);
 
 	// Skills
 	clientstat(STAT_SKILL_UNARMED, EV_FLOAT, skill_unarmed);
@@ -64,6 +65,8 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_SKILL_CLIMB, EV_FLOAT, skill_climb);
 	clientstat(STAT_SKILL_SWIM, EV_FLOAT, skill_swim);
 	clientstat(STAT_SKILL_ACROBATIC, EV_FLOAT, skill_acrobatic);
+
+	clientstat(STAT_REAPERMARK, EV_FLOAT, reaper_marks);
 
 	// Job Skills
 };
@@ -100,6 +103,7 @@ void() worldspawn =
 	precache_sound ("levelup.wav");
 	precache_sound ("sword1.wav");
 	precache_sound ("swordhit.wav");
+	precache_sound ("shield1.wav");
 	precache_sound ("land1.wav");
 	precache_sound ("land2.wav");
 

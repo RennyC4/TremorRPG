@@ -59,7 +59,19 @@ void() DoAttack_Melee =
 				bs_damage = 1;
 			string eventlog_print = (strcat("^1Backstab! +", ftos(bs_damage), " damage !!\n"));
 			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+			float backstab = TRUE;
 		}
+
+		if (trace_ent.blocking && !backstab)
+		{
+			sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
+			damage = damage - trace_ent.blockvalue;
+			if (trace_ent.blockvalue > damage)
+				damage = 1;
+		}
+		else
+			sound (trace_ent, CHAN_BODY, "swordhit.wav", 1, ATTN_NORM);
+
 		damage = ceil(damage); // round up final damage output
 
 		float i;
@@ -68,10 +80,9 @@ void() DoAttack_Melee =
 
 		for (i=0; i < 2; i++)
 			te_blood(trace_ent.origin + eye_level, trace_ent.velocity, 12); // spawn blood
-		DoDamage(trace_ent, self, damage);
-		sound (trace_ent, CHAN_BODY, "swordhit.wav", 1, ATTN_NORM);
-	}
 
+		DoDamage(trace_ent, self, damage);
+	}
 	self.melee_finished = time + self.attack_speed;
 };
 

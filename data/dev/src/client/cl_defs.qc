@@ -2242,5 +2242,5 @@ float MENU_CHARACTER = 2; // user info screen
 #define STAT_SKILL_CLIMB 80
 #define STAT_SKILL_SWIM 81
 #define STAT_SKILL_ACROBATIC 82
-// Misc
 #define STAT_REAPERMARK 83
+#define STAT_BLOCKVALUE 84

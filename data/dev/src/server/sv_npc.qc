@@ -77,7 +77,7 @@ void() bonfire_use =
 			self.user.view_ofs = [0, 0, 48];
 			self.user.movetype = MOVETYPE_WALK; // Stop user movement
 
-			string eventlog_print = "^5You stand back up ...\n";
+			eventlog_print = "^5You stand back up ...\n";
 			stuffcmd (self.user, sprintf("conecho event %s\n", eventlog_print));
 			self.user.bonfire = FALSE;
 		}

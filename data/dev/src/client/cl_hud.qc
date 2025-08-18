@@ -255,7 +255,6 @@ void() User_CharacterScreen =
 
 	string displaystat;
 
-	// rpg stats
 	string disp_gender = getstats(STAT_GENDER);
 	float disp_level = getstatf(STAT_LEVEL);
 	float disp_exp =  getstatf(STAT_EXP);
@@ -270,7 +269,6 @@ void() User_CharacterScreen =
 	float disp_attacktype = getstatf(STAT_ATTACKTYPE);
 	string disp_armorname = getstats(STAT_ARMORNAME);
 	float disp_armorvalue = getstatf(STAT_ARMORVALUE);
-	//skills
 	float disp_unarmed = getstatf(STAT_SKILL_UNARMED);
 	float disp_slash = getstatf(STAT_SKILL_SLASH);
 	float disp_pierce = getstatf(STAT_SKILL_PIERCE);
@@ -285,13 +283,12 @@ void() User_CharacterScreen =
 	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
 	float disp_healthregen = getstatf(STAT_SKILL_HEALTHREGEN);
 	float disp_manaregen = getstatf(STAT_SKILL_MANAREGEN);
-
 	float disp_haggle = getstatf(STAT_SKILL_HAGGLE);
 	float disp_climb = getstatf(STAT_SKILL_CLIMB);
 	float disp_swim = getstatf(STAT_SKILL_SWIM);
 	float disp_acrobatic = getstatf(STAT_SKILL_ACROBATIC);
-
 	float disp_reapermarks = getstatf(STAT_REAPERMARK);
+	float disp_blocking = getstatf(STAT_BLOCKVALUE);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -397,7 +394,8 @@ void() User_CharacterScreen =
 
 	newpos_y += 10;
 
-	displaystat = "^2Blocking:^70";
+	//displaystat = "^2Blocking:^7", ;
+	displaystat = strcat("^2Blocking:^7" , ftos(disp_blocking), "\n");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 

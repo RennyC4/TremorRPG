@@ -1814,6 +1814,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .string main_hand; // string for main hand
 .string off_hand; // string for off hand
 .float blocking; // Player can block with shield WIP
+.float blockvalue; // damage reduction when blocking
 .string armorname;
 .float reaper_marks; // for PVP kills
 //.float armorvalue; (this is already defined)
@@ -1907,8 +1908,8 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define STAT_SKILL_CLIMB 80
 #define STAT_SKILL_SWIM 81
 #define STAT_SKILL_ACROBATIC 82
-// Misc
 #define STAT_REAPERMARK 83
+#define STAT_BLOCKVALUE 84
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

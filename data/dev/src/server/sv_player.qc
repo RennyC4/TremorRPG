@@ -63,6 +63,8 @@ void() CSEv_PlayerCrouch =
 {
 	if (!self.loggedin)
 		return;
+	if (self.blocking)
+		return;
 	if (self.deadflag == DEAD_DEAD || self.health <= 0)
 		return;
 
@@ -193,6 +195,16 @@ void() Player_Use =
 // Block button
 void() Player_ShieldBlock =
 {
+	if (self.attack_speed < time)
+	{
+		self.blocking = TRUE;
+		self.maxspeed = 240;
+	}
+	else
+	{
+		self.maxspeed = 360;
+		self.blocking = FALSE;
+	}
 };
 
 //
@@ -287,7 +299,13 @@ void() PlayerPreThink =
 			}
 		}
 		else
-			DoAttack_Melee();
+		{
+			if (!self.blocking)
+				DoAttack_Melee();
+			else // TODO: Add shield bash
+			{
+			}
+		}
 	}
 
 	// Button1 we ignore
@@ -308,7 +326,16 @@ void() PlayerPreThink =
 	
 	// Block button
 	if (self.button4)
-		Player_ShieldBlock();
+	{
+		if (!self.crouch)
+			Player_ShieldBlock();
+	}
+	else // player speed checks
+	{
+		self.blocking = FALSE;
+		if (self.maxspeed != 360 && !self.crouch)
+			self.maxspeed = 360;
+	}
 
 	// Enforce name
 	if (self.loggedin)
@@ -354,8 +381,11 @@ void() PlayerPostThink =
 		}
 		// Stamina regeneration
 		if (self.staminaregen_finished < time)
-		{		
-			calc = 0.2 - (self.skill_endurance * 0.0005);
+		{
+			if (!self.blocking)
+				calc = 0.2 - (self.skill_endurance * 0.0005);
+			else
+				calc = 0.6 - (self.skill_endurance * 0.0005);
 			//string calc_disp = ftos(calc);
 			//print (calc_disp, "\n");
 
@@ -599,6 +629,7 @@ void(entity targ) CSEv_Player_SaveChar =
 		fputs(v, ftos(targ.pvp), "\n");
 		fputs(v, ftos(targ.pvpenable_count), "\n");
 		fputs(v, ftos(targ.pvp_autoflagged), "\n");
+		fputs(v, ftos(targ.blockvalue), "\n");
 		//
 
 		// skills
@@ -713,6 +744,8 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.pvpenable_count = stof(line);
 		if (line = fgets(v))
 			self.pvp_autoflagged = stof(line);
+		if (line = fgets(v))
+			self.blockvalue = stof(line);
 
 		//
 
@@ -800,7 +833,8 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.attack_stamina = 25;
 		self.attack_type = 1; // Slashing weapon
 		self.main_hand = "Broken Sword";
-		self.off_hand = "Empty";
+		self.off_hand = "Broken Buckler";
+		self.blockvalue = 1;
 
 		// default armor
 		self.armorname = "Plain Clothes";
