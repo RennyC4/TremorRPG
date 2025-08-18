@@ -121,6 +121,12 @@ void() CSEv_User_TogglePVP_ =
 
 	if (!self.pvp)
 	{
+		eventlog_print = (strcat("PVP: ^8Unavailable"));
+		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+		return;
+	}
+	if (self.pvp == 2)
+	{
 		self.pvp = TRUE;
 		eventlog_print = (strcat("PVP: ^1Enabled"));
 		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
@@ -129,7 +135,7 @@ void() CSEv_User_TogglePVP_ =
 	{
 		eventlog_print = (strcat("PVP: ^2Disabled"));
 		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
-		self.pvp = FALSE;
+		self.pvp = 2;
 	}
 };
 
@@ -399,6 +405,11 @@ void() ClientConnect =
 
 void() PlayerDeath =
 {
+	float g = ceil(self.gold * 0.25);
+	if (self.gold > 1)
+		self.gold -= g; // drop some gold
+	string h = ftos(g);
+
 	string eventlog_print = "^1You're dead!\n";
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 
@@ -409,7 +420,8 @@ void() PlayerDeath =
 	self.radius_candamage = "FALSE"; // uses string
 	self.movetype = MOVETYPE_NONE;
 	self.view_ofs = [0, 0, 4];
-	centerprint (self, "/PYou're Dead!\n\n\n\nPress Attack to respawn\n");
+	centerprint (self, "/P^1You're Dead!\n^7--------\n\nYou've lost ^3" , h, " ^7gold!" , "\n\n^b^5Press Attack to respawn\n");
+	
 	self.respawn_finished = time + 5;
 };
 

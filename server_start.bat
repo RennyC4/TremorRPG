@@ -1,1 +1,1 @@
-quakerpg.exe +window -dedicated +mapcluster world +sv_serverip 99.248.148.145
+quakerpg.exe +window -dedicated +mapcluster world.hmp +sv_serverip 99.248.148.145

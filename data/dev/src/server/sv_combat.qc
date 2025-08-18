@@ -8,6 +8,7 @@ void() DoAttack_Melee =
 {
 	if (self.melee_finished > time)
 		return;
+
 	// Stamina drain on swing
 	if (self.classname == "player")
 	{
@@ -84,7 +85,12 @@ void(entity targ, entity attacker) DoDeath =
 			GiveExperience(attacker, targ.exp_min, targ.exp);
 			GiveGold(attacker, targ.gold_min, targ.gold);
 		}
-		// TODO: PVP killing rewards
+		if (targ.classname == "player") // PVP Kill
+		{
+			attacker.reaper_marks += targ.level;
+			if (targ.gold > 1)
+				GiveGold(attacker, ceil(targ.gold / 4), ceil(targ.gold / 4));
+		}
 	}
 
 	if (targ.th_die)

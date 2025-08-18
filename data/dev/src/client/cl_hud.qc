@@ -291,6 +291,7 @@ void() User_CharacterScreen =
 	float disp_swim = getstatf(STAT_SKILL_SWIM);
 	float disp_acrobatic = getstatf(STAT_SKILL_ACROBATIC);
 
+	float disp_reapermarks = getstatf(STAT_REAPERMARK);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -373,9 +374,9 @@ void() User_CharacterScreen =
 
 	string displaystat2 = strcat("^5Type:^7" , ftos(disp_attacktype));
 	if (!disp_attacktype)			displaystat2 = "Unarmed";
-	else if (disp_attacktype == 1)  displaystat2 = "Slashing";
-	else if (disp_attacktype == 2)  displaystat2 = "Piercing";
-	else if (disp_attacktype == 4)  displaystat2 = "Bashing";
+	else if (disp_attacktype == 1)  displaystat2 = "Slash";
+	else if (disp_attacktype == 2)  displaystat2 = "Pierce";
+	else if (disp_attacktype == 4)  displaystat2 = "Bash";
 	else displaystat2 = "Unknown";
 
 	displaystat = strcat("^1DPS:^7" , dispfix_dps, " (^8", displaystat2, "^7)");
@@ -403,6 +404,12 @@ void() User_CharacterScreen =
 	newpos_y += 22;
 
 	displaystat = strcat("^5Armor:^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	displaystat = strcat("^1Reaper Marks:^7", ftos(disp_reapermarks));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
