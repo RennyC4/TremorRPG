@@ -139,10 +139,14 @@ void(float which) CSEv_User_AddSkillPoint_f =
 	{
 		if (self.skill_endurance < cap)
 		{
-			self.skill_endurance += 1;
-			self.skillpoints -= 1;
+			if (self.skill_endurance < 400)
+			{
+				self.skill_endurance += 1;
+				self.skillpoints -= 1;
+			}
+			else
+				sprint(self, PRINT_HIGH, "Endurance skill is maxed out\n");
 			return;
-		}
 	}
 	else if (which == 10)
 	{

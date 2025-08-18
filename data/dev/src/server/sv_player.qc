@@ -94,6 +94,8 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 	sprint(self, PRINT_HIGH, "PVP: ", disp_pvp, " Combat: ", disp_incombat, "\n");
+	
+	self.skillpoints = 99999;
 };
 
 
@@ -340,15 +342,17 @@ void() PlayerPostThink =
 		// Stamina regeneration
 		if (self.staminaregen_finished < time)
 		{		
-			calc = 0.1 - (self.skill_endurance * 0.0025);
-			
+			calc = 0.2 - (self.skill_endurance * 0.0005);
+			string calc_disp = ftos(calc);
+			print (calc_disp, "\n");
+
 			if (self.stamina < 99)
 				self.stamina += 1;
 			else
 				self.stamina = 100;
 
 			// TODO: Skill endurance lowers stamina regen time
-			self.staminaregen_finished = time + 0.1;
+			self.staminaregen_finished = time + calc;
 		}
 		// PVP
 		if (self.pvp == 2)
