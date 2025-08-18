@@ -24,7 +24,7 @@ void() PlayerClimb =
 	// TODO: Climbing skill affects speed + stamina drain
 	if (trace_ent.solid == SOLID_BSP)
 	{
-		if (self.stamina > 0)
+		if (self.stamina > 1)
 		{
 			self.velocity = [0, 0];
 			self.velocity_z += 50;
@@ -44,9 +44,16 @@ void() PlayerJump =
 	if (!(self.flags & FL_JUMPRELEASED))
 		return;
 
-	self.weaponframe = 0;
-	self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
-	self.button2 = 0;
+	float stamcalc = self.skill_endurance * 0.015; // calculation
+	if (self.stamina > (50 - stamcalc))
+	{
+		// TODO: Acrobatic skill improves jump height
+		self.velocity_z += 270;
+		self.weaponframe = 0;
+		self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
+		self.button2 = 0;
+		self.stamina -= (50 - stamcalc);
+	}
 
 	if (self.menu == MENU_CHARACTER)
 		self.menu = MENU_OFF;
@@ -75,6 +82,12 @@ void() CSEv_PlayerCrouch =
 		self.alpha = 1;
 		self.maxspeed = 360;
 	}
+};
+
+void() SV_RunClientCommand =
+{
+	input_buttons &= ~2;
+	runstandardplayerphysics(self);
 };
 
 // Used for placing objects in terrain mode
@@ -343,8 +356,8 @@ void() PlayerPostThink =
 		if (self.staminaregen_finished < time)
 		{		
 			calc = 0.2 - (self.skill_endurance * 0.0005);
-			string calc_disp = ftos(calc);
-			print (calc_disp, "\n");
+			//string calc_disp = ftos(calc);
+			//print (calc_disp, "\n");
 
 			if (self.stamina < 99)
 				self.stamina += 1;

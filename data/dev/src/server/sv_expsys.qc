@@ -147,6 +147,7 @@ void(float which) CSEv_User_AddSkillPoint_f =
 			else
 				sprint(self, PRINT_HIGH, "Endurance skill is maxed out\n");
 			return;
+		}
 	}
 	else if (which == 10)
 	{

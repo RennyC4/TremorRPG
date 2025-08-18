@@ -105,5 +105,3 @@ void() worldspawn =
 
 	SSQC_SendValuesToCSQC();
 };
-
-void() SV_RunClientCommand = {runstandardplayerphysics(self);};
