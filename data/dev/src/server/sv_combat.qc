@@ -16,6 +16,67 @@ float(entity enemy, entity peaking) infront_block =
 	return FALSE;
 };
 
+void() DoAttack_ShieldBash =
+{
+	if (self.melee_finished > time)
+		return;
+
+	// Stamina drain on swing
+	if (self.classname == "player")
+	{
+		float stamcalc = 25 - (self.skill_endurance * 0.015); // calculation, same as regular sword swing
+		if (self.stamina < stamcalc)
+			return;
+		self.stamina -= stamcalc;
+	}
+	
+	makevectors (self.angles);
+	vector source = self.origin + '0 0 16';
+	traceline (source, source + v_forward * 48, MOVE_TRIGGERS, self);
+
+	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
+	{
+		// PVP
+		if (self.classname == "player" && trace_ent.classname == "player")
+		{
+			if (self.pvp != 1 || trace_ent.pvp != 1)
+				return;
+			else
+			{
+				self.incombat = trace_ent.incombat = TRUE; // Turn off health regen, flag players for incombat
+				self.incombat_finished = trace_ent.incombat_finished = time + 30; // keep players locked in combat
+			}
+		}
+		if (trace_ent.parry_finished < time)
+		{
+			// Pushing
+			vector dir = trace_ent.origin - self.origin;
+			dir = normalize(dir);
+			trace_ent.velocity = '0 0 0';
+			trace_ent.flags &= ~FL_ONGROUND;
+			trace_ent.velocity_z += 150;
+			trace_ent.velocity = trace_ent.velocity + dir * 500;
+			//
+			if (trace_ent.stagger_finished < time)
+				trace_ent.stagger_finished = time + 3;
+			trace_ent.stagger_lockview = trace_ent.angles;
+			sound (trace_ent, CHAN_WEAPON, "shield2.wav", 1, ATTN_NORM);
+		}
+		else // Parry
+		{
+			float parry = TRUE;
+			string eventlog_print = (strcat("^2Successful parry!"));
+			stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+			// Apply effects
+			self.stagger_lockview = self.angles;
+			self.stagger_finished = time + 3;
+		}
+	}
+	sound (self, CHAN_WEAPON, "shield3.wav", 1, ATTN_NORM);
+	self.melee_finished = time + 2;
+};
+
+// Main melee attack function
 void() DoAttack_Melee =
 {
 	if (self.melee_finished > time)
@@ -64,7 +125,7 @@ void() DoAttack_Melee =
 		}
 
 		// check & add backstab skill damage
-		if (!infront_block(self, trace_ent) && /* self.crouch && */ trace_ent.enemy != self)
+		if (!infront_block(self, trace_ent))
 		{
 			float bs_damage = (self.skill_backstab * howmuch);
 			if (bs_damage < 1)
@@ -79,9 +140,13 @@ void() DoAttack_Melee =
 			}
 			if (trace_ent.classname == "player")
 			{
-				eventlog_print = (strcat("^1You've been staggered!"));
-				stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
-				trace_ent.stagger_finished = time + 3; // stagger, stamina is out
+				if (trace_ent.stagger_finished < time)
+				{
+					eventlog_print = (strcat("^1You've been staggered!"));
+					stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+					trace_ent.stagger_lockview = trace_ent.angles;
+					trace_ent.stagger_finished = time + 3; // stagger, stamina is out
+				}
 			}
 		}
 
@@ -89,46 +154,84 @@ void() DoAttack_Melee =
 		{
 			float stamcalc_block = 20 - (self.skill_endurance * 0.015); // calculation
 	
-			if (trace_ent.stamina >= stamcalc_block)
+			if (trace_ent.parry_finished < time)
 			{
-				damage = damage - trace_ent.blockvalue;
-				if (trace_ent.blockvalue > damage)
-					damage = 1;
-
-				trace_ent.stamina -= stamcalc_block;
-			}
-			else
-			{
-				if (trace_ent.classname == "player")
+				if (trace_ent.stamina >= stamcalc_block)
 				{
-					eventlog_print = (strcat("^1You've been staggered!"));
-					stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+					damage = damage - trace_ent.blockvalue;
+					if (trace_ent.blockvalue > damage)
+						damage = 1;
+
+					trace_ent.stamina -= stamcalc_block;
 				}
-				damage = damage - ceil(trace_ent.blockvalue / 2); // save a tiny bit of damage still
-				trace_ent.stamina = 0;
-				trace_ent.blocking = FALSE;
-				trace_ent.stagger_finished = time + 3; // stagger, stamina is out
+				else
+				{
+					if (trace_ent.stagger_finished < time)
+					{
+						if (trace_ent.classname == "player")
+						{
+							eventlog_print = (strcat("^1You've been staggered!"));
+							stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+						}
+						damage = damage - ceil(trace_ent.blockvalue / 2); // save a tiny bit of damage still
+						trace_ent.stamina = 0;
+						trace_ent.blocking = FALSE;
+						trace_ent.stagger_lockview = trace_ent.angles;
+						trace_ent.stagger_finished = time + 3; // stagger, stamina is out
+					}
+				}
+
+				// Camera shake
+				if (random() < 0.5)
+				{
+					trace_ent.punchangle_x = 8;
+					if (random() < 0.5)
+						trace_ent.angles_y += 8;
+					else
+						trace_ent.angles_y -= 8;
+				}
+				else
+				{
+					trace_ent.punchangle_x = (8 * -1);
+					if (random() < 0.5)
+						trace_ent.angles_y += 8;
+					else
+						trace_ent.angles_y -= 8;
+				}
 			}
+			else // parry
+			{
+				float parry = TRUE;
+				eventlog_print = (strcat("^2Successful parry!"));
+				stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+				// Apply effects
+				self.stagger_lockview = self.angles;
+				self.stagger_finished = time + 3;
+			}
+			trace_ent.fixangle = TRUE;
 			sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
 		}
 
-		// Armor calculations
-		if (trace_ent.armorvalue > damage)
-			damage = 1;
-		else
-			damage = damage - trace_ent.armorvalue;
+		if (!parry)
+		{
+			// Armor calculations
+			if (trace_ent.armorvalue > damage)
+				damage = 1;
+			else
+				damage = damage - trace_ent.armorvalue;
 
-		// Blood effects
-		float i;
-		vector eye_level = [9, 0];
-		eye_level_z = self.view_ofs_z; // match up blood spray to attackers view by z
+			// Blood effects
+			float i;
+			vector eye_level = [9, 0];
+			eye_level_z = self.view_ofs_z; // match up blood spray to attackers view by z
 
-		for (i=0; i < 2; i++)
-			te_blood(trace_ent.origin + eye_level, trace_ent.velocity, 12); // spawn blood
+			for (i=0; i < 2; i++)
+				te_blood(trace_ent.origin + eye_level, trace_ent.velocity, 12); // spawn blood
 
-		damage = ceil(damage); // round up final damage output
-		DoDamage(trace_ent, self, damage);
-		sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
+			damage = ceil(damage); // round up final damage output
+			DoDamage(trace_ent, self, damage);
+			sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
+		}
 	}
 	self.melee_finished = time + self.attack_speed;
 };

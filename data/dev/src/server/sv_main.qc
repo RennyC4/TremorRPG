@@ -105,6 +105,8 @@ void() worldspawn =
 	precache_sound ("swordhit.wav");
 	precache_sound ("backstab.wav");
 	precache_sound ("shield1.wav");
+	precache_sound ("shield2.wav");
+	precache_sound ("shield3.wav");
 	precache_sound ("land1.wav");
 	precache_sound ("land2.wav");
 

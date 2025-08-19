@@ -194,7 +194,17 @@ void() Player_Use =
 void() Player_ShieldBlock =
 {
 	if (self.attack_speed < time && self.stagger_finished < time)
+	{
+		if (!self.blocking)
+		{
+			if (self.parry_finished < time && self.parry_cooldown_finished < time)
+			{
+				self.parry_finished = time + 0.135; // success window
+				self.parry_cooldown_finished = time + 0.8;
+			}			
+		}
 		self.blocking = TRUE;
+	}
 	else
 		self.blocking = FALSE;
 };
@@ -294,9 +304,8 @@ void() PlayerPreThink =
 		{
 			if (!self.blocking)
 				DoAttack_Melee();
-			else // TODO: Add shield bash
-			{
-			}
+			else
+				DoAttack_ShieldBash();
 		}
 	}
 
@@ -336,7 +345,12 @@ void() PlayerPreThink =
 			self.maxspeed = 180;
 	}
 	else
+	{
+		// Stagger will lock the players view temporarily
 		self.maxspeed = 90; // staggered speed
+		self.angles = self.stagger_lockview;
+		self.fixangle = TRUE;
+	}
 
 	// Enforce name
 	if (self.loggedin)

@@ -1776,6 +1776,7 @@ const float MENU_CHARACTER = 2;
 .entity user; // mainly used for th_use
 .float was_onground;
 .float climb_finished;
+.vector stagger_lockview;
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)
@@ -1819,6 +1820,8 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float stagger_finished; // when staggered, can't block for a bit (slower player speed on recovery)
 .string armorname;
 .float reaper_marks; // for PVP kills
+.float parry_finished;
+.float parry_cooldown_finished;
 //.float armorvalue; (this is already defined)
 
 // skill point stats

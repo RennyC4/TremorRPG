@@ -72,7 +72,7 @@ float (entity targ) visible =
 
 void() monster_ai_melee =
 {
-	if (self.melee_finished < time)
+	if (self.melee_finished < time && self.stagger_finished < time)
 	{
 		if (self.noise1)
 			sound (self, CHAN_VOICE, self.noise1, 1, ATTN_NORM);
@@ -87,6 +87,9 @@ void() monster_ai_melee =
 
 void() monster_ai_move =
 {
+	if (self.stagger_finished > time)
+		return;
+
 	if (self.enemy)
 	{
 		if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
@@ -201,8 +204,11 @@ void() monster_ai_think =
 	if (self.goalentity) 
 	{
 		vector view = vectoangles(self.goalentity.origin - self.origin);
-		self.angles_y = view_y;
-		self.angles_x = view_x;
+		if (self.stagger_finished < time)
+		{
+			self.angles_y = view_y;
+			self.angles_x = view_x;
+		}
 
 		if (self.ai_mode != AI_RUNBACK)
 			self.ai_mode = AI_CHASE;
