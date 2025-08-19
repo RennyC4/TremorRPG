@@ -78,17 +78,41 @@ void() DoAttack_Melee =
 				string eventlog_print = (strcat("^1Backstab! +", ftos(bs_damage), " damage !!\n"));
 				stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 			}
+			if (trace_ent.classname == "player")
+			{
+				eventlog_print = (strcat("^1You've been staggered!"));
+				stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+				trace_ent.stagger_finished = time + 3; // stagger, stamina is out
+			}
 		}
 
 		if (trace_ent.blocking && !backstab)
 		{
-			sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
-			damage = damage - trace_ent.blockvalue;
-			if (trace_ent.blockvalue > damage)
-				damage = 1;
+			float stamcalc_block = 20 - (self.skill_endurance * 0.015); // calculation
+	
+			if (trace_ent.stamina >= stamcalc_block)
+			{
+				sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
+				damage = damage - trace_ent.blockvalue;
+				if (trace_ent.blockvalue > damage)
+					damage = 1;
+
+				trace_ent.stamina -= stamcalc_block;
+			}
+			else
+			{
+				if (trace_ent.classname == "player")
+				{
+					eventlog_print = (strcat("^1You've been staggered!"));
+					stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+				}
+				damage = damage - ceil(trace_ent.blockvalue / 2); // save a tiny bit of damage still
+				trace_ent.blocking = FALSE;
+				trace_ent.stagger_finished = time + 3; // stagger, stamina is out
+			}
 		}
-		else
-			sound (trace_ent, CHAN_BODY, "swordhit.wav", 1, ATTN_NORM);
+
+		sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
 
 		damage = ceil(damage); // round up final damage output
 

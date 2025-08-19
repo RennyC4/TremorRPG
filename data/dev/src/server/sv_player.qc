@@ -74,7 +74,6 @@ void() CSEv_PlayerCrouch =
 		self.view_ofs = [0, 0, 24];
 		self.crouch = TRUE;
 		self.alpha = 0.25;
-		self.maxspeed = 160;
 	}
 	else
 	{
@@ -82,7 +81,6 @@ void() CSEv_PlayerCrouch =
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];
 		self.alpha = 1;
-		self.maxspeed = 360;
 	}
 };
 
@@ -195,16 +193,10 @@ void() Player_Use =
 // Block button
 void() Player_ShieldBlock =
 {
-	if (self.attack_speed < time)
-	{
+	if (self.attack_speed < time && self.stagger_finished < time)
 		self.blocking = TRUE;
-		self.maxspeed = 240;
-	}
 	else
-	{
-		self.maxspeed = 360;
 		self.blocking = FALSE;
-	}
 };
 
 //
@@ -331,11 +323,20 @@ void() PlayerPreThink =
 			Player_ShieldBlock();
 	}
 	else // player speed checks
-	{
 		self.blocking = FALSE;
+
+	// Player speed checks
+	if (self.stagger_finished < time)
+	{
 		if (self.maxspeed != 360 && !self.crouch)
 			self.maxspeed = 360;
+		if (self.maxspeed != 240 && self.blocking)
+			self.maxspeed = 240;
+		if (self.crouch && self.maxspeed != 180)
+			self.maxspeed = 180;
 	}
+	else
+		self.maxspeed = 90; // staggered speed
 
 	// Enforce name
 	if (self.loggedin)
@@ -835,7 +836,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.attack_type = 1; // Slashing weapon
 		self.main_hand = "Broken Sword";
 		self.off_hand = "Broken Buckler";
-		self.blockvalue = 1;
+		self.blockvalue = 3;
 
 		// default armor
 		self.armorname = "Plain Clothes";
