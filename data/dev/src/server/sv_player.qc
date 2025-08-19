@@ -285,14 +285,22 @@ void() FallDamage_Update =
     self.was_onground = (self.flags & FL_ONGROUND) != 0;
 };
 
+.float swim_stamina_finished;
 void() WaterUpdate =
 {
 	if (self.waterlevel > 1)
 	{
+		float stamcalc = 0.01 + (self.skill_swim * 0.0005); // stamina calculation
 		if (self.stamina > 0)
-			self.stamina -= 1;
+		{
+			if (self.swim_stamina_finished < time)
+			{
+				self.stamina -= 1;
+				self.swim_stamina_finished = time + stamcalc;
+			}
+		}
 		else
-			DoDamage(self, world, 1); // drowning
+			DoDamage(self, world, self.health); // drowned
 	}
 };
 
@@ -381,6 +389,9 @@ void() PlayerPostThink =
 	if (!self.loggedin)
 		return;
 
+	WaterUpdate();
+	FallDamage_Update();
+
 	float calc;
 
 	// HACK: Used to display level on the scoreboard
@@ -416,7 +427,7 @@ void() PlayerPostThink =
 			else
 				calc = 0.4 - (self.skill_endurance * 0.0005);
 
-			if (self.climbing)
+			if (self.climbing || self.waterlevel > 1)
 				calc = -1;
 
 			//string calc_disp = ftos(calc);
@@ -428,8 +439,6 @@ void() PlayerPostThink =
 				else
 					self.stamina = 100;
 			}
-
-			// TODO: Skill endurance lowers stamina regen time
 			self.staminaregen_finished = time + calc;
 		}
 		// PVP
@@ -475,8 +484,6 @@ void() PlayerPostThink =
 			self.effects &= ~EF_FLAG2;
 		}
 	}
-	WaterUpdate();
-	FallDamage_Update();
 };
 
 void() ClientConnect =
@@ -581,6 +588,7 @@ void(float type) PlayerSpawn =
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
 		self.fixangle = TRUE;
+		self.velocity = '0 0 0';
 
 		// TODO: Follow gender rule
 		setmodel(self, "models/player_m.iqm");

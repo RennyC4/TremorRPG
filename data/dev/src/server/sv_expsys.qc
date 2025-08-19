@@ -222,8 +222,13 @@ void(float which) CSEv_User_AddSkillPoint_f =
 	{
 		if (self.skill_swim < cap)
 		{
-			self.skill_swim += 1;
-			self.skillpoints -= 1;
+			if (self.skill_swim < 300)
+			{
+				self.skill_swim += 1;
+				self.skillpoints -= 1;
+			}
+			else
+				sprint(self, PRINT_HIGH, "Swimming skill is maxed out\n");	
 			return;
 		}
 	}
