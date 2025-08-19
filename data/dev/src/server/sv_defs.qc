@@ -1778,6 +1778,7 @@ const float MENU_CHARACTER = 2;
 .float climbing; // boolean
 .float climb_finished;
 .vector stagger_lockview;
+.entity char; // used for various things
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)

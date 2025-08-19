@@ -1,4 +1,4 @@
-//
+﻿//
 // Lock on targetting
 //
 
@@ -11,11 +11,11 @@ void(entity target) SmoothFaceEntity;
 .float  lock_on; 	// 0/1 toggle
 .float  lock_next;	// debounce for toggles/switches (time)
 
-float LOCK_RANGE        = 900;	// max distance to pick/keep a lock
-float LOCK_FOV_COS      = 0.90;	// cos(FOV/2). 0.60 ~ ~104° cone; tighten to ~0.90 for ~50°
+float LOCK_RANGE        = 1000;	// max distance to pick/keep a lock
+float LOCK_FOV_COS      = 0.60;	// cos(FOV/2). 0.60 ~ ~104° cone; tighten to ~0.90 for ~50°
 float LOCK_LOS_STEP     = 16;	// los trace hull size step (point trace is fine too)
 float LOCK_SWITCH_COOLD = 0.18;	// seconds between switch presses
-float LOCK_TURN_SPEED   = 16;	// higher = snappier turn toward target (server smoothing)
+float LOCK_TURN_SPEED   = 32;	// higher = snappier turn toward target (server smoothing)
 float LOCK_BREAK_TIME   = 0.25;	// grace time when LOS lost before breaking lock
 
 // impulses
@@ -25,6 +25,38 @@ float IMP_LOCK_PREV   = 142;
 
 // remember last time we saw the target for grace period
 .float lock_los_lost_time;
+
+void() ShowLockMarker_think =
+{
+	if (self.scale > 0.5)
+		self.scale -= 0.1;
+	else
+		self.scale = 0.5;
+	self.nextthink = time;
+};
+
+void(entity player, entity target) ShowLockMarker =
+{
+    if (!target)
+		return;
+	if (target.char)
+		return;
+
+	entity x = spawn();
+	x.owner = x.aiment = target;
+	x.drawonlytoclient = player;
+	x.movetype = MOVETYPE_FOLLOW;
+	x.effects = EF_NODEPTHTEST;
+	x.classname = "reticle";
+	x.scale = 2;
+	x.view_ofs_z = target.maxs_z / 2;
+	setmodel(x, "progs/targetdot.spr");
+	setsize(x, [-0, -0, 0], [0, 0, 0]);
+	x.think = ShowLockMarker_think;
+	x.nextthink = time;
+
+	target.char = x; // link 'em
+};
 
 // helper function (aim magnet) to bios aim vector towards the locked target
 vector() AttackDir =
@@ -56,10 +88,17 @@ void() LockOn_HandleInput =
 				self.lock_on = 1;
                 self.lock_target = t;
                 self.lock_los_lost_time = 0;
+				if (!t.char)
+					ShowLockMarker(self, t); // show flash on new target
             }
         }
         else
         {
+			if (self.lock_target.char)
+			{
+				remove(self.lock_target.char);
+				self.lock_target.char = world;
+			}
             self.lock_on = 0;
             self.lock_target = world;
         }
@@ -99,7 +138,11 @@ void() LockOn_HandleInput =
         }
 
         if (best)
+		{
 			self.lock_target = best;
+			if (!best.char)
+				ShowLockMarker(self, best); // show reticle on target
+		}
         self.impulse = 0;
     }
 };
@@ -112,7 +155,12 @@ void() LockOn_Update =
     entity t = self.lock_target;
     if (!IsValidLockTarget(t))
     {
-        self.lock_on = 0;
+		if (self.lock_target.char)
+		{
+			remove(self.lock_target.char);
+			self.lock_target.char = world;
+		}
+		self.lock_on = 0;
         self.lock_target = world;
         return;
     }
@@ -127,6 +175,11 @@ void() LockOn_Update =
 			self.lock_los_lost_time = time;
         if (time - self.lock_los_lost_time > LOCK_BREAK_TIME)
         {
+			if (self.lock_target.char)
+			{
+				remove(self.lock_target.char);
+				self.lock_target.char = world;
+			}
             self.lock_on = 0;
             self.lock_target = world;
             return;
@@ -137,7 +190,12 @@ void() LockOn_Update =
 
     if (d > LOCK_RANGE * 1.2) // a little hysteresis
     {
-        self.lock_on = 0;
+		if (self.lock_target.char)
+		{
+			remove(self.lock_target.char);
+			self.lock_target.char = world;
+		}
+		self.lock_on = 0;
         self.lock_target = world;
         return;
     }
