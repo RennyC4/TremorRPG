@@ -112,10 +112,13 @@ void() DoAttack_Melee =
 			sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
 		}
 
-		sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
+		// Armor calculations
+		if (trace_ent.armorvalue > damage)
+			damage = 1;
+		else
+			damage = damage - trace_ent.armorvalue;
 
-		damage = ceil(damage); // round up final damage output
-
+		// Blood effects
 		float i;
 		vector eye_level = [9, 0];
 		eye_level_z = self.view_ofs_z; // match up blood spray to attackers view by z
@@ -123,7 +126,9 @@ void() DoAttack_Melee =
 		for (i=0; i < 2; i++)
 			te_blood(trace_ent.origin + eye_level, trace_ent.velocity, 12); // spawn blood
 
+		damage = ceil(damage); // round up final damage output
 		DoDamage(trace_ent, self, damage);
+		sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
 	}
 	self.melee_finished = time + self.attack_speed;
 };
