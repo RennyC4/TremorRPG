@@ -55,14 +55,17 @@ void() PlayerJump =
 	if (!(self.flags & FL_JUMPRELEASED))
 		return;
 
-	float stamcalc = self.skill_endurance * 0.015; // calculation
+	float stamcalc = self.skill_acrobatic * 0.35; // calculation
+	float jumpcalc = self.skill_acrobatic * 1.1; // calculation
 	if (self.stamina > (50 - stamcalc))
 	{
 		// TODO: Acrobatic skill improves jump height
-		self.velocity_z += 270;
+		self.velocity_z += (270 + jumpcalc);
 		self.weaponframe = 0;
 		self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
 		self.button2 = 0;
+		if (stamcalc > 49)
+			stamcalc = 49;
 		self.stamina -= (50 - stamcalc);
 	}
 
@@ -246,10 +249,10 @@ void() FallDamage_Update =
         return;
     }
 
-    // While airborne, keep the *largest downward* speed seen this airtime
+    // While airborne, keep the largest downward speed seen this airtime
     if (!(self.flags & FL_ONGROUND))
     {
-        float down = -self.velocity_z; // positive when falling
+        float down = - self.velocity_z; // positive when falling
         if (down > self.fall_maxspeed)
             self.fall_maxspeed = down;
     }
@@ -260,7 +263,7 @@ void() FallDamage_Update =
         // small guard against multiple hits in the same frame slice
         if (time - self.last_landtime > LAND_COOLDOWN)
         {
-            float impact = self.fall_maxspeed;
+            float impact = self.fall_maxspeed - (self.skill_acrobatic / 2);
             float mul = FallDamage_MediumMul(); // cushion media reduces impact
             impact *= mul;
 

@@ -236,8 +236,13 @@ void(float which) CSEv_User_AddSkillPoint_f =
 	{
 		if (self.skill_acrobatic < cap)
 		{
-			self.skill_acrobatic += 1;
-			self.skillpoints -= 1;
+			if (self.skill_climb < 300)
+			{
+				self.skill_acrobatic += 1;
+				self.skillpoints -= 1;
+			}
+			else
+				sprint(self, PRINT_HIGH, "Acrobatics skill is maxed out\n");	
 			return;
 		}
 	}
