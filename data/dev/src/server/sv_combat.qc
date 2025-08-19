@@ -3,6 +3,29 @@
 //
 
 void(entity targ, entity attacker, float damage) DoDamage;
+vector() AttackDir;
+
+// Camera shake
+void(entity e, float howmuch) DoCamera_Shake =
+{
+	if (random() < 0.5)
+	{
+		e.angles_x += howmuch;
+		if (random() < 0.5)
+			e.angles_y += howmuch;
+		else
+			e.angles_y -= howmuch;
+	}
+	else
+	{
+		e.angles_x += (howmuch * -1);
+		if (random() < 0.5)
+			e.angles_y += howmuch;
+		else
+			e.angles_y -= howmuch;
+	}
+	e.fixangle = TRUE;
+};
 
 // returns 1 if the entity is in front (in sight) of self, used for blocking
 float(entity enemy, entity peaking) infront_block =
@@ -32,7 +55,7 @@ void() DoAttack_ShieldBash =
 	
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
-	traceline (source, source + v_forward * 48, MOVE_TRIGGERS, self);
+	traceline (source, source + AttackDir() * 48, MOVE_TRIGGERS, self);
 
 	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
 	{
@@ -107,7 +130,7 @@ void() DoAttack_Melee =
 
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
-	traceline (source, source + v_forward * self.attack_length, MOVE_TRIGGERS, self);
+	traceline (source, source + AttackDir() * self.attack_length, MOVE_TRIGGERS, self);
 	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 
 	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
@@ -150,6 +173,7 @@ void() DoAttack_Melee =
 			}
 		}
 
+		// blocking
 		if (trace_ent.blocking && !backstab)
 		{
 			float stamcalc_block = 20 - (self.skill_endurance * 0.015); // calculation
@@ -163,6 +187,7 @@ void() DoAttack_Melee =
 						damage = 1;
 
 					trace_ent.stamina -= stamcalc_block;
+					DoCamera_Shake(trace_ent, 8);
 				}
 				else
 				{
@@ -173,30 +198,13 @@ void() DoAttack_Melee =
 							eventlog_print = (strcat("^1You've been staggered!"));
 							stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 						}
+						DoCamera_Shake(trace_ent, 16);
 						damage = damage - ceil(trace_ent.blockvalue / 2); // save a tiny bit of damage still
 						trace_ent.stamina = 0;
 						trace_ent.blocking = FALSE;
 						trace_ent.stagger_lockview = trace_ent.angles;
 						trace_ent.stagger_finished = time + 3; // stagger, stamina is out
 					}
-				}
-
-				// Camera shake
-				if (random() < 0.5)
-				{
-					trace_ent.punchangle_x = 8;
-					if (random() < 0.5)
-						trace_ent.angles_y += 8;
-					else
-						trace_ent.angles_y -= 8;
-				}
-				else
-				{
-					trace_ent.punchangle_x = (8 * -1);
-					if (random() < 0.5)
-						trace_ent.angles_y += 8;
-					else
-						trace_ent.angles_y -= 8;
 				}
 			}
 			else // parry
@@ -208,7 +216,6 @@ void() DoAttack_Melee =
 				self.stagger_lockview = self.angles;
 				self.stagger_finished = time + 3;
 			}
-			trace_ent.fixangle = TRUE;
 			sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
 		}
 

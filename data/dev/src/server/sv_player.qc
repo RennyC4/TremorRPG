@@ -383,6 +383,8 @@ void() PlayerPreThink =
 		if (self.loginname != self.netname)
 			forceinfokey(self, "name", self.loginname);
 	}
+	LockOn_HandleInput();
+	LockOn_Update();
 	CheckImpulses();
 };
 
