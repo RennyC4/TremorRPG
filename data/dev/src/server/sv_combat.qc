@@ -16,7 +16,6 @@ float(entity enemy, entity peaking) infront_block =
 	return FALSE;
 };
 
-
 void() DoAttack_Melee =
 {
 	if (self.melee_finished > time)
@@ -47,7 +46,7 @@ void() DoAttack_Melee =
 
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
-	traceline (source, source + v_forward * 64, MOVE_TRIGGERS, self);
+	traceline (source, source + v_forward * self.attack_length, MOVE_TRIGGERS, self);
 	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 
 	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
@@ -92,7 +91,6 @@ void() DoAttack_Melee =
 	
 			if (trace_ent.stamina >= stamcalc_block)
 			{
-				sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
 				damage = damage - trace_ent.blockvalue;
 				if (trace_ent.blockvalue > damage)
 					damage = 1;
@@ -107,9 +105,11 @@ void() DoAttack_Melee =
 					stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 				}
 				damage = damage - ceil(trace_ent.blockvalue / 2); // save a tiny bit of damage still
+				trace_ent.stamina = 0;
 				trace_ent.blocking = FALSE;
 				trace_ent.stagger_finished = time + 3; // stagger, stamina is out
 			}
+			sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
 		}
 
 		sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);

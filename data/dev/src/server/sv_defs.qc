@@ -1806,6 +1806,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float attack_speed; // player + monster attack speed
 .float attack_type; // 0 unarmed, 1 slash, 2 pierce, 3 bash
 .float attack_stamina; // player, how much stamina a weapon requires + drains
+.float attack_length; // player, monster, how far a weapon reaches (hidden stat)
 .float spell_power_min; // player + monster damage
 .float spell_power_max; // player + monster damage
 .float mana;

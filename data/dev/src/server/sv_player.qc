@@ -624,6 +624,7 @@ void(entity targ) CSEv_Player_SaveChar =
 		fputs(v, ftos(targ.attack_speed), "\n");
 		fputs(v, ftos(targ.attack_type), "\n");
 		fputs(v, ftos(targ.attack_stamina), "\n");
+		fputs(v, ftos(targ.attack_length), "\n");
 		fputs(v, targ.main_hand, "\n");
 		fputs(v, targ.off_hand, "\n");
 		fputs(v, targ.armorname, "\n");
@@ -733,6 +734,8 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.attack_stamina = stof(line);
 		if (line = fgets(v))
+			self.attack_length = stof(line);
+		if (line = fgets(v))
 			self.main_hand = line;
 		if (line = fgets(v))
 			self.off_hand = line;
@@ -834,6 +837,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.attack_speed = 1;
 		self.attack_stamina = 25;
 		self.attack_type = 1; // Slashing weapon
+		self.attack_length = 64; // Weapon length
 		self.main_hand = "Broken Sword";
 		self.off_hand = "Broken Buckler";
 		self.blockvalue = 3;
