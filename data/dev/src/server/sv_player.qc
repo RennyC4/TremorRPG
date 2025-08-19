@@ -385,7 +385,8 @@ void() PlayerPostThink =
 			if (!self.blocking)
 				calc = 0.2 - (self.skill_endurance * 0.0005);
 			else
-				calc = 0.6 - (self.skill_endurance * 0.0005);
+				calc = 0.4 - (self.skill_endurance * 0.0005);
+
 			//string calc_disp = ftos(calc);
 			//print (calc_disp, "\n");
 

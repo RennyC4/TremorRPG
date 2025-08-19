@@ -22,8 +22,8 @@ float	RANGE_NEAR				= 2;
 float	RANGE_MID				= 3;
 float	RANGE_FAR				= 4;
 
-// returns 1 if the entity is in front (in sight) of self
-float(entity enemy, entity peaking) infront =
+// returns 1 if the entity is in front (in sight) of self, used for stealth
+float(entity enemy, entity peaking) infront_stealth =
 {
 	makevectors (peaking.angles);
 	vector vec = normalize (enemy.origin - peaking.origin);
@@ -144,7 +144,7 @@ void() monster_ai_think =
 		// Patroling randomly, searching for players nearby - TODO: Stealth mechanic code using infront();
 		for (entity targ = world;(targ = find(targ, classname, "player"));)
 		{
-			if (vlen(targ.origin - self.origin) <= 500 && targ.deadflag != DEAD_DEAD && visible(targ) && infront(targ, self) && targ.bonfire == FALSE)
+			if (vlen(targ.origin - self.origin) <= 500 && targ.deadflag != DEAD_DEAD && visible(targ) && infront_stealth(targ, self) && targ.bonfire == FALSE)
 			{
 				if (self.noise)
 					sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);

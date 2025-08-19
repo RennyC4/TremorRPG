@@ -4,6 +4,19 @@
 
 void(entity targ, entity attacker, float damage) DoDamage;
 
+// returns 1 if the entity is in front (in sight) of self, used for blocking
+float(entity enemy, entity peaking) infront_block =
+{
+	makevectors (peaking.angles);
+	vector vec = normalize (enemy.origin - peaking.origin);
+	float dot = vec * v_forward;
+
+	if (dot > 0.45)
+		return TRUE;
+	return FALSE;
+};
+
+
 void() DoAttack_Melee =
 {
 	if (self.melee_finished > time)
@@ -52,14 +65,19 @@ void() DoAttack_Melee =
 		}
 
 		// check & add backstab skill damage
-		if (!infront(self, trace_ent) && self.crouch && trace_ent.enemy != self)
+		if (!infront_block(self, trace_ent) && /* self.crouch && */ trace_ent.enemy != self)
 		{
 			float bs_damage = (self.skill_backstab * howmuch);
 			if (bs_damage < 1)
 				bs_damage = 1;
-			string eventlog_print = (strcat("^1Backstab! +", ftos(bs_damage), " damage !!\n"));
-			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 			float backstab = TRUE;
+			sound (trace_ent, CHAN_AUTO, "backstab.wav", 1, ATTN_NORM);	
+
+			if (self.classname == "player")
+			{
+				string eventlog_print = (strcat("^1Backstab! +", ftos(bs_damage), " damage !!\n"));
+				stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+			}
 		}
 
 		if (trace_ent.blocking && !backstab)
