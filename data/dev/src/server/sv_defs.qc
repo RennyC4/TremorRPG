@@ -1775,6 +1775,7 @@ const float MENU_CHARACTER = 2;
 .float bonfire_finished; // prevent spam
 .entity user; // mainly used for th_use
 .float was_onground;
+.float climbing; // boolean
 .float climb_finished;
 .vector stagger_lockview;
 

@@ -153,7 +153,7 @@ void() DoAttack_Melee =
 		if (trace_ent.blocking && !backstab)
 		{
 			float stamcalc_block = 20 - (self.skill_endurance * 0.015); // calculation
-	
+
 			if (trace_ent.parry_finished < time)
 			{
 				if (trace_ent.stamina >= stamcalc_block)

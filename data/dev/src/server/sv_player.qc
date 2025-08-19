@@ -10,6 +10,7 @@ void() SetChangeParms = {};
 void(float elapsedtime) SV_PausedTic = {};
 void() info_player_start = {};
 
+.float climb_stamina_finished;
 void() PlayerClimb =
 {
 	makevectors (self.angles);
@@ -21,17 +22,27 @@ void() PlayerClimb =
 	if (self.climb_finished > time)
 		return;
 
-	// TODO: Climbing skill affects speed + stamina drain
+	float climbcalc = 50 + (self.skill_climb * 0.35); // speed calculation
+	float stamcalc = 0.01 + (self.skill_climb * 0.0005); // stamina calculation
+
 	if (trace_ent.solid == SOLID_BSP)
 	{
-		if (self.stamina > 1)
+		if (self.stamina > 0)
 		{
+			self.climbing = TRUE;
 			self.velocity = [0, 0];
-			self.velocity_z += 50;
-			self.stamina -= 1;
+			self.velocity_z += climbcalc;
+			if (self.climb_stamina_finished < time)
+			{
+				self.stamina -= 1;
+				self.climb_stamina_finished = time + stamcalc;
+			}
 		}
 		else
+		{
+			self.stamina = 0;
 			self.climb_finished = time + 3;
+		}
 	}
 };
 
@@ -314,7 +325,10 @@ void() PlayerPreThink =
 	if (self.button2)
 		PlayerJump();
 	else
+	{
+		self.climbing = FALSE;
 		self.flags |= FL_JUMPRELEASED;
+	}
 
 	// Use button
 	if (self.button3)
@@ -402,13 +416,18 @@ void() PlayerPostThink =
 			else
 				calc = 0.4 - (self.skill_endurance * 0.0005);
 
+			if (self.climbing)
+				calc = -1;
+
 			//string calc_disp = ftos(calc);
 			//print (calc_disp, "\n");
-
-			if (self.stamina < 99)
-				self.stamina += 1;
-			else
-				self.stamina = 100;
+			if (calc != -1)
+			{
+				if (self.stamina < 99)
+					self.stamina += 1;
+				else
+					self.stamina = 100;
+			}
 
 			// TODO: Skill endurance lowers stamina regen time
 			self.staminaregen_finished = time + calc;
