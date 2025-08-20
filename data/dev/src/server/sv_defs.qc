@@ -1699,7 +1699,7 @@ void(string cmdname, optional string desc) registercommand = #352; /*
 string string_null = "";
 float(float min, float max) random_range;
 float	SVC_TEMPENTITY		= 23;
-const float CSQC_INVENTORY = 110;
+const float CSQC_INVENTORY = 1;
 
 // Function defs
 .void()		th_die;

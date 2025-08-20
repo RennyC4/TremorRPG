@@ -157,23 +157,13 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 	return FALSE;
 };
 
-const float CSQC_INVENTORY = 110;
+const float CSQC_INVENTORY = 1;
 void() CSQC_Parse_Event =
 {
-	float first = readbyte();
-	switch(first)
-	{
-		default:
-			printf("No action for byte %f\n", first);
-		break;
-	}
-};
+	float event = readbyte();
 
-/*
-void() CSQC_Parse_Event =
-{
-    if (te == TE_CSQC_INVENTORY)
-    {
+	if (event == CSQC_INVENTORY)
+	{
         float i;
 
         inv_count = readbyte();
@@ -182,10 +172,8 @@ void() CSQC_Parse_Event =
             inventory[i] = readstring();
             inventory_count[i] = readfloat();
         }
-        return TRUE;
-    }
-    return FALSE;
+		print ("Yeeaaah\n");
+	}
 };
-*/
 
 noref void CSQC_Shutdown() = {};

@@ -89,9 +89,9 @@ void(entity player, string itemname) UseItem =
 
     if (itemname == "healthpot") // test crap
     {
-        player.health = min(player.health + 25, 100);
+        player.health = min(player.health + 25, player.max_health);
         RemoveFromInventory(player, itemname, 1);
-        sprint(player, PRINT_HIGH, "You used a healthkit.\n");
+        sprint(player, PRINT_HIGH, "You used a health potion\n");
     }
     else if (itemname == "keyred") // test crap
     {
@@ -122,9 +122,11 @@ void(entity player) SendInventory =
 
     for (i = 0; i < player.inv_count; i++)
     {
-        WriteString(MSG_ONE, player.inventory[i]);
-        WriteFloat(MSG_ONE, player.inventory_count[i]);
+        WriteString(MSG_MULTICAST, player.inventory[i]);
+        WriteFloat(MSG_MULTICAST, player.inventory_count[i]);
     }
+	multicast(self.origin, MULTICAST_ONE);
+	print ("Data Sent\n");
 };
 
 void() Item_Touch =

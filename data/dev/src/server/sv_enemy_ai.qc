@@ -99,9 +99,12 @@ void() monster_ai_move =
 	walkmove(self.angles_y, self.speed / 2);
 
 	self.velocity = '0 0 0';
-	self.flags -= (self.flags & FL_ONGROUND);
-	vector forward = v_forward * 150;
-	self.velocity = forward;
+	if (self.ai_mode == AI_RUNBACK) // prevent monster from stepping into player
+	{
+		self.flags -= (self.flags & FL_ONGROUND);
+		vector forward = v_forward * 150;
+		self.velocity = forward;
+	}
 };
 
 void() monster_ai_spawnrunback =

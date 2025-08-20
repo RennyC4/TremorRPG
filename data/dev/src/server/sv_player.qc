@@ -4,7 +4,11 @@
 
 void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
+
+// Inventory stuff, temporary here for testing
 void(entity player) ShowInventory;
+void(entity player) SendInventory;
+void(entity player, string itemname, float count) AddToInventory;
 
 void() ClientKill = {};
 void() SetNewParms = {};
@@ -110,7 +114,7 @@ void() CSEv_PlayerCrouch =
 
 void() SV_RunClientCommand =
 {
-	input_buttons &= ~2;
+	input_buttons &= ~2; // taking over +jump
 	runstandardplayerphysics(self);
 };
 
@@ -129,7 +133,9 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 	
 	//self.skillpoints = 99999;
-	ShowInventory(self);
+	AddToInventory(self, "healthpot", 1);
+	SendInventory(self); // send to CSQC
+	ShowInventory(self); // show locally
 };
 
 // called from CSQC ("show_character" console command)
