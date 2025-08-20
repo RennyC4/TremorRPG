@@ -2,7 +2,7 @@
 
 void() monster_respawn =
 {
-	self.solid = SOLID_TRIGGER;
+	self.solid = SOLID_SLIDEBOX;
 	self.deadflag = DEAD_NO;
 	self.takedamage = DAMAGE_AIM;
 	self.alpha = 1; // removeme when we have animations + proper model
@@ -43,7 +43,7 @@ void() set_monster =
 	if (self.noise3)
 		precache_sound(self.noise3); // death sound
 
-	self.solid = SOLID_TRIGGER;
+	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_STEP;
 	if (!self.max_health)
 		self.health = 1;
