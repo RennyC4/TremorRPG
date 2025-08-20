@@ -160,8 +160,11 @@ void() DoAttack_Melee =
 			}
 		}
 
+		if (self.fall_maxspeed >= 100)
+			float jumpattack = TRUE;
+
 		// check & add backstab skill damage
-		if (!infront_block(self, trace_ent))
+		if (!infront_block(self, trace_ent) && !jumpattack)
 		{
 			float bs_damage = (self.skill_backstab * howmuch);
 			if (bs_damage < 1)
@@ -234,6 +237,9 @@ void() DoAttack_Melee =
 
 		if (!parry)
 		{
+			if (jumpattack) // add jump attack damage
+				damage += (self.fall_maxspeed * 0.1);
+
 			// armor calculations
 			if (trace_ent.armorvalue > damage)
 				damage = 1;

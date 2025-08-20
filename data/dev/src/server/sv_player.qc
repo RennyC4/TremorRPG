@@ -72,6 +72,7 @@ void() PlayerJump =
 		self.menu = MENU_OFF;
 };
 
+// camera toggle from csqc -> ssqc for various reasons
 void(float toggle) CSEv_CameraToggle_f =
 {
 	if (!toggle)
@@ -131,7 +132,6 @@ void() PlayerPrintStats =
 	
 	self.skillpoints = 99999;
 };
-
 
 // called from CSQC ("show_character" console command)
 void() CSEv_PlayerShowStats = 
@@ -418,6 +418,10 @@ void() PlayerPostThink =
 
 	WaterUpdate();
 	FallDamage_Update();
+
+	string f = ftos(self.fall_maxspeed);
+	print (f, "\n");
+	// over 100? Do falling damage on attack
 
 	if (self.frags != self.level) // HACK: used to display level on the scoreboard
 		self.frags = self.level;
