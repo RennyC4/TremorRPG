@@ -419,10 +419,6 @@ void() PlayerPostThink =
 	WaterUpdate();
 	FallDamage_Update();
 
-	string f = ftos(self.fall_maxspeed);
-	print (f, "\n");
-	// over 100? Do falling damage on attack
-
 	if (self.frags != self.level) // HACK: used to display level on the scoreboard
 		self.frags = self.level;
 
