@@ -104,6 +104,7 @@ void() DoAttack_ShieldBash =
 			// apply effects
 			self.stagger_finished = time + 1.5;
 			self.lockview_finished = time + 1.5;
+			sound (self, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
 		}
 	}
 	sound (self, CHAN_WEAPON, "shield3.wav", 1, ATTN_NORM);
@@ -233,6 +234,7 @@ void() DoAttack_Melee =
 			else // parry
 			{
 				parry = TRUE;
+				sound (self, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
 				eventlog_print = (strcat("^2Successful parry!"));
 				stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 				// apply effects
