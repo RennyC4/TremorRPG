@@ -11,7 +11,7 @@ void(entity target) SmoothFaceEntity;
 .float  lock_on; 	// 0/1 toggle
 .float  lock_next;	// debounce for toggles/switches (time)
 
-float LOCK_RANGE        = 1000;	// max distance to pick/keep a lock
+float LOCK_RANGE        = 2000;	// max distance to pick/keep a lock
 float LOCK_FOV_COS      = 0.60;	// cos(FOV/2). 0.60 ~ ~104° cone; tighten to ~0.90 for ~50°
 float LOCK_LOS_STEP     = 16;	// los trace hull size step (point trace is fine too)
 float LOCK_SWITCH_COOLD = 0.18;	// seconds between switch presses
@@ -140,9 +140,14 @@ void() LockOn_HandleInput =
 
         if (best)
 		{
+			if (self.lock_target.char) // remove last target
+			{
+				remove(self.lock_target.char);
+				self.lock_target.char = world;
+			}
 			self.lock_target = best;
 			if (!best.char)
-				ShowLockMarker(self, best); // show reticle on target
+				ShowLockMarker(self, best); // show reticle on new target
 		}
         self.impulse = 0;
     }

@@ -59,7 +59,6 @@ void() PlayerJump =
 	float jumpcalc = self.skill_acrobatic * 1.1; // calculation
 	if (self.stamina > (50 - stamcalc))
 	{
-		// TODO: Acrobatic skill improves jump height
 		self.velocity_z += (270 + jumpcalc);
 		self.weaponframe = 0;
 		self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
@@ -71,6 +70,14 @@ void() PlayerJump =
 
 	if (self.menu == MENU_CHARACTER)
 		self.menu = MENU_OFF;
+};
+
+void(float toggle) CSEv_CameraToggle_f =
+{
+	if (!toggle)
+		self.camera_toggle = FALSE;
+	else
+		self.camera_toggle = TRUE;
 };
 
 void() CSEv_PlayerCrouch =

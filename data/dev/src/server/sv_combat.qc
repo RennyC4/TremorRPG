@@ -10,6 +10,8 @@ void(entity e, float howmuch) DoCamera_Shake =
 {
 	if (e.classname != "player")
 		return;
+	if (e.camera_toggle) // disable in 3rd person mode
+		return;
 
 	if (random() < 0.5)
 	{
@@ -37,7 +39,7 @@ float(entity enemy, entity peaking) infront_block =
 	vector vec = normalize (enemy.origin - peaking.origin);
 	float dot = vec * v_forward;
 
-	if (dot > 0.45)
+	if (dot > 0.25)
 		return TRUE;
 	return FALSE;
 };
@@ -86,7 +88,10 @@ void() DoAttack_ShieldBash =
 			trace_ent.velocity = trace_ent.velocity + dir * 250;
 			//
 			if (trace_ent.stagger_finished < time)
-				trace_ent.stagger_finished = time + 3;
+			{
+				trace_ent.stagger_finished = time + 1.5;
+				trace_ent.lockview_finished = time + 1.5;
+			}
 			DoCamera_Shake(trace_ent, 16);
 			sound (trace_ent, CHAN_BODY, "shield2.wav", 1, ATTN_NORM);
 		}
@@ -96,7 +101,8 @@ void() DoAttack_ShieldBash =
 			string eventlog_print = (strcat("^2Successful parry!"));
 			stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 			// apply effects
-			self.stagger_finished = time + 3;
+			self.stagger_finished = time + 1.5;
+			self.lockview_finished = time + 1.5;
 		}
 	}
 	sound (self, CHAN_WEAPON, "shield3.wav", 1, ATTN_NORM);
@@ -174,6 +180,7 @@ void() DoAttack_Melee =
 				{
 					eventlog_print = (strcat("^1You've been staggered!"));
 					stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+					trace_ent.lockview_finished = time + 3;
 					trace_ent.stagger_finished = time + 3; // stagger, stamina is out
 				}
 			}
@@ -208,6 +215,7 @@ void() DoAttack_Melee =
 						damage = damage - ceil(trace_ent.blockvalue / 2); // save a tiny bit of damage still
 						trace_ent.stamina = 0;
 						trace_ent.blocking = FALSE;
+						trace_ent.lockview_finished = time + 3;
 						trace_ent.stagger_finished = time + 3; // stagger, stamina is out
 					}
 				}
@@ -217,7 +225,8 @@ void() DoAttack_Melee =
 				float parry = TRUE;
 				eventlog_print = (strcat("^2Successful parry!"));
 				stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
-				// Apply effects
+				// apply effects
+				self.lockview_finished = time + 3;
 				self.stagger_finished = time + 3;
 			}
 			sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);

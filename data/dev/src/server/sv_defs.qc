@@ -1779,6 +1779,7 @@ const float MENU_CHARACTER = 2;
 .float climb_finished;
 .float lockview_finished; // lock player view in certain situations, handled by CSQC
 .entity char; // used for various things
+.float camera_toggle; // boolean
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)

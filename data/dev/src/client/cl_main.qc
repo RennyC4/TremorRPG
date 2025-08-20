@@ -99,9 +99,15 @@ float(string strCommand) CSQC_ConsoleCommand =
 	if (argv(0) == "toggle_camera") // TODO send camera mode to SSQC for various reasons
 	{
 		if (!camera_mode)
+		{
+			sendevent("CameraToggle", "f", 1);
 			camera_mode = TRUE;
+		}
 		else
+		{
+			sendevent("CameraToggle", "f", 0);
 			camera_mode = FALSE;
+		}
 	}
 	if (argv(0) == "+showscores") // scoreboard
 		showscores = TRUE;
