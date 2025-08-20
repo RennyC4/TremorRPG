@@ -126,9 +126,9 @@ name_command bindlist[] =
 	{ "Use", "+button3" },
 	{ "Block", "+button4" },
 	{ "Camera", "toggle_camera" },
-	{ "Toggle Target", "impulse 140" },
-	{ "Next Target", "impulse 141" },
-	{ "Prev Target", "impulse 142" },
+	{ "Target", "impulse 140" },
+	{ "Right Target", "impulse 141" },
+	{ "Left Target", "impulse 142" },
 //	{ "Jump0", "+jump" },
 };
 

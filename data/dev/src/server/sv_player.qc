@@ -4,6 +4,8 @@
 
 void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
+void(entity player) ShowInventory;
+
 void() ClientKill = {};
 void() SetNewParms = {};
 void() SetChangeParms = {};
@@ -123,14 +125,11 @@ void() PlayerPrintStats =
 	string ang_y = ftos(self.angles_y);
 	string ang_z = ftos(self.angles_z);
 
-	string disp_pvp = ftos(self.pvp);
-	string disp_incombat = ftos(self.incombat);
-
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
-	sprint(self, PRINT_HIGH, "PVP: ", disp_pvp, " Combat: ", disp_incombat, "\n");
 	
-	self.skillpoints = 99999;
+	//self.skillpoints = 99999;
+	ShowInventory(self);
 };
 
 // called from CSQC ("show_character" console command)

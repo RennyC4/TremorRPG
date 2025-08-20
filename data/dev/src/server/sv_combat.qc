@@ -49,7 +49,8 @@ void() DoAttack_ShieldBash =
 	if (self.melee_finished > time)
 		return;
 
-	self.velocity = [0, 0];
+	if (self.flags & FL_ONGROUND)
+		self.velocity = [0, 0];
 
 	// Stamina drain on swing
 	if (self.classname == "player")
@@ -116,7 +117,8 @@ void() DoAttack_Melee =
 	if (self.melee_finished > time)
 		return;
 
-	self.velocity = [0, 0];
+	if (self.flags & FL_ONGROUND)
+		self.velocity = [0, 0];
 
 	// Stamina drain on swing
 	if (self.classname == "player")
@@ -162,14 +164,18 @@ void() DoAttack_Melee =
 
 		if (self.fall_maxspeed >= 100)
 			float jumpattack = TRUE;
+		else
+			jumpattack = FALSE;
 
 		// check & add backstab skill damage
+		float bs_damage = 0;
+		float backstab = FALSE;
 		if (!infront_block(self, trace_ent) && !jumpattack)
 		{
-			float bs_damage = (self.skill_backstab * howmuch);
+			bs_damage = (self.skill_backstab * howmuch);
 			if (bs_damage < 1)
 				bs_damage = 1;
-			float backstab = TRUE;
+			backstab = TRUE;
 			sound (trace_ent, CHAN_AUTO, "backstab.wav", 1, ATTN_NORM);	
 
 			if (self.classname == "player")
@@ -190,6 +196,7 @@ void() DoAttack_Melee =
 		}
 
 		// blocking
+		float parry = FALSE;
 		if (trace_ent.blocking && !backstab)
 		{
 			float stamcalc_block = 20 - (self.skill_endurance * 0.015); // calculation
@@ -225,7 +232,7 @@ void() DoAttack_Melee =
 			}
 			else // parry
 			{
-				float parry = TRUE;
+				parry = TRUE;
 				eventlog_print = (strcat("^2Successful parry!"));
 				stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 				// apply effects

@@ -14,3 +14,4 @@ server/sv_player.qc
 server/sv_npc.qc
 math.qc
 server/sv_misc.qc
+server/sv_inventory.qc

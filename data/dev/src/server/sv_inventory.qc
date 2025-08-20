@@ -1,0 +1,139 @@
+﻿//
+// Inventory
+//
+
+#define MAX_INVENTORY 32 // how many slots allowed
+.float inv_count;
+.string inventory[MAX_INVENTORY];
+.float inventory_count[MAX_INVENTORY]; // stack counts
+
+void(entity player, string itemname, float count) AddToInventory =
+{
+    float i;
+
+    // First, see if item already exists
+    for (i = 0; i < player.inv_count; i++)
+    {
+        if (player.inventory[i] == itemname)
+        {
+            player.inventory_count[i] += count;
+            return;
+        }
+    }
+
+    // If new item, check space
+    if (player.inv_count >= MAX_INVENTORY)
+    {
+        sprint(player, PRINT_HIGH, "Inventory full!\n");
+        return;
+    }
+
+    player.inventory[player.inv_count] = itemname;
+    player.inventory_count[player.inv_count] = count;
+    player.inv_count++;
+};
+
+void(entity player, string itemname, float count) RemoveFromInventory =
+{
+    float i;
+
+    for (i = 0; i < player.inv_count; i++)
+    {
+        if (player.inventory[i] == itemname)
+        {
+            player.inventory_count[i] -= count;
+            if (player.inventory_count[i] <= 0)
+            {
+                // Shift everything down
+                for (; i < player.inv_count - 1; i++)
+                {
+                    player.inventory[i] = player.inventory[i+1];
+                    player.inventory_count[i] = player.inventory_count[i+1];
+                }
+                player.inv_count--;
+            }
+            return;
+        }
+    }
+};
+
+float(entity player, string itemname) HasItem =
+{
+    float i;
+
+    for (i = 0; i < player.inv_count; i++)
+        if (player.inventory[i] == itemname)
+            return TRUE;
+
+    return FALSE;
+};
+
+float(entity player, string itemname) GetItemCount =
+{
+    float i;
+
+    for (i = 0; i < player.inv_count; i++)
+        if (player.inventory[i] == itemname)
+            return player.inventory_count[i];
+
+    return 0;
+};
+
+void(entity player, string itemname) UseItem =
+{
+    if (!HasItem(player, itemname))
+    {
+        sprint(player, PRINT_HIGH, strcat("You don’t have a ", itemname, "\n"));
+        return;
+    }
+
+    if (itemname == "healthpot") // test crap
+    {
+        player.health = min(player.health + 25, 100);
+        RemoveFromInventory(player, itemname, 1);
+        sprint(player, PRINT_HIGH, "You used a healthkit.\n");
+    }
+    else if (itemname == "keyred") // test crap
+    {
+        sprint(player, PRINT_HIGH, "You wave the red key, but nothing happens.\n");
+    }
+};
+
+void(entity player) ShowInventory =
+{
+    float i;
+
+    sprint(player, PRINT_HIGH, "==== Inventory ====\n");
+    for (i = 0; i < player.inv_count; i++)
+    {
+        sprint(player, PRINT_HIGH, strcat(player.inventory[i], " x"));
+        sprint(player, PRINT_HIGH, ftos(player.inventory_count[i]));
+        sprint(player, PRINT_HIGH, "\n");
+    }
+};
+
+void(entity player) SendInventory =
+{
+    float i;
+
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_INVENTORY);
+	WriteByte(MSG_MULTICAST, player.inv_count);
+
+    for (i = 0; i < player.inv_count; i++)
+    {
+        WriteString(MSG_ONE, player.inventory[i]);
+        WriteFloat(MSG_ONE, player.inventory_count[i]);
+    }
+};
+
+void() Item_Touch =
+{
+    if (other.classname != "player")
+        return;
+
+    // Example: self.netname is the item's identifier string
+    AddToInventory(other, self.netname, 1);
+    sprint(other, PRINT_HIGH, strcat("Picked up: ", self.netname, "\n"));
+    remove(self);
+};

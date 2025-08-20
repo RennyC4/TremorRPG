@@ -110,7 +110,7 @@ void() LockOn_HandleInput =
         self.lock_next = time + LOCK_SWITCH_COOLD;
 
 		// find best neighbor target to the RIGHT or LEFT of current target based on screen-space angle
-		entity best;
+		entity best = world;
 		float bestAngle = -99999;
 		float wantSign = (self.impulse == IMP_LOCK_NEXT) ? 1 : -1;
 
@@ -244,7 +244,7 @@ float(entity from, entity to) ForwardDotTo =
 // pick best target in cone, nearest angle first, then distance
 entity() FindLockTarget =
 {
-    entity e, best;
+    entity e, best = world;
     float bestScore = -99999;
 
     e = find(world, classname, "monster");
@@ -273,13 +273,13 @@ entity() FindLockTarget =
     {
         if (IsValidLockTarget(e))
         {
-            float d = vlen(e.origin - self.origin);
+            d = vlen(e.origin - self.origin);
             if (d <= LOCK_RANGE)
             {
-                float f = ForwardDotTo(self, e);
+                f = ForwardDotTo(self, e);
                 if (f >= LOCK_FOV_COS && HasLOS(self, e))
                 {
-                    float score = f*1000 - d*0.1;
+                    score = f*1000 - d*0.1;
                     if (score > bestScore) { bestScore = score; best = e; }
                 }
             }

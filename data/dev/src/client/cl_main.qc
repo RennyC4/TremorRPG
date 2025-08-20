@@ -72,7 +72,10 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		Hud_Scoreboard('0 0 0', virtsize);
 	}
 	else
+	{
 		Player_Hud();
+		DrawInventory();
+	}
 
 	sui_menu_nav();
 	sui_end();
@@ -154,6 +157,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 	return FALSE;
 };
 
+const float CSQC_INVENTORY = 110;
 void() CSQC_Parse_Event =
 {
 	float first = readbyte();
@@ -164,5 +168,24 @@ void() CSQC_Parse_Event =
 		break;
 	}
 };
+
+/*
+void() CSQC_Parse_Event =
+{
+    if (te == TE_CSQC_INVENTORY)
+    {
+        float i;
+
+        inv_count = readbyte();
+        for (i = 0; i < inv_count; i++)
+        {
+            inventory[i] = readstring();
+            inventory_count[i] = readfloat();
+        }
+        return TRUE;
+    }
+    return FALSE;
+};
+*/
 
 noref void CSQC_Shutdown() = {};

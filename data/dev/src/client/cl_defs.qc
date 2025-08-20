@@ -2239,3 +2239,9 @@ float MENU_CHARACTER = 2; // user info screen
 #define STAT_REAPERMARK 83
 #define STAT_BLOCKVALUE 84
 #define STAT_LOCKVIEW 85
+
+// Inventory
+#define MAX_INVENTORY 32
+string inventory[MAX_INVENTORY];
+float inventory_count[MAX_INVENTORY];
+float inv_count;

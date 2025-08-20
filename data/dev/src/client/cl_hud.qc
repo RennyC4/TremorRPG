@@ -197,6 +197,7 @@ void() Draw_Exp =
 
 	float disp = e - e3;
 	float disp_max = e2 - e3;
+	vector disp_bar = [0, g_width, 0];
 
 	//
 	// Draw Experience
@@ -214,7 +215,7 @@ void() Draw_Exp =
 	ebar_size_z = 0;
 
 	drawfill(pos + '1 1 0', ebar_size, '1 1 0', 0.25, 0);
-	drawfill(pos + '1 1 0', g_width, '1 1 0', 0.08, 0); // Full bar display
+	drawfill(pos + '1 1 0', disp_bar, '1 1 0', 0.08, 0); // Full bar display
 };
 
 //
@@ -591,3 +592,37 @@ void() User_CharacterScreen =
 
 	sui_pop_frame();
 };
+
+//
+// Inventory
+//
+
+void DrawInventory()
+{
+    local float i;
+    local float x, y, size;
+
+    x = 50;   // start position X
+    y = g_height - 80; // near bottom of screen
+    size = 48; // icon size
+
+    for (i = 0; i < inv_count; i++)
+    {
+        // Draw background slot
+        drawfill([x + i*(size+4), y], [size, size], '0 0 0', 0.5, 0);
+
+        // Load icon texture (e.g. "gfx/items/healthkit.tga")
+        // You can map inventory[i] -> filename via a lookup function
+        string icon = strcat("gfx/items/", inventory[i], ".tga");
+
+        drawpic([x + i*(size+4), y], icon, [size, size], '1 1 1', 1, 1);
+
+        // Draw count
+        if (inventory_count[i] > 1)
+        {
+            drawstring([x + i*(size+4) + size*0.5, y + size*0.7],
+                       ftos(inventory_count[i]),
+                       '8 8', '1 1 1', 1, 0);
+        }
+    }
+}

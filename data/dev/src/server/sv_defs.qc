@@ -1696,8 +1696,10 @@ void(string cmdname, optional string desc) registercommand = #352; /*
 		Console commands that are later used will invoke CSQC_ConsoleCommand/m_consolecommand/ConsoleCmd according to module. */
 
 // Misc
-string string_null = ""; 
+string string_null = "";
 float(float min, float max) random_range;
+float	SVC_TEMPENTITY		= 23;
+const float CSQC_INVENTORY = 110;
 
 // Function defs
 .void()		th_die;
