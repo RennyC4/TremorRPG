@@ -1777,7 +1777,7 @@ const float MENU_CHARACTER = 2;
 .float was_onground;
 .float climbing; // boolean
 .float climb_finished;
-.vector stagger_lockview;
+.float lockview_finished; // lock player view in certain situations, handled by CSQC
 .entity char; // used for various things
 
 //
@@ -1857,24 +1857,18 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 //
 // Send stats to CSQC 
 //
-
-// Unique identifier per user
 #define STAT_GUID 32
 #define STAT_LOGGEDIN 33
-// Origin
 #define STAT_PLAYER_X 34
 #define STAT_PLAYER_Y 35
 #define STAT_PLAYER_Z 36
-// View angles
 #define STAT_PLAYER_ANGLE_X 37
 #define STAT_PLAYER_ANGLE_Y 38
 #define STAT_PLAYER_ANGLE_Z 39
-// Misc
 #define STAT_MENU 40
 #define STAT_ZONENAME 41
 #define STAT_ZONENAME_TIME 42
 #define STAT_PVP 43
-// Player RPG stats
 #define STAT_HEALTH 44
 #define STAT_MAXHEALTH 45
 #define STAT_MANA 46
@@ -1896,7 +1890,6 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define STAT_ARMORNAME 62
 #define STAT_ARMORVALUE 63
 #define STAT_INCOMBAT 64
-// Player skill stats
 #define STAT_SKILL_UNARMED 65
 #define STAT_SKILL_SLASH 66
 #define STAT_SKILL_PIERCE 67
@@ -1917,6 +1910,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define STAT_SKILL_ACROBATIC 82
 #define STAT_REAPERMARK 83
 #define STAT_BLOCKVALUE 84
+#define STAT_LOCKVIEW 85
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

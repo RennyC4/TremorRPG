@@ -4,7 +4,7 @@ void() set_npc =
 {
 	precache_model(self.model);
 
-	self.solid = SOLID_TRIGGER;
+	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_STEP;
 	if (!self.max_health)
 		self.health = 1;
@@ -70,17 +70,10 @@ void() bonfire_use =
 			self.user.bonfire_finished = time + 3;
 			sound (self, CHAN_AUTO, "bonfire1.wav", 1, ATTN_NORM);
 		}
+		/*
 		else
-		{
-			self.user.crouch = FALSE;
-			setsize(self.user, [-16, -16, 0], [16, 16, 56]);
-			self.user.view_ofs = [0, 0, 48];
-			self.user.movetype = MOVETYPE_WALK; // Stop user movement
-
-			eventlog_print = "^5You stand back up ...\n";
-			stuffcmd (self.user, sprintf("conecho event %s\n", eventlog_print));
-			self.user.bonfire = FALSE;
-		}
+			// Moved to sv_player.qc for various reasons
+		*/
 	}
 	self.think = bonfire_think;
 	self.nextthink = time + 0.1;

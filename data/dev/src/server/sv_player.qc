@@ -191,9 +191,23 @@ entity() get_spawn_point =
 // Use button
 void() Player_Use =
 {
+	if (self.bonfire && self.bonfire_finished < time)
+	{
+		self.crouch = FALSE;
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
+		self.view_ofs = [0, 0, 48];
+		self.movetype = MOVETYPE_WALK; // start movement
+
+		string eventlog_print = "^5You stand back up ...\n";
+		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+		self.bonfire = FALSE;
+		self.bonfire_finished = time + 1; // fixes input bleed
+		return;
+	}
+
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
-	traceline (source, source + v_forward * 64, MOVE_EVERYTHING, self);
+	traceline (source, source + v_forward * 64, MOVE_TRIGGERS, self);
 
 	if (trace_ent.th_use)
 	{
@@ -332,7 +346,6 @@ void() PlayerPreThink =
 	}
 
 	// Button1 we ignore
-
 	if (self.button2)
 		PlayerJump();
 	else
@@ -341,8 +354,7 @@ void() PlayerPreThink =
 		self.flags |= FL_JUMPRELEASED;
 	}
 
-	// Use button
-	if (self.button3)
+	if (self.button3) // use button
 	{
 		if (!self.button3_pressed)
 			Player_Use();
@@ -350,35 +362,36 @@ void() PlayerPreThink =
 	else
 		self.button3_pressed = FALSE;
 	
-	// Block button
-	if (self.button4)
+	if (self.button4) // block button
 	{
 		if (!self.crouch)
 			Player_ShieldBlock();
 	}
-	else // player speed checks
+	else
 		self.blocking = FALSE;
 
-	// Player speed checks
+	// Player movement + speed checks
 	if (self.stagger_finished < time)
 	{
-		if (self.maxspeed != 360 && !self.crouch)
-			self.maxspeed = 360;
-		if (self.maxspeed != 240 && self.blocking)
-			self.maxspeed = 240;
-		if (self.crouch && self.maxspeed != 180)
-			self.maxspeed = 180;
+		if (self.melee_finished > time) // attack commitment
+			self.maxspeed = 1;
+		else
+		{
+			if (self.maxspeed != 360 && !self.crouch)
+				self.maxspeed = 360;
+			if (self.maxspeed != 240 && self.blocking)
+				self.maxspeed = 240;
+			if (self.crouch && self.maxspeed != 180)
+				self.maxspeed = 180;
+		}
 	}
 	else
 	{
-		// Stagger will lock the players view temporarily
 		self.maxspeed = 90; // staggered speed
-		self.angles = self.stagger_lockview;
 		self.fixangle = TRUE;
 	}
 
-	// Enforce name
-	if (self.loggedin)
+	if (self.loggedin) // enforce name
 	{
 		if (self.loginname != self.netname)
 			forceinfokey(self, "name", self.loginname);
@@ -394,13 +407,12 @@ void() PlayerPostThink =
 	if (!self.loggedin)
 		return;
 
+	float calc;
+
 	WaterUpdate();
 	FallDamage_Update();
 
-	float calc;
-
-	// HACK: Used to display level on the scoreboard
-	if (self.frags != self.level)
+	if (self.frags != self.level) // HACK: used to display level on the scoreboard
 		self.frags = self.level;
 
 	if (self.deadflag != DEAD_DEAD)
@@ -475,7 +487,7 @@ void() PlayerPostThink =
 			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 		}
 
-		// Alpha transparency for crouch/sneaking
+		// Alpha transparency handler for crouch/sneaking
 		if (self.crouch && !self.bonfire)
 		{
 			self.alpha = 1 - (self.skill_stealth * 0.004);
@@ -523,7 +535,7 @@ void(float type) PlayerSpawn =
 {
 	entity spawn_spot = get_spawn_point();
 
-	if (!type) // Login screen
+	if (!type) // login screen
 	{
 		self.classname = "notloggedin";
 		self.solid = SOLID_NOT;
@@ -619,11 +631,7 @@ void() PutClientInServer =
 
 void() ClientDisconnect =
 {
-//	if (self.guid && self.loggedin) // valid player, save character on disconnect
-//		CSEv_Player_SaveChar();
-
-	// clean up removed player
-	player_chain_remove(self);
+	player_chain_remove(self); // clean up removed player
 	setmodel (self, string_null);
 	self.solid = SOLID_NOT;
 	self.classname = "notloggedin";
@@ -710,21 +718,20 @@ void(entity targ) CSEv_Player_SaveChar =
 void(string LOGIN_NAME) CSEv_ResumeCharacter_s = 
 {
 	string line;
-	// Security check
+	// security check
 	float f = fopen(LOGIN_NAME, FILE_READ);
 	if (f >= 0)
 	{
 		self.guid = infokey(self, INFOKEY_P_GUID);	
 		if (line = fgets(f)) // grab guid from file
-		if (line != self.guid) // Compare guid from file & user
+		if (line != self.guid) // compare guid from file & user
 		{
 			sprint(self, PRINT_HIGH, "Server GUID does not match players\n");
 			return;
 		}
 	}
 
-	// Passed security check
-	// Grab stats from user server file
+	// passed security check, grab stats from user server file
 	float v = fopen(LOGIN_NAME, FILE_READ);
 	if (v >= 0)
 	{
@@ -877,13 +884,13 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.stamina = 100;
 		self.skillpoints = 25; // 25 skill points new players can dump into stats
 
-		// default starter weapon
+		// default starters
 		self.attack_power_min = 2;
 		self.attack_power_max = 6;
 		self.attack_speed = 1;
 		self.attack_stamina = 25;
-		self.attack_type = 1; // Slashing weapon
-		self.attack_length = 64; // Weapon length
+		self.attack_type = 1; // slashing weapon
+		self.attack_length = 64; // weapon length
 		self.main_hand = "Broken Sword";
 		self.off_hand = "Broken Buckler";
 		self.blockvalue = 3;

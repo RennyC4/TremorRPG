@@ -8,6 +8,9 @@ vector() AttackDir;
 // Camera shake
 void(entity e, float howmuch) DoCamera_Shake =
 {
+	if (e.classname != "player")
+		return;
+
 	if (random() < 0.5)
 	{
 		e.angles_x += howmuch;
@@ -44,6 +47,8 @@ void() DoAttack_ShieldBash =
 	if (self.melee_finished > time)
 		return;
 
+	self.velocity = [0, 0];
+
 	// Stamina drain on swing
 	if (self.classname == "player")
 	{
@@ -52,7 +57,7 @@ void() DoAttack_ShieldBash =
 			return;
 		self.stamina -= stamcalc;
 	}
-	
+
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
 	traceline (source, source + AttackDir() * 48, MOVE_TRIGGERS, self);
@@ -78,25 +83,25 @@ void() DoAttack_ShieldBash =
 			trace_ent.velocity = '0 0 0';
 			trace_ent.flags &= ~FL_ONGROUND;
 			trace_ent.velocity_z += 150;
-			trace_ent.velocity = trace_ent.velocity + dir * 500;
+			trace_ent.velocity = trace_ent.velocity + dir * 250;
 			//
 			if (trace_ent.stagger_finished < time)
 				trace_ent.stagger_finished = time + 3;
-			trace_ent.stagger_lockview = trace_ent.angles;
-			sound (trace_ent, CHAN_WEAPON, "shield2.wav", 1, ATTN_NORM);
+			DoCamera_Shake(trace_ent, 16);
+			sound (trace_ent, CHAN_BODY, "shield2.wav", 1, ATTN_NORM);
 		}
 		else // Parry
 		{
 			float parry = TRUE;
 			string eventlog_print = (strcat("^2Successful parry!"));
 			stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
-			// Apply effects
-			self.stagger_lockview = self.angles;
+			// apply effects
 			self.stagger_finished = time + 3;
 		}
 	}
 	sound (self, CHAN_WEAPON, "shield3.wav", 1, ATTN_NORM);
-	self.melee_finished = time + 2;
+	self.melee_finished = time + 1.5;
+	self.lockview_finished = time + 1.5;
 };
 
 // Main melee attack function
@@ -104,6 +109,8 @@ void() DoAttack_Melee =
 {
 	if (self.melee_finished > time)
 		return;
+
+	self.velocity = [0, 0];
 
 	// Stamina drain on swing
 	if (self.classname == "player")
@@ -167,7 +174,6 @@ void() DoAttack_Melee =
 				{
 					eventlog_print = (strcat("^1You've been staggered!"));
 					stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
-					trace_ent.stagger_lockview = trace_ent.angles;
 					trace_ent.stagger_finished = time + 3; // stagger, stamina is out
 				}
 			}
@@ -198,11 +204,10 @@ void() DoAttack_Melee =
 							eventlog_print = (strcat("^1You've been staggered!"));
 							stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 						}
-						DoCamera_Shake(trace_ent, 16);
+						DoCamera_Shake(trace_ent, 12);
 						damage = damage - ceil(trace_ent.blockvalue / 2); // save a tiny bit of damage still
 						trace_ent.stamina = 0;
 						trace_ent.blocking = FALSE;
-						trace_ent.stagger_lockview = trace_ent.angles;
 						trace_ent.stagger_finished = time + 3; // stagger, stamina is out
 					}
 				}
@@ -213,7 +218,6 @@ void() DoAttack_Melee =
 				eventlog_print = (strcat("^2Successful parry!"));
 				stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 				// Apply effects
-				self.stagger_lockview = self.angles;
 				self.stagger_finished = time + 3;
 			}
 			sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
@@ -221,13 +225,13 @@ void() DoAttack_Melee =
 
 		if (!parry)
 		{
-			// Armor calculations
+			// armor calculations
 			if (trace_ent.armorvalue > damage)
 				damage = 1;
 			else
 				damage = damage - trace_ent.armorvalue;
 
-			// Blood effects
+			// blood effects
 			float i;
 			vector eye_level = [9, 0];
 			eye_level_z = self.view_ofs_z; // match up blood spray to attackers view by z
@@ -237,10 +241,12 @@ void() DoAttack_Melee =
 
 			damage = ceil(damage); // round up final damage output
 			DoDamage(trace_ent, self, damage);
+			DoCamera_Shake(trace_ent, 16);
 			sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
 		}
 	}
 	self.melee_finished = time + self.attack_speed;
+	self.lockview_finished = time + self.attack_speed;
 };
 
 void(entity targ) Player_CheckLevelUp;
@@ -253,7 +259,7 @@ void(entity targ, entity attacker) DoDeath =
 			GiveExperience(attacker, targ.exp_min, targ.exp);
 			GiveGold(attacker, targ.gold_min, targ.gold);
 		}
-		if (targ.classname == "player") // PVP Kill
+		if (targ.classname == "player") // PVP kill
 		{
 			attacker.reaper_marks += targ.level;
 			if (targ.gold > 1)
@@ -323,7 +329,8 @@ void(entity targ, entity attacker, float damage) DoDamage =
 		if (targ.noise2) // pain sound
 			sound (trace_ent, CHAN_VOICE, targ.noise2, 1, ATTN_NORM);
 
-		targ.goalentity = targ.enemy = attacker; // Go after last attacker
+		// TODO: Aggo stuff?
+		targ.goalentity = targ.enemy = attacker; // go after last attacker
 	}
 
 	if (targ.health <= 0)

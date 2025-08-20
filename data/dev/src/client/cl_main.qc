@@ -4,7 +4,6 @@
 
 void() Hud_UpdateScores;
 void(vector virtmin, vector virtsize) Hud_Scoreboard;
-
 void() CSQC_Ent_Remove = {remove(self);};
 
 float(string key, string val) find_player_id =
@@ -97,7 +96,7 @@ float(string strCommand) CSQC_ConsoleCommand =
 		sendevent("PlayerShowStats", "");
 	if (argv(0) == "toggle_crouch")
 		sendevent("PlayerCrouch", "");
-	if (argv(0) == "toggle_camera")
+	if (argv(0) == "toggle_camera") // TODO send camera mode to SSQC for various reasons
 	{
 		if (!camera_mode)
 			camera_mode = TRUE;
@@ -114,6 +113,7 @@ float(string strCommand) CSQC_ConsoleCommand =
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
 	float player_menu = getstatf(STAT_MENU);
+	float player_lockview = getstatf(STAT_LOCKVIEW);
 
 	if (player_menu == MENU_CHARACTER) // Character screen
 		sui_input_event(evtype, scanx, chary, devid);
@@ -127,7 +127,12 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 			case IE_KEYUP:
 				return FALSE;
 			case IE_MOUSEDELTA:
-				return FALSE;
+			{
+				if (player_lockview > time) // disable mouse movement
+					return TRUE;
+				else
+					return FALSE;
+			}
 			case IE_MOUSEABS:
 				cursor_pos_x = scanx;
 				cursor_pos_y = chary;
@@ -154,7 +159,4 @@ void() CSQC_Parse_Event =
 	}
 };
 
-noref void CSQC_Shutdown() =
-{
-	//sendevent("Player_SaveChar", "");
-};
+noref void CSQC_Shutdown() = {};

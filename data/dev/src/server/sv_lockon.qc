@@ -48,7 +48,7 @@ void(entity player, entity target) ShowLockMarker =
 	x.movetype = MOVETYPE_FOLLOW;
 	x.effects = EF_NODEPTHTEST;
 	x.classname = "reticle";
-	x.scale = 2;
+	x.scale = 4;
 	x.view_ofs_z = target.maxs_z / 2;
 	setmodel(x, "progs/targetdot.spr");
 	setsize(x, [-0, -0, 0], [0, 0, 0]);
@@ -72,6 +72,7 @@ vector() AttackDir =
 			aim = normalize(aim * 0.7 + to * 0.3); // blend 30% toward target
 		}
 	}
+
     return aim;
 };
 

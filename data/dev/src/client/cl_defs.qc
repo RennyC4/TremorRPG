@@ -2185,23 +2185,18 @@ float MENU_CHARACTER = 2; // user info screen
 // Grab stats from SSQC 
 //
 
-// Unique identifier per user
 #define STAT_GUID 32
 #define STAT_LOGGEDIN 33
-// Origin
 #define STAT_PLAYER_X 34
 #define STAT_PLAYER_Y 35
 #define STAT_PLAYER_Z 36
-// View angles
 #define STAT_PLAYER_ANGLE_X 37
 #define STAT_PLAYER_ANGLE_Y 38
 #define STAT_PLAYER_ANGLE_Z 39
-// Misc
 #define STAT_MENU 40
 #define STAT_ZONENAME 41
 #define STAT_ZONENAME_TIME 42
 #define STAT_PVP 43
-// Player RPG stats
 #define STAT_HEALTH 44
 #define STAT_MAXHEALTH 45
 #define STAT_MANA 46
@@ -2223,7 +2218,6 @@ float MENU_CHARACTER = 2; // user info screen
 #define STAT_ARMORNAME 62
 #define STAT_ARMORVALUE 63
 #define STAT_INCOMBAT 64
-// Player skill stats
 #define STAT_SKILL_UNARMED 65
 #define STAT_SKILL_SLASH 66
 #define STAT_SKILL_PIERCE 67
@@ -2244,3 +2238,4 @@ float MENU_CHARACTER = 2; // user info screen
 #define STAT_SKILL_ACROBATIC 82
 #define STAT_REAPERMARK 83
 #define STAT_BLOCKVALUE 84
+#define STAT_LOCKVIEW 85
