@@ -2,11 +2,6 @@
 // Inventory
 //
 
-#define MAX_INVENTORY 32 // how many slots allowed
-.float inv_count;
-.string inventory[MAX_INVENTORY];
-.float inventory_count[MAX_INVENTORY]; // stack counts
-
 void(entity player, string itemname, float count) AddToInventory =
 {
     float i;
@@ -87,7 +82,7 @@ void(entity player, string itemname) UseItem =
         return;
     }
 
-    if (itemname == "healthpot") // test crap
+    if (itemname == "health potion") // test crap
     {
         player.health = min(player.health + 25, player.max_health);
         RemoveFromInventory(player, itemname, 1);
@@ -99,6 +94,8 @@ void(entity player, string itemname) UseItem =
     }
 };
 
+// Obsolete
+/*
 void(entity player) ShowInventory =
 {
     float i;
@@ -111,11 +108,14 @@ void(entity player) ShowInventory =
         sprint(player, PRINT_HIGH, "\n");
     }
 };
+*/
 
+// called whenever we need to send inventory data to CSQC
 void(entity player) SendInventory =
 {
     float i;
 
+	msg_entity = player;
 	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
 	WriteByte(MSG_MULTICAST, CSQC_INVENTORY);
 	WriteByte(MSG_MULTICAST, player.inv_count);
@@ -125,8 +125,7 @@ void(entity player) SendInventory =
         WriteString(MSG_MULTICAST, player.inventory[i]);
         WriteFloat(MSG_MULTICAST, player.inventory_count[i]);
     }
-	multicast(self.origin, MULTICAST_ONE);
-	print ("Data Sent\n");
+	multicast(self.origin, MULTICAST_ONE_R);
 };
 
 void() Item_Touch =

@@ -17,15 +17,19 @@ void() Player_Hud =
 
 			if (player_menu == MENU_LOGIN)
 				User_LoginScreen();
-			if (player_menu == MENU_CHARACTER)
+			else
 			{
 				Draw_Health();
 				Draw_Mana();
 				Draw_Stamina();
 				Draw_Exp();
 				Draw_InCombatorPVP();
-				User_CharacterScreen();
 			}
+
+			if (player_menu == MENU_CHARACTER)
+				User_CharacterScreen();
+			if (player_menu == MENU_INVENTORY)
+				User_InventoryScreen();
 		}
 		else // Regular gameplay
 		{

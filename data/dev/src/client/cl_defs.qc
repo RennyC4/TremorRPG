@@ -2180,6 +2180,7 @@ float MENU;
 float MENU_OFF = 0;
 float MENU_LOGIN = 1;
 float MENU_CHARACTER = 2; // user info screen
+float MENU_INVENTORY = 3; // user inventory screen
 
 //
 // Grab stats from SSQC 

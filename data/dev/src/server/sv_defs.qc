@@ -1745,6 +1745,7 @@ const float ATTACKTYPE_BASH = 3;
 const float MENU_OFF = 0;
 const float MENU_LOGIN = 1;
 const float MENU_CHARACTER = 2;
+const float MENU_INVENTORY = 3;
 
 .float button3_pressed;
 
@@ -1929,3 +1930,10 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 // Particle defs
 var float PART_FOUNTAIN;
 var float PART_BONFIRE;
+
+// Inventory
+#define MAX_INVENTORY 32 // how many slots allowed
+.float inv_count;
+.string inventory[MAX_INVENTORY];
+.float inventory_count[MAX_INVENTORY]; // stack counts
+.float read_inv_count; // used for reading how many items the player has on resuming character

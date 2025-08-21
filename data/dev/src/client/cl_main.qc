@@ -30,6 +30,7 @@ noref void() CSQC_WorldLoaded =
 {
 	registercommand("+showscores", "Show scoreboard");
 	registercommand("show_character", "Displays character information screen\n");
+	registercommand("show_inventory", "Displays inventory information screen\n");
 	registercommand("toggle_crouch", "Crouching & sneaking\n");
 	registercommand("toggle_camera", "3rd person camera toggle\n");
 	registercommand("+use", "Use what is in front of player\n");
@@ -74,7 +75,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 	{
 		Player_Hud();
-		DrawInventory();
 	}
 
 	sui_menu_nav();
@@ -97,6 +97,8 @@ float(string strCommand) CSQC_ConsoleCommand =
 	tokenize(strCommand);
 	if (argv(0) == "show_character")
 		sendevent("PlayerShowStats", "");
+	if (argv(0) == "show_inventory")
+		sendevent("PlayerShowInventory", "");
 	if (argv(0) == "toggle_crouch")
 		sendevent("PlayerCrouch", "");
 	if (argv(0) == "toggle_camera") // TODO send camera mode to SSQC for various reasons
@@ -124,7 +126,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 	float player_menu = getstatf(STAT_MENU);
 	float player_lockview = getstatf(STAT_LOCKVIEW);
 
-	if (player_menu == MENU_CHARACTER) // Character screen
+	if (player_menu == MENU_CHARACTER || player_menu == MENU_INVENTORY) // Character screen
 		sui_input_event(evtype, scanx, chary, devid);
 
 	if (player_menu != MENU_LOGIN)
@@ -162,7 +164,7 @@ void() CSQC_Parse_Event =
 {
 	float event = readbyte();
 
-	if (event == CSQC_INVENTORY)
+	if (event == CSQC_INVENTORY) // receive inventory update from SSQC
 	{
         float i;
 
@@ -172,7 +174,6 @@ void() CSQC_Parse_Event =
             inventory[i] = readstring();
             inventory_count[i] = readfloat();
         }
-		print ("Yeeaaah\n");
 	}
 };
 

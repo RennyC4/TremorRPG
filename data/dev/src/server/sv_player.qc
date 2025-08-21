@@ -6,7 +6,6 @@ void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
 
 // Inventory stuff, temporary here for testing
-void(entity player) ShowInventory;
 void(entity player) SendInventory;
 void(entity player, string itemname, float count) AddToInventory;
 
@@ -60,6 +59,9 @@ void() PlayerJump =
 		return;
 	if (!(self.flags & FL_JUMPRELEASED))
 		return;
+	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY)
+		return;
+
 
 	float stamcalc = self.skill_acrobatic * 0.35; // calculation
 	float jumpcalc = self.skill_acrobatic * 1.1; // calculation
@@ -73,9 +75,6 @@ void() PlayerJump =
 			stamcalc = 49;
 		self.stamina -= (50 - stamcalc);
 	}
-
-	if (self.menu == MENU_CHARACTER)
-		self.menu = MENU_OFF;
 };
 
 // camera toggle from csqc -> ssqc for various reasons
@@ -132,10 +131,12 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 	
+	// Inventory debugging
+	AddToInventory(self, "Health Potion", 1);
+	AddToInventory(self, "Short Sword", 1);
+	AddToInventory(self, "Skibidi Toilet", 1);
+
 	//self.skillpoints = 99999;
-	AddToInventory(self, "healthpot", 1);
-	SendInventory(self); // send to CSQC
-	ShowInventory(self); // show locally
 };
 
 // called from CSQC ("show_character" console command)
@@ -146,8 +147,22 @@ void() CSEv_PlayerShowStats =
 
 	if (self.menu == MENU_OFF)
 		self.menu = MENU_CHARACTER;
+	else if (self.menu == MENU_INVENTORY)
+		self.menu = MENU_CHARACTER;
 	else
 		self.menu = MENU_OFF;
+};
+
+// called from CSQC ("show_inventory" console command + button)
+void() CSEv_PlayerShowInventory = 
+{
+	if (self.deadflag != DEAD_NO)
+		return;
+
+	if (self.menu == MENU_INVENTORY)
+		self.menu = MENU_OFF;
+	else if (self.menu == MENU_CHARACTER || self.menu == MENU_OFF)
+		self.menu = MENU_INVENTORY;
 };
 
 // called from CSQC (PVP button)
@@ -412,6 +427,10 @@ void() PlayerPreThink =
 		if (self.loginname != self.netname)
 			forceinfokey(self, "name", self.loginname);
 	}
+
+	if (self.menu == MENU_INVENTORY) // TODO: Buy/Sell menu stuff should be included
+		SendInventory(self); // send inventory to CSQC
+
 	LockOn_HandleInput();
 	LockOn_Update();
 	CheckImpulses();
@@ -729,9 +748,25 @@ void(entity targ) CSEv_Player_SaveChar =
 		fputs(v, ftos(targ.skill_acrobatic), "\n");		
 		//
 
+		fputs(v, ftos(targ.inv_count), "\n"); // inventory count, used for reading back on character resume
+
 		fclose(v);
-		print(targ.loginname, " character saved\n");
 	}
+
+	// save inventory to seperate file
+	string inv = strcat(targ.loginname, "_inv");
+	float b = fopen(inv, FILE_WRITE);
+	if (b >= 0)
+	{
+		float i;
+		for (i = 0; i < targ.inv_count; i++)
+		{
+			fputs(b, targ.inventory[i], "\n");
+			fputs(b, ftos(targ.inventory_count[i]), "\n");
+		}
+		fclose(b);
+	}
+	sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
 };
 
 void(string LOGIN_NAME) CSEv_ResumeCharacter_s = 
@@ -865,17 +900,42 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.skill_acrobatic = stof(line);
 		//
 
+		if (line = fgets(v)) // inventory count
+			self.read_inv_count = stof(line);
+
 		fclose(v);
 
 		setorigin (self, self.origin); // relink properly
 		self.fixangle = TRUE;
 		self.displayname = self.loginname;
 		self.stamina = 100;
-
+		
 		PlayerSpawn(1); // Put player in game
 	}
 	else
+	{
 		sprint(self, PRINT_HIGH, "Character doesn't exist\n");
+		return;
+	}
+	
+	// load inventory
+	string inv = strcat(self.loginname, "_inv");
+	float b = fopen(inv, FILE_READ);
+	if (b >= 0)
+	{
+		float i;
+		for (i = 0; i < self.read_inv_count; i++)
+		{
+			if (line = fgets(v)) // Add item
+			{
+				string what = line;
+				AddToInventory(self, what, 0);
+			}
+			if (line = fgets(v)) // Add count to item
+				AddToInventory(self, what, stof(line));
+		}
+		fclose(b);
+	}
 };
 
 void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
