@@ -1782,6 +1782,7 @@ const float MENU_CHARACTER = 2;
 .float lockview_finished; // lock player view in certain situations, handled by CSQC
 .entity reticle; // used for targetting reticle
 .float camera_toggle; // boolean
+.float inair_count; // how long player is in the air
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)

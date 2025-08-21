@@ -278,6 +278,9 @@ void() FallDamage_Update =
     // While airborne, keep the largest downward speed seen this airtime
     if (!(self.flags & FL_ONGROUND))
     {
+		self.inair_count += 1;
+		if (self.inair_count >= 12)
+			self.lockview_finished = time + 0.1; // lock view when leaving ground, but not over small inclines
         float down = - self.velocity_z; // positive when falling
         if (down > self.fall_maxspeed)
             self.fall_maxspeed = down;
@@ -286,6 +289,7 @@ void() FallDamage_Update =
     // Landing
     if ((self.flags & FL_ONGROUND) && !self.was_onground)
     {
+		self.inair_count = 0;
         // small guard against multiple hits in the same frame slice
         if (time - self.last_landtime > LAND_COOLDOWN)
         {
@@ -389,12 +393,12 @@ void() PlayerPreThink =
 			self.maxspeed = 1;
 		else
 		{
-			if (self.maxspeed != 360 && !self.crouch)
-				self.maxspeed = 360;
-			if (self.maxspeed != 240 && self.blocking)
-				self.maxspeed = 240;
-			if (self.crouch && self.maxspeed != 180)
-				self.maxspeed = 180;
+			if (self.maxspeed != 225 && !self.crouch)
+				self.maxspeed = 225;
+			if (self.maxspeed != 150 && self.blocking)
+				self.maxspeed = 150;
+			if (self.crouch && self.maxspeed != 100)
+				self.maxspeed = 100;
 		}
 	}
 	else
@@ -584,7 +588,7 @@ void(float type) PlayerSpawn =
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.crouch = FALSE;
 		self.alpha = 1;
-		self.maxspeed = 360;
+		//self.maxspeed = 200;
 		self.th_die = PlayerDeath;
 
 		// TODO: Follow gender rule
@@ -612,7 +616,7 @@ void(float type) PlayerSpawn =
 		self.incombat_finished = time;
 		self.crouch = FALSE;
 		self.alpha = 1;
-		self.maxspeed = 360;
+		//self.maxspeed = 200;
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
@@ -915,7 +919,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.armorvalue = 0;
 		self.pvp = FALSE;
 
-		self.maxspeed = 360;
+		//self.maxspeed = 200;
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		self.displayname = self.loginname;
