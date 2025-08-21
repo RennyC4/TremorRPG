@@ -28,10 +28,10 @@ float IMP_LOCK_PREV   = 142;
 
 void() ShowLockMarker_think =
 {
-	if (self.scale > 0.5)
-		self.scale -= 0.1;
+	if (self.scale > 4)
+		self.scale -= 0.5;
 	else
-		self.scale = 0.5;
+		self.scale = 4;
 	self.nextthink = time;
 };
 
@@ -49,7 +49,7 @@ void(entity player, entity target) ShowLockMarker =
 	x.movetype = MOVETYPE_FOLLOW;
 	x.effects = EF_NODEPTHTEST;
 	x.classname = "reticle";
-	x.scale = 4;
+	x.scale = 24;
 	x.view_ofs_z = target.maxs_z / 2;
 	setmodel(x, "progs/targetdot.spr");
 	setsize(x, [-0, -0, 0], [0, 0, 0]);
