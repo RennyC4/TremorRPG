@@ -643,6 +643,9 @@ void() PutClientInServer =
 
 void() ClientDisconnect =
 {
+	if (self.reticle)
+		remove(self.reticle);
+
 	player_chain_remove(self); // clean up removed player
 	setmodel (self, string_null);
 	self.solid = SOLID_NOT;
