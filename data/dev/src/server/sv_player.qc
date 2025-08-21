@@ -62,7 +62,6 @@ void() PlayerJump =
 	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY)
 		return;
 
-
 	float stamcalc = self.skill_acrobatic * 0.35; // calculation
 	float jumpcalc = self.skill_acrobatic * 1.1; // calculation
 	if (self.stamina > (50 - stamcalc))
@@ -375,7 +374,7 @@ void() PlayerPreThink =
 				DoAttack_ShieldBash();
 		}
 	}
-
+	
 	// Button1 we ignore
 	if (self.button2)
 		PlayerJump();
@@ -607,11 +606,10 @@ void(float type) PlayerSpawn =
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.crouch = FALSE;
 		self.alpha = 1;
-		//self.maxspeed = 200;
 		self.th_die = PlayerDeath;
 
 		// TODO: Follow gender rule
-		setmodel(self, "models/player_m.iqm");
+		setmodel(self, "models/player_m.glb");
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
@@ -635,7 +633,6 @@ void(float type) PlayerSpawn =
 		self.incombat_finished = time;
 		self.crouch = FALSE;
 		self.alpha = 1;
-		//self.maxspeed = 200;
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
@@ -643,7 +640,7 @@ void(float type) PlayerSpawn =
 		self.velocity = '0 0 0';
 
 		// TODO: Follow gender rule
-		setmodel(self, "models/player_m.iqm");
+		setmodel(self, "models/player_m.glb");
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
@@ -919,6 +916,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	}
 	
 	// load inventory
+	string what = "";
 	string inv = strcat(self.loginname, "_inv");
 	float b = fopen(inv, FILE_READ);
 	if (b >= 0)
@@ -928,7 +926,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		{
 			if (line = fgets(v)) // Add item
 			{
-				string what = line;
+				what = line;
 				AddToInventory(self, what, 0);
 			}
 			if (line = fgets(v)) // Add count to item
@@ -978,8 +976,6 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.armorname = "Plain Clothes";
 		self.armorvalue = 0;
 		self.pvp = FALSE;
-
-		//self.maxspeed = 200;
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		self.displayname = self.loginname;

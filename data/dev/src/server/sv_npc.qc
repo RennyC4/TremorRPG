@@ -81,7 +81,7 @@ void() bonfire_use =
 
 void() set_bonfire =
 {
-	precache_model("models/bonfire.iqm");
+	precache_model("models/bonfire.glb");
 	precache_sound("bonfire1.wav");
 	precache_sound("bonfire2.wav");
 
@@ -93,7 +93,7 @@ void() set_bonfire =
 	self.th_use = bonfire_use;
 	self.effects = EF_DIMLIGHT;
 
-	setmodel(self, "models/bonfire.iqm");
+	setmodel(self, "models/bonfire.glb");
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 	setorigin(self, self.origin + v_up * 64);
 

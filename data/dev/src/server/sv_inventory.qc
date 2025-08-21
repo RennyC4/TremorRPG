@@ -94,22 +94,6 @@ void(entity player, string itemname) UseItem =
     }
 };
 
-// Obsolete
-/*
-void(entity player) ShowInventory =
-{
-    float i;
-
-    sprint(player, PRINT_HIGH, "==== Inventory ====\n");
-    for (i = 0; i < player.inv_count; i++)
-    {
-        sprint(player, PRINT_HIGH, strcat(player.inventory[i], " x"));
-        sprint(player, PRINT_HIGH, ftos(player.inventory_count[i]));
-        sprint(player, PRINT_HIGH, "\n");
-    }
-};
-*/
-
 // called whenever we need to send inventory data to CSQC
 void(entity player) SendInventory =
 {
@@ -133,8 +117,11 @@ void() Item_Touch =
     if (other.classname != "player")
         return;
 
-    // Example: self.netname is the item's identifier string
+	// Example: self.netname is the item's identifier string
     AddToInventory(other, self.netname, 1);
-    sprint(other, PRINT_HIGH, strcat("Picked up: ", self.netname, "\n"));
-    remove(self);
+
+	string eventlog_print = (strcat("+ ", self.netname, "\n"));
+	stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
+
+	remove(self);
 };

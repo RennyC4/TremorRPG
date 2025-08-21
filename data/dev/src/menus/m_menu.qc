@@ -266,7 +266,7 @@ void() main_menu =
 	my_button("mm_settings", [0, 8 + 48], [size_x - 16, 20], "Settings") ? current_menu = MENU_SETTINGS : 0;
 	my_button("mm_help", [0, 8 + 72], [size_x - 16, 20], "Help") ? current_menu = MENU_HELP : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
-	my_button("mm_quit", [0, -8], [size_x - 16, 20], "Quit") ? localcmd("disconnect;quit\n") : 0;
+	my_button("mm_quit", [0, -8], [size_x - 16, 20], "Quit") ? localcmd("cfg_save;disconnect;quit\n") : 0;
 	sui_pop_frame();	
 
 	sui_set_default_kb_focus("mm_start");

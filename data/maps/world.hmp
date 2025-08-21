@@ -51,7 +51,7 @@ angles "0 0 0"
 // NPC
 {
 classname "set_npc"
-model "models/player_m.iqm"
+model "models/player_m.glb"
 origin "-3095 -1466 85"
 angles "0 -172 0"
 displayname "Erywen"
@@ -76,7 +76,7 @@ attack_speed "3"
 // monster (bandit lvl1)
 {
 classname "set_monster"
-model "models/player_m.iqm"
+model "models/player_m.glb"
 origin "-1111 439 150"
 angles "0 0 0"
 displayname "Bandit"
@@ -101,7 +101,7 @@ attack_length "64"
 // monster (bandit lvl1)
 {
 classname "set_monster"
-model "models/player_m.iqm"
+model "models/player_m.glb"
 origin "-2939 751 45"
 angles "0 0 0"
 displayname "Bandit"
@@ -126,7 +126,7 @@ attack_length "64"
 // monster (bandit lvl1)
 {
 classname "set_monster"
-model "models/player_m.iqm"
+model "models/player_m.glb"
 origin "-592 282 135"
 angles "0 0 0"
 displayname "Bandit"

@@ -229,9 +229,9 @@ void(vector pos) Draw_3DPDoll =
     {
  
 		doll = spawn();
-        precache_model("models/player_m.iqm");
+        precache_model("models/player_m.glb");
 		// TODO: Draw female player model
-        setmodel(doll, "models/player_m.iqm");
+        setmodel(doll, "models/player_m.glb");
         setorigin(doll, '0 0 0');
 		doll.angles_y -= 180;
 		doll.origin_z -= 35;
