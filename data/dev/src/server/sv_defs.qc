@@ -1780,7 +1780,7 @@ const float MENU_CHARACTER = 2;
 .float climbing; // boolean
 .float climb_finished;
 .float lockview_finished; // lock player view in certain situations, handled by CSQC
-.entity char; // used for various things
+.entity reticle; // used for targetting reticle
 .float camera_toggle; // boolean
 
 //

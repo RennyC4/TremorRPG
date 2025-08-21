@@ -39,11 +39,12 @@ void(entity player, entity target) ShowLockMarker =
 {
     if (!target)
 		return;
-	if (target.char)
+	if (player.reticle)
 		return;
 
 	entity x = spawn();
-	x.owner = x.aiment = target;
+	x.owner = player;
+	x.aiment = target;
 	x.drawonlytoclient = player;
 	x.movetype = MOVETYPE_FOLLOW;
 	x.effects = EF_NODEPTHTEST;
@@ -55,7 +56,7 @@ void(entity player, entity target) ShowLockMarker =
 	x.think = ShowLockMarker_think;
 	x.nextthink = time;
 
-	target.char = x; // link 'em
+	player.reticle = x; // link 'em
 };
 
 // helper function (aim magnet) to bios aim vector towards the locked target
@@ -89,16 +90,16 @@ void() LockOn_HandleInput =
 				self.lock_on = 1;
                 self.lock_target = t;
                 self.lock_los_lost_time = 0;
-				if (!t.char)
+				if (!self.reticle)
 					ShowLockMarker(self, t); // show flash on new target
             }
         }
         else
         {
-			if (self.lock_target.char)
+			if (self.reticle)
 			{
-				remove(self.lock_target.char);
-				self.lock_target.char = world;
+				remove(self.reticle);
+				self.reticle = world;
 			}
             self.lock_on = 0;
             self.lock_target = world;
@@ -140,13 +141,13 @@ void() LockOn_HandleInput =
 
         if (best)
 		{
-			if (self.lock_target.char) // remove last target
+			if (self.reticle) // remove last target
 			{
-				remove(self.lock_target.char);
-				self.lock_target.char = world;
+				remove(self.reticle);
+				self.reticle = world;
 			}
 			self.lock_target = best;
-			if (!best.char)
+			if (!self.reticle)
 				ShowLockMarker(self, best); // show reticle on new target
 		}
         self.impulse = 0;
@@ -161,10 +162,10 @@ void() LockOn_Update =
     entity t = self.lock_target;
     if (!IsValidLockTarget(t))
     {
-		if (self.lock_target.char)
+		if (self.reticle)
 		{
-			remove(self.lock_target.char);
-			self.lock_target.char = world;
+			remove(self.reticle);
+			self.reticle = world;
 		}
 		self.lock_on = 0;
         self.lock_target = world;
@@ -181,10 +182,10 @@ void() LockOn_Update =
 			self.lock_los_lost_time = time;
         if (time - self.lock_los_lost_time > LOCK_BREAK_TIME)
         {
-			if (self.lock_target.char)
+			if (self.reticle)
 			{
-				remove(self.lock_target.char);
-				self.lock_target.char = world;
+				remove(self.reticle);
+				self.reticle = world;
 			}
             self.lock_on = 0;
             self.lock_target = world;
@@ -196,10 +197,10 @@ void() LockOn_Update =
 
     if (d > LOCK_RANGE * 1.2) // a little hysteresis
     {
-		if (self.lock_target.char)
+		if (self.reticle)
 		{
-			remove(self.lock_target.char);
-			self.lock_target.char = world;
+			remove(self.reticle);
+			self.reticle = world;
 		}
 		self.lock_on = 0;
         self.lock_target = world;
