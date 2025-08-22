@@ -7,7 +7,7 @@ void() monster_respawn =
 	self.takedamage = DAMAGE_AIM;
 	self.alpha = 1; // removeme when we have animations + proper model
 	self.health = self.max_health;
-	self.radius_candamage = "TRUE"; // uses string
+	self.radius_candamage = TRUE;
 	self.ai_mode = AI_IDLE; // return to idling
 
 	setorigin (self, self.saveorigin); // respawn at initial spawn spot
@@ -24,7 +24,7 @@ void() monster_death =
 	self.solid = SOLID_NOT;
 	self.deadflag = DEAD_DEAD;
 	self.takedamage = DAMAGE_NO;
-	self.radius_candamage = "FALSE"; // uses string
+	self.radius_candamage = FALSE;
 
 	self.think = monster_respawn;
 	self.nextthink = time + self.respawn_finished;
@@ -51,7 +51,7 @@ void() set_monster =
 		self.health = self.max_health;
 	self.takedamage = DAMAGE_AIM;
 	self.classname = "monster";
-	self.radius_candamage = "TRUE"; // uses string
+	self.radius_candamage = TRUE;
 	self.colormod = '100 0 0'; // Red
 	self.flags |= FL_MONSTER;
 	self.canbackstab = TRUE; // can be backstabbed, TODO: Mapper should be able to set this

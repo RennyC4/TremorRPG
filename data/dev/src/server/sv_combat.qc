@@ -33,10 +33,10 @@ void(entity e, float howmuch) DoCamera_Shake =
 };
 
 // returns 1 if the entity is in front (in sight) of self, used for blocking
-float(entity enemy, entity peaking) check_block =
+float(entity enemy, entity defender) check_block =
 {
-	makevectors (peaking.angles);
-	vector vec = normalize (enemy.origin - peaking.origin);
+	makevectors (defender.angles);
+	vector vec = normalize (enemy.origin - defender.origin);
 	float dot = vec * v_forward;
 
 	if (dot > 0.7)
@@ -381,7 +381,7 @@ void(entity targ, entity attacker, float damage) DoDamage =
 
 void(entity attacker, float radius, float damage, float setfire, float diminish) DoRadiusDamage =
 {
-	for (entity targ = world;(targ = find(targ, radius_candamage, "TRUE"));)
+	for (entity targ = world;(targ = findfloat(targ, radius_candamage, TRUE));)
 	{
 		if (vlen(targ.origin - self.origin) <= radius)
 		{

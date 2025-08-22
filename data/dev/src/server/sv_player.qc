@@ -565,7 +565,7 @@ void() PlayerDeath =
 	self.incombat = FALSE;
 	setmodel(self, string_null); // remove me when we get actual animations
 	self.deadflag = DEAD_DEAD;
-	self.radius_candamage = "FALSE"; // uses string
+	self.radius_candamage = FALSE;
 	self.movetype = MOVETYPE_NONE;
 	self.view_ofs = [0, 0, 4];
 	centerprint (self, "/P^1You're Dead!\n^7--------\n\nYou've lost ^3" , h, " ^7gold!" , "\n\n^b^5Press Attack to respawn\n");
@@ -597,7 +597,7 @@ void(float type) PlayerSpawn =
 
 		self.menu = MENU_LOGIN;
 		self.loggedin = FALSE;
-		self.radius_candamage = "FALSE"; // uses string
+		self.radius_candamage = FALSE;
 	}
 	else if (type == 1) // put actual player in
 	{
@@ -609,7 +609,7 @@ void(float type) PlayerSpawn =
 		self.view_ofs = [0, 0, 48];
 		self.menu = MENU_OFF;
 		self.loggedin = TRUE;
-		self.radius_candamage = "TRUE"; // uses string
+		self.radius_candamage = TRUE;
 		self.solid = SOLID_TRIGGER;
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.crouch = FALSE;
@@ -633,7 +633,7 @@ void(float type) PlayerSpawn =
 		self.movetype = MOVETYPE_WALK;
 		self.view_ofs = [0, 0, 48];
 		self.deadflag = DEAD_NO;
-		self.radius_candamage = "TRUE"; // uses string
+		self.radius_candamage = TRUE;
 		self.solid = SOLID_TRIGGER;
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.stamina = 100;

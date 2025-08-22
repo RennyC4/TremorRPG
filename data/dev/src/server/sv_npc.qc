@@ -53,7 +53,7 @@ void() set_npc =
 	self.takedamage = DAMAGE_NO;
 	self.classname = "npc";
 	self.netname = "Keldran"; // TODO: NPC stuff should be its own file
-	self.radius_candamage = "FALSE"; // uses string
+	self.radius_candamage = FALSE;
 	self.colormod = '100 100 0'; // Yellow
 	self.idealangles = self.angles;
 	self.th_use = npc_use;
@@ -131,7 +131,7 @@ void() set_bonfire =
 	self.movetype = MOVETYPE_NONE;
 	self.takedamage = DAMAGE_NO;
 	self.classname = "bonfire";
-	self.radius_candamage = "FALSE"; // uses string
+	self.radius_candamage = FALSE;
 	self.th_use = bonfire_use;
 	self.effects = EF_DIMLIGHT;
 
