@@ -48,28 +48,14 @@ origin "-2986 -1825 52"
 angles "0 0 0"
 }
 
-// NPC
+// NPC (Elderfen Weapon / Armor Merchant)
 {
 classname "set_npc"
 model "models/player_m.glb"
-origin "-3095 -1466 85"
-angles "0 -172 0"
+origin "-1810 -1725 76"
+angles " 0 0"
 displayname "Erywen"
-max_health "6"
-level "1"
-exp "10"
-exp_min "2"
-gold "3"
-gold_min "1"
-attack_power_min "1"
-attack_power_max "3"
-respawn_finished "10"
-speed "15"
-noise "monsters/sight1.wav" // sight sound
-noise1 "monsters/attack1.wav" // attack sound
-noise2 "monsters/pain1.wav" // pain sound
-noise3 "monsters/death1.wav" // death sound
-attack_speed "3"
+gold "500"
 }
 
 

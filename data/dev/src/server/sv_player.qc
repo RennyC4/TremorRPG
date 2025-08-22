@@ -232,8 +232,9 @@ void() Player_Use =
 	}
 
 	makevectors (self.angles);
-	vector source = self.origin + '0 0 16';
-	traceline (source, source + v_forward * 64, MOVE_TRIGGERS, self);
+	vector source = self.origin;
+	source = self.origin + self.view_ofs;
+	traceline (source, source + v_forward * 72, MOVE_ENTCHAIN, self);
 
 	if (trace_ent.th_use)
 	{

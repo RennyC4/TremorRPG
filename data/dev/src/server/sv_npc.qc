@@ -136,7 +136,7 @@ void() set_bonfire =
 	self.effects = EF_DIMLIGHT;
 
 	setmodel(self, "models/bonfire.glb");
-	setsize(self, [-16, -16, 0], [16, 16, 56]);
+	setsize(self, [-16, -16, 0], [16, 16, 112]);
 	setorigin(self, self.origin + v_up * 64);
 
 	ambientsound(self.origin, "bonfire2.wav", 1, ATTN_STATIC);
