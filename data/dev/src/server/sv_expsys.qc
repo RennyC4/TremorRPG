@@ -24,7 +24,7 @@ void(entity targ) Player_CheckLevelUp =
 
 void(entity targ, float expmin, float expmax) GiveExperience =
 {
-	float amount = random_range(expmin, expmax);
+	float amount = ceil(random_range(expmin, expmax));
 	targ.exp += amount; // give exp
 
 	string eventlog_print = (strcat("^2", ftos(amount), "^7 exp received!\n"));
@@ -35,7 +35,7 @@ void(entity targ, float expmin, float expmax) GiveExperience =
 
 void(entity targ, float goldmin, float goldmax) GiveGold =
 {
-	float amount = random_range(goldmin, goldmax);
+	float amount = ceil(random_range(goldmin, goldmax));
 	targ.gold += amount; // give gold
 
 	string eventlog_print = (strcat("^3", ftos(amount), "^7 gold received!\n"));

@@ -160,11 +160,13 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 };
 
 const float CSQC_INVENTORY = 1;
+const float CSQC_NPCINFO = 2;
 void() CSQC_Parse_Event =
 {
 	float event = readbyte();
 
-	if (event == CSQC_INVENTORY) // receive inventory update from SSQC
+	// inventory update
+	if (event == CSQC_INVENTORY)
 	{
         float i;
 
@@ -174,6 +176,13 @@ void() CSQC_Parse_Event =
             inventory[i] = readstring();
             inventory_count[i] = readfloat();
         }
+	}
+	// NPC interaction update
+	if (event == CSQC_NPCINFO)
+	{
+		string npcname = readstring();
+		string script = readstring();
+		print ("CSQC received NPC data\n");
 	}
 };
 

@@ -606,6 +606,7 @@ void(float type) PlayerSpawn =
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.crouch = FALSE;
 		self.alpha = 1;
+		self.canbackstab = TRUE; // can be backstabbed
 		self.th_die = PlayerDeath;
 
 		// TODO: Follow gender rule
@@ -633,6 +634,7 @@ void(float type) PlayerSpawn =
 		self.incombat_finished = time;
 		self.crouch = FALSE;
 		self.alpha = 1;
+		self.canbackstab = TRUE; // can be backstabbed
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;

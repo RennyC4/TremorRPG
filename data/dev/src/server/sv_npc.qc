@@ -1,4 +1,44 @@
+//
 // NPCs, most are defined in the maps themselves (hmp / bsp)
+//
+
+void() npc_ai_think;
+.string npc_name;
+.string dialog_script; // reference npc file scripts
+
+void() npc_use =
+{
+	if (!self.user)
+		return;
+
+	print ("NPC_use called\n");
+
+    msg_entity = self.user;
+    WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+    WriteByte(MSG_MULTICAST, CSQC_NPCINFO); // custom opcode for "open npc dialog"
+    WriteString(MSG_MULTICAST, self.npc_name);
+    WriteString(MSG_MULTICAST, self.dialog_script);
+	multicast(self.origin, MULTICAST_ONE_R);
+	
+	self.think = npc_ai_think;
+	self.nextthink = time + 0.1;
+};
+
+void() npc_ai_think =
+{
+	// Search for customer nearby
+	for (entity b = world; (b = find(b, classname, "player"));)
+	{
+		if (vlen(b.origin - self.origin) < 100)
+			self.goalentity = b;
+		else
+			self.goalentity = world;
+	}
+
+	TurnToTarget(10);
+	
+	self.nextthink = time + 0.1;
+};
 
 void() set_npc =
 {
@@ -12,12 +52,14 @@ void() set_npc =
 		self.health = self.max_health;
 	self.takedamage = DAMAGE_NO;
 	self.classname = "npc";
+	self.netname = "Keldran"; // TODO: NPC stuff should be its own file
 	self.radius_candamage = "FALSE"; // uses string
 	self.colormod = '100 100 0'; // Yellow
+	self.idealangles = self.angles;
+	self.th_use = npc_use;
 
 	//self.th_die = npc_death;
-
-	self.exp = 0;
+	//self.exp = 0;
 
 	self.saveorigin = self.origin + v_up * 1; // stash initial spawn spot
 
@@ -26,8 +68,8 @@ void() set_npc =
 
 	self.flags |= FL_FINDABLE_NONSOLID;
 
-//	self.think = npc_ai_think;
-//	self.nextthink = time + 0.1;
+	self.think = npc_ai_think;
+	self.nextthink = time + 0.1;
 };
 
 // TODO: Should update respawn location etc

@@ -10,6 +10,7 @@ const float AI_RUNBACK = 3;
 .float ai_mode;
 .float ai_patrolidle;
 .float ai_standstill;
+.float ai_backup_finished;
 .entity ai_runback_temp;
 
 void() monster_ai_think;
@@ -21,6 +22,37 @@ float	RANGE_MELEE				= 1;
 float	RANGE_NEAR				= 2;
 float	RANGE_MID				= 3;
 float	RANGE_FAR				= 4;
+
+void(float speed) TurnToTarget =
+{
+	vector dir, target_angles;
+	float turn_speed, diff;
+
+	if (self.classname == "npc")
+	{
+		if (self.goalentity)
+			dir = normalize(self.goalentity.origin - self.origin);
+		else
+			dir = normalize(self.idealangles);
+	}
+	else
+		dir = normalize(self.goalentity.origin - self.origin); 
+
+    target_angles = vectoangles(dir);
+    diff = anglemod(target_angles_y - self.angles_y);
+
+    if (diff > 180)		diff -= 360;
+    if (diff < -180)	diff += 360;
+
+    turn_speed = speed;
+
+    if (diff > turn_speed)
+        self.angles_y = anglemod(self.angles_y + turn_speed);
+    else if (diff < -turn_speed)
+        self.angles_y = anglemod(self.angles_y - turn_speed);
+    else
+        self.angles_y = anglemod(self.angles_y + diff); // snap final tiny difference
+};
 
 // returns 1 if the entity is in front (in sight) of self, used for stealth
 float(entity enemy, entity peaking) infront_stealth =
@@ -92,8 +124,13 @@ void() monster_ai_move =
 
 	if (self.enemy)
 	{
-		if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
-			return; // keep AI slightly back from target
+		if (self.ai_backup_finished > time)
+			walkmove(self.angles_y, self.speed * -1); // keep AI slightly back from target
+
+		if (range(self.enemy) == RANGE_CLOSE)
+			self.ai_backup_finished = time + random_range(0.7, 2.5); // too close, back up a bit
+		if (range(self.enemy) == RANGE_MELEE)
+			return; // don't move
 	}
 	movetogoal(self.speed / 2);
 	walkmove(self.angles_y, self.speed / 2);
@@ -136,10 +173,11 @@ void() monster_ai_think =
 		if (self.ai_patrolidle < time)
 		{
 			self.angles_x = 0;
-			self.angles_y = random()*360;
+			self.idealangles_y = random()*360;
 			self.ai_patrolidle = time + 3 + random()*6;
 			if (random() < 0.35)
 				self.ai_standstill = time + 1 + random()*8;
+			TurnToTarget(self.turn_speed);
 		}
 		else
 		{
@@ -183,10 +221,10 @@ void() monster_ai_think =
 	{
 		if (b > 50)
 		{
-				if (self.origin_z > self.ai_runback_temp.origin_z)
-					self.origin_z -= 1;
-				else
-					self.origin_z += 1;
+			if (self.origin_z > self.ai_runback_temp.origin_z)
+				self.origin_z -= 1;
+			else
+				self.origin_z += 1;
 
 			self.enemy = world;
 			self.goalentity = self.ai_runback_temp;
@@ -206,11 +244,12 @@ void() monster_ai_think =
 
 	if (self.goalentity) 
 	{
-		vector view = vectoangles(self.goalentity.origin - self.origin);
 		if (self.stagger_finished < time)
 		{
-			self.angles_y = view_y;
-			self.angles_x = view_x;
+			if (self.melee_finished > time) // TODO? : Monster attack tracking can be done animation+per-monster
+				TurnToTarget(self.turn_speed / 2);
+			else
+				TurnToTarget(self.turn_speed);
 		}
 
 		if (self.ai_mode != AI_RUNBACK)
@@ -237,7 +276,7 @@ void() monster_ai_think =
 	else
 		self.ai_mode = AI_IDLE;
 
-	// Enemy dead, or is using a bonfire
+	// enemy dead / used a bonfire
 	if (self.enemy && self.enemy.health <= 0 || self.enemy.bonfire == TRUE)
 	{
 		self.oldenemy = self.enemy; // stash last killed or lost to bonfire

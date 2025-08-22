@@ -54,6 +54,7 @@ void() set_monster =
 	self.radius_candamage = "TRUE"; // uses string
 	self.colormod = '100 0 0'; // Red
 	self.flags |= FL_MONSTER;
+	self.canbackstab = TRUE; // can be backstabbed, TODO: Mapper should be able to set this
 	self.th_die = monster_death;
 
 	if (!self.exp)

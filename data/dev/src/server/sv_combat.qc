@@ -33,14 +33,29 @@ void(entity e, float howmuch) DoCamera_Shake =
 };
 
 // returns 1 if the entity is in front (in sight) of self, used for blocking
-float(entity enemy, entity peaking) infront_block =
+float(entity enemy, entity peaking) check_block =
 {
 	makevectors (peaking.angles);
 	vector vec = normalize (enemy.origin - peaking.origin);
 	float dot = vec * v_forward;
 
-	if (dot > 0.25)
+	if (dot > 0.7)
 		return TRUE;
+	return FALSE;
+};
+
+// return 1 if monster or player are behind each other using findfloat
+float(entity defender) check_backstab =
+{
+	vector properangle = defender.angles;
+	properangle_x = properangle_z = 0;
+	makevectors (properangle);
+
+	for (entity a = world;(a = findfloat(a, canbackstab, TRUE));)
+	{
+		if (vlen(a.origin - (defender.origin - v_forward * 32)) < 15)
+			return TRUE;
+	}
 	return FALSE;
 };
 
@@ -55,7 +70,7 @@ void() DoAttack_ShieldBash =
 	// Stamina drain on swing
 	if (self.classname == "player")
 	{
-		float stamcalc = 25 - (self.skill_endurance * 0.015); // calculation, same as regular sword swing
+		float stamcalc = 15 - (self.skill_endurance * 0.015); // calculation, same as regular sword swing
 		if (self.stamina < stamcalc)
 			return;
 		self.stamina -= stamcalc;
@@ -85,8 +100,8 @@ void() DoAttack_ShieldBash =
 			dir = normalize(dir);
 			trace_ent.velocity = '0 0 0';
 			trace_ent.flags &= ~FL_ONGROUND;
-			trace_ent.velocity_z += 150;
-			trace_ent.velocity = trace_ent.velocity + dir * 250;
+			trace_ent.velocity_z += 125;
+			trace_ent.velocity = trace_ent.velocity + dir * 200;
 			//
 			if (trace_ent.stagger_finished < time)
 			{
@@ -102,8 +117,8 @@ void() DoAttack_ShieldBash =
 			string eventlog_print = (strcat("^2Successful parry!"));
 			stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 			// apply effects
-			self.stagger_finished = time + 1.5;
-			self.lockview_finished = time + 1.5;
+			self.stagger_finished = time + 2;
+			self.lockview_finished = time + 2;
 			sound (self, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
 		}
 	}
@@ -130,8 +145,8 @@ void() DoAttack_Melee =
 		self.stamina -= (self.attack_stamina - stamcalc);
 	}
 
-	// Calculate damage by weapon
-	float damage = random_range(self.attack_power_min, self.attack_power_max);
+	// calculate damage by weapon
+	float damage = ceil(random_range(self.attack_power_min, self.attack_power_max));
 
 	// add skill damage
 	float howmuch = 0.1;
@@ -171,7 +186,7 @@ void() DoAttack_Melee =
 		// check & add backstab skill damage
 		float bs_damage = 0;
 		float backstab = FALSE;
-		if (!infront_block(self, trace_ent) && !jumpattack)
+		if (check_backstab(trace_ent) && !jumpattack)
 		{
 			bs_damage = (self.skill_backstab * howmuch);
 			if (bs_damage < 1)
@@ -198,7 +213,7 @@ void() DoAttack_Melee =
 
 		// blocking
 		float parry = FALSE;
-		if (trace_ent.blocking && !backstab)
+		if (check_block(self, trace_ent) && trace_ent.blocking && !backstab)
 		{
 			float stamcalc_block = 20 - (self.skill_endurance * 0.015); // calculation
 

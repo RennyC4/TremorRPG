@@ -1,6 +1,6 @@
 float(float min, float max) random_range =
 {
-    return ceil(min + (random() * (max - min)));
+    return min + (random() * (max - min));
 };
 
 /*

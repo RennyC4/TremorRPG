@@ -1700,6 +1700,7 @@ string string_null = "";
 float(float min, float max) random_range;
 float	SVC_TEMPENTITY		= 23;
 const float CSQC_INVENTORY = 1;
+const float CSQC_NPCINFO = 2;
 
 // Function defs
 .void()		th_die;
@@ -1756,6 +1757,8 @@ const float MENU_INVENTORY = 3;
 .float menu; // menu float, send to CSQC
 .string radius_candamage; // TRUE, entity can be damaged by radius attacks
 .vector saveorigin; // used for monsters to save their inital spawn location and patrol near it
+.vector idealangles;
+.float turn_speed; // how fast monsters/npcs can turn
 .string music; // what track to play for the client
 .string zonename; // name of zone player is in
 .float zonename_finished; // display on csqc hud
@@ -1784,6 +1787,7 @@ const float MENU_INVENTORY = 3;
 .entity reticle; // used for targetting reticle
 .float camera_toggle; // boolean
 .float inair_count; // how long player is in the air
+.float canbackstab; // can be backstabbed
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)

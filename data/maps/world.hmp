@@ -96,6 +96,7 @@ noise2 "monsters/pain1.wav" // pain sound
 noise3 "monsters/death1.wav" // death sound
 attack_speed "2"
 attack_length "64"
+turn_speed "30"
 }
 
 // monster (bandit lvl1)
@@ -121,6 +122,7 @@ noise2 "monsters/pain1.wav" // pain sound
 noise3 "monsters/death1.wav" // death sound
 attack_speed "2"
 attack_length "64"
+turn_speed "30"
 }
 
 // monster (bandit lvl1)
@@ -146,4 +148,5 @@ noise2 "monsters/pain1.wav" // pain sound
 noise3 "monsters/death1.wav" // death sound
 attack_speed "2"
 attack_length "64"
+turn_speed "30"
 }
