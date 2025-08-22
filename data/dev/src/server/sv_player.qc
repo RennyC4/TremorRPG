@@ -545,6 +545,14 @@ void() ClientConnect =
 
 void() PlayerDeath =
 {
+	if (self.reticle)
+	{
+		remove(self.reticle);
+		self.reticle = world;
+	}
+	self.lock_on = 0;
+	self.lock_target = world;
+			
 	float g = ceil(self.gold * 0.25);
 	if (self.gold > 1)
 		self.gold -= g; // drop some gold
