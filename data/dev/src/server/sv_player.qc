@@ -699,7 +699,7 @@ void() ClientDisconnect =
 
 void(entity targ) CSEv_Player_SaveChar =
 {
-	if (!targ.guid || !targ.loggedin) // invalid player
+	if (!targ.loggedin) // invalid player
 		return;
 
 	float v = fopen(targ.loginname, FILE_WRITE);
@@ -793,7 +793,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	{
 		self.guid = infokey(self, INFOKEY_P_GUID);	
 		if (line = fgets(f)) // grab guid from file
-		if (line != self.guid && line != "") // compare guid from file & user, server owner can wipe guid line if needed
+		if (line != "" && line != self.guid) // compare guid from file & user, server owner can wipe guid line if needed
 		{
 			sprint(self, PRINT_HIGH, "Server GUID does not match players\n");
 			return;
@@ -805,8 +805,8 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	if (v >= 0)
 	{
 		// stats
-		if (line = fgets(v))
-			self.guid = line;
+		if (line = fgets(v)) // do not set GUID any longer
+			//self.guid = line;
 		if (line = fgets(v))
 			self.netname = self.loginname = line;
 		if (line = fgets(v))

@@ -1,5 +1,7 @@
-2
+3
 Short Sword
 200
 Health Potion
 50
+Padded Armor
+300

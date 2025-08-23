@@ -96,7 +96,7 @@ void() worldspawn =
 	PART_BONFIRE = particleeffectnum("bonfire");
 	//
 
-	precache_model("models/player_m.iqm");
+	precache_model("models/player_m.glb");
 	precache_model("progs/targetdot.spr");
 
 	precache_sound ("levelup.wav");
