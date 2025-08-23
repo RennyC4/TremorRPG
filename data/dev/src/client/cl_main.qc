@@ -126,7 +126,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 	float player_menu = getstatf(STAT_MENU);
 	float player_lockview = getstatf(STAT_LOCKVIEW);
 
-	if (player_menu == MENU_CHARACTER || player_menu == MENU_INVENTORY) // Character screen
+	if (player_menu > 1)
 		sui_input_event(evtype, scanx, chary, devid);
 
 	if (player_menu != MENU_LOGIN)
@@ -180,9 +180,8 @@ void() CSQC_Parse_Event =
 	// NPC interaction update
 	if (event == CSQC_NPCINFO)
 	{
-		string npcname = readstring();
-		string script = readstring();
-		print ("CSQC received NPC data\n");
+		npc_name = readstring();
+		npc_dialogue = readstring();
 	}
 };
 

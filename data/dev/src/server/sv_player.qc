@@ -163,6 +163,7 @@ void() CSEv_PlayerShowInventory =
 	else if (self.menu == MENU_CHARACTER || self.menu == MENU_OFF)
 		self.menu = MENU_INVENTORY;
 };
+void() CSEv_ShutDownMenus = {self.menu = MENU_OFF;self.melee_finished = time + 0.25;};
 
 // called from CSQC (PVP button)
 void() CSEv_User_TogglePVP_ =
@@ -404,7 +405,8 @@ void() PlayerPreThink =
 	// Player movement + speed checks
 	if (self.stagger_finished < time)
 	{
-		if (self.melee_finished > time) // attack commitment
+		// attack commitment / npc interaction menus
+		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL)
 			self.maxspeed = 1;
 		else
 		{
@@ -786,7 +788,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	{
 		self.guid = infokey(self, INFOKEY_P_GUID);	
 		if (line = fgets(f)) // grab guid from file
-		if (line != self.guid) // compare guid from file & user
+		if (line != self.guid && line != "") // compare guid from file & user, server owner can wipe guid line if needed
 		{
 			sprint(self, PRINT_HIGH, "Server GUID does not match players\n");
 			return;

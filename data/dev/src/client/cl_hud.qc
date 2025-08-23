@@ -779,13 +779,6 @@ void() User_InventoryScreen =
 		string item_disp = strcat("^5", inventory[i], " ^7[^2", ftos(inventory_count[i]), "^7]");
 		if (inventory_count[i] > 0)
 			sui_text(newpos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
-		/*
-		else if (inventory_count[i] > 1)
-		{
-			item_disp = strcat(inventory[i], " Amt: ", ftos(inventory_count[i]));
-			sui_text(newpos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
-		}
-		*/
 		newpos_y += 10;
     }
 

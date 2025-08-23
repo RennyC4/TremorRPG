@@ -30,6 +30,8 @@ void() Player_Hud =
 				User_CharacterScreen();
 			if (player_menu == MENU_INVENTORY)
 				User_InventoryScreen();
+			if (player_menu == MENU_DIALOGUE)
+				User_NPCDialogue(); // Remove me
 		}
 		else // Regular gameplay
 		{

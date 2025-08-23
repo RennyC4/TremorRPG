@@ -3,40 +3,82 @@
 //
 
 void() npc_ai_think;
-.string npc_name;
-.string dialog_script; // reference npc file scripts
+.string npc_dialog; // reference npc file scripts
 
 void() npc_use =
 {
 	if (!self.user)
 		return;
+	if (self.user.menu != MENU_OFF)
+		return;
+		
+	self.user.velocity = [0, 0];
 
-	print ("NPC_use called\n");
+	string contents, line = "";
+
+	// grab NPC dialogue from file
+	string readfile = strcat("npc_", self.netname, "_d.txt");
+	float v = fopen(readfile, FILE_READ);
+	if (v >= 0)
+	{
+		while ((line = fgets(v)))
+		{
+			contents = strcat(contents, line, "\n");
+			self.npc_dialog = contents;
+		}
+	}
+	else
+	{
+		print ("NPC dialogue file not found\n");
+		return;
+	}
+
+	// TODO: Send NPC inventory to CSQC to buy / sell stuff
+	// Grab NPC inventory from file
+	/*
+	readfile = strcat("npc_", self.netname, "_i.txt");
+	float v = fopen(readfile, FILE_READ);
+	if (v >= 0)
+	{
+		while ((line = fgets(v)))
+		{
+			//contents = strcat(contents, line, "\n");
+			//self.dialog_script = contents;
+		}
+	}
+	*/
+	//print (self.dialog_script, "\n"); // for CSQC
 
     msg_entity = self.user;
     WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
     WriteByte(MSG_MULTICAST, CSQC_NPCINFO); // custom opcode for "open npc dialog"
-    WriteString(MSG_MULTICAST, self.npc_name);
-    WriteString(MSG_MULTICAST, self.dialog_script);
+    WriteString(MSG_MULTICAST, self.netname);
+    WriteString(MSG_MULTICAST, self.npc_dialog);
 	multicast(self.origin, MULTICAST_ONE_R);
-	
+
+	// Open player NPC window
+	self.user.menu = MENU_DIALOGUE;
+
 	self.think = npc_ai_think;
 	self.nextthink = time + 0.1;
 };
 
 void() npc_ai_think =
 {
-	// Search for customer nearby
-	for (entity b = world; (b = find(b, classname, "player"));)
+	for (entity b = world; (b = find(b, classname, "player"));) // search for customer nearby
 	{
 		if (vlen(b.origin - self.origin) < 100)
 			self.goalentity = b;
 		else
 			self.goalentity = world;
 	}
-
+	if (!self.netname)
+	{
+		print("Error: NPC without a netname defined!\n");
+		self.netname = "error";
+	}
 	TurnToTarget(10);
-	
+
 	self.nextthink = time + 0.1;
 };
 
@@ -52,7 +94,6 @@ void() set_npc =
 		self.health = self.max_health;
 	self.takedamage = DAMAGE_NO;
 	self.classname = "npc";
-	self.netname = "Keldran"; // TODO: NPC stuff should be its own file
 	self.radius_candamage = FALSE;
 	self.colormod = '100 100 0'; // Yellow
 	self.idealangles = self.angles;
@@ -136,8 +177,9 @@ void() set_bonfire =
 	self.effects = EF_DIMLIGHT;
 
 	setmodel(self, "models/bonfire.glb");
-	setsize(self, [-16, -16, 0], [16, 16, 112]);
+	setsize(self, [-16, -16, 0], [16, 16, 80]);
 	setorigin(self, self.origin + v_up * 64);
+	droptofloor();
 
 	ambientsound(self.origin, "bonfire2.wav", 1, ATTN_STATIC);
 

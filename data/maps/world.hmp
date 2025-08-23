@@ -54,7 +54,7 @@ classname "set_npc"
 model "models/player_m.glb"
 origin "-1810 -1725 76"
 angles " 0 0"
-displayname "Erywen"
+netname "Keldran"
 gold "500"
 }
 

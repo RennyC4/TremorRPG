@@ -2177,10 +2177,12 @@ float drawfont2;
 float camera_mode;
 
 float MENU;
-float MENU_OFF = 0;
-float MENU_LOGIN = 1;
-float MENU_CHARACTER = 2; // user info screen
-float MENU_INVENTORY = 3; // user inventory screen
+const float MENU_OFF = 0;
+const float MENU_LOGIN = 1;
+const float MENU_CHARACTER = 2; // user info screen
+const float MENU_INVENTORY = 3; // user inventory screen
+const float MENU_DIALOGUE = 4; // for NPC interaction
+const float MENU_BUYSELL = 5; // for NPC interaction
 
 //
 // Grab stats from SSQC 
@@ -2246,3 +2248,7 @@ float MENU_INVENTORY = 3; // user inventory screen
 string inventory[MAX_INVENTORY];
 float inventory_count[MAX_INVENTORY];
 float inv_count;
+
+// NPC
+string npc_name;
+string npc_dialogue;
