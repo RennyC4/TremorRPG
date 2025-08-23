@@ -31,7 +31,9 @@ void() Player_Hud =
 			if (player_menu == MENU_INVENTORY)
 				User_InventoryScreen();
 			if (player_menu == MENU_DIALOGUE)
-				User_NPCDialogue(); // Remove me
+				User_NPCDialogue();
+			if (player_menu == MENU_BUYSELL)
+				User_NPCBuySell();
 		}
 		else // Regular gameplay
 		{

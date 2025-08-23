@@ -80,6 +80,9 @@ void() PlayerJump =
 // camera toggle from csqc -> ssqc for various reasons
 void(float toggle) CSEv_CameraToggle_f =
 {
+	if (self.menu != MENU_OFF)
+		return;
+
 	if (!toggle)
 		self.camera_toggle = FALSE;
 	else
@@ -162,6 +165,10 @@ void() CSEv_PlayerShowInventory =
 	else if (self.menu == MENU_CHARACTER || self.menu == MENU_OFF)
 		self.menu = MENU_INVENTORY;
 };
+
+// called from CSQC button
+void() CSEv_PlayerShowBuySell = {self.menu = MENU_BUYSELL;};
+void() CSEv_PlayerShowDialogue = {self.menu = MENU_DIALOGUE;};
 
 // called from CSQC (PVP button)
 void() CSEv_User_TogglePVP_ =
@@ -428,7 +435,7 @@ void() PlayerPreThink =
 			forceinfokey(self, "name", self.loginname);
 	}
 
-	if (self.menu == MENU_INVENTORY) // TODO: Buy/Sell menu stuff should be included
+	if (self.menu == MENU_INVENTORY || self.menu == MENU_BUYSELL)
 		SendInventory(self); // send inventory to CSQC
 
 	LockOn_HandleInput();
