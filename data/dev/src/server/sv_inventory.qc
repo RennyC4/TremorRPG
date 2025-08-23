@@ -2,30 +2,30 @@
 // Inventory
 //
 
-void(entity player, string itemname, float count) AddToInventory =
+void(entity targ, string itemname, float count) AddToInventory =
 {
     float i;
 
-    // First, see if item already exists
-    for (i = 0; i < player.inv_count; i++)
+    // first see if item already exists, then add it
+    for (i = 0; i < targ.inv_count; i++)
     {
-        if (player.inventory[i] == itemname)
+        if (targ.inventory[i] == itemname)
         {
-            player.inventory_count[i] += count;
+            targ.inventory_count[i] += count;
             return;
         }
     }
 
-    // If new item, check space
-    if (player.inv_count >= MAX_INVENTORY)
+    // if new item, check space
+    if (targ.inv_count >= MAX_INVENTORY && targ.classname == "player")
     {
-        sprint(player, PRINT_HIGH, "Inventory full!\n");
+        sprint(targ, PRINT_HIGH, "Inventory full!\n");
         return;
     }
 
-    player.inventory[player.inv_count] = itemname;
-    player.inventory_count[player.inv_count] = count;
-    player.inv_count++;
+    targ.inventory[targ.inv_count] = itemname;
+    targ.inventory_count[targ.inv_count] = count;
+    targ.inv_count++;
 };
 
 void(entity player, string itemname, float count) RemoveFromInventory =
@@ -94,8 +94,8 @@ void(entity player, string itemname) UseItem =
     }
 };
 
-// called whenever we need to send inventory data to CSQC
-void(entity player) SendInventory =
+// called whenever we need to send player/client ONLY inventory data to CSQC
+void(entity player) SendPlayerInventory =
 {
     float i;
 
@@ -108,6 +108,27 @@ void(entity player) SendInventory =
     {
         WriteString(MSG_MULTICAST, player.inventory[i]);
         WriteFloat(MSG_MULTICAST, player.inventory_count[i]);
+    }
+	multicast(self.origin, MULTICAST_ONE_R);
+};
+
+// called whenever we need to send inventory data to CSQC from an NPC ONLY
+void(entity targ, entity client) SendNPCInventory =
+{
+	if (client.classname != "player")
+		return;
+
+    float i;
+
+	msg_entity = client;
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_INVENTORY_NPC);
+	WriteByte(MSG_MULTICAST, targ.inv_count);
+
+    for (i = 0; i < targ.inv_count; i++)
+    {
+        WriteString(MSG_MULTICAST, targ.inventory[i]);
+        WriteFloat(MSG_MULTICAST, targ.inventory_count[i]);
     }
 	multicast(self.origin, MULTICAST_ONE_R);
 };

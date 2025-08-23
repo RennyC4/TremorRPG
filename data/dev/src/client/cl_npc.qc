@@ -130,5 +130,14 @@ void() User_NPCBuySell =
 	sui_border_box(newpos, size, 2, MENU_BORDER, 0.3, 0);
 	sui_fill(newpos, size, MENU_BG_DARK, 0.75, 0);
 
+	vector linepos_npc = [-2.5, 25];
+    for (i = 0; i < npc_inv_count; i++)
+    {
+		string item_disp = strcat("^5", npc_inventory[i], " ^7- ^3", ftos(npc_inventory_gold[i]), "^7g");
+		if (npc_inventory_gold[i] > 0)
+			sui_text(linepos_npc, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+		linepos_npc_y += 10;
+    }
+
 	sui_pop_frame();
 };

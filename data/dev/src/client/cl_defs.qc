@@ -2243,12 +2243,17 @@ const float MENU_BUYSELL = 5; // for NPC interaction
 #define STAT_BLOCKVALUE 84
 #define STAT_LOCKVIEW 85
 
-// Inventory
+// Inventory - Player
 #define MAX_INVENTORY 32
 string inventory[MAX_INVENTORY];
 float inventory_count[MAX_INVENTORY];
 float inv_count;
 
-// NPC
+// Inventory - NPC
+string npc_inventory[MAX_INVENTORY];
+float npc_inventory_gold[MAX_INVENTORY];
+float npc_inv_count;
+
+// NPC dialogue
 string npc_name;
 string npc_dialogue;

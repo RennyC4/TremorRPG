@@ -1701,6 +1701,7 @@ float(float min, float max) random_range;
 float	SVC_TEMPENTITY		= 23;
 const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
+const float CSQC_INVENTORY_NPC = 3;
 
 // Function defs
 .void()		th_die;

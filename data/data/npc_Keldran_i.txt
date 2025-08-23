@@ -1,2 +1,5 @@
+2
 Short Sword
 200
+Health Potion
+50

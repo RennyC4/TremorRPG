@@ -165,15 +165,15 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 
 const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
+const float CSQC_INVENTORY_NPC = 3;
 void() CSQC_Parse_Event =
 {
+	float i;
 	float event = readbyte();
 
 	// inventory update
 	if (event == CSQC_INVENTORY)
 	{
-        float i;
-
         inv_count = readbyte();
         for (i = 0; i < inv_count; i++)
         {
@@ -186,6 +186,16 @@ void() CSQC_Parse_Event =
 	{
 		npc_name = readstring();
 		npc_dialogue = readstring();
+	}
+	// inventory update from an NPC
+	if (event == CSQC_INVENTORY_NPC)
+	{
+        npc_inv_count = readbyte();
+        for (i = 0; i < npc_inv_count; i++)
+        {
+            npc_inventory[i] = readstring();
+            npc_inventory_gold[i] = readfloat();
+        }
 	}
 };
 

@@ -7,7 +7,7 @@ void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
 
 // Inventory stuff, temporary here for testing
-void(entity player) SendInventory;
+void(entity player) SendPlayerInventory;
 void(entity player, string itemname, float count) AddToInventory;
 
 void() ClientKill = {};
@@ -436,7 +436,7 @@ void() PlayerPreThink =
 	}
 
 	if (self.menu == MENU_INVENTORY || self.menu == MENU_BUYSELL)
-		SendInventory(self); // send inventory to CSQC
+		SendPlayerInventory(self); // send inventory to CSQC
 
 	LockOn_HandleInput();
 	LockOn_Update();

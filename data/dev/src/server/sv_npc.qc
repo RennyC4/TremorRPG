@@ -2,6 +2,7 @@
 // NPCs, most are defined in the maps themselves (hmp / bsp)
 //
 
+void(entity targ, entity client) SendNPCInventory;
 void() npc_ai_think;
 .string npc_dialog; // reference npc file scripts
 
@@ -29,25 +30,35 @@ void() npc_use =
 	}
 	else
 	{
-		print ("NPC dialogue file not found\n");
+		print ("Error: NPC dialogue file not found\n");
 		return;
 	}
+	fclose(v);
 
-	// TODO: Send NPC inventory to CSQC to buy / sell stuff
 	// Grab NPC inventory from file
-	/*
+	string what = "";
 	readfile = strcat("npc_", self.netname, "_i.txt");
-	float v = fopen(readfile, FILE_READ);
-	if (v >= 0)
+	float b = fopen(readfile, FILE_READ);
+	if (b >= 0)
 	{
-		while ((line = fgets(v)))
+		if (line = fgets(b)) // Get item count from text file
+			self.read_inv_count = stof(line);
+
+		float i;
+		for (i = 0; i < self.read_inv_count; i++)
 		{
-			//contents = strcat(contents, line, "\n");
-			//self.dialog_script = contents;
+			if (line = fgets(b)) // Add item
+			{
+				what = line;
+				AddToInventory(self, line, 0);
+			}
+			if (line = fgets(b)) // Add count to item, NPCs use item count as buying price
+				AddToInventory(self, what, stof(line));
 		}
+		SendNPCInventory(self, self.user); // Send NPC inventory to CSQC
 	}
-	*/
-	//print (self.dialog_script, "\n"); // for CSQC
+	fclose(b);
+	// We don't send an error if an NPC doesn't have an inventory as not all are vendors
 
     msg_entity = self.user;
     WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
