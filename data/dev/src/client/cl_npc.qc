@@ -116,12 +116,25 @@ void() User_NPCBuySell =
 
 	float i;
 	vector linepos = [2.5, 25];
+	vector buttonpos = [-17, 25];
     for (i = 0; i < inv_count; i++)
     {
+		float sellbutton_count = 0;
 		string item_disp = strcat("^5", inventory[i], " ^7[^2", ftos(inventory_count[i]), "^7]");
 		if (inventory_count[i] > 0)
+		{
+			while (sellbutton_count < npc_inv_count) // create buy buttons
+			{
+				sellbutton_count += 1;
+				string j = strcat("s_", inventory[i]);
+			}
 			sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
+			my_button(j, buttonpos, [30, 10], "Sell") ? print(j,"\n") : 0;
+			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+		}
 		linepos_y += 10;
+		buttonpos_y += 10; // move buy buttons down
     }
 
 	// NPC Inventory
@@ -130,8 +143,8 @@ void() User_NPCBuySell =
 	sui_border_box(newpos, size, 2, MENU_BORDER, 0.3, 0);
 	sui_fill(newpos, size, MENU_BG_DARK, 0.75, 0);
 
-	vector linepos_npc = [-2.5, 25];
-	vector buttonpos_npc = [15, 25];
+	vector linepos = [-2.5, 25];
+	vector buttonpos = [15, 25];
     for (i = 0; i < npc_inv_count; i++)
     {
 		float buybutton_count = 0;
@@ -141,15 +154,15 @@ void() User_NPCBuySell =
 			while (buybutton_count < npc_inv_count) // create buy buttons
 			{
 				buybutton_count += 1;
-				string j = npc_inventory[i];
+				string j = strcat("b_", npc_inventory[i]);
 			}
-			sui_text(linepos_npc, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+			sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-			my_button(j, buttonpos_npc, [25, 10], "Buy") ? print(j,"\n") : 0;
+			my_button(j, buttonpos, [25, 10], "Buy") ? print(j,"\n") : 0;
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 		}
-		linepos_npc_y += 10;
-		buttonpos_npc_y += 10; // move buy buttons down
+		linepos_y += 10;
+		buttonpos_y += 10; // move buy buttons down
     }
 
 	sui_pop_frame();
