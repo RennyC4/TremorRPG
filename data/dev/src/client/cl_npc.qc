@@ -131,12 +131,25 @@ void() User_NPCBuySell =
 	sui_fill(newpos, size, MENU_BG_DARK, 0.75, 0);
 
 	vector linepos_npc = [-2.5, 25];
+	vector buttonpos_npc = [15, 25];
     for (i = 0; i < npc_inv_count; i++)
     {
+		float buybutton_count = 0;
 		string item_disp = strcat("^5", npc_inventory[i], " ^7- ^3", ftos(npc_inventory_gold[i]), "^7g");
 		if (npc_inventory_gold[i] > 0)
+		{
+			while (buybutton_count < npc_inv_count) // create buy buttons
+			{
+				buybutton_count += 1;
+				string j = npc_inventory[i];
+			}
 			sui_text(linepos_npc, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
+			my_button(j, buttonpos_npc, [25, 10], "Buy") ? print(j,"\n") : 0;
+			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+		}
 		linepos_npc_y += 10;
+		buttonpos_npc_y += 10; // move buy buttons down
     }
 
 	sui_pop_frame();
