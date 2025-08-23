@@ -2,6 +2,7 @@
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
+void() CSEv_ShutDownMenus = {self.menu = MENU_OFF;self.melee_finished = time + 0.25;};
 void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
 
@@ -144,12 +145,10 @@ void() CSEv_PlayerShowStats =
 	if (self.deadflag != DEAD_NO)
 		return;
 
-	if (self.menu == MENU_OFF)
-		self.menu = MENU_CHARACTER;
-	else if (self.menu == MENU_INVENTORY)
-		self.menu = MENU_CHARACTER;
-	else
+	if (self.menu == MENU_CHARACTER)
 		self.menu = MENU_OFF;
+	else if (self.menu == MENU_INVENTORY || self.menu == MENU_OFF)
+		self.menu = MENU_CHARACTER;
 };
 
 // called from CSQC ("show_inventory" console command + button)
@@ -163,7 +162,6 @@ void() CSEv_PlayerShowInventory =
 	else if (self.menu == MENU_CHARACTER || self.menu == MENU_OFF)
 		self.menu = MENU_INVENTORY;
 };
-void() CSEv_ShutDownMenus = {self.menu = MENU_OFF;self.melee_finished = time + 0.25;};
 
 // called from CSQC (PVP button)
 void() CSEv_User_TogglePVP_ =
