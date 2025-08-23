@@ -182,21 +182,20 @@ void() CSEv_User_TogglePVP_ =
 
 	if (!self.pvp)
 	{
-		eventlog_print = (strcat("PVP: ^8Unavailable"));
-		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+		sprint(self, PRINT_HIGH, "PVP: ^8Unavailable\n");
 		return;
 	}
-	if (self.pvp == 2)
+	else if (self.pvp == 1)
 	{
-		self.pvp = TRUE;
-		eventlog_print = (strcat("PVP: ^1Enabled"));
-		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+		self.pvp = 2;
+		sprint(self, PRINT_HIGH, "PVP: ^2Disabled\n");
+		return;
+
 	}
 	else
 	{
-		eventlog_print = (strcat("PVP: ^2Disabled"));
-		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
-		self.pvp = 2;
+		self.pvp = 1;
+		sprint(self, PRINT_HIGH, "PVP: ^1Enabled\n");
 	}
 };
 

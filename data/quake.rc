@@ -31,7 +31,7 @@ sv_gameplayfix_qwplayerphysics 1
 sv_gameplayfix_findradiusdistancetobox 1
 sv_bigcoords 1
 m_preset_chosen 1
-sys_clocktype 1 // Fix for odd game speed 
+sys_clocktype 1 // fix for odd game speed 
 sv_autosave 0
 gl_blendsprites 1
 v_gunkick 1
@@ -52,7 +52,7 @@ r_hdr_irisadaptation_maxvalue 1.5 // adjustment value
 r_deluxemapping 0 // needs to be 0 with bumpscale base textures
 r_shadow_shadowmapping 1 // draw shadow maps (stencil is faster however)
 r_dynamic 0 // fixes odd ugly lighting
-r_shadows 2 // realtime shadows
+r_shadows 1 // realtime shadows, 2 causes texture flickering on bsp objects
 r_coronas 1
 //sv_autooffload 0 // 1 = smoother performance? judderfest
 cl_lerp_smooth 1
@@ -63,6 +63,7 @@ v_cshift_water 0
 r_particledesc "classic high tsshaft"
 v_deathtilt 0
 sv_gameplayfix_stepdown 1
+gl_texture_anisotropic_filtering 16
 cl_sendguid 1 // Needed otherwise you'll loose your online character on servers
 
 // this prevents data drops on dedicated servers / other real players
@@ -70,15 +71,13 @@ sv_maxrate 0
 setinfo rate 0
 //
 
-sv_playerslots 255 // increase for more players
+sv_playerslots 255 // 255 is max per map cluster node, adjust for your PC
 
 // Turn these off if anything breaks
 mod_terrain_shadows 0 // Broken
 mod_terrain_ambient 0 // Broken
 
 // Fonts
-//con_textfont "fonts/font"
-//gl_font "fonts/font"
 vid_conautoscale 3
 
 //

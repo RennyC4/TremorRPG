@@ -11,14 +11,15 @@ void() trigger_zone_touch =
 	{
 		if (!self.pvp) // remove all PVP flags when pvp = 0
 		{
+			other.pvp = 0;
 			other.pvp_autoflagged = FALSE;
 			other.incombat = FALSE;
 			other.incombat_finished = time;
 			other.pvpenable_count = 0;
 			other.pvpenable_finished = time;
 		}
-
-		other.pvp = self.pvp;
+		if (other.pvp != 1)
+			other.pvp = self.pvp;
 	}
 	if (other.music != self.music)
 	{

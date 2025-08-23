@@ -586,7 +586,15 @@ void() User_CharacterScreen =
 	newpos = [2, -2]; // reset newpos
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	my_button("pvp_toggle", newpos, [25, 25], "PVP") ? sendevent("User_TogglePVP", "") : 0;
+	float disp_pvp = getstatf(STAT_PVP);
+	if (!disp_pvp)
+		string pvpcolor = "^8PVP";
+	else if (disp_pvp == 1)
+		pvpcolor = "^1PVP";
+	else
+		pvpcolor = "^2PVP";
+
+	my_button("pvp_toggle", newpos, [25, 25], pvpcolor) ? sendevent("User_TogglePVP", "") : 0;
 
 	newpos_x += 26;
 
@@ -787,8 +795,18 @@ void() User_InventoryScreen =
 	//
 	newpos = [2, -2]; // reset newpos
 
+	// PVP button
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	my_button("pvp_toggle", newpos, [25, 25], "PVP") ? sendevent("User_TogglePVP", "") : 0;
+
+	float disp_pvp = getstatf(STAT_PVP);
+	if (!disp_pvp)
+		string pvpcolor = "^8PVP";
+	else if (disp_pvp == 1)
+		pvpcolor = "^1PVP";
+	else
+		pvpcolor = "^2PVP";
+
+	my_button("pvp_toggle", newpos, [25, 25], pvpcolor) ? sendevent("User_TogglePVP", "") : 0;
 
 	newpos_x += 26;
 
