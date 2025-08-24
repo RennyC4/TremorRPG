@@ -84,14 +84,14 @@ void() User_NPCBuySell =
 	// Display Gold
 	newpos_y -= 15;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
-	string displaystat = strcat("^3Gold: ", ftos(disp_gold));
+	displaystat = strcat("^3Gold: ", ftos(disp_gold));
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 	newpos = [2.5, 2.5]; // reset newpos
 
 	// Display NPC name
 	newpos_x -= 2.5;
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	string displaystat = strcat("^1", npc_name);
+	displaystat = strcat("^1", npc_name);
 	sui_text(newpos, MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
 
 	// Bottom buttons
@@ -115,6 +115,7 @@ void() User_NPCBuySell =
 	sui_fill(newpos, size, MENU_BG_DARK, 0.75, 0);
 
 	float i;
+	string j = "";
 	vector linepos = [2.5, 25];
 	vector buttonpos = [-19, 25];
     for (i = 0; i < inv_count; i++)
@@ -126,7 +127,7 @@ void() User_NPCBuySell =
 			while (sellbutton_count < npc_inv_count) // setup buy buttons
 			{
 				sellbutton_count += 1;
-				string j = strcat("s_", inventory[i]);
+				j = strcat("s_", inventory[i]);
 			}
 			sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
@@ -143,8 +144,8 @@ void() User_NPCBuySell =
 	sui_border_box(newpos, size, 2, MENU_BORDER, 0.3, 0);
 	sui_fill(newpos, size, MENU_BG_DARK, 0.75, 0);
 
-	vector linepos = [-2.5, 25];
-	vector buttonpos = [15, 25];
+	linepos = [-2.5, 25];
+	buttonpos = [15, 25];
     for (i = 0; i < npc_inv_count; i++)
     {
 		float buybutton_count = 0;
@@ -154,7 +155,7 @@ void() User_NPCBuySell =
 			while (buybutton_count < npc_inv_count) // setup buy buttons
 			{
 				buybutton_count += 1;
-				string j = strcat("b_", npc_inventory[i]);
+				j = strcat("b_", npc_inventory[i]);
 			}
 			sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);

@@ -784,6 +784,7 @@ void() User_InventoryScreen =
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
 	float i;
+	string j = "";
     for (i = 0; i < inv_count; i++)
     {
 		string item_disp = strcat("^5", inventory[i], " ^7[^2", ftos(inventory_count[i]), "^7]");
@@ -793,7 +794,7 @@ void() User_InventoryScreen =
 			while (usebutton_count < inventory_count[i]) // setup use buttons
 			{
 				usebutton_count += 1;
-				string j = strcat("u_", inventory[i]);
+				j = strcat("u_", inventory[i]);
 			}
 			sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);

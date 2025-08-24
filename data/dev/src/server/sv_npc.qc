@@ -16,7 +16,8 @@ void() npc_use =
 
 	self.user.velocity = [0, 0];
 
-	string contents, line = "";
+	string contents = "";
+	string line = "";
 
 	// grab NPC dialogue from file
 	string readfile = strcat("npc_", self.netname, "_d.txt");

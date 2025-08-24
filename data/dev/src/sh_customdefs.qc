@@ -24,7 +24,6 @@ string(string s) string_tolower =
 {
     string result;
     float i, c, len;
-    string ch;
 
     result = "";
     len = strlen(s);

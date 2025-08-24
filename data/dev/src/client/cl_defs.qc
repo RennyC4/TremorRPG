@@ -21,7 +21,9 @@ Available options:
 #pragma warning disable F211 /*system crc outdated (eg: dp's csqc)*/
 #pragma warning enable F301 /*non-utf-8 strings*/
 #pragma warning enable F302 /*uninitialised locals*/
+#pragma warning disable F306 // disable Local "cursor" hides global with same name and type
 #pragma target FTE
+
 #ifndef CSQC
 #define CSQC
 #endif

@@ -1,4 +1,4 @@
-﻿//
+//
 // Inventory
 //
 
@@ -32,7 +32,7 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 	price -= ceil(self.skill_haggle * 0.5);
 	if (price < 1)
 		price = 1;
-		
+
 	if (self.gold < price)
 	{
 		sprint(self, PRINT_HIGH, "Not enough gold!\n");
@@ -65,7 +65,7 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 
 	string printgold = ftos(price);
 	sprint (self, PRINT_HIGH, itemname, " bought!\n");
-	string eventlog_print = strcat(itemname, " bought! ^1-^3", printgold, "g")
+	string eventlog_print = strcat(itemname, " bought! ^1-^3", printgold, "g");
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 
     self.inventory[self.inv_count] = itemname;
@@ -77,13 +77,15 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 void(string itemname) CSEv_PlayerSellItem_s =
 {
 	string line;
+	float price = 0;
+
 	string fix_itemname = string_remove_spaces(itemname);
 	string readfile = strcat("itm_", fix_itemname, ".txt");
 	float v = fopen(readfile, FILE_READ);
 	if (v >= 0)
 	{
 		if (line = fgets(v))
-			float price = stof(line); // grab price from item file
+			price = stof(line); // grab price from item file
 		fclose(v);
 	}
 	else
@@ -100,7 +102,7 @@ void(string itemname) CSEv_PlayerSellItem_s =
 
 	string printgold = ftos(price);
 	sprint (self, PRINT_HIGH, itemname, " sold!\n");
-	string eventlog_print = strcat(itemname, " sold! ^2+^3", printgold, "g")
+	string eventlog_print = strcat(itemname, " sold! ^2+^3", printgold, "g");
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 
     for (i = 0; i < self.inv_count; i++)
@@ -194,6 +196,8 @@ void(string itemname) CSEv_UseItem_s =
 		Player_EquipItem(itemname, 0);
 	else if (itemname == "Short Sword")
 		Player_EquipItem(itemname, 0);
+	else if (itemname == "Rusty Dagger")
+		Player_EquipItem(itemname, 0);
 
 	// Armor equippables
 	if (itemname == "Plain Clothes")
@@ -203,6 +207,8 @@ void(string itemname) CSEv_UseItem_s =
 
 	// Off hand equippables (shields, etc)
 	else if (itemname == "Broken Buckler")
+		Player_EquipItem(itemname, 2);
+	else if (itemname == "Flimsy Buckler")
 		Player_EquipItem(itemname, 2);
 
 	RemoveFromInventory(self, itemname, 1);

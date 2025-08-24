@@ -2,6 +2,10 @@
 //	Main.qc - mostly functions that will be called from the engine and are expected to exist
 //
 
+#pragma target fte // QuakeRPG FTE only
+#pragma warning disable F302 // disable potentially uninitialised variable
+#pragma warning disable Q201 // disable suggest parenthesis for assignment used as truth value
+
 void() main = {};
 void() SpectatorConnect = {};
 

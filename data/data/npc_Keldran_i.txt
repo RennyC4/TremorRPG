@@ -1,7 +1,11 @@
-3
+5
 Short Sword
 200
 Health Potion
 50
 Padded Armor
 300
+Rusty Dagger
+115
+Flimsy Buckler
+150

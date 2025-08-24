@@ -20,15 +20,15 @@ void(string itemname, float id) Player_EquipItem =
 			if (line = fgets(v)) // attack type
 				float attack_type_e = stof(line);
 			if (line = fgets(v)) // attack power min
-				float attack_power_min_e = stof(line);;
+				float attack_power_min_e = stof(line);
 			if (line = fgets(v)) // attack power max
-				float attack_power_max_e = stof(line);;
+				float attack_power_max_e = stof(line);
 			if (line = fgets(v)) // attack power speed
-				float attack_speed_e = stof(line);;
+				float attack_speed_e = stof(line);
 			if (line = fgets(v)) // attack stamina
-				float attack_stamina_e = stof(line);;
+				float attack_stamina_e = stof(line);
 			if (line = fgets(v)) // attack length
-				float attack_length_e = stof(line);;
+				float attack_length_e = stof(line);
 		}
 		else
 		{
@@ -56,7 +56,7 @@ void(string itemname, float id) Player_EquipItem =
 			if (line = fgets(v)) // armor name
 				string armorname_e = line;
 			if (line = fgets(v)) // armor value
-				float armorvalue_e = stof(line);;
+				float armorvalue_e = stof(line);
 		}
 		else
 		{
@@ -70,6 +70,30 @@ void(string itemname, float id) Player_EquipItem =
 		// Equip new armor
 		self.armorname = armorname_e;
 		self.armorvalue = armorvalue_e;
+
+	}
+	else if (id == 2) // Off-hand to equip
+	{
+		if (v >= 0)
+		{
+			if (line = fgets(v)) // skip price on equipping
+			if (line = fgets(v)) // armor name
+				string off_hand_e = line;
+			if (line = fgets(v)) // armor value
+				float blockvalue_e = stof(line);
+		}
+		else
+		{
+			print ("Player_EquipItem: ", readfile, " not found\n");
+			return;
+		}
+
+		// Add old armor to inventory
+		AddToInventory(self, self.off_hand, 1);
+
+		// Equip new armor
+		self.off_hand = off_hand_e;
+		self.blockvalue = blockvalue_e;
 
 	}
 	sprint(self, PRINT_HIGH, strcat(itemname, " equipped\n"));
