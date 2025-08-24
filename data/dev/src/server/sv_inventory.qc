@@ -2,6 +2,8 @@
 // Inventory
 //
 
+void() Item_Touch;
+
 // Management checks
 float(entity player, string itemname) HasItem =
 {
@@ -177,6 +179,51 @@ void(entity player, string itemname, float count) RemoveFromInventory =
     }
 };
 
+void() itemchest_think =
+{
+	self.owner = world; // allow original owner to grab item
+	self.touch = Item_Touch;
+};
+
+void(string itemname) CSEv_DropItem_s =
+{
+	// Drop item
+	print ("Drop Item ", itemname, "\n");
+
+	// Spawn chest
+
+	makevectors (self.angles);
+
+	entity itemchest = spawn();
+	itemchest.owner = self;
+	itemchest.movetype = MOVETYPE_TOSS;
+	itemchest.solid = SOLID_TRIGGER;
+	itemchest.classname = "item";
+	itemchest.flags = FL_ITEM;
+	itemchest.netname = itemname; // netname = what its holding
+	itemchest.scale = 0.75;
+	itemchest.angles_y = random()*360;
+	itemchest.modelflags = MF_ROTATE;
+
+	setmodel(itemchest, "models/chest.glb");
+	setsize(itemchest, '-16 -16 -0', '16 16 16');
+	setorigin(itemchest, self.origin);
+	
+	itemchest.velocity_z = 270;
+	vector dir = v_forward;
+	dir = normalize(dir);
+	itemchest.velocity = itemchest.velocity + dir * (random_range(200, 300));
+	
+	itemchest.think = itemchest_think;
+	itemchest.nextthink = time + 1;
+
+	string eventlog_print = (strcat("Dropped ", itemname, "\n"));
+	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+
+	// Remove Item
+	RemoveFromInventory(self, itemname, 1);
+}
+
 void(string itemname) CSEv_UseItem_s =
 {
     if (!HasItem(self, itemname))
@@ -258,10 +305,9 @@ void() Item_Touch =
     if (other.classname != "player")
         return;
 
-	// Example: self.netname is the item's identifier string
-    AddToInventory(other, self.netname, 1);
+	AddToInventory(other, self.netname, 1); // self.netname is the item's identifier string
 
-	string eventlog_print = (strcat("+ ", self.netname, "\n"));
+	string eventlog_print = (strcat("Got ", self.netname, "\n"));
 	stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
 
 	remove(self);

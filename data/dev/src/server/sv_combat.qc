@@ -262,7 +262,7 @@ void() DoAttack_Melee =
 		if (!parry)
 		{
 			if (jumpattack) // add jump attack damage
-				damage += (self.fall_maxspeed * 0.1);
+				damage += (self.fall_maxspeed * 0.05);
 
 			// armor calculations
 			if (trace_ent.armorvalue > damage)

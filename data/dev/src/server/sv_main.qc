@@ -101,6 +101,7 @@ void() worldspawn =
 	//
 
 	precache_model("models/player_m.glb");
+	precache_model("models/chest.glb");
 	precache_model("progs/targetdot.spr");
 
 	precache_sound ("levelup.wav");

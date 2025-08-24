@@ -5,8 +5,8 @@
 vector plyr_pos;
 void() Camera_Third =
 {
-    camang = getproperty(VF_ANGLES);
-    makevectors(camang);
+	camang = getproperty(VF_ANGLES);
+	makevectors(camang);
 
     campos = getproperty(VF_ORIGIN) - v_forward * 100 + v_up * 20;
     plyr_pos = getproperty(VF_ORIGIN);
@@ -15,13 +15,5 @@ void() Camera_Third =
 
     setproperty(VF_ORIGIN, trace_endpos);
     setproperty(VF_AFOV, 90);
-	setviewprop(VF_VIEWENTITY, 0);
-
-/*
-    if (self.entnum == player_localentnum)
-	{
-        addentity(self);
-		self.renderflags &= ~RF_EXTERNALMODEL;
-    }
-*/
+	setviewprop(VF_VIEWENTITY, 0); // Show player in world
 };
