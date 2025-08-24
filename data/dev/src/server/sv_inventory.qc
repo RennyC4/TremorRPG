@@ -29,9 +29,9 @@ float(entity player, string itemname) GetItemCount =
 // Buying an item from a vendor
 void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 {
-	//price -= ceil(self.skill_haggle * 0.5);
-	//if (price < 1)
-	//	price = 1;
+	price -= ceil(self.skill_haggle * 0.5);
+	if (price < 1)
+		price = 1;
 
     // first see if item already exists, then add it
 	float count = 1;
