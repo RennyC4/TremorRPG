@@ -183,15 +183,13 @@ void() itemchest_think =
 {
 	self.owner = world; // allow original owner to grab item
 	self.touch = Item_Touch;
+	self.think = sub_remove; // Dropped items remove after a minute
+	self.nextthink = time + 60;
 };
 
 void(string itemname) CSEv_DropItem_s =
 {
-	// Drop item
-	print ("Drop Item ", itemname, "\n");
-
 	// Spawn chest
-
 	makevectors (self.angles);
 
 	entity itemchest = spawn();
@@ -220,7 +218,7 @@ void(string itemname) CSEv_DropItem_s =
 	string eventlog_print = (strcat("Dropped ", itemname, "\n"));
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 
-	// Remove Item
+	// Remove inventory item
 	RemoveFromInventory(self, itemname, 1);
 }
 

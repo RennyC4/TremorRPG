@@ -51,12 +51,13 @@ void() set_monster =
 		self.health = self.max_health;
 	self.takedamage = DAMAGE_AIM;
 	self.classname = "monster";
-	self.radius_candamage = TRUE;
+	self.radius_candamage = TRUE; // can be affected by radius damage
 	self.colormod = '100 0 0'; // Red
 	self.flags |= FL_MONSTER;
-	self.canbackstab = TRUE; // can be backstabbed, TODO: Mapper should be able to set this
 	self.th_die = monster_death;
 
+	if (!self.sight_range)
+		self.sight_range = 500;
 	if (!self.exp)
 		self.exp = 1;
 	if (!self.noise)

@@ -84,7 +84,7 @@ void() npc_ai_think =
 {
 	for (entity b = world; (b = find(b, classname, "player"));) // search for customer nearby
 	{
-		if (vlen(b.origin - self.origin) < 100)
+		if (vlen(b.origin - self.origin) < self.sight_range)
 			self.goalentity = b;
 		else
 			self.goalentity = world;
@@ -115,6 +115,9 @@ void() set_npc =
 	self.colormod = '100 100 0'; // Yellow
 	self.idealangles = self.angles;
 	self.th_use = npc_use;
+
+	if (!self.sight_range)
+		self.sight_range = 100;
 
 	//self.th_die = npc_death;
 	//self.exp = 0;

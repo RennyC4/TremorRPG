@@ -1791,6 +1791,7 @@ const float MENU_BUYSELL = 5; // for NPC interaction
 .float camera_toggle; // boolean
 .float inair_count; // how long player is in the air
 .float canbackstab; // can be backstabbed
+.float sight_range; // used by monsters & npcs
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)

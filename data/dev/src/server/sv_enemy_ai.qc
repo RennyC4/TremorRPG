@@ -188,7 +188,7 @@ void() monster_ai_think =
 		// Patroling randomly, searching for players nearby - TODO: Stealth mechanic code using infront();
 		for (entity targ = world;(targ = find(targ, classname, "player"));)
 		{
-			if (vlen(targ.origin - self.origin) <= 500 && targ.deadflag != DEAD_DEAD && visible(targ) && infront_stealth(targ, self) && targ.bonfire == FALSE)
+			if (vlen(targ.origin - self.origin) <= self.sight_range && targ.deadflag != DEAD_DEAD && visible(targ) && infront_stealth(targ, self) && targ.bonfire == FALSE)
 			{
 				if (self.noise)
 					sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
