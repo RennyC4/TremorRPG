@@ -777,7 +777,9 @@ void() User_InventoryScreen =
 	// inventory item display
 	//
 
-	newpos = [5, 5];
+	newpos = [2.5, 2.5];
+	vector buttonpos = [-2.5, 2.5];
+	vector linepos = [0, 0];
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
@@ -786,8 +788,20 @@ void() User_InventoryScreen =
     {
 		string item_disp = strcat("^5", inventory[i], " ^7[^2", ftos(inventory_count[i]), "^7]");
 		if (inventory_count[i] > 0)
-			sui_text(newpos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
-		newpos_y += 10;
+		{
+			float usebutton_count = 0;
+			while (usebutton_count < inventory_count[i]) // setup use buttons
+			{
+				usebutton_count += 1;
+				string j = strcat("u_", inventory[i]);
+			}
+			sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+			my_button(j, buttonpos, [32, 10], "Use") ? sendevent("UseItem", "s", inventory[i]) : 0;
+			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+		}
+		linepos_y += 10;
+		buttonpos_y += 10;
     }
 
 	//

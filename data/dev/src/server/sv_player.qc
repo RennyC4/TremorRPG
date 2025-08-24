@@ -138,6 +138,7 @@ void() PlayerPrintStats =
 	AddToInventory(self, "Health Potion", 1);
 
 	//self.skillpoints = 99999;
+	self.gold = 99999;
 };
 
 // called from CSQC ("show_character" console command)
@@ -175,8 +176,6 @@ void() CSEv_User_TogglePVP_ =
 		return;
 	if (self.pvp_autoflagged)
 		return;
-
-	string eventlog_print;
 
 	if (!self.pvp)
 	{
@@ -985,7 +984,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.attack_length = 64; // weapon length
 		self.main_hand = "Broken Sword";
 		self.off_hand = "Broken Buckler";
-		self.blockvalue = 3;
+		self.blockvalue = 1;
 
 		// default armor
 		self.armorname = "Plain Clothes";

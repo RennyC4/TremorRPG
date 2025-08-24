@@ -32,7 +32,15 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 	price -= ceil(self.skill_haggle * 0.5);
 	if (price < 1)
 		price = 1;
-
+		
+	if (self.gold < price)
+	{
+		sprint(self, PRINT_HIGH, "Not enough gold!\n");
+		return;
+	}
+	else
+		float gold_ok = TRUE;
+		
     // first see if item already exists, then add it
 	float count = 1;
     float i;
@@ -52,12 +60,7 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
         return;
     }
 
-	if (self.gold < price)
-	{
-		sprint(self, PRINT_HIGH, "Not enough gold!\n");
-		return;
-	}
-	else
+	if (gold_ok)
 		self.gold -= price;
 
 	string printgold = ftos(price);
@@ -172,24 +175,37 @@ void(entity player, string itemname, float count) RemoveFromInventory =
     }
 };
 
-void(entity player, string itemname) UseItem =
+void(string itemname) CSEv_UseItem_s =
 {
-    if (!HasItem(player, itemname))
+    if (!HasItem(self, itemname))
     {
-        sprint(player, PRINT_HIGH, strcat("You don’t have a ", itemname, "\n"));
+        sprint(self, PRINT_HIGH, strcat("You don't have a ", itemname, "\n"));
         return;
     }
 
-    if (itemname == "health potion") // test crap
-    {
-        player.health = min(player.health + 25, player.max_health);
-        RemoveFromInventory(player, itemname, 1);
-        sprint(player, PRINT_HIGH, "You used a health potion\n");
-    }
-    else if (itemname == "keyred") // test crap
-    {
-        sprint(player, PRINT_HIGH, "You wave the red key, but nothing happens.\n");
-    }
+	// IMPORTANT: Capital letters are considered in itemname string!
+
+	// Consumables
+    if (itemname == "Health Potion")
+		Player_UseItem(0, itemname);
+
+	// Main hand equippables (weapons)
+	if (itemname == "Broken Sword")
+		Player_EquipItem(itemname, 0);
+	else if (itemname == "Short Sword")
+		Player_EquipItem(itemname, 0);
+
+	// Armor equippables
+	if (itemname == "Plain Clothes")
+		Player_EquipItem(itemname, 1);
+	else if (itemname == "Padded Armor")
+		Player_EquipItem(itemname, 1);
+
+	// Off hand equippables (shields, etc)
+	else if (itemname == "Broken Buckler")
+		Player_EquipItem(itemname, 2);
+
+	RemoveFromInventory(self, itemname, 1);
 };
 
 // called whenever we need to send player/client ONLY inventory data to CSQC
