@@ -8,7 +8,7 @@ void(float type) PlayerSpawn;
 
 // Inventory stuff, temporary here for testing
 void(entity player) SendPlayerInventory;
-void(entity player, string itemname, float count) AddToInventory;
+void(entity targ, string itemname, float count) AddToInventory;
 
 void() ClientKill = {};
 void() SetNewParms = {};
@@ -136,8 +136,6 @@ void() PlayerPrintStats =
 	
 	// Inventory debugging
 	AddToInventory(self, "Health Potion", 1);
-	AddToInventory(self, "Short Sword", 1);
-	AddToInventory(self, "Skibidi Toilet", 1);
 
 	//self.skillpoints = 99999;
 };

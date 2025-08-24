@@ -5,6 +5,7 @@
 void(entity targ, entity client) SendNPCInventory;
 void() npc_ai_think;
 .string npc_dialog; // reference npc file scripts
+.float npc_inventory_grabbed; // boolean
 
 void() npc_use =
 {
@@ -12,7 +13,7 @@ void() npc_use =
 		return;
 	if (self.user.menu != MENU_OFF)
 		return;
-		
+
 	self.user.velocity = [0, 0];
 
 	string contents, line = "";
@@ -35,38 +36,42 @@ void() npc_use =
 	}
 	fclose(v);
 
-	// Grab NPC inventory from file
-	string what = "";
-	readfile = strcat("npc_", self.netname, "_i.txt");
-	float b = fopen(readfile, FILE_READ);
-	if (b >= 0)
+	if (!self.npc_inventory_grabbed) // only grab the inventory ONCE *important*
 	{
-		if (line = fgets(b)) // Get item count from text file
-			self.read_inv_count = stof(line);
-
-		float i;
-		for (i = 0; i < self.read_inv_count; i++)
+		// Grab NPC inventory from file
+		string what = "";
+		readfile = strcat("npc_", self.netname, "_i.txt");
+		float b = fopen(readfile, FILE_READ);
+		if (b >= 0)
 		{
-			if (line = fgets(b)) // Add item
+			if (line = fgets(b)) // Get item count from text file
+				self.read_inv_count = stof(line);
+
+			float i;
+			for (i = 0; i < self.read_inv_count; i++)
 			{
-				what = line;
-				AddToInventory(self, line, 0);
+				if (line = fgets(b)) // Add item
+				{
+					what = line;
+					AddToInventory(self, line, 0);
+				}
+				if (line = fgets(b)) // Add count to item, NPCs use item count as buying price
+					AddToInventory(self, what, stof(line));
 			}
-			if (line = fgets(b)) // Add count to item, NPCs use item count as buying price
-				AddToInventory(self, what, stof(line));
+			SendNPCInventory(self, self.user); // Send NPC inventory to CSQC
 		}
-		SendNPCInventory(self, self.user); // Send NPC inventory to CSQC
+		fclose(b);
+		// We don't send an error if an NPC doesn't have an inventory as not all are vendors
+
+		msg_entity = self.user;
+		WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+		WriteByte(MSG_MULTICAST, CSQC_NPCINFO); // custom opcode for "open npc dialog"
+		WriteString(MSG_MULTICAST, self.netname);
+		WriteString(MSG_MULTICAST, self.npc_dialog);
+		multicast(self.origin, MULTICAST_ONE_R);
+
+		self.npc_inventory_grabbed = TRUE;
 	}
-	fclose(b);
-	// We don't send an error if an NPC doesn't have an inventory as not all are vendors
-
-    msg_entity = self.user;
-    WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
-    WriteByte(MSG_MULTICAST, CSQC_NPCINFO); // custom opcode for "open npc dialog"
-    WriteString(MSG_MULTICAST, self.netname);
-    WriteString(MSG_MULTICAST, self.npc_dialog);
-	multicast(self.origin, MULTICAST_ONE_R);
-
 	// Open player NPC window
 	self.user.menu = MENU_DIALOGUE;
 
