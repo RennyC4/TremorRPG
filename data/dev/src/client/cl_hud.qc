@@ -800,8 +800,9 @@ void() User_InventoryScreen =
 			}
 			sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+			buttonpos_x = -2.5;
 			my_button(j, buttonpos, [32, 10], "Use") ? sendevent("UseItem", "s", inventory[i]) : 0;
-			buttonpos_x -= 33;
+			buttonpos_x = -34;
 			my_button(d, buttonpos, [32, 10], "Drop") ? sendevent("DropItem", "s", inventory[i]) : 0;
 			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 		}
