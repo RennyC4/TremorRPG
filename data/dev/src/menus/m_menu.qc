@@ -250,6 +250,11 @@ void() main_menu =
 {
 	vector realsize = getproperty(VF_SCREENPSIZE);
 
+	// Draw background
+	vector bg_size = [realsize_x / 2, realsize_y / 2, 0];
+	sui_pic([0,0], bg_size, "textures/background.jpg", '0.5 0.5 0.5', 1, 0);
+
+	// Draw logo
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	
 	vector logo_size = [realsize_x / 2, realsize_y / 2, 0];
