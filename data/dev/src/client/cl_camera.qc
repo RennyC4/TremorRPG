@@ -13,6 +13,18 @@ setviewprop(VF_ANGLES, ang);
 vector plyr_pos;
 void() Camera_Third =
 {
+	plyr_pos = getproperty(VF_ORIGIN);
+
+	// Enable this after player sits still for awhile, morrowind-style
+	/*
+	vector ang = [0, cltime*16, 0];
+	makevectors(ang);
+	setviewprop(VF_VIEWENTITY, 0.0);
+	setviewprop(VF_ORIGIN, plyr_pos - v_forward*64);
+	setviewprop(VF_ANGLES, ang);
+	*/
+
+	// Regular 3rd person camera
 	camang = getproperty(VF_ANGLES);
 	makevectors(camang);
 

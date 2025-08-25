@@ -255,6 +255,9 @@ void() main_menu =
 	vector logo_size = [realsize_x / 2, realsize_y / 2, 0];
 	vector logo_pos = [(realsize_x - logo_size_x) * 0.1, 0, 0];
 
+	float scale = 1 - 0.05 * sin(time * 0.2);
+	logo_size = logo_size * scale;
+
 	sui_pic(logo_pos, logo_size, "textures/logo.png", '1 1 1', 1, 0);
 	
 	vector pos = [25, -100];
