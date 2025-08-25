@@ -1,4 +1,4 @@
-# QuakeRPG
+# TremorRPG
 
 Open World RPG using FTEQuake
 
