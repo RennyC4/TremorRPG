@@ -53,7 +53,7 @@ void() User_LoginScreen =
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 
-	sui_text([0, 4], MENU_TEXT_MEDIUM, "Welcome to Quake RPG", MENU_TEXT_1, 1, 0);
+	sui_text([0, 4], MENU_TEXT_MEDIUM, "Welcome to Tremor RPG", MENU_TEXT_1, 1, 0);
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text([size_x / 3.5, size_y - 135], MENU_TEXT_MEDIUM, "User Name", MENU_TEXT_MEDIUM, 1, 0);
 

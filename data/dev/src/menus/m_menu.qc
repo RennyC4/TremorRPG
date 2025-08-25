@@ -256,7 +256,7 @@ void() main_menu =
 
 	// Draw version #
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	sui_text([0, -10], MENU_TEXT_SMALL, "QRPG Version Alpha Test\n", MENU_TEXT_1, 1, 0);
+	sui_text([0, -10], MENU_TEXT_SMALL, "TRPG Version Alpha Test\n", MENU_TEXT_1, 1, 0);
 	sui_text([0, 0], MENU_TEXT_SMALL, "Powered by ^5SUI^7 by ^5shpuld\n", MENU_TEXT_1, 1, 0);
 	
 	// Draw logo

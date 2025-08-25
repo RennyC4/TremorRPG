@@ -1,5 +1,3 @@
-//TODO: Setup properly for Quake RPG
-
 const float GAME_TEAMPLAY = 129;
 typedef struct
 {
