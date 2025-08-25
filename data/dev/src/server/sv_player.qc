@@ -315,7 +315,7 @@ void() FallDamage_Update =
     if (!(self.flags & FL_ONGROUND))
     {
 		self.inair_count += 1;
-		if (self.inair_count >= 12)
+		if (self.inair_count >= 12 && !self.waterlevel)
 			self.lockview_finished = time + 0.1; // lock view when leaving ground, but not over small inclines
         float down = - self.velocity_z; // positive when falling
         if (down > self.fall_maxspeed)
@@ -355,10 +355,28 @@ void() FallDamage_Update =
 };
 
 .float swim_stamina_finished;
+.float underwatersfx_finished;
 void() WaterUpdate =
 {
 	if (self.waterlevel > 1)
 	{
+		if (self.waterlevel >= 3)
+		{
+			if (self.underwatersfx_finished < time)
+			{
+				stuffcmd (self, sprintf("play %s\n", "inwater.wav")); // sound
+				self.underwatersfx_finished = time + 9.9;
+			}
+		}
+		else
+		{
+			if (self.underwatersfx_finished > time)
+			{
+				stuffcmd (self, sprintf("stopsound %s\n", "inwater.wav")); // sound
+				self.underwatersfx_finished = time;
+			}
+		}
+		
 		float stamcalc = 0.01 + (self.skill_swim * 0.0005); // stamina calculation
 		if (self.stamina > 0)
 		{
@@ -371,7 +389,6 @@ void() WaterUpdate =
 		else
 			DoDamage(self, world, self.health); // drowned
 	}
-	// TODO: Underwater sound
 };
 
 .float nextfootstep_finished;
@@ -379,6 +396,8 @@ void() FootstepThink =
 {
     if (!(self.flags & FL_ONGROUND))
         return;
+	if (self.deadflag == DEAD_DEAD)
+		return;
 
 	string s;
     vector vel = self.velocity;

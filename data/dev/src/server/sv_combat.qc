@@ -128,6 +128,7 @@ void() DoAttack_ShieldBash =
 };
 
 // Main melee attack function
+.float staminamessage_finished;
 void() DoAttack_Melee =
 {
 	if (self.melee_finished > time)
@@ -142,7 +143,11 @@ void() DoAttack_Melee =
 		float stamcalc = self.skill_endurance * 0.015; // calculation
 		if (self.stamina < self.attack_stamina)
 		{
-			sprint(self, PRINT_HIGH, "^1Out of stamina ...\n");
+			if (self.staminamessage_finished < time)
+			{
+				sprint(self, PRINT_HIGH, "^1Out of stamina ...\n");
+				self.staminamessage_finished = time + 1;
+			}
 			return;
 		}
 		self.stamina -= (self.attack_stamina - stamcalc);
