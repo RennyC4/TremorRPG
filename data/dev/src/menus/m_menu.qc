@@ -249,11 +249,16 @@ void() help_menu =
 void() main_menu =
 {
 	vector realsize = getproperty(VF_SCREENPSIZE);
-
+	
 	// Draw background
 	vector bg_size = [realsize_x / 2, realsize_y / 2, 0];
 	sui_pic([0,0], bg_size, "textures/background.jpg", '0.5 0.5 0.5', 1, 0);
 
+	// Draw version #
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
+	sui_text([0, -10], MENU_TEXT_SMALL, "QRPG Version Alpha Test\n", MENU_TEXT_1, 1, 0);
+	sui_text([0, 0], MENU_TEXT_SMALL, "Powered by ^5SUI^7 by ^5shpuld\n", MENU_TEXT_1, 1, 0);
+	
 	// Draw logo
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	
