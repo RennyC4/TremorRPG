@@ -92,6 +92,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		pauseframe = 0;
 };
 
+float togglemenu;
 float(string strCommand) CSQC_ConsoleCommand =
 {
 	tokenize(strCommand);

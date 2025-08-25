@@ -21,6 +21,7 @@ void() Camera_Third =
 	makevectors(ang);
 	setviewprop(VF_VIEWENTITY, 0.0);
 	setviewprop(VF_ORIGIN, plyr_pos - v_forward*64);
+	pmove_org
 	setviewprop(VF_ANGLES, ang);
 	*/
 

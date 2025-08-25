@@ -84,7 +84,7 @@ void() Draw_Health =
 	// Draw Health
 	//
 
-	vector pos = [(g_width * 0.015), (g_height - 36)];
+	vector pos = [10, (g_height - 36)];
 
 	// Bar
 	vector hbar_size = '100 8 0';
@@ -119,7 +119,7 @@ void() Draw_Mana =
 	// Draw Mana
 	//
 
-	vector pos = [(g_width * 0.015), (g_height - 36)];
+	vector pos = [10, (g_height - 36)];
 
 	// Bar
 	vector mbar_size = '100 8 0';
@@ -154,7 +154,7 @@ void() Draw_Stamina =
 	// Draw Stamina
 	//
 
-	vector pos = [(g_width * 0.015), (g_height - 36)];
+	vector pos = [10, (g_height - 36)];
 
 	// Bar
 	vector sbar_size = '100 8 0';
