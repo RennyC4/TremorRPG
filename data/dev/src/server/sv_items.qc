@@ -70,7 +70,6 @@ void(string itemname, float id) Player_EquipItem =
 		// Equip new armor
 		self.armorname = armorname_e;
 		self.armorvalue = armorvalue_e;
-
 	}
 	else if (id == 2) // Off-hand to equip
 	{
@@ -94,8 +93,8 @@ void(string itemname, float id) Player_EquipItem =
 		// Equip new armor
 		self.off_hand = off_hand_e;
 		self.blockvalue = blockvalue_e;
-
 	}
+	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
 	sprint(self, PRINT_HIGH, strcat(itemname, " equipped\n"));
 };
 
@@ -104,6 +103,7 @@ void(float id, string itemname) Player_UseItem =
 	if (id == 0) // health potion
 	{
 		// TODO: Health potions will recover 1/4th of your health, can carry only 2 at first
+		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 		self.health = min(self.health + 25, self.max_health);
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
 	}

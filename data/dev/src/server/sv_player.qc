@@ -2,7 +2,7 @@
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
-void() CSEv_ShutDownMenus = {self.menu = MENU_OFF;self.melee_finished = time + 0.25;};
+void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;self.melee_finished = time + 0.25;};
 void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
 
@@ -74,6 +74,7 @@ void() PlayerJump =
 		if (stamcalc > 49)
 			stamcalc = 49;
 		self.stamina -= (50 - stamcalc);
+	sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
 	}
 };
 
@@ -135,10 +136,10 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 	
 	// Inventory debugging
-	AddToInventory(self, "Health Potion", 1);
+	//AddToInventory(self, "Health Potion", 1);
 
 	//self.skillpoints = 99999;
-	self.gold = 99999;
+	//self.gold = 99999;
 };
 
 // called from CSQC ("show_character" console command)
@@ -148,9 +149,18 @@ void() CSEv_PlayerShowStats =
 		return;
 
 	if (self.menu == MENU_CHARACTER)
+	{
 		self.menu = MENU_OFF;
+		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
+	}
 	else if (self.menu == MENU_INVENTORY || self.menu == MENU_OFF)
+	{
+		if (self.menu == MENU_OFF)
+			stuffcmd (self, sprintf("play %s\n", "menu/menu_open.wav")); // sound
+		else
+			stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav")); // sound
 		self.menu = MENU_CHARACTER;
+	}
 };
 
 // called from CSQC ("show_inventory" console command + button)
@@ -160,14 +170,23 @@ void() CSEv_PlayerShowInventory =
 		return;
 
 	if (self.menu == MENU_INVENTORY)
+	{
 		self.menu = MENU_OFF;
+		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
+	}
 	else if (self.menu == MENU_CHARACTER || self.menu == MENU_OFF)
+	{
+		if (self.menu == MENU_OFF)
+			stuffcmd (self, sprintf("play %s\n", "menu/menu_open.wav")); // sound
+		else
+			stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav")); // sound
 		self.menu = MENU_INVENTORY;
+	}		
 };
 
 // called from CSQC button
-void() CSEv_PlayerShowBuySell = {self.menu = MENU_BUYSELL;};
-void() CSEv_PlayerShowDialogue = {self.menu = MENU_DIALOGUE;};
+void() CSEv_PlayerShowBuySell = {stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav"));self.menu = MENU_BUYSELL;};
+void() CSEv_PlayerShowDialogue = {stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav"));self.menu = MENU_DIALOGUE;};
 
 // called from CSQC (PVP button)
 void() CSEv_User_TogglePVP_ =
@@ -320,14 +339,14 @@ void() FallDamage_Update =
 
             // Soft landing sound only
             if (impact > FALL_SOFT_SPEED && impact <= FALL_DAMAGE_SPEED)
-				sound (self, CHAN_BODY, "land1.wav", 1, ATTN_NORM);
+				sound (self, CHAN_AUTO, "land1.wav", 1, ATTN_NORM);
             // Damage
             else if (impact > FALL_DAMAGE_SPEED)
             {
                 float dmg = (impact - FALL_DAMAGE_SPEED) * FALL_SCALE;
 				dmg = ceil(dmg);
 				DoDamage(self, world, dmg);
-                sound (self, CHAN_BODY, "land2.wav", 1, ATTN_NORM);
+                sound (self, CHAN_AUTO, "land2.wav", 1, ATTN_NORM);
             }
         }
         self.fall_maxspeed = 0;
@@ -352,6 +371,48 @@ void() WaterUpdate =
 		else
 			DoDamage(self, world, self.health); // drowned
 	}
+	// TODO: Underwater sound
+};
+
+.float nextfootstep_finished;
+void() FootstepThink =
+{
+    if (!(self.flags & FL_ONGROUND))
+        return;
+
+	string s;
+    vector vel = self.velocity;
+    float speed = vlen(vel);
+
+	if (speed < 5)
+		return;
+
+    if (time >= self.nextfootstep_finished)
+    {
+        if (self.waterlevel >= 1)
+            s = strcat("move_wade", ftos(floor(random()*2)), ".wav");
+        else
+            s = strcat("move_step", ftos(floor(random()*2)), ".wav");
+
+		if (!self.waterlevel)
+		{
+			if (!self.crouch)
+			{
+				self.nextfootstep_finished = time + 0.35;
+				sound(self, CHAN_BODY, s, 0.25, ATTN_NORM);
+			}
+			else
+			{
+				self.nextfootstep_finished = time + 0.50;
+				sound(self, CHAN_BODY, s, 0.1, ATTN_NORM);
+			}
+		}
+		else
+		{
+			sound(self, CHAN_AUTO, s, 0.25, ATTN_NORM); // water sounds need CHAN_AUTO
+			self.nextfootstep_finished = time + 0.35;
+		}
+    }
 };
 
 // Ran before physics
@@ -448,6 +509,7 @@ void() PlayerPostThink =
 	float calc;
 
 	WaterUpdate();
+	FootstepThink();
 	FallDamage_Update();
 
 	if (self.frags != self.level) // HACK: used to display level on the scoreboard

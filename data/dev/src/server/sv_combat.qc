@@ -141,7 +141,10 @@ void() DoAttack_Melee =
 	{
 		float stamcalc = self.skill_endurance * 0.015; // calculation
 		if (self.stamina < self.attack_stamina)
+		{
+			sprint(self, PRINT_HIGH, "^1Out of stamina ...\n");
 			return;
+		}
 		self.stamina -= (self.attack_stamina - stamcalc);
 	}
 

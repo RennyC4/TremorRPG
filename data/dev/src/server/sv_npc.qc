@@ -75,7 +75,8 @@ void() npc_use =
 	}
 	// Open player NPC window
 	self.user.menu = MENU_DIALOGUE;
-
+	stuffcmd (self.user, sprintf("play %s\n", "menu/menu_open.wav"));
+	
 	self.think = npc_ai_think;
 	self.nextthink = time + 0.1;
 };

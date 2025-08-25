@@ -50,6 +50,16 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
     {
         if (self.inventory[i] == itemname)
         {
+			if (gold_ok)
+				self.gold -= price;
+
+			string printgold = ftos(price);
+			sprint (self, PRINT_HIGH, itemname, " bought!\n");
+			string eventlog_print = strcat(itemname, " bought! ^1-^3", printgold, "g");
+			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+
+			stuffcmd (self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
+
             self.inventory_count[i] += count;
             return;
         }
@@ -70,6 +80,8 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 	string eventlog_print = strcat(itemname, " bought! ^1-^3", printgold, "g");
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 
+	stuffcmd (self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
+	
     self.inventory[self.inv_count] = itemname;
     self.inventory_count[self.inv_count] = count;
     self.inv_count++;
@@ -106,6 +118,8 @@ void(string itemname) CSEv_PlayerSellItem_s =
 	sprint (self, PRINT_HIGH, itemname, " sold!\n");
 	string eventlog_print = strcat(itemname, " sold! ^2+^3", printgold, "g");
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+
+	stuffcmd (self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
 
     for (i = 0; i < self.inv_count; i++)
     {
@@ -206,14 +220,15 @@ void(string itemname) CSEv_DropItem_s =
 	setmodel(itemchest, "models/chest.glb");
 	setsize(itemchest, '-16 -16 -0', '16 16 16');
 	setorigin(itemchest, self.origin);
-	
 	itemchest.velocity_z = 270;
 	vector dir = v_forward;
 	dir = normalize(dir);
-	itemchest.velocity = itemchest.velocity + dir * (random_range(200, 300));
-	
+	itemchest.velocity = itemchest.velocity + dir * (random_range(125, 300));
+
 	itemchest.think = itemchest_think;
 	itemchest.nextthink = time + 1;
+
+	sound (self, CHAN_AUTO, "item/drop.wav", 1, ATTN_NORM);
 
 	string eventlog_print = (strcat("Dropped ", itemname, "\n"));
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
@@ -307,6 +322,6 @@ void() Item_Touch =
 
 	string eventlog_print = (strcat("Got ", self.netname, "\n"));
 	stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
-
+	stuffcmd (other, sprintf("play %s\n", "item/get.wav"));
 	remove(self);
 };

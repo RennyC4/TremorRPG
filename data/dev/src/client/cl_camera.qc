@@ -2,6 +2,14 @@
 // CSQC 3rd person camera
 //
 
+/*
+vector ang = [0, cltime, 0];
+makevectors(ang);
+setviewprop(VF_VIEWENTITY, 0.0);
+setviewprop(VF_ORIGIN, pmove_org - v_forward*64 + v_up*24);
+setviewprop(VF_ANGLES, ang);
+*/
+
 vector plyr_pos;
 void() Camera_Third =
 {
