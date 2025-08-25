@@ -216,7 +216,7 @@ void() settings_menu =
 
 	if (sui_listen_back())
 		current_menu = MENU_MAIN;
-	
+
 	sui_pop_frame();
 };
 
@@ -248,12 +248,18 @@ void() help_menu =
 
 void() main_menu =
 {
+	vector realsize = getproperty(VF_SCREENPSIZE);
+
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-	sui_text([0, 64], MENU_TEXT_LARGE, "Quake RPG", [1, 1, 1], 1, 0);
 	
-	vector pos = [0, -24];
+	vector logo_size = [realsize_x / 2, realsize_y / 2, 0];
+	vector logo_pos = [(realsize_x - logo_size_x) * 0.1, 0, 0];
+
+	sui_pic(logo_pos, logo_size, "textures/logo.png", '1 1 1', 1, 0);
+	
+	vector pos = [25, -100];
 	vector size = [120, 140];
-	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
 	
 	sui_fill([0, 0], size, MENU_BG, 0.3, 0);

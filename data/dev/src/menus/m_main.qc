@@ -3,6 +3,7 @@ float splash_time;
 
 void() m_init =
 {
+	localcmd("music sound/music/track00.ogg");
 	splash_time = time + 2.5;
 	// drawfont = loadfont("", "Courier Prime Code", "12,16,24,32,48,64,72,128,256,512", -1, 0, 0);
 	setcursormode(TRUE,"gfx/xhair", [16, 16], cvar("vid_conautoscale"));
@@ -55,12 +56,14 @@ void(vector screensize) m_draw =
 
 void() m_close =
 {
+	localsound("menu/menu_close.wav");
 	setkeydest(0);
 	menu_active = FALSE;
 };
 
 void() m_open =
 {
+	localsound("menu/menu_open.wav");
 	setkeydest(2);
 	menu_active = TRUE;
 };
