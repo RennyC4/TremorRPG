@@ -266,13 +266,14 @@ void() main_menu =
 	vector logo_pos = [(realsize_x - logo_size_x) * 0.1, 0, 0];
 
 	float scale = 1 - 0.05 * sin(time * 0.2);
-	float colour_scale = 2 + 1 * sin(time * 0.75);
-	print (ftos(colour_scale), "\n");
-	vector colour = [1, 1, 1];
-	colour = [colour_scale, 1, 1]; // red tinge
+	float s = sin(time * 0.375);
+	float colour_scale = 3 * pow(s, 4);
+	//print (ftos(colour_scale), "\n");
+	vector colour = [colour_scale, 0, 0]; // red tinge on text
 	logo_size = logo_size * scale;
 
-	sui_pic(logo_pos, logo_size, "textures/logo.png", colour, 1, 0);
+	sui_pic(logo_pos, logo_size+[5,5,5], "textures/logo.png", colour, 1, 0); // logo shadow effect
+	sui_pic(logo_pos, logo_size, "textures/logo.png", '1 1 1', 1, 0);
 	
 	vector pos = [25, -100];
 	vector size = [120, 140];
