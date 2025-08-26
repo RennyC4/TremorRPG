@@ -65,3 +65,15 @@ void(string id, vector pos, vector size, float maxlen, __inout string text, __in
 	sui_pop_frame();
 	sui_pop_frame();
 };
+
+void(string id, vector pos, vector size, string text) sui_tooltip =
+{
+	sui_push_frame(pos, size);
+	vector basecolor = sui_is_hovered(id) ? MENU_BUTTON + MENU_HIGHLIGHT * 0.25 : MENU_BUTTON; 
+	sui_fill([0, 0], size, basecolor, 0.6, 0);
+	sui_border_box([0, 0], size, 1, MENU_BUTTON_BORDER, 0.4, 0);
+
+	sui_text([0, 0], MENU_TEXT_SMALL, text, MENU_TEXT_1, 1, 0);	
+	//sui_action_element([0, 0], size, id, sui_noop);
+	sui_pop_frame();
+};

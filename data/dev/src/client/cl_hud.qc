@@ -798,7 +798,12 @@ void() User_InventoryScreen =
 				j = strcat("u_", inventory[i]);
 				d = strcat("d_", inventory[i]);
 			}
-			sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+			
+			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+
+			float hover_text_size = stringwidth(inventory[i], 1);
+			sui_tooltip(inventory[i], linepos, [hover_text_size * 8, 8], item_disp);
+			
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 			buttonpos_x = -2.5;
 			my_button(j, buttonpos, [32, 10], "Use") ? sendevent("UseItem", "s", inventory[i]) : 0;
