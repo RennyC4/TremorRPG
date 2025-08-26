@@ -68,6 +68,8 @@ void(string id, vector pos, vector size, float maxlen, __inout string text, __in
 
 vector tt_pos;
 vector tt_size;
+float tt_fix_x;
+
 void(string id, vector pos, vector size, string text) sui_tooltip =
 {
 	// Draw hover-able element
@@ -105,11 +107,10 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 			vector tt_pos = [_cursor_position_x, _cursor_position_y, 0];
 			tt_pos -= [190, 64]; // box fix alignment
 
-			tt_size_x = 100; // TODO: Box needs to match text size
-
 			sui_push_frame(tt_pos, tt_size);
 			sui_fill([0, 0], tt_size, MENU_BG_DARK, 0.95, 0);
-			
+
+			// draw text, and set size of box
 			float i, numlines = 0;
 			vector linepos = [0, 0];
 			numlines = tokenizebyseparator(tt_contents, "\n");
@@ -118,7 +119,14 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 				string tt_line = argv(i);
 				sui_text(linepos, MENU_TEXT_SMALL, tt_line, MENU_TEXT_1, 1, 0);
 				linepos_y += 10;
-				tt_size_y = linepos_y - 10;
+
+				float largest_x;
+				tt_fix_x = stringwidth(tt_line, 1); // get length
+				if (tt_fix_x > largest_x)
+					largest_x = tt_fix_x; // record largest length string in a file
+
+				tt_size[0] = largest_x * 8; // length
+				tt_size[1] = (linepos_y - 10);
 			}
 			sui_pop_frame();
 		}
