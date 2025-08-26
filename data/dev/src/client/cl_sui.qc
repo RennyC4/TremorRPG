@@ -66,14 +66,33 @@ void(string id, vector pos, vector size, float maxlen, __inout string text, __in
 	sui_pop_frame();
 };
 
+string tt_contents;
 void(string id, vector pos, vector size, string text) sui_tooltip =
 {
+	// Draw hover-able element
 	sui_push_frame(pos, size);
-	vector basecolor = sui_is_hovered(id) ? MENU_BUTTON + MENU_HIGHLIGHT * 0.25 : MENU_BUTTON; 
-	sui_fill([0, 0], size, basecolor, 0.6, 0);
-	sui_border_box([0, 0], size, 1, MENU_BUTTON_BORDER, 0.4, 0);
+	sui_fill([0, 0], size, MENU_BG_DARK, 0.6, 0);
 
 	sui_text([0, 0], MENU_TEXT_SMALL, text, MENU_TEXT_1, 1, 0);	
-	//sui_action_element([0, 0], size, id, sui_noop);
+	sui_action_element([0, 0], size, id, sui_noop);
 	sui_pop_frame();
+	
+	// open desc_itemname.txt for reading tooltip text
+	if (sui_is_hovered(id))
+	{
+		string line = "";
+		string contents = "";
+		string readfile = strcat(id, ".txt");
+		float v = fopen(readfile, FILE_READ);
+		if (v >= 0)
+		{
+			while ((line = fgets(v)))
+				tt_contents = strcat(tt_contents, line, "\n");
+			fclose(v);
+		}
+		else
+			print(strcat("sui_tooltip: Missing: ", id, ".txt file\n")); // print missing tooltip file
+	}
+	
+	// draw tool tip here
 };

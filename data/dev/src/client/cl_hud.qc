@@ -786,6 +786,8 @@ void() User_InventoryScreen =
 	float i;
 	string j = "";
 	string d = "";
+	string desc = "";
+
     for (i = 0; i < inv_count; i++)
     {
 		string item_disp = strcat("^5", inventory[i], " ^7[^2", ftos(inventory_count[i]), "^7]");
@@ -795,15 +797,17 @@ void() User_InventoryScreen =
 			while (usebutton_count < inventory_count[i]) // setup use buttons
 			{
 				usebutton_count += 1;
-				j = strcat("u_", inventory[i]);
-				d = strcat("d_", inventory[i]);
+				j = strcat("u_", inventory[i]); // use
+				d = strcat("d_", string_remove_spaces(inventory[i])); // drop
+				desc = strcat("desc_", string_remove_spaces(inventory[i])); // tooltip display
 			}
 			
 			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 
+			// tooltip
 			float hover_text_size = stringwidth(inventory[i], 1);
-			sui_tooltip(inventory[i], linepos, [hover_text_size * 8, 8], item_disp);
-			
+			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
+
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 			buttonpos_x = -2.5;
 			my_button(j, buttonpos, [32, 10], "Use") ? sendevent("UseItem", "s", inventory[i]) : 0;

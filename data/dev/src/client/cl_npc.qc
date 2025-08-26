@@ -116,7 +116,8 @@ void() User_NPCBuySell =
 
 	float i;
 	string j = "";
-	string d = "";
+	string desc = "";
+
 	vector linepos = [2.5, 25];
 	vector buttonpos = [-19, 25];
     for (i = 0; i < inv_count; i++)
@@ -129,11 +130,12 @@ void() User_NPCBuySell =
 			{
 				sellbutton_count += 1;
 				j = strcat("s_", inventory[i]);
+				desc = strcat("desc_", string_remove_spaces(inventory[i]));
 			}
 			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 
 			float hover_text_size = stringwidth(inventory[i], 1);
-			sui_tooltip(j, linepos, [hover_text_size * 8, 8], item_disp);
+			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
 			
 			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 			my_button(j, buttonpos, [32, 10], "Sell") ? sendevent("PlayerSellItem", "s", inventory[i]) : 0;
@@ -161,12 +163,13 @@ void() User_NPCBuySell =
 			{
 				buybutton_count += 1;
 				j = strcat("b_", npc_inventory[i]);
-				d = strcat("desc_", npc_inventory[i]);
+				desc = strcat("desc_", string_remove_spaces(npc_inventory[i])); // tooltip display
 			}
 			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 
+			// tooltip
 			float hover_text_size = stringwidth(npc_inventory[i], 1);
-			sui_tooltip(d, linepos, [hover_text_size * 8, 8], item_disp);
+			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
 
 			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 			my_button(j, buttonpos, [25, 10], "Buy") ? sendevent("PlayerBuyItem", "sf", npc_inventory[i], npc_inventory_gold[i]) : 0;
