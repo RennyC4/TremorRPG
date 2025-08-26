@@ -45,6 +45,7 @@ void() User_NPCDialogue =
 	newpos = [2.5, 2.5]; //reset newpos
 	newpos_y += 25;
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+
 	vector linepos = newpos;
 	float i, numlines = 0;
 	numlines = tokenizebyseparator(npc_dialogue, "\n");

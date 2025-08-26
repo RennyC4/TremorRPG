@@ -66,7 +66,6 @@ void(string id, vector pos, vector size, float maxlen, __inout string text, __in
 	sui_pop_frame();
 };
 
-string tt_contents;
 vector tt_pos;
 vector tt_size;
 void(string id, vector pos, vector size, string text) sui_tooltip =
@@ -82,8 +81,9 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 	// open desc_itemname.txt for reading tooltip text
 	if (sui_is_hovered(id))
 	{
+		// setup file read
 		string line = "";
-		string contents = "";
+		string tt_contents = "";
 		string readfile = strcat(id, ".txt");
 		float v = fopen(readfile, FILE_READ);
 		if (v >= 0)
@@ -94,23 +94,33 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 		}
 		else
 		{
+			tt_contents = "";
 			print(strcat("sui_tooltip: Missing: ", id, ".txt file\n")); // print missing tooltip file
 		}
 
 		// draw tool tip here
 		if (tt_contents != "")
 		{
-			tt_pos = [_cursor_position_x - 200, _cursor_position_y - 46, 0];
-			tt_size = [100, 100];
+			// draw box
+			vector tt_pos = [_cursor_position_x, _cursor_position_y, 0];
+			tt_pos -= [190, 64]; // box fix alignment
+
+			tt_size_x = 100; // TODO: Box needs to match text size
 
 			sui_push_frame(tt_pos, tt_size);
 			sui_fill([0, 0], tt_size, MENU_BG_DARK, 0.95, 0);
-
-			//sui_text([0, 0], MENU_TEXT_SMALL, text, MENU_TEXT_1, 1, 0);	
-			sui_action_element([0, 0], tt_size, id, sui_noop);
+			
+			float i, numlines = 0;
+			vector linepos = [0, 0];
+			numlines = tokenizebyseparator(tt_contents, "\n");
+			for (i = 0; i < numlines; i = i + 1)
+			{
+				string tt_line = argv(i);
+				sui_text(linepos, MENU_TEXT_SMALL, tt_line, MENU_TEXT_1, 1, 0);
+				linepos_y += 10;
+				tt_size_y = linepos_y - 10;
+			}
 			sui_pop_frame();
-		
-			//print (tt_contents, "\n");
 		}
 	}
 };
