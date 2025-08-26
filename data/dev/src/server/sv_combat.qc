@@ -292,6 +292,7 @@ void() DoAttack_Melee =
 			sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
 		}
 	}
+	self.pushforward_finished = time + (self.attack_speed / 4);
 	self.melee_finished = time + self.attack_speed;
 	self.lockview_finished = time + self.attack_speed;
 };

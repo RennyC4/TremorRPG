@@ -446,6 +446,18 @@ void() FootstepThink =
     }
 };
 
+void(float speed) Player_PushForward =
+{
+	if (self.pushforward_finished < time)
+		return;
+	if (!(self.flags & FL_ONGROUND))
+		return;
+	if (self.deadflag == DEAD_DEAD)
+		return;
+
+	walkmove(self.angles_y, speed);
+};
+
 // Ran before physics
 void() PlayerPreThink =
 {	
@@ -550,6 +562,7 @@ void() PlayerPostThink =
 
 	if (self.deadflag != DEAD_DEAD)
 	{
+		Player_PushForward(3);
 	    if (self.healthpot_heal_remaining > 0 && time > self.healthpot_finished) // apply ongoing healing
 		{
 			if (self.health >= self.max_health)

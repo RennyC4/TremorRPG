@@ -1796,6 +1796,7 @@ const float MENU_BUYSELL = 5; // for NPC interaction
 .float healthpot_heal_rate;       // how much per tick
 .float healthpot_finished;
 .float healthpot_use_finished;
+.float pushforward_finished;
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)
