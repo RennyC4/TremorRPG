@@ -1792,6 +1792,10 @@ const float MENU_BUYSELL = 5; // for NPC interaction
 .float inair_count; // how long player is in the air
 .float canbackstab; // can be backstabbed
 .float sight_range; // used by monsters & npcs
+.float healthpot_heal_remaining;  // how much left to heal from this use
+.float healthpot_heal_rate;       // how much per tick
+.float healthpot_finished;
+.float healthpot_use_finished;
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)

@@ -93,8 +93,8 @@ void() Draw_Health =
 
 	drawfill(hbarpos + '1 1 0', hbar_size, '1 0 0', 1, 0);
 
-	// Text
-	string h1 = ftos(h);
+	//Text
+	string h1 = FloatToIntString(h);
 	string h2 = ftos(hmax);
 
 	drawstring (pos - '9 -1', "Health", '8 8 0', '0 0 0', 1, 0); // text shadow

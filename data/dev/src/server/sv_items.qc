@@ -102,9 +102,18 @@ void(float id, string itemname) Player_UseItem =
 {
 	if (id == 0) // health potion
 	{
-		// TODO: Health potions will recover 1/4th of your health, can carry only 2 at first
+		// remove crouching if enabled
+		self.crouch = FALSE;
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
+		self.view_ofs = [0, 0, 48];
+		self.alpha = 1;
+
+		self.healthpot_heal_rate = self.max_health * 0.01; // heal 1% of max health
+		self.healthpot_heal_remaining += ceil(self.max_health * 0.25); // add heal 25% per health potion
+		self.healthpot_use_finished = time + 3; // slow player movement
+		self.healthpot_finished = time + 1.5; // delay before first tick (drink time)
+
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
-		self.health = min(self.health + 25, self.max_health);
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
 	}
 	else

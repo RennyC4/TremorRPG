@@ -53,6 +53,13 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 			if (gold_ok)
 				self.gold -= price;
 
+			// Health potion check
+			if (self.classname == "player" && itemname == "Health Potion" && self.inventory_count[i] >= 2)
+			{
+				sprint (self, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
+				return;
+			}
+
 			string printgold = ftos(price);
 			sprint (self, PRINT_HIGH, itemname, " bought!\n");
 			string eventlog_print = strcat(itemname, " bought! ^1-^3", printgold, "g");
@@ -142,17 +149,24 @@ void(string itemname) CSEv_PlayerSellItem_s =
 };
 
 // Add an item, mainly used for item pick ups
-void(entity targ, string itemname, float count) AddToInventory =
+// returns TRUE if player was able to grab the item
+float(entity targ, string itemname, float count) AddToInventory =
 {
     float i;
 
     // first see if item already exists, then add it
     for (i = 0; i < targ.inv_count; i++)
     {
+		// Health potion check
+		if (targ.classname == "player" && itemname == "Health Potion" && targ.inventory_count[i] >= 2)
+		{
+			sprint (targ, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
+			return FALSE;
+		}
         if (targ.inventory[i] == itemname)
         {
             targ.inventory_count[i] += count;
-            return;
+            return TRUE;
         }
     }
 
@@ -160,12 +174,13 @@ void(entity targ, string itemname, float count) AddToInventory =
     if (targ.inv_count >= MAX_INVENTORY && targ.classname == "player")
     {
         sprint(targ, PRINT_HIGH, "Inventory full!\n");
-        return;
+        return FALSE;
     }
 
     targ.inventory[targ.inv_count] = itemname;
 	targ.inventory_count[targ.inv_count] = count;
     targ.inv_count++;
+	return TRUE;
 };
 
 // Remove an item, mainly used for dropping items
@@ -223,7 +238,7 @@ void(string itemname) CSEv_DropItem_s =
 	itemchest.velocity_z = 270;
 	vector dir = v_forward;
 	dir = normalize(dir);
-	itemchest.velocity = itemchest.velocity + dir * (random_range(125, 300));
+	itemchest.velocity = itemchest.velocity + dir * (random_range(100, 300));
 
 	itemchest.think = itemchest_think;
 	itemchest.nextthink = time + 1;
@@ -318,10 +333,13 @@ void() Item_Touch =
     if (other.classname != "player")
         return;
 
-	AddToInventory(other, self.netname, 1); // self.netname is the item's identifier string
+	float check = AddToInventory(other, self.netname, 1); // self.netname is the item's identifier string
 
-	string eventlog_print = (strcat("Got ", self.netname, "\n"));
-	stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
-	stuffcmd (other, sprintf("play %s\n", "item/get.wav"));
-	remove(self);
+	if (check) // player can grab item
+	{
+		string eventlog_print = (strcat("Got ", self.netname, "\n"));
+		stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
+		stuffcmd (other, sprintf("play %s\n", "item/get.wav"));
+		remove(self);
+	}
 };

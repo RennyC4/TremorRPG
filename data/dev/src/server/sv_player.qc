@@ -8,7 +8,7 @@ void(float type) PlayerSpawn;
 
 // Inventory stuff, temporary here for testing
 void(entity player) SendPlayerInventory;
-void(entity targ, string itemname, float count) AddToInventory;
+float(entity targ, string itemname, float count) AddToInventory;
 
 void() ClientKill = {};
 void() SetNewParms = {};
@@ -98,6 +98,8 @@ void() CSEv_PlayerCrouch =
 		return;
 	if (self.deadflag == DEAD_DEAD || self.health <= 0)
 		return;
+	if (self.healthpot_use_finished > time)
+		return;
 
 	if (!self.crouch)
 	{
@@ -124,6 +126,9 @@ void() SV_RunClientCommand =
 // Used for placing objects in terrain mode
 void() PlayerPrintStats =
 {
+	if (cvar("sv_cheats") == 0)
+		return;
+
 	string pos_x = ftos(self.origin_x);
 	string pos_y = ftos(self.origin_y);
 	string pos_z = ftos(self.origin_z);
@@ -136,10 +141,12 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 	
 	// Inventory debugging
-	//AddToInventory(self, "Health Potion", 1);
+	AddToInventory(self, "Health Potion", 1);
 
-	//self.skillpoints = 99999;
-	//self.gold = 99999;
+	// Give cheat stats
+	self.skillpoints = 99999;
+	self.gold = 99999;
+	self.level = 9999;
 };
 
 // called from CSQC ("show_character" console command)
@@ -417,12 +424,17 @@ void() FootstepThink =
 		{
 			if (!self.crouch)
 			{
-				self.nextfootstep_finished = time + 0.35;
+				if (self.healthpot_use_finished > time)
+					self.nextfootstep_finished = time + 0.5;
+				if (!self.blocking)
+					self.nextfootstep_finished = time + 0.35;
+				else
+					self.nextfootstep_finished = time + 0.5;
 				sound(self, CHAN_BODY, s, 0.25, ATTN_NORM);
 			}
 			else
 			{
-				self.nextfootstep_finished = time + 0.50;
+				self.nextfootstep_finished = time + 0.5;
 				sound(self, CHAN_BODY, s, 0.1, ATTN_NORM);
 			}
 		}
@@ -467,7 +479,8 @@ void() PlayerPreThink =
 		self.flags |= FL_JUMPRELEASED;
 	}
 
-	if (self.button3) // use button
+	// use button
+	if (self.button3)
 	{
 		if (!self.button3_pressed)
 			Player_Use();
@@ -475,7 +488,8 @@ void() PlayerPreThink =
 	else
 		self.button3_pressed = FALSE;
 	
-	if (self.button4) // block button
+	// block button
+	if (self.button4 && self.healthpot_use_finished < time && !self.menu)
 	{
 		if (!self.crouch)
 			Player_ShieldBlock();
@@ -493,9 +507,9 @@ void() PlayerPreThink =
 		{
 			if (self.maxspeed != 225 && !self.crouch)
 				self.maxspeed = 225;
-			if (self.maxspeed != 150 && self.blocking)
-				self.maxspeed = 150;
-			if (self.crouch && self.maxspeed != 100)
+			if (self.maxspeed != 135 && self.blocking)
+				self.maxspeed = 135;
+			if ((self.crouch || self.healthpot_use_finished > time) && self.maxspeed != 100)
 				self.maxspeed = 100;
 		}
 	}
@@ -536,6 +550,15 @@ void() PlayerPostThink =
 
 	if (self.deadflag != DEAD_DEAD)
 	{
+	    if (self.healthpot_heal_remaining > 0 && time > self.healthpot_finished) // apply ongoing healing
+		{
+			if (self.health >= self.max_health)
+				self.healthpot_heal_remaining = 0;
+
+			self.health = min(self.max_health, self.health + self.healthpot_heal_rate);
+			self.healthpot_heal_remaining -= self.healthpot_heal_rate;
+			self.healthpot_finished = time + 0.1; // how fast to tick
+		}
 		if (!self.incombat)
 		{
 			// Non-combat health regeneration
@@ -544,6 +567,8 @@ void() PlayerPostThink =
 				calc = 60 - (self.skill_healthregen * 0.25);
 				if (self.health < self.max_health)
 					self.health += 1;
+				else
+					self.health = self.max_health;
 				self.healthregen_finished = time + calc;
 			}
 			// Non-combat mana regeneration
@@ -552,6 +577,8 @@ void() PlayerPostThink =
 				calc = 60 - (self.skill_manaregen * 0.25);
 				if (self.mana < self.max_mana)
 					self.mana += 1;
+				else
+					self.mana = self.max_mana;
 				self.manaregen_finished = time + calc;
 			}
 		}
@@ -653,6 +680,10 @@ void() PlayerDeath =
 	self.radius_candamage = FALSE;
 	self.movetype = MOVETYPE_NONE;
 	self.view_ofs = [0, 0, 4];
+	self.healthpot_heal_remaining = 0;
+	self.healthpot_heal_rate = 0;
+	self.healthpot_finished = time;
+
 	centerprint (self, "/P^1You're Dead!\n^7--------\n\nYou've lost ^3" , h, " ^7gold!" , "\n\n^b^5Press Attack to respawn\n");
 	
 	self.respawn_finished = time + 5;

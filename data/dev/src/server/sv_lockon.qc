@@ -13,10 +13,9 @@ void(entity target) SmoothFaceEntity;
 
 float LOCK_RANGE        = 2000;	// max distance to pick/keep a lock
 float LOCK_FOV_COS      = 0.60;	// cos(FOV/2). 0.60 ~ ~104° cone; tighten to ~0.90 for ~50°
-float LOCK_LOS_STEP     = 16;	// los trace hull size step (point trace is fine too)
 float LOCK_SWITCH_COOLD = 0.18;	// seconds between switch presses
 float LOCK_TURN_SPEED   = 32;	// higher = snappier turn toward target (server smoothing)
-float LOCK_BREAK_TIME   = 0.25;	// grace time when LOS lost before breaking lock
+float LOCK_BREAK_TIME   = 3;	// (was 0.25) grace time when LOS lost before breaking lock
 
 // impulses
 float IMP_LOCK_TOGGLE = 140;
@@ -228,7 +227,13 @@ float(entity e) IsValidLockTarget
 // line of sight check (point trace to target's eye/center)
 float(entity from, entity to) HasLOS =
 {
-    vector a = from.origin + from.view_ofs;
+	vector a;
+	float a_height = from.view_ofs_z;
+	if (self.camera_toggle)
+		a = from.origin + [0, 0, 20+a_height]; // camera is on
+	else
+		a = from.origin + from.view_ofs;
+
     vector b = to.origin + to.view_ofs;
     traceline(a, b, TRUE, from);  // ignore 'from'
     return (trace_ent == to || trace_fraction >= 1);

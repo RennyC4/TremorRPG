@@ -38,3 +38,13 @@ string(string s) string_tolower =
 
     return result;
 };
+
+// strip decimal points
+string(float f) FloatToIntString =
+{
+	string s = ftos(f);
+	float i = strstrofs(s, ".", 0); // decimal point
+	if (i >= 0)
+		return substring(s, 0, i); // cut decimals
+	return s;
+};
