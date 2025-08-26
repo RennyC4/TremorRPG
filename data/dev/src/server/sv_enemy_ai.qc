@@ -132,8 +132,7 @@ void() monster_ai_move =
 		if (range(self.enemy) == RANGE_MELEE)
 			return; // don't move
 	}
-	movetogoal(self.speed / 2);
-	walkmove(self.angles_y, self.speed / 2);
+	movetogoal(self.speed);
 
 	self.velocity = '0 0 0';
 	if (self.ai_mode == AI_RUNBACK) // prevent monster from stepping into player
@@ -185,7 +184,7 @@ void() monster_ai_think =
 				walkmove(self.angles_y, self.speed / 4);
 		}
 
-		// Patroling randomly, searching for players nearby - TODO: Stealth mechanic code using infront();
+		// Patroling randomly, searching for players nearby
 		for (entity targ = world;(targ = find(targ, classname, "player"));)
 		{
 			if (vlen(targ.origin - self.origin) <= self.sight_range && targ.deadflag != DEAD_DEAD && visible(targ) && infront_stealth(targ, self) && targ.bonfire == FALSE)

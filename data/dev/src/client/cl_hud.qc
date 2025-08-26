@@ -55,7 +55,7 @@ void() Draw_EventLog =
 		drawfont = drawfont2;
 	con_draw("event", pos, size, 12);
 	if (drawfont != drawfont1)
-		drawfont = loadfont("", "Courier Prime Code", "12,16,24,32,64,72,128,256,512", -1, 0, 0); // set font back
+		drawfont = drawfont1;
 };
 
 void() Draw_InCombatorPVP =
@@ -91,7 +91,7 @@ void() Draw_Health =
 	vector hbarpos = pos - '-50 1 0';
 	hbar_size_x = (h / hmax) * hbar_size_x; // keep bar updated
 
-	drawfill(hbarpos + '1 1 0', hbar_size, '1 0 0', 1, 0);
+	drawfill(hbarpos + '1 1 0', hbar_size, '0.5 0 0', 1, 0);
 
 	//Text
 	string h1 = FloatToIntString(h);
@@ -126,7 +126,7 @@ void() Draw_Mana =
 	vector mbarpos = pos - '-50 -10 0';
 	mbar_size_x = (m / mmax) * mbar_size_x; // keep bar updated
 
-	drawfill(mbarpos + '1 1 0', mbar_size, '0 0 1', 1, 0);
+	drawfill(mbarpos + '1 1 0', mbar_size, '0 0 0.5', 1, 0);
 
 	// Text
 	string m1 = ftos(m);
@@ -161,7 +161,7 @@ void() Draw_Stamina =
 	vector sbarpos = pos - '-50 -21 0';
 	sbar_size_x = (s / smax) * sbar_size_x; // keep bar updated
 
-	drawfill(sbarpos + '1 1 0', sbar_size, '0 1 0', 1, 0);
+	drawfill(sbarpos + '1 1 0', sbar_size, '0 0.5 0', 1, 0);
 
 	// Text
 	string s1 = ftos(s);
@@ -303,7 +303,7 @@ void() User_CharacterScreen =
 	// Display name, gender
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	displaystat = strcat(disp_gender, " ^1", LOGIN_NAME);
-	sui_text([0, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
 
 	// 3D Character box
 	pos_y += 10;

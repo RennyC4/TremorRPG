@@ -123,12 +123,9 @@ void() SV_RunClientCommand =
 	runstandardplayerphysics(self);
 };
 
-// Used for placing objects in terrain mode
+// function used for placing objects in terrain mode, cheats 
 void() PlayerPrintStats =
 {
-	if (cvar("sv_cheats") == 0)
-		return;
-
 	string pos_x = ftos(self.origin_x);
 	string pos_y = ftos(self.origin_y);
 	string pos_z = ftos(self.origin_z);
@@ -140,13 +137,16 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 	
-	// Inventory debugging
-	AddToInventory(self, "Health Potion", 1);
+	if (cvar("sv_cheats") > 0)
+	{
+		// Inventory debugging
+		AddToInventory(self, "Health Potion", 1);
 
-	// Give cheat stats
-	self.skillpoints = 99999;
-	self.gold = 99999;
-	self.level = 9999;
+		// Give cheat stats
+		self.skillpoints = 99999;
+		self.gold = 99999;
+		self.level = 9999;
+	}
 };
 
 // called from CSQC ("show_character" console command)
