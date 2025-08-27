@@ -84,11 +84,11 @@ void() Draw_Health =
 	// Draw Health
 	//
 
-	vector pos = [10, (g_height - 36)];
+	vector pos = [30, (g_height - 38)];
 
 	// Bar
 	vector hbar_size = '100 8 0';
-	vector hbarpos = pos - '-50 1 0';
+	vector hbarpos = pos;
 	hbar_size_x = (h / hmax) * hbar_size_x; // keep bar updated
 
 	drawfill(hbarpos + '1 1 0', hbar_size, '0.5 0 0', 1, 0);
@@ -97,17 +97,21 @@ void() Draw_Health =
 	string h1 = FloatToIntString(h);
 	string h2 = ftos(hmax);
 
-	drawstring (pos - '9 -1', "Health", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos - '10 0 0', "^1Health", '8 8 0', '1 1 1', 1, 0);
+	pos = [0, (g_height - 36)];
+	drawstring (pos+[1,1], "Health", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, "^1Health", '8 8 0', '1 1 1', 1, 0);
 
-	drawstring (pos + '57 1', h1, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos + '56 0', h1, '8 8 0', '1 1 1', 1, 0);
+	pos_x += 40;
+	drawstring (pos+[1,1], h1, '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, h1, '8 8 0', '1 1 1', 1, 0);
 
-	drawstring (pos + '96 1', "/", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos + '95 0', "/", '8 8 0', '1 1 1', 1, 0);
+	pos_x += 25;
+	drawstring (pos+[1,1], "/", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, "/", '8 8 0', '1 1 1', 1, 0);
 
-	drawstring (pos + '116 1', h2, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos + '115 0', h2, '8 8 0', '1 1 1', 1, 0);
+	pos_x += 20;
+	drawstring (pos+[1,1], h2, '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, h2, '8 8 0', '1 1 1', 1, 0);
 };
 
 void() Draw_Mana =
@@ -119,11 +123,11 @@ void() Draw_Mana =
 	// Draw Mana
 	//
 
-	vector pos = [10, (g_height - 36)];
+	vector pos = [30, (g_height - 28)];
 
 	// Bar
 	vector mbar_size = '100 8 0';
-	vector mbarpos = pos - '-50 -10 0';
+	vector mbarpos = pos;
 	mbar_size_x = (m / mmax) * mbar_size_x; // keep bar updated
 
 	drawfill(mbarpos + '1 1 0', mbar_size, '0 0 0.5', 1, 0);
@@ -132,17 +136,21 @@ void() Draw_Mana =
 	string m1 = ftos(m);
 	string m2 = ftos(mmax);
 
-	drawstring (pos - '9 -12', "Mana", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos - '10 -11', "^4Mana", '8 8 0', '1 1 1', 1, 0);
+	pos = [0, (g_height - 26)];
+	drawstring (pos+[1,1], "Mana", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, "^4Mana", '8 8 0', '1 1 1', 1, 0);
 
-	drawstring (pos + '57 12', m1, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos + '56 11', m1, '8 8 0', '1 1 1', 1, 0);
+	pos_x += 40;
+	drawstring (pos+[1,1], m1, '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, m1, '8 8 0', '1 1 1', 1, 0);
 
-	drawstring (pos + '96 12', "/", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos + '95 11', "/", '8 8 0', '1 1 1', 1, 0);
+	pos_x += 25;
+	drawstring (pos+[1,1], "/", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, "/", '8 8 0', '1 1 1', 1, 0);
 
-	drawstring (pos + '116 12', m2, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos + '115 11', m2, '8 8 0', '1 1 1', 1, 0);
+	pos_x += 20;
+	drawstring (pos+[1,1], m2, '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, m2, '8 8 0', '1 1 1', 1, 0);
 };
 
 void() Draw_Stamina =
@@ -154,11 +162,11 @@ void() Draw_Stamina =
 	// Draw Stamina
 	//
 
-	vector pos = [10, (g_height - 36)];
+	vector pos = [30, (g_height - 18)];
 
 	// Bar
 	vector sbar_size = '100 8 0';
-	vector sbarpos = pos - '-50 -21 0';
+	vector sbarpos = pos;
 	sbar_size_x = (s / smax) * sbar_size_x; // keep bar updated
 
 	drawfill(sbarpos + '1 1 0', sbar_size, '0 0.5 0', 1, 0);
@@ -168,25 +176,29 @@ void() Draw_Stamina =
 	string s2 = ftos(smax);	
 	string dispfix_stamina = sprintf("%.1f", s); // cut down numbers
 
-	drawstring (pos - '9 -23', "Stamina", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos - '10 -22', "^2Stamina", '8 8 0', '1 1 1', 1, 0);
+	pos = [0, (g_height - 16)];
+	drawstring (pos+[1,1], "Stamina", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, "^2Stamina", '8 8 0', '1 1 1', 1, 0);
 
+	pos_x += 40;
 	if (s < 100)
 	{
-		drawstring (pos + '57 23', dispfix_stamina, '8 8 0', '0 0 0', 1, 0); // text shadow
-		drawstring (pos + '56 22', dispfix_stamina, '8 8 0', '1 1 1', 1, 0);
+		drawstring (pos+[1,1], dispfix_stamina, '8 8 0', '0 0 0', 1, 0); // text shadow
+		drawstring (pos, dispfix_stamina, '8 8 0', '1 1 1', 1, 0);
 	}
 	else
 	{
-		drawstring (pos + '57 23', s1, '8 8 0', '0 0 0', 1, 0); // text shadow
-		drawstring (pos + '56 22', s1, '8 8 0', '1 1 1', 1, 0);
+		drawstring (pos+[1,1], s1, '8 8 0', '0 0 0', 1, 0); // text shadow
+		drawstring (pos, s1, '8 8 0', '1 1 1', 1, 0);
 	}
 
-	drawstring (pos + '96 23', "/", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos + '95 22', "/", '8 8 0', '1 1 1', 1, 0);
+	pos_x += 25;
+	drawstring (pos+[1,1], "/", '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, "/", '8 8 0', '1 1 1', 1, 0);
 
-	drawstring (pos + '116 23', s2, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos + '115 22', s2, '8 8 0', '1 1 1', 1, 0);
+	pos_x += 20;
+	drawstring (pos+[1,1], s2, '8 8 0', '0 0 0', 1, 0); // text shadow
+	drawstring (pos, s2, '8 8 0', '1 1 1', 1, 0);
 };
 
 void() Draw_Exp = 
@@ -802,7 +814,7 @@ void() User_InventoryScreen =
 				desc = strcat("desc_", string_remove_spaces(inventory[i])); // tooltip display
 			}
 			
-			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+			sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 			buttonpos_x = -2.5;
@@ -811,9 +823,11 @@ void() User_InventoryScreen =
 			my_button(d, buttonpos, [32, 10], "Drop") ? sendevent("DropItem", "s", inventory[i]) : 0;
 			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
+			/*
 			// tooltip (draw last)
 			float hover_text_size = stringwidth(inventory[i], 1);
 			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
+			*/
 		}
 		linepos_y += 10;
 		buttonpos_y += 10;

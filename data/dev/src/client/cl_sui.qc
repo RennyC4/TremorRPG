@@ -69,13 +69,11 @@ void(string id, vector pos, vector size, float maxlen, __inout string text, __in
 vector tt_pos;
 vector tt_size;
 float tt_fix_x;
-
 void(string id, vector pos, vector size, string text) sui_tooltip =
 {
 	// Draw hover-able element
 	sui_push_frame(pos, size);
 	sui_fill([0, 0], size, MENU_BG_DARK, 0.6, 0);
-
 	sui_text([0, 0], MENU_TEXT_SMALL, text, MENU_TEXT_1, 1, 0);	
 	sui_action_element([0, 0], size, id, sui_noop);
 	sui_pop_frame();
@@ -106,15 +104,9 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 			// draw box
 			vector tt_pos = [_cursor_position_x, _cursor_position_y, 0];
 			tt_pos += [2.5, 2.5];
-			
-			//tt_pos -= [190, 64]; // box fix alignment
-			//sui_push_frame(tt_pos, tt_size);
-			//sui_fill([0, 0], tt_size, MENU_BG_DARK, 0.95, 0);
-			
+												
 			drawfill(tt_pos, tt_size, MENU_BG_DARK, 1, 0);
 			
-			//float(vector position, vector size, vector rgb, float alpha, optional float drawflag) drawfill = #323; /*
-
 			// draw text, and set size of box
 			float i, numlines = 0;
 			vector linepos = [0, 0];
@@ -122,19 +114,19 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 			for (i = 0; i < numlines; i = i + 1)
 			{
 				string tt_line = argv(i);
-				//sui_text(linepos, MENU_TEXT_SMALL, tt_line, MENU_TEXT_1, 1, 0);
-				drawstring(tt_pos+linepos, tt_line, MENU_TEXT_SMALL, MENU_TEXT_1, 1, 0);
-				linepos_y += 10;
 
 				float largest_x;
 				tt_fix_x = stringwidth(tt_line, 1); // get length
 				if (tt_fix_x > largest_x)
 					largest_x = tt_fix_x; // record largest length string in a file
 
-				tt_size[0] = largest_x * 8; // length
+				drawstring(tt_pos+linepos, tt_line, MENU_TEXT_SMALL, MENU_TEXT_1, 1, 0); // place text
+
+				linepos_y += 10;
+
+				tt_size[0] = largest_x * 8; // length, 8 is font size
 				tt_size[1] = (linepos_y - 10);
 			}
-			//sui_pop_frame();
 		}
 	}
 };
