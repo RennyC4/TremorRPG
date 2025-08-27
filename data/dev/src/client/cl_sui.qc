@@ -105,10 +105,15 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 		{
 			// draw box
 			vector tt_pos = [_cursor_position_x, _cursor_position_y, 0];
-			tt_pos -= [190, 64]; // box fix alignment
-
-			sui_push_frame(tt_pos, tt_size);
-			sui_fill([0, 0], tt_size, MENU_BG_DARK, 0.95, 0);
+			tt_pos += [2.5, 2.5];
+			
+			//tt_pos -= [190, 64]; // box fix alignment
+			//sui_push_frame(tt_pos, tt_size);
+			//sui_fill([0, 0], tt_size, MENU_BG_DARK, 0.95, 0);
+			
+			drawfill(tt_pos, tt_size, MENU_BG_DARK, 1, 0);
+			
+			//float(vector position, vector size, vector rgb, float alpha, optional float drawflag) drawfill = #323; /*
 
 			// draw text, and set size of box
 			float i, numlines = 0;
@@ -117,7 +122,8 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 			for (i = 0; i < numlines; i = i + 1)
 			{
 				string tt_line = argv(i);
-				sui_text(linepos, MENU_TEXT_SMALL, tt_line, MENU_TEXT_1, 1, 0);
+				//sui_text(linepos, MENU_TEXT_SMALL, tt_line, MENU_TEXT_1, 1, 0);
+				drawstring(tt_pos+linepos, tt_line, MENU_TEXT_SMALL, MENU_TEXT_1, 1, 0);
 				linepos_y += 10;
 
 				float largest_x;
@@ -128,7 +134,7 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 				tt_size[0] = largest_x * 8; // length
 				tt_size[1] = (linepos_y - 10);
 			}
-			sui_pop_frame();
+			//sui_pop_frame();
 		}
 	}
 };
