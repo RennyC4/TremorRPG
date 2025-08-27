@@ -331,31 +331,31 @@ void() User_CharacterScreen =
 	//Level, Experience, Next Experience
 	vector newpos = [2,30];
 
-	displaystat = strcat("^5Level:^7", ftos(disp_level));
+	displaystat = strcat("^5Level: ^7", ftos(disp_level));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Exp:^7", ftos(disp_exp), " / ", ftos(disp_neededexp));
+	displaystat = strcat("^5Exp: ^7", ftos(disp_exp), " / ", ftos(disp_neededexp));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Gold:^7", ftos(disp_gold));
+	displaystat = strcat("^5Gold: ^7", ftos(disp_gold));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Skill Points:^7", ftos(disp_skillpoints));
+	displaystat = strcat("^5Skill Points: ^7", ftos(disp_skillpoints));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 12.5;
 
-	displaystat = strcat("^5Main Hand:");
+	displaystat = strcat("^5Main Hand: ");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -388,13 +388,13 @@ void() User_CharacterScreen =
 	else if (disp_attacktype == 4)  displaystat2 = "Bash";
 	else displaystat2 = "Unknown";
 
-	displaystat = strcat("^1DPS:^7" , dispfix_dps, " (^8", displaystat2, "^7)");
+	displaystat = strcat("^1DPS: ^7" , dispfix_dps, " (^8", displaystat2, "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 12.5;
 
-	displaystat = "^5Off Hand:";
+	displaystat = "^5Off Hand: ";
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -406,19 +406,19 @@ void() User_CharacterScreen =
 
 	newpos_y += 10;
 
-	displaystat = strcat("^2Blocking:^7" , ftos(disp_blocking), "\n");
+	displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 22;
 
-	displaystat = strcat("^5Armor:^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
+	displaystat = strcat("^5Armor: ^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^1Reaper Marks:^7", ftos(disp_reapermarks));
+	displaystat = strcat("^1Reaper Marks: ^7", ftos(disp_reapermarks));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -443,109 +443,109 @@ void() User_CharacterScreen =
 	// Draw skill point text
 	newpos = [5, 5];
 
-	displaystat = strcat("^5Unarmed:^7", ftos(disp_unarmed));
+	displaystat = strcat("^5Unarmed: ^7", ftos(disp_unarmed));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Slashing:^7", ftos(disp_slash));
+	displaystat = strcat("^5Slashing: ^7", ftos(disp_slash));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Piercing:^7", ftos(disp_pierce));
+	displaystat = strcat("^5Piercing: ^7", ftos(disp_pierce));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Bashing:^7", ftos(disp_bash));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-	
-	newpos_y +=10;
-
-	displaystat = strcat("^5Stealth:^7", ftos(disp_stealth));
+	displaystat = strcat("^5Bashing: ^7", ftos(disp_bash));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 	
 	newpos_y +=10;
 
-	displaystat = strcat("^5Backstab:^7", ftos(disp_backstab));
+	displaystat = strcat("^5Stealth: ^7", ftos(disp_stealth));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 	
 	newpos_y +=10;
 
-	displaystat = strcat("^5Offensive Magic:^7", ftos(disp_offensivemagic));
+	displaystat = strcat("^5Backstab: ^7", ftos(disp_backstab));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	
+	newpos_y +=10;
+
+	displaystat = strcat("^5Offensive Magic: ^7", ftos(disp_offensivemagic));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Defensive Magic:^7", ftos(disp_defensivemagic));
+	displaystat = strcat("^5Defensive Magic: ^7", ftos(disp_defensivemagic));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Neutral Magic:^7", ftos(disp_neutralmagic));
+	displaystat = strcat("^5Neutral Magic: ^7", ftos(disp_neutralmagic));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Endurance:^7", ftos(disp_endurance));
+	displaystat = strcat("^5Endurance: ^7", ftos(disp_endurance));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Spell Resist:^7", ftos(disp_spellresist));
+	displaystat = strcat("^5Spell Resist: ^7", ftos(disp_spellresist));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Archery:^7", ftos(disp_archery));
+	displaystat = strcat("^5Archery: ^7", ftos(disp_archery));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Health Regeneration:^7", ftos(disp_healthregen));
+	displaystat = strcat("^5Health Regeneration: ^7", ftos(disp_healthregen));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Mana Regeneration:^7", ftos(disp_manaregen));
+	displaystat = strcat("^5Mana Regeneration: ^7", ftos(disp_manaregen));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Haggling:^7", ftos(disp_haggle));
+	displaystat = strcat("^5Haggling: ^7", ftos(disp_haggle));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Climbing:^7", ftos(disp_climb));
+	displaystat = strcat("^5Climbing: ^7", ftos(disp_climb));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Swimming:^7", ftos(disp_swim));
+	displaystat = strcat("^5Swimming: ^7", ftos(disp_swim));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y +=10;
 
-	displaystat = strcat("^5Acrobatics:^7", ftos(disp_acrobatic));
+	displaystat = strcat("^5Acrobatics: ^7", ftos(disp_acrobatic));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -680,25 +680,25 @@ void() User_InventoryScreen =
 	//Level, Experience, Next Experience
 	vector newpos = [2,30];
 
-	displaystat = strcat("^5Level:^7", ftos(disp_level));
+	displaystat = strcat("^5Level: ^7", ftos(disp_level));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Exp:^7", ftos(disp_exp), " / ", ftos(disp_neededexp));
+	displaystat = strcat("^5Exp: ^7", ftos(disp_exp), " / ", ftos(disp_neededexp));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Gold:^7", ftos(disp_gold));
+	displaystat = strcat("^5Gold: ^7", ftos(disp_gold));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Skill Points:^7", ftos(disp_skillpoints));
+	displaystat = strcat("^5Skill Points: ^7", ftos(disp_skillpoints));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -737,7 +737,7 @@ void() User_InventoryScreen =
 	else if (disp_attacktype == 4)  displaystat2 = "Bash";
 	else displaystat2 = "Unknown";
 
-	displaystat = strcat("^1DPS:^7" , dispfix_dps, " (^8", displaystat2, "^7)");
+	displaystat = strcat("^1DPS: ^7" , dispfix_dps, " (^8", displaystat2, "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -755,19 +755,19 @@ void() User_InventoryScreen =
 
 	newpos_y += 10;
 
-	displaystat = strcat("^2Blocking:^7" , ftos(disp_blocking), "\n");
+	displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 22;
 
-	displaystat = strcat("^5Armor:^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
+	displaystat = strcat("^5Armor: ^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
 
-	displaystat = strcat("^1Reaper Marks:^7", ftos(disp_reapermarks));
+	displaystat = strcat("^1Reaper Marks: ^7", ftos(disp_reapermarks));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
