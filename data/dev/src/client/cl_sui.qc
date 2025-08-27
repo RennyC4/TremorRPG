@@ -115,10 +115,12 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 			{
 				string tt_line = argv(i);
 
-				float largest_x;
+				float largest_x = 0;
 				tt_fix_x = stringwidth(tt_line, 1); // get length
 				if (tt_fix_x > largest_x)
-					largest_x = tt_fix_x; // record largest length string in a file
+					largest_x += tt_fix_x; // record largest length string in a file
+				else
+					largest_x = 0;
 
 				drawstring(tt_pos+linepos, tt_line, MENU_TEXT_SMALL, MENU_TEXT_1, 1, 0); // place text
 

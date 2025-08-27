@@ -332,6 +332,8 @@ void() Item_Touch =
 {
     if (other.classname != "player")
         return;
+	if (self.stagger_finished > time) // prevent console spam on items that cannot be picked up
+		return;
 
 	float check = AddToInventory(other, self.netname, 1); // self.netname is the item's identifier string
 
@@ -342,4 +344,6 @@ void() Item_Touch =
 		stuffcmd (other, sprintf("play %s\n", "item/get.wav"));
 		remove(self);
 	}
+	else
+		self.stagger_finished = time + 1;
 };

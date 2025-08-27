@@ -322,8 +322,8 @@ void() FallDamage_Update =
     if (!(self.flags & FL_ONGROUND))
     {
 		self.inair_count += 1;
-		if (self.inair_count >= 12 && !self.waterlevel)
-			self.lockview_finished = time + 0.1; // lock view when leaving ground, but not over small inclines
+		if (self.inair_count >= 12 && !self.waterlevel && !self.climbing)
+			self.lockview_finished = time + 0.1; // lock view when leaving ground, but not over small inclines (climbing is fine)
         float down = - self.velocity_z; // positive when falling
         if (down > self.fall_maxspeed)
             self.fall_maxspeed = down;
