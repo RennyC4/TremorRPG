@@ -369,6 +369,18 @@ void(entity targ, entity attacker, float damage) DoDamage =
 				targ.incombat_finished = attacker.incombat_finished = time + 30;
 			}
 		}
+
+		// Knock player out of drinking a health potion
+		if (targ.healthpot_use_finished > time)
+		{
+			targ.healthpot_heal_rate = 0;
+			targ.healthpot_heal_remaining = 0;
+			targ.healthpot_use_finished = time;
+			targ.healthpot_finished = time;
+
+			eventlog_print = (strcat("^1You drop your health potion!\n"));
+			stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+		}
 	}
 
 	// Monster stuff

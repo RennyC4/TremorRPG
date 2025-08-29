@@ -1,4 +1,4 @@
-^2Padded Armro^7
+^2Padded Armor^7
 
 ^5Armor Power:^7 2
 

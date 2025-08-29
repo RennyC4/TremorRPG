@@ -102,8 +102,7 @@ void(float id, string itemname) Player_UseItem =
 {
 	if (id == 0) // health potion
 	{
-		// remove crouching if enabled
-		self.crouch = FALSE;
+		self.crouch = FALSE; // remove crouching if enabled
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];
 		self.alpha = 1;
@@ -111,7 +110,7 @@ void(float id, string itemname) Player_UseItem =
 		self.healthpot_heal_rate = self.max_health * 0.01; // heal 1% of max health
 		self.healthpot_heal_remaining += ceil(self.max_health * 0.25); // add heal 25% per health potion
 		self.healthpot_use_finished = time + 3; // slow player movement
-		self.healthpot_finished = time + 1.5; // delay before first tick (drink time)
+		self.healthpot_finished = time + 3; // delay before first tick (drink time)
 
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
