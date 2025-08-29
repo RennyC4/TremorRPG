@@ -50,6 +50,26 @@ void() PlayerClimb =
 			self.climb_finished = time + 3;
 		}
 	}
+
+	// check for ledge to climb over
+	makevectors (self.angles);
+	vector start = self.origin;
+	start_z += 8; 
+	v_forward_z = 0;
+	normalize(v_forward);
+	vector end = start + v_forward * 24;
+
+	traceline (start, end, TRUE, self);
+	if (trace_fraction < 1)
+	{
+		start_z = start_z + self.maxs_z - 8;
+		end = start + v_forward * 24;
+		self.movedir = trace_plane_normal * -50;
+		traceline (start, end, TRUE, self);
+
+		if (trace_fraction == 1)
+			self.velocity_z = 225;
+	}
 };
 
 void() PlayerJump =
