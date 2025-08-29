@@ -2259,3 +2259,8 @@ float npc_inv_count;
 // NPC dialogue
 string npc_name;
 string npc_dialogue;
+
+// tooltips
+vector tt_pos;
+vector tt_size;
+string tt_contents;

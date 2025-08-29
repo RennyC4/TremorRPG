@@ -1103,7 +1103,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		// default starters
 		self.attack_power_min = 2;
 		self.attack_power_max = 6;
-		self.attack_speed = 1;
+		self.attack_speed = 1.2;
 		self.attack_stamina = 25;
 		self.attack_type = 1; // slashing weapon
 		self.attack_length = 64; // weapon length

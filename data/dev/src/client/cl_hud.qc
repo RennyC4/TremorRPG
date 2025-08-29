@@ -2,6 +2,44 @@
 // Player HUD
 //
 
+void() Draw_ToolTip =
+{
+	if (!tt_contents)
+		return;
+
+	vector tt_pos = [_cursor_position_x, _cursor_position_y, 0];
+	tt_pos += [2.5, 2.5];
+
+	float i, numlines = 0;
+	vector linepos = [0, 0];
+	numlines = tokenizebyseparator(tt_contents, "\n");
+	for (i = 0; i < numlines; i = i + 1)
+	{
+		string tt_line = argv(i);
+
+		float largest_x;
+		float tt_fix_x;
+
+		tt_fix_x = stringwidth(tt_line, 1); // get length
+		if (tt_fix_x > largest_x)
+			largest_x += tt_fix_x; // record largest length string in a file
+
+		linepos_y += 10;
+
+		tt_size[0] = largest_x * 8.5; // 10 is font size?
+		tt_size[1] = linepos_y + 10;
+
+		if (_cursor_position_x > g_width / 1.5)
+		{
+			tt_pos_x = _cursor_position_x - (g_width / 12) - tt_size[0];
+			//print ("Tool tip: MOVE!\n");
+		}
+
+		drawfill(tt_pos, [tt_size[0],tt_size[1]], '0 0 0', 1, 0);
+		drawtextfield(tt_pos, [tt_size[0],tt_size[1]], 3, tt_contents);
+	}
+};
+
 //
 // Reki's Code to draw 3D objects on the HUD
 //
@@ -23,7 +61,7 @@ void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
 };
 
 void(float screenwidth, float screenheight) Draw_ZoneName =
-{
+{	
 	string zonename = getstats(STAT_ZONENAME);
 	vector pos = [(screenwidth - stringwidth(zonename, TRUE, '18 18 0'))/2, (screenheight - 18)/3];
 
@@ -814,7 +852,7 @@ void() User_InventoryScreen =
 				desc = strcat("desc_", string_remove_spaces(inventory[i])); // tooltip display
 			}
 			
-			sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 			buttonpos_x = -2.5;
@@ -823,11 +861,10 @@ void() User_InventoryScreen =
 			my_button(d, buttonpos, [32, 10], "Drop") ? sendevent("DropItem", "s", inventory[i]) : 0;
 			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-			/*
 			// tooltip (draw last)
 			float hover_text_size = stringwidth(inventory[i], 1);
 			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
-			*/
+
 		}
 		linepos_y += 10;
 		buttonpos_y += 10;

@@ -1,0 +1,9 @@
+^2Short Sword^7
+
+^5Type:^7 Slashing
+^5Power:^7 4 - 7
+^5Speed:^7 1/sec
+^5Stamina Req:^7 25
+^5Length:^7 64
+
+^6Item Level:^7 1

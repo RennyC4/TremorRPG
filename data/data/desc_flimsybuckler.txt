@@ -1,0 +1,5 @@
+^2Flimsy Buckler^7
+
+^5Blocking Power:^7 3
+
+^6Item Level:^7 1

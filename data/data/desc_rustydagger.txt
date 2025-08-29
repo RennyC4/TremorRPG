@@ -1,0 +1,9 @@
+^2Rusty Dagger^7
+
+^5Type:^7 Piercing
+^5Power:^7 1 - 3
+^5Speed:^7 0.4/sec
+^5Stamina Req:^7 10
+^5Length:^7 40
+
+^6Item Level:^7 1

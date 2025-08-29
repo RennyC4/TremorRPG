@@ -1,0 +1,5 @@
+^2Broken Buckler^7
+
+^5Blocking Power:^7 1
+
+^6Item Level:^7 0

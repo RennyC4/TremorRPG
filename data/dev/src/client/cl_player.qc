@@ -7,6 +7,7 @@ void() CSQC_Input_Frame =
 
 void() Player_Hud =
 {
+
 	if (cvar("developer") == 0)
 	{
 		float player_loggedin = getstatf(STAT_LOGGEDIN);
@@ -29,11 +30,17 @@ void() Player_Hud =
 			if (player_menu == MENU_CHARACTER)
 				User_CharacterScreen();
 			if (player_menu == MENU_INVENTORY)
+			{
 				User_InventoryScreen();
+				Draw_ToolTip();
+			}
 			if (player_menu == MENU_DIALOGUE)
 				User_NPCDialogue();
 			if (player_menu == MENU_BUYSELL)
+			{
 				User_NPCBuySell();
+				Draw_ToolTip();
+			}
 		}
 		else // Regular gameplay
 		{

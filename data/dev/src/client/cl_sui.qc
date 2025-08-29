@@ -66,9 +66,7 @@ void(string id, vector pos, vector size, float maxlen, __inout string text, __in
 	sui_pop_frame();
 };
 
-vector tt_pos;
-vector tt_size;
-float tt_fix_x;
+float tt_clear_finished;
 void(string id, vector pos, vector size, string text) sui_tooltip =
 {
 	// Draw hover-able element
@@ -81,9 +79,10 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 	// open desc_itemname.txt for reading tooltip text
 	if (sui_is_hovered(id))
 	{
+		tt_contents = ""; // reset string
+
 		// setup file read
 		string line = "";
-		string tt_contents = "";
 		string readfile = strcat(id, ".txt");
 		float v = fopen(readfile, FILE_READ);
 		if (v >= 0)
@@ -93,42 +92,10 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 			fclose(v);
 		}
 		else
-		{
-			tt_contents = "";
 			print(strcat("sui_tooltip: Missing: ", id, ".txt file\n")); // print missing tooltip file
-		}
 
-		// draw tool tip here
-		if (tt_contents != "")
-		{
-			// draw box
-			vector tt_pos = [_cursor_position_x, _cursor_position_y, 0];
-			tt_pos += [2.5, 2.5];
-												
-			drawfill(tt_pos, tt_size, MENU_BG_DARK, 1, 0);
-			
-			// draw text, and set size of box
-			float i, numlines = 0;
-			vector linepos = [0, 0];
-			numlines = tokenizebyseparator(tt_contents, "\n");
-			for (i = 0; i < numlines; i = i + 1)
-			{
-				string tt_line = argv(i);
-
-				float largest_x = 0;
-				tt_fix_x = stringwidth(tt_line, 1); // get length
-				if (tt_fix_x > largest_x)
-					largest_x += tt_fix_x; // record largest length string in a file
-				else
-					largest_x = 0;
-
-				drawstring(tt_pos+linepos, tt_line, MENU_TEXT_SMALL, MENU_TEXT_1, 1, 0); // place text
-
-				linepos_y += 10;
-
-				tt_size[0] = largest_x * 8; // length, 8 is font size
-				tt_size[1] = (linepos_y - 10);
-			}
-		}
+		tt_clear_finished = time + 0.1;
 	}
+	else if (tt_clear_finished < time)
+		tt_contents = "";
 };

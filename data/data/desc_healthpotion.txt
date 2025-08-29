@@ -1,0 +1,4 @@
+^2Health Potion^7
+
+Restores 25% of health per use,
+can only carry a limited quantity

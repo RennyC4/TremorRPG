@@ -1,0 +1,5 @@
+^2Plain Clothes^7
+
+^5Armor Power:^7 0
+
+^6Item Level:^7 0
