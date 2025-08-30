@@ -296,6 +296,9 @@ void() Player_Use =
 // Block button
 void() Player_ShieldBlock =
 {
+	if (self.blockvalue <= 0)
+		return;
+
 	if (self.attack_speed < time && self.stagger_finished < time)
 	{
 		if (!self.blocking)
@@ -521,7 +524,7 @@ void() PlayerPreThink =
 		self.button3_pressed = FALSE;
 	
 	// block button
-	if (self.button4 && self.healthpot_use_finished < time && !self.menu)
+	if (self.button4 && self.healthpot_use_finished < time && !self.menu && self.blockvalue > 0)
 	{
 		if (!self.crouch)
 			Player_ShieldBlock();
@@ -670,6 +673,7 @@ void() PlayerPostThink =
 		if (self.crouch && !self.bonfire)
 		{
 			self.alpha = 1 - (self.skill_stealth * 0.004);
+			self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
 			if (self.alpha < 0.1)
 				self.alpha = 0.1;
 			self.effects |= EF_FLAG2; // Normally this is EF_ADDITIVE
@@ -677,6 +681,7 @@ void() PlayerPostThink =
 		else
 		{
 			self.alpha = 1;
+			self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
 			self.effects &= ~EF_FLAG2;
 		}
 	}

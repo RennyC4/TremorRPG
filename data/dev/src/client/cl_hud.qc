@@ -393,10 +393,15 @@ void() User_CharacterScreen =
 
 	newpos_y += 12.5;
 
-	displaystat = strcat("^5Main Hand: ");
+	displaystat = strcat("^5Main Hand");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
+	// button to unequip main hand
+	newpos_x += 40;
+	my_button("unequip_mainhand", newpos, [30, 10], "Unequip");// ? sendevent("User_AddSkillPoint", "f", 0) : 0;
+	newpos_x -= 40;
+	
 	newpos_y += 10;
 	
 	displaystat = strcat(disp_mainhand, " (^8", ftos(disp_attackmin), "-", ftos(disp_attackmax), "^7)");
@@ -432,10 +437,15 @@ void() User_CharacterScreen =
 
 	newpos_y += 12.5;
 
-	displaystat = "^5Off Hand: ";
+	displaystat = "^5Off Hand";
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
+	// button to unequip off hand
+	newpos_x += 40;
+	my_button("unequip_offhand", newpos, [30, 10], "Unequip");// ? sendevent("User_AddSkillPoint", "f", 0) : 0;
+	newpos_x -= 40;
+	
 	newpos_y += 10;
 	
 	displaystat = disp_offhand;
@@ -742,7 +752,7 @@ void() User_InventoryScreen =
 
 	newpos_y += 12.5;
 
-	displaystat = strcat("^5Main Hand:");
+	displaystat = strcat("^5Main Hand");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -781,7 +791,7 @@ void() User_InventoryScreen =
 
 	newpos_y += 12.5;
 
-	displaystat = "^5Off Hand:";
+	displaystat = "^5Off Hand";
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
