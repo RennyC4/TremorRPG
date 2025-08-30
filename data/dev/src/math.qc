@@ -30,7 +30,9 @@ float(float value, float minValue, float maxValue) wrap;
  *
  * Returns: A number within the given range.
  */
-float(float value, float minValue, float maxValue) clamp = {
+ 
+float(float value, float minValue, float maxValue) clamp =
+{
     if (value < minValue) {
         return minValue;
     }
@@ -50,13 +52,12 @@ float(float value, float minValue, float maxValue) clamp = {
  *
  * Returns: -1 if x < 0, 0 if x == 0, 1 if x > 0.
  */
-float(float x) sign = {
-    if (x > 0) {
-        return 1;
-    }
-    else if (x < 0) {
+float(float x) sign =
+{
+    if (x > 0)
+		return 1;
+    else if (x < 0)
         return -1;
-    }
 
     return 0;
 };
@@ -75,29 +76,8 @@ float(float x) sign = {
  *
  * Returns: A number within the given range.
  */
-float(float value, float minValue, float maxValue) wrap = {
-    local float range = maxValue - minValue;
-
-    return mod(value - minValue, range + 1) + minValue;
-};
-
-/*
- *
- * angle difference
- *
- * from DOOMBRINGER
- *
- */
-
-float(float start, float end) angle_diff =
+float(float value, float minValue, float maxValue) wrap =
 {
-    // result = how much to turn to go from 'start' to 'end'
-    // result ranges from -180 to +180
-
-    local float D = anglemod(end) - anglemod(start);
-
-    if (D >  180) D = D - 360;
-    if (D < -180) D = D + 360;
-
-    return D;
+	float range = maxValue - minValue;
+    return mod(value - minValue, range + 1) + minValue;
 };
