@@ -26,7 +26,7 @@ void() Draw_ToolTip =
 
 		linepos_y += 10;
 
-		tt_size[0] = largest_x * 8.5; // 10 is font size?
+		tt_size[0] = largest_x * 8.75; // 10 is font size?
 		tt_size[1] = linepos_y + 10;
 
 		if (_cursor_position_x > g_width / 1.5)
@@ -35,9 +35,9 @@ void() Draw_ToolTip =
 			//print ("Tool tip: MOVE!\n");
 		}
 
-		drawfill(tt_pos, [tt_size[0],tt_size[1]], '0 0 0', 1, 0);
-		drawtextfield(tt_pos, [tt_size[0],tt_size[1]], 3, tt_contents);
 	}
+	drawfill(tt_pos, [tt_size[0],tt_size[1]], MENU_BG_DARK, 0.9, 0);
+	drawtextfield(tt_pos+[2.5,2.5], [tt_size[0],tt_size[1]], 3, tt_contents);
 };
 
 //

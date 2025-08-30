@@ -3,7 +3,7 @@
 ^5Type:^7 Slashing
 ^5Power:^7 2 - 6
 ^5Speed:^7 1.2/sec
-^5Stamina Req:^7 25
+^5Stamina Use:^7 25
 ^5Length:^7 64
 
 ^6Item Level:^7 0
