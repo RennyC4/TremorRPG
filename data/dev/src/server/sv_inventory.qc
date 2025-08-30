@@ -154,6 +154,9 @@ float(entity targ, string itemname, float count) AddToInventory =
 {
     float i;
 
+	if (itemname == "Unarmed" || itemname == "Empty")
+		return; // that'd be silly
+
     // first see if item already exists, then add it
     for (i = 0; i < targ.inv_count; i++)
     {

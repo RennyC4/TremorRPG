@@ -211,6 +211,46 @@ void() CSEv_PlayerShowInventory =
 	}		
 };
 
+void() CSEv_User_UnequipMainhand_ =
+{
+	if (self.main_hand == "Unarmed")
+	{
+		sprint(self, PRINT_HIGH, "Main hand is unequipped already\n");
+		return;
+	}
+
+	AddToInventory(self, self.main_hand, 1); // add old item back to inventory
+
+	// equipped unarmed
+	self.attack_power_min = 1;
+	self.attack_power_max = 1;
+	self.attack_speed = 1;
+	self.attack_stamina = 5;
+	self.attack_type = 0; // unarmed
+	self.attack_length = 32; // weapon length
+	self.main_hand = "Unarmed";
+
+	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
+	sprint(self, PRINT_HIGH, strcat("Main hand unequipped\n"));
+};
+
+void() CSEv_User_UnequipOffhand_ =
+{
+	if (self.off_hand == "Empty")
+	{
+		sprint(self, PRINT_HIGH, "Off hand is unequipped already\n");
+		return;
+	}
+
+	AddToInventory(self, self.off_hand, 1); // add old item back to inventory
+
+	self.off_hand = "Empty";
+	self.blockvalue = 0;
+	
+	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
+	sprint(self, PRINT_HIGH, strcat("Off hand unequipped\n"));
+};
+
 // called from CSQC button
 void() CSEv_PlayerShowBuySell = {stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav"));self.menu = MENU_BUYSELL;};
 void() CSEv_PlayerShowDialogue = {stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav"));self.menu = MENU_DIALOGUE;};
