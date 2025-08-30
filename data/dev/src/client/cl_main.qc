@@ -101,7 +101,7 @@ float(string strCommand) CSQC_ConsoleCommand =
 		sendevent("PlayerShowInventory", "");
 	if (argv(0) == "toggle_crouch")
 		sendevent("PlayerCrouch", "");
-	if (argv(0) == "toggle_camera") // TODO send camera mode to SSQC for various reasons
+	if (argv(0) == "toggle_camera") // send camera mode to SSQC for various reasons
 	{
 		float player_menu = getstatf(STAT_MENU);
 		if (!player_menu)

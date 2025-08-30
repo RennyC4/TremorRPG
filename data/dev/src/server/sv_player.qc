@@ -404,7 +404,7 @@ void() WaterUpdate =
 			}
 		}
 		
-		float stamcalc = 0.01 + (self.skill_swim * 0.0005); // stamina calculation
+		float stamcalc = 0.01 + (self.skill_swim * 0.0025); // stamina calculation
 		if (self.stamina > 0)
 		{
 			if (self.swim_stamina_finished < time)
@@ -773,6 +773,12 @@ void(float type) PlayerSpawn =
 	}
 	else // respawning from death
 	{
+		if (self.underwatersfx_finished > time) // Remove left over un
+		{
+			stuffcmd (self, sprintf("stopsound %s\n", "inwater.wav")); // sound
+			self.underwatersfx_finished = time;
+		}
+
 		centerprint (self, ""); // clear centerprint
 		self.melee_finished = time + 1; // prevent attack on respawn
 
