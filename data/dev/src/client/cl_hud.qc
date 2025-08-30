@@ -715,7 +715,7 @@ void() User_InventoryScreen =
 	// Display name, gender
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	displaystat = strcat(disp_gender, " ^1", LOGIN_NAME);
-	sui_text([0, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
 
 	// 3D Character box
 	pos_y += 10;
