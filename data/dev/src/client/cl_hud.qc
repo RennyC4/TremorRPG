@@ -411,7 +411,7 @@ void() User_CharacterScreen =
 	newpos_y += 10;
 
 	float disp_dps = (disp_attackmin + disp_attackmax * 0.5) / disp_attackspeed; // calculate DPS
-	
+
 	// add skill calculation to DPS
 	if (!disp_attacktype) // unarmed
 		disp_dps = disp_dps + (disp_unarmed * 0.1);
@@ -660,6 +660,9 @@ void() User_CharacterScreen =
 
 	my_button("inventory_toggle", newpos, [72, 25], "Inventory") ? sendevent("PlayerShowInventory", "") : 0;
 
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
+	my_button("disconnect", [23, 20.5], [40, 20], "Disconnect") ? localcmd("cfg_save;disconnect\n") : 0;
+
 	sui_pop_frame();
 };
 
@@ -806,7 +809,7 @@ void() User_InventoryScreen =
 	newpos_x -= 40;
 
 	newpos_y += 10;
-	
+
 	displaystat = disp_offhand;
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
@@ -893,6 +896,7 @@ void() User_InventoryScreen =
 	//
 	// Bottom button list
 	//
+
 	newpos = [2, -2]; // reset newpos
 
 	// PVP button
@@ -911,6 +915,9 @@ void() User_InventoryScreen =
 	newpos_x += 26;
 
 	my_button("stats_toggle", newpos, [72, 25], "Skills") ? sendevent("PlayerShowStats", "") : 0;
+	
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
+	my_button("disconnect", [23, 20.5], [40, 20], "Disconnect") ? localcmd("cfg_save;disconnect\n") : 0;
 
 	sui_pop_frame();
 };

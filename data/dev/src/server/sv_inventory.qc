@@ -37,7 +37,7 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 
 	if (self.gold < price)
 	{
-		sprint(self, PRINT_HIGH, "Not enough gold!\n");
+		sprint(self, PRINT_HIGH, "Not enough ^3gold^7!\n");
 		return;
 	}
 	else
