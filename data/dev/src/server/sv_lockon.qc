@@ -205,9 +205,8 @@ void() LockOn_Update =
         self.lock_target = world;
         return;
     }
-
-    // gently steer the view
-    SmoothFaceEntity(t);
+	
+	SmoothFaceEntity(t); // gently steer the view
 };
 
 // true if e is valid target
@@ -223,6 +222,15 @@ float(entity e) IsValidLockTarget =
 		return FALSE;
 	if (e.ai_mode == AI_RUNBACK) // don't target monsters returning to their spawn origin
 		return FALSE;
+
+	if (e.classname == "player") // players targetting each other
+	{
+		if (self.pvp == 1 && e.pvp == 1)
+			return TRUE;
+		else
+			return FALSE;
+	}
+
     return TRUE;
 };
 
@@ -275,11 +283,11 @@ entity() FindLockTarget =
         e = find(e, classname, "monster");
     }
 
-    // include other players
+    // include other players if PVP mode is on
     e = find(world, classname, "player");
     while (e)
     {
-        if (IsValidLockTarget(e))
+        if (IsValidLockTarget(e) && e.pvp == 1)
         {
             d = vlen(e.origin - self.origin);
             if (d <= LOCK_RANGE)
