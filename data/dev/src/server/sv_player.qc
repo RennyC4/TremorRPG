@@ -54,7 +54,7 @@ void() PlayerClimb =
 	// check for ledge to climb over
 	makevectors (self.angles);
 	vector start = self.origin;
-	start_z += 8; 
+	start_z += 8;
 	v_forward_z = 0;
 	normalize(v_forward);
 	vector end = start + v_forward * 24;
@@ -65,9 +65,9 @@ void() PlayerClimb =
 		start_z = start_z + self.maxs_z - 8;
 		end = start + v_forward * 24;
 		self.movedir = trace_plane_normal * -50;
-		traceline (start, end, TRUE, self);
 
-		if (trace_fraction == 1)
+		traceline (start, end, TRUE, self);
+		if (trace_fraction == 1) // empty air
 			self.velocity_z = 225;
 	}
 };
@@ -83,8 +83,8 @@ void() PlayerJump =
 	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY)
 		return;
 
-	float stamcalc = self.skill_acrobatic * 0.35; // calculation
-	float jumpcalc = self.skill_acrobatic * 1.1; // calculation
+	float stamcalc = self.skill_acrobatic * 0.35; // skill calculation
+	float jumpcalc = self.skill_acrobatic * 1.1; // skill calculation
 	if (self.stamina > (50 - stamcalc))
 	{
 		self.velocity_z += (270 + jumpcalc);
@@ -94,7 +94,8 @@ void() PlayerJump =
 		if (stamcalc > 49)
 			stamcalc = 49;
 		self.stamina -= (50 - stamcalc);
-	sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
+
+		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
 	}
 };
 

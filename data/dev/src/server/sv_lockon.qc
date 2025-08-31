@@ -211,7 +211,7 @@ void() LockOn_Update =
 };
 
 // true if e is valid target
-float(entity e) IsValidLockTarget
+float(entity e) IsValidLockTarget =
 {
     if (!e)
 		return FALSE;
@@ -220,6 +220,8 @@ float(entity e) IsValidLockTarget
     if (!e.takedamage)
 		return FALSE;
     if (e == self)
+		return FALSE;
+	if (e.ai_mode == AI_RUNBACK) // don't target monsters returning to their spawn origin
 		return FALSE;
     return TRUE;
 };
