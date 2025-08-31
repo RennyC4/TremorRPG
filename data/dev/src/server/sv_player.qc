@@ -793,6 +793,8 @@ void(float type) PlayerSpawn =
 		self.menu = MENU_LOGIN;
 		self.loggedin = FALSE;
 		self.radius_candamage = FALSE;
+
+		stuffcmd (self, sprintf("music sound/music/track03.ogg\n", self.music)); // login screen music
 	}
 	else if (type == 1) // put actual player in
 	{
