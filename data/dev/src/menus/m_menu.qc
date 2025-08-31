@@ -256,6 +256,23 @@ void() help_menu =
 	sui_pop_frame();	
 };
 
+string server_ip;
+void() connect_mainserver =
+{
+	string line;
+
+	float v = fopen("server.txt", FILE_READ);
+	if (v >= 0) // file exists
+	{
+		if (line = fgets(v))
+			server_ip = line;
+		localcmd(sprintf("connect %s\n", server_ip));
+		return;
+	}
+	else
+		print ("^2Missing File:^7 data/server.txt\n");
+};
+
 void() main_menu =
 {
 	vector realsize = getproperty(VF_SCREENPSIZE);
@@ -296,7 +313,7 @@ void() main_menu =
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	
 	my_button("mm_start", [0, 8], [size_x - 16, 20], "Single Player") ? localcmd("disconnect;map world\n") : 0;
-	my_button("mm_connect", [0, 8 +24], [size_x - 16, 20], "Multiplayer") ? localcmd("connect 99.248.148.145:27500\n") : 0; // rennyc
+	my_button("mm_connect", [0, 8 +24], [size_x - 16, 20], "Multiplayer") ? connect_mainserver() : 0; // rennyc
 	my_button("mm_settings", [0, 8 + 48], [size_x - 16, 20], "Settings") ? current_menu = MENU_SETTINGS : 0;
 	my_button("mm_help", [0, 8 + 72], [size_x - 16, 20], "Help") ? current_menu = MENU_HELP : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
