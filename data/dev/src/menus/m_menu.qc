@@ -211,7 +211,7 @@ void() settings_menu =
 	bind_list("bindlist", [xpos, ypos], [width, 160], binds_scroll);
 	ypos += 160 + 8;
 
-	cvar_slider([xpos, ypos], [width, 32], [0.1, 10], "sensitivity", "Sensitivity", "%.2f");
+	cvar_slider([xpos, ypos], [width, 32], [0.1, 20], "sensitivity", "Sensitivity", "%.2f");
 	ypos += 32;
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
