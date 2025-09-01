@@ -110,10 +110,18 @@ float(string cmd) m_consolecommand =
 
 void(float wantmode) m_toggle =
 {
+	if (wantmode == 1)
+		m_open();
+	else if (wantmode == 0)
+		m_close();
+	else
+		print ("m_toggle error\n");
+/*
 	if (menu_active)
 		m_close();
 	else
 		m_open();
+*/
 };
 
 void() m_shutdown = {};

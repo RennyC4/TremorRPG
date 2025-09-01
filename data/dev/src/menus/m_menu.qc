@@ -257,6 +257,7 @@ void() help_menu =
 };
 
 string server_ip;
+float connect_text;
 void() connect_mainserver =
 {
 	string line;
@@ -267,10 +268,17 @@ void() connect_mainserver =
 		if (line = fgets(v))
 			server_ip = line;
 		localcmd(sprintf("connect %s\n", server_ip));
+		connect_text = TRUE; // flash connect message on screen
 		return;
 	}
 	else
 		print ("^2Missing File:^7 data/server.txt\n");
+};
+
+void() singleplayer_button =
+{
+	connect_text = FALSE;
+	localcmd("disconnect;map world\n");
 };
 
 void() main_menu =
@@ -311,7 +319,7 @@ void() main_menu =
 	
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	
-	my_button("mm_start", [0, 8], [size_x - 16, 20], "Single Player") ? localcmd("disconnect;map world\n") : 0;
+	my_button("mm_start", [0, 8], [size_x - 16, 20], "Single Player") ? singleplayer_button() : 0;
 	my_button("mm_connect", [0, 8 +24], [size_x - 16, 20], "Multiplayer") ? connect_mainserver() : 0; // rennyc
 	my_button("mm_settings", [0, 8 + 48], [size_x - 16, 20], "Settings") ? current_menu = MENU_SETTINGS : 0;
 	my_button("mm_help", [0, 8 + 72], [size_x - 16, 20], "Help") ? current_menu = MENU_HELP : 0;
@@ -319,6 +327,14 @@ void() main_menu =
 	my_button("mm_quit", [0, -8], [size_x - 16, 20], "Quit") ? localcmd("cfg_save;disconnect;quit\n") : 0;
 	sui_pop_frame();	
 
+	// Draw connecting text
+	if (connect_text && server_ip != "")
+	{
+		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+		string connectmsg = strcat("^b^1Attempting to connect to ^7", server_ip);
+		sui_text([0, 0], MENU_TEXT_SMALL, connectmsg, MENU_TEXT_1, 1, 0);
+	}
+	
 	sui_set_default_kb_focus("mm_start");
 };
 
