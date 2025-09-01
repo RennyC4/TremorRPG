@@ -69,6 +69,7 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_SKILL_ACROBATIC, EV_FLOAT, skill_acrobatic);
 	clientstat(STAT_REAPERMARK, EV_FLOAT, reaper_marks);
 	clientstat(STAT_LOCKVIEW, EV_FLOAT, lockview_finished);
+	clientstat(STAT_SPELLEQUIPPED, EV_FLOAT, spell_equipped);
 
 	// Job Skills
 };

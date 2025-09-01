@@ -2244,6 +2244,7 @@ const float MENU_BUYSELL = 5; // for NPC interaction
 #define STAT_REAPERMARK 83
 #define STAT_BLOCKVALUE 84
 #define STAT_LOCKVIEW 85
+#define STAT_SPELLEQUIPPED 86
 
 // Inventory - Player
 #define MAX_INVENTORY 32

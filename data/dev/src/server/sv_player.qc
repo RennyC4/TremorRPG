@@ -935,6 +935,7 @@ void(entity targ) CSEv_Player_SaveChar =
 		fputs(v, ftos(targ.pvpenable_count), "\n");
 		fputs(v, ftos(targ.pvp_autoflagged), "\n");
 		fputs(v, ftos(targ.blockvalue), "\n");
+		fputs(v, ftos(targ.spell_equipped), "\n");
 		//
 
 		// skills
@@ -1068,6 +1069,8 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.pvp_autoflagged = stof(line);
 		if (line = fgets(v))
 			self.blockvalue = stof(line);
+		if (line = fgets(v))
+			self.spell_equipped = stof(line);
 
 		//
 
@@ -1189,6 +1192,8 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.armorname = "Plain Clothes";
 		self.armorvalue = 0;
 		self.pvp = FALSE;
+		
+		self.spell_equipped = SPELL_NONE;
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		self.displayname = self.loginname;

@@ -1873,6 +1873,11 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float skill_blacksmithing;
 
 //
+.float spell_equipped;
+const float SPELL_NONE = 0;
+const float SPELL_FIREDART = 1;
+
+//
 // Send stats to CSQC 
 //
 #define STAT_GUID 32
@@ -1929,6 +1934,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define STAT_REAPERMARK 83
 #define STAT_BLOCKVALUE 84
 #define STAT_LOCKVIEW 85
+#define STAT_SPELLEQUIPPED 86
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

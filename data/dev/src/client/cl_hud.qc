@@ -340,6 +340,7 @@ void() User_CharacterScreen =
 	float disp_acrobatic = getstatf(STAT_SKILL_ACROBATIC);
 	float disp_reapermarks = getstatf(STAT_REAPERMARK);
 	float disp_blocking = getstatf(STAT_BLOCKVALUE);
+	float disp_magicspell = getstatf(STAT_SPELLEQUIPPED);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -356,18 +357,17 @@ void() User_CharacterScreen =
 	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
 
 	// 3D Character box
-	pos_y += 10;
 	size = [125, 150];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_border_box(pos, size, 2, MENU_BORDER, 0.3, 0);
 	sui_fill(pos, size, MENU_BG_DARK, 0.75, 0);
 
 	// Draw 3D doll model
-	pos = [37, -10];
+	pos = [37, -18];
 	Draw_3DPDoll(pos);
 
 	//Level, Experience, Next Experience
-	vector newpos = [2,30];
+	vector newpos = [2, 20];
 
 	displaystat = strcat("^5Level: ^7", ftos(disp_level));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
@@ -458,13 +458,21 @@ void() User_CharacterScreen =
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
-	newpos_y += 22;
+	//newpos_y += 22;
+	newpos_y += 12.5;
 
 	displaystat = strcat("^5Armor: ^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
+	string fix_disp_magicspell;
+	if (!disp_magicspell) fix_disp_magicspell = "None";
+	displaystat = strcat("^5Magic Spell: ^7", fix_disp_magicspell);
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 20;
 
 	displaystat = strcat("^1Reaper Marks: ^7", ftos(disp_reapermarks));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
@@ -641,8 +649,10 @@ void() User_CharacterScreen =
 	newpos_y +=10;
 	my_button("skillpoint_acrobatics", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 17) : 0;
 
-	// PVP button
-	
+	//
+	// Bottom button list
+	//
+
 	newpos = [2, -2]; // reset newpos
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
@@ -657,13 +667,15 @@ void() User_CharacterScreen =
 	my_button("pvp_toggle", newpos, [25, 25], pvpcolor) ? sendevent("User_TogglePVP", "") : 0;
 
 	newpos_x += 26;
-
 	my_button("inventory_toggle", newpos, [72, 25], "Inventory") ? sendevent("PlayerShowInventory", "") : 0;
-
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-	my_button("disconnect", [23, 20.5], [40, 20], "Disconnect") ? localcmd("cfg_save;disconnect\n") : 0;
+	newpos_x += 73;
+	my_button("magic_toggle", newpos, [72, 25], "Magic"); //? sendevent("PlayerShowInventory", "") : 0;
 
 	sui_pop_frame();
+	sui_pop_frame();
+
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
+	my_button("disconnect", [0, 0], [40, 20], "Disconnect") ? localcmd("cfg_save;disconnect\n") : 0;
 };
 
 //
@@ -702,6 +714,7 @@ void() User_InventoryScreen =
 	float disp_bash = getstatf(STAT_SKILL_BASH);
 	float disp_reapermarks = getstatf(STAT_REAPERMARK);
 	float disp_blocking = getstatf(STAT_BLOCKVALUE);
+	float disp_magicspell = getstatf(STAT_SPELLEQUIPPED);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -718,18 +731,17 @@ void() User_InventoryScreen =
 	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
 
 	// 3D Character box
-	pos_y += 10;
 	size = [125, 150];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_border_box(pos, size, 2, MENU_BORDER, 0.3, 0);
 	sui_fill(pos, size, MENU_BG_DARK, 0.75, 0);
 
 	// Draw 3D doll model
-	pos = [37, -10];
+	pos = [37, -18];
 	Draw_3DPDoll(pos);
 
 	//Level, Experience, Next Experience
-	vector newpos = [2,30];
+	vector newpos = [2, 20];
 
 	displaystat = strcat("^5Level: ^7", ftos(disp_level));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
@@ -816,17 +828,25 @@ void() User_InventoryScreen =
 
 	newpos_y += 10;
 
-	displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
+		displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
-	newpos_y += 22;
+	//newpos_y += 22;
+	newpos_y += 12.5;
 
 	displaystat = strcat("^5Armor: ^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
+	string fix_disp_magicspell;
+	if (!disp_magicspell) fix_disp_magicspell = "None";
+	displaystat = strcat("^5Magic Spell: ^7", fix_disp_magicspell);
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 20;
 
 	displaystat = strcat("^1Reaper Marks: ^7", ftos(disp_reapermarks));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
@@ -913,11 +933,13 @@ void() User_InventoryScreen =
 	my_button("pvp_toggle", newpos, [25, 25], pvpcolor) ? sendevent("User_TogglePVP", "") : 0;
 
 	newpos_x += 26;
-
 	my_button("stats_toggle", newpos, [72, 25], "Skills") ? sendevent("PlayerShowStats", "") : 0;
-	
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-	my_button("disconnect", [23, 20.5], [40, 20], "Disconnect") ? localcmd("cfg_save;disconnect\n") : 0;
+	newpos_x += 73;
+	my_button("magic_toggle", newpos, [72, 25], "Magic"); //? sendevent("PlayerShowInventory", "") : 0;
 
 	sui_pop_frame();
+	sui_pop_frame();
+
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
+	my_button("disconnect", [0, 0], [40, 20], "Disconnect") ? localcmd("cfg_save;disconnect\n") : 0;
 };
