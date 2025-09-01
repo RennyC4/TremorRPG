@@ -5,7 +5,7 @@
 "mapversion" "220"
 "wad" "C:\Games\TremorRPG\data\dev\wads\colours.wad;C:\Games\TremorRPG\data\dev\wads\fence_tex.wad;C:\Games\TremorRPG\data\dev\wads\misc.wad;C:\Games\TremorRPG\data\dev\wads\str_delven.wad;C:\Games\TremorRPG\data\dev\wads\taov.wad"
 "classname" "worldspawn"
-"light" "25"
+"light" "20"
 "message" "Elderfen"
 // brush 0
 {
@@ -1663,7 +1663,7 @@
 // entity 32
 {
 "classname" "light"
-"origin" "0 0 1344"
+"origin" "0 1792 1344"
 "delay" "3"
 "wait" "10000"
 "light" "200"
