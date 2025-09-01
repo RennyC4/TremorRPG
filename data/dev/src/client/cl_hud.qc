@@ -653,9 +653,11 @@ void() User_CharacterScreen =
 	// Bottom button list
 	//
 
-	newpos = [2, -2]; // reset newpos
+	newpos = [3, -2]; // reset newpos
 
+	// PVP button
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
+
 	float disp_pvp = getstatf(STAT_PVP);
 	if (!disp_pvp)
 		string pvpcolor = "^8PVP";
@@ -667,11 +669,17 @@ void() User_CharacterScreen =
 	my_button("pvp_toggle", newpos, [25, 25], pvpcolor) ? sendevent("User_TogglePVP", "") : 0;
 
 	newpos_x += 26;
-	my_button("inventory_toggle", newpos, [72, 25], "Inventory") ? sendevent("PlayerShowInventory", "") : 0;
+	my_button("stats_toggle", newpos, [72, 25], "Skills") ? sendevent("PlayerShowStats", "") : 0;
 	newpos_x += 73;
-	my_button("magic_toggle", newpos, [72, 25], "Magic"); //? sendevent("PlayerShowInventory", "") : 0;
+	my_button("magic_toggle", newpos, [72, 25], "Magic") ? sendevent("PlayerShowMagic", "") : 0;
+	newpos_x += 73;
+	my_button("inventory_toggle", newpos, [72, 25], "Inventory") ? sendevent("PlayerShowInventory", "") : 0;
 
 	sui_pop_frame();
+	
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	my_button("close", [0, 0], [15, 15], "X") ? sendevent("ShutDownMenus", "") : 0;
+
 	sui_pop_frame();
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
@@ -917,7 +925,7 @@ void() User_InventoryScreen =
 	// Bottom button list
 	//
 
-	newpos = [2, -2]; // reset newpos
+	newpos = [3, -2]; // reset newpos
 
 	// PVP button
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
@@ -935,9 +943,289 @@ void() User_InventoryScreen =
 	newpos_x += 26;
 	my_button("stats_toggle", newpos, [72, 25], "Skills") ? sendevent("PlayerShowStats", "") : 0;
 	newpos_x += 73;
-	my_button("magic_toggle", newpos, [72, 25], "Magic"); //? sendevent("PlayerShowInventory", "") : 0;
+	my_button("magic_toggle", newpos, [72, 25], "Magic") ? sendevent("PlayerShowMagic", "") : 0;
+	newpos_x += 73;
+	my_button("inventory_toggle", newpos, [72, 25], "Inventory") ? sendevent("PlayerShowInventory", "") : 0;
 
 	sui_pop_frame();
+	
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	my_button("close", [0, 0], [15, 15], "X") ? sendevent("ShutDownMenus", "") : 0;
+
+	sui_pop_frame();
+
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
+	my_button("disconnect", [0, 0], [40, 20], "Disconnect") ? localcmd("cfg_save;disconnect\n") : 0;
+};
+
+//
+// Character inventory screen + use/drop items
+//
+
+void() User_MagicScreen =
+{
+	float get_h = getstatf(STAT_HEALTH);
+	if (get_h <= 0)
+		return;
+
+	// darken screen
+	vector scrsz = [g_width, g_height];
+	drawfill('0 0', scrsz, '0 0 0', 0.65);
+
+	string displaystat;
+
+	string disp_gender = getstats(STAT_GENDER);
+	float disp_level = getstatf(STAT_LEVEL);
+	float disp_exp =  getstatf(STAT_EXP);
+	float disp_neededexp =  getstatf(STAT_EXPNEEDED);
+	float disp_gold =  getstatf(STAT_GOLD);
+	float disp_skillpoints =  getstatf(STAT_SKILLPOINTS);
+	string disp_mainhand = getstats(STAT_MAINHAND);
+	string disp_offhand = getstats(STAT_OFFHAND);
+	float disp_attackmin = getstatf(STAT_ATTACKMIN);
+	float disp_attackmax = getstatf(STAT_ATTACKMAX);
+	float disp_attackspeed = getstatf(STAT_ATTACKSPEED);
+	float disp_attacktype = getstatf(STAT_ATTACKTYPE);
+	string disp_armorname = getstats(STAT_ARMORNAME);
+	float disp_armorvalue = getstatf(STAT_ARMORVALUE);
+	float disp_unarmed = getstatf(STAT_SKILL_UNARMED);
+	float disp_slash = getstatf(STAT_SKILL_SLASH);
+	float disp_pierce = getstatf(STAT_SKILL_PIERCE);
+	float disp_bash = getstatf(STAT_SKILL_BASH);
+	float disp_reapermarks = getstatf(STAT_REAPERMARK);
+	float disp_blocking = getstatf(STAT_BLOCKVALUE);
+	float disp_magicspell = getstatf(STAT_SPELLEQUIPPED);
+
+	vector pos = [25, 25];
+	vector size = [450, 325];
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_push_frame(pos, size);
+
+	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+
+	// Display name, gender
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	displaystat = strcat(disp_gender, " ^1", LOGIN_NAME);
+	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
+
+	// 3D Character box
+	size = [125, 150];
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_border_box(pos, size, 2, MENU_BORDER, 0.3, 0);
+	sui_fill(pos, size, MENU_BG_DARK, 0.75, 0);
+
+	// Draw 3D doll model
+	pos = [37, -18];
+	Draw_3DPDoll(pos);
+
+	//Level, Experience, Next Experience
+	vector newpos = [2, 20];
+
+	displaystat = strcat("^5Level: ^7", ftos(disp_level));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	displaystat = strcat("^5Exp: ^7", ftos(disp_exp), " / ", ftos(disp_neededexp));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	displaystat = strcat("^5Gold: ^7", ftos(disp_gold));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	displaystat = strcat("^5Skill Points: ^7", ftos(disp_skillpoints));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 12.5;
+
+	displaystat = strcat("^5Main Hand");
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	
+	// button to unequip main hand
+	newpos_x += 40;
+	my_button("unequip_mainhand", newpos, [30, 10], "Unequip") ? sendevent("User_UnequipMainhand", "", 0) : 0;
+	newpos_x -= 40;
+
+	newpos_y += 10;
+	
+	displaystat = strcat(disp_mainhand, " (^8", ftos(disp_attackmin), "-", ftos(disp_attackmax), "^7)");
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+	float disp_dps = (disp_attackmin + disp_attackmax * 0.5) / disp_attackspeed; // calculate DPS
+	
+	// add skill calculation to DPS
+	if (!disp_attacktype) // unarmed
+		disp_dps = disp_dps + (disp_unarmed * 0.1);
+	else if (disp_attacktype == 1) // slashing
+		disp_dps = disp_dps + (disp_slash * 0.1);
+	else if (disp_attacktype == 2) // piercing
+		disp_dps = disp_dps + (disp_pierce * 0.1);
+	else // bashing
+		disp_dps = disp_dps + (disp_bash * 0.1);
+
+	string dispfix_dps = ftos(disp_dps);
+	dispfix_dps = sprintf("%.2f", disp_dps); // cut down numbers
+
+	if (!disp_attacktype)			string displaystat2 = "Unarmed";
+	else if (disp_attacktype == 1)  displaystat2 = "Slash";
+	else if (disp_attacktype == 2)  displaystat2 = "Pierce";
+	else if (disp_attacktype == 4)  displaystat2 = "Bash";
+	else displaystat2 = "Unknown";
+
+	displaystat = strcat("^1DPS: ^7" , dispfix_dps, " (^8", displaystat2, "^7)");
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 12.5;
+
+	displaystat = "^5Off Hand";
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	// button to unequip off hand
+	newpos_x += 40;
+	my_button("unequip_offhand", newpos, [30, 10], "Unequip") ? sendevent("User_UnequipOffhand", "", 0) : 0;
+	newpos_x -= 40;
+
+	newpos_y += 10;
+
+	displaystat = disp_offhand;
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+
+		displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	//newpos_y += 22;
+	newpos_y += 12.5;
+
+	displaystat = strcat("^5Armor: ^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+	string fix_disp_magicspell;
+	if (!disp_magicspell) fix_disp_magicspell = "None";
+	displaystat = strcat("^5Magic Spell: ^7", fix_disp_magicspell);
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 20;
+
+	displaystat = strcat("^1Reaper Marks: ^7", ftos(disp_reapermarks));
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	// Draw inventory point box/frame/text
+	pos = [75, 0];
+	size = [250, 280];
+
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	sui_push_frame(pos, size);
+
+	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+
+	pos = [0, -15];
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	sui_text(pos, MENU_TEXT_MEDIUM, "^2Magic", MENU_TEXT_1, 1, 0);
+
+	//
+	// magic spell list display
+	//
+
+/*
+	newpos = [2.5, 2.5];
+	vector buttonpos = [-2.5, 2.5];
+	vector linepos = [2.5, 2.5];
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+
+	float i;
+	string j = "";
+	string d = "";
+	string desc = "";
+
+    for (i = 0; i < inv_count; i++)
+    {
+		string item_disp = strcat("^5", inventory[i], " ^7[^2", ftos(inventory_count[i]), "^7]");
+		if (inventory_count[i] > 0)
+		{
+			float usebutton_count = 0;
+			while (usebutton_count < inventory_count[i]) // setup use buttons
+			{
+				usebutton_count += 1;
+				j = strcat("u_", inventory[i]); // use
+				d = strcat("d_", string_remove_spaces(inventory[i])); // drop
+				desc = strcat("desc_", string_remove_spaces(inventory[i])); // tooltip display
+			}
+			
+			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+
+			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+			buttonpos_x = -2.5;
+			my_button(j, buttonpos, [32, 10], "Use") ? sendevent("UseItem", "s", inventory[i]) : 0;
+			buttonpos_x = -34;
+			my_button(d, buttonpos, [32, 10], "Drop") ? sendevent("DropItem", "s", inventory[i]) : 0;
+			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+
+			// tooltip (draw last)
+			float hover_text_size = stringwidth(inventory[i], 1);
+			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
+
+		}
+		linepos_y += 10;
+		buttonpos_y += 10;
+    }
+*/
+
+	//
+	// Bottom button list
+	//
+
+	newpos = [3, -2]; // reset newpos
+
+	// PVP button
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
+
+	float disp_pvp = getstatf(STAT_PVP);
+	if (!disp_pvp)
+		string pvpcolor = "^8PVP";
+	else if (disp_pvp == 1)
+		pvpcolor = "^1PVP";
+	else
+		pvpcolor = "^2PVP";
+
+	my_button("pvp_toggle", newpos, [25, 25], pvpcolor) ? sendevent("User_TogglePVP", "") : 0;
+
+	newpos_x += 26;
+	my_button("stats_toggle", newpos, [72, 25], "Skills") ? sendevent("PlayerShowStats", "") : 0;
+	newpos_x += 73;
+	my_button("magic_toggle", newpos, [72, 25], "Magic") ? sendevent("PlayerShowMagic", "") : 0;
+	newpos_x += 73;
+	my_button("inventory_toggle", newpos, [72, 25], "Inventory") ? sendevent("PlayerShowInventory", "") : 0;
+
+	sui_pop_frame();
+	
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	my_button("close", [0, 0], [15, 15], "X") ? sendevent("ShutDownMenus", "") : 0;
+
 	sui_pop_frame();
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);

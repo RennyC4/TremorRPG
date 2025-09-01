@@ -1746,10 +1746,11 @@ const float ATTACKTYPE_BASH = 3;
 
 const float MENU_OFF = 0;
 const float MENU_LOGIN = 1;
-const float MENU_CHARACTER = 2;
-const float MENU_INVENTORY = 3;
+const float MENU_CHARACTER = 2; // user character screen
+const float MENU_INVENTORY = 3; // user inventory screen
 const float MENU_DIALOGUE = 4; // for NPC interaction
 const float MENU_BUYSELL = 5; // for NPC interaction
+const float MENU_MAGIC = 6; // user magic screen
 
 .float button3_pressed;
 

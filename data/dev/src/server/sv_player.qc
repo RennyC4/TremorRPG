@@ -80,7 +80,7 @@ void() PlayerJump =
 		return;
 	if (!(self.flags & FL_JUMPRELEASED))
 		return;
-	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY)
+	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC)
 		return;
 
 	float stamcalc = self.skill_acrobatic * 0.35; // skill calculation
@@ -178,10 +178,11 @@ void() CSEv_PlayerShowStats =
 
 	if (self.menu == MENU_CHARACTER)
 	{
+		self.melee_finished = time + 0.5; // prevent +attack misfire
 		self.menu = MENU_OFF;
 		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
 	}
-	else if (self.menu == MENU_INVENTORY || self.menu == MENU_OFF)
+	else if (self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_OFF)
 	{
 		if (self.menu == MENU_OFF)
 			stuffcmd (self, sprintf("play %s\n", "menu/menu_open.wav")); // sound
@@ -199,10 +200,11 @@ void() CSEv_PlayerShowInventory =
 
 	if (self.menu == MENU_INVENTORY)
 	{
+		self.melee_finished = time + 0.2; // prevent +attack misfire
 		self.menu = MENU_OFF;
 		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
 	}
-	else if (self.menu == MENU_CHARACTER || self.menu == MENU_OFF)
+	else if (self.menu == MENU_CHARACTER || self.menu == MENU_MAGIC || self.menu == MENU_OFF)
 	{
 		if (self.menu == MENU_OFF)
 			stuffcmd (self, sprintf("play %s\n", "menu/menu_open.wav")); // sound
@@ -210,6 +212,28 @@ void() CSEv_PlayerShowInventory =
 			stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav")); // sound
 		self.menu = MENU_INVENTORY;
 	}		
+};
+
+// called from CSQC ("show_magic" console command)
+void() CSEv_PlayerShowMagic = 
+{
+	if (self.deadflag != DEAD_NO)
+		return;
+
+	if (self.menu == MENU_MAGIC)
+	{
+		self.melee_finished = time + 0.2; // prevent +attack misfire
+		self.menu = MENU_OFF;
+		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
+	}
+	else if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_OFF)
+	{
+		if (self.menu == MENU_OFF)
+			stuffcmd (self, sprintf("play %s\n", "menu/menu_open.wav")); // sound
+		else
+			stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav")); // sound
+		self.menu = MENU_MAGIC;
+	}
 };
 
 void() CSEv_User_UnequipMainhand_ =

@@ -7,7 +7,6 @@ void() CSQC_Input_Frame =
 
 void() Player_Hud =
 {
-
 	if (cvar("developer") == 0)
 	{
 		float player_loggedin = getstatf(STAT_LOGGEDIN);
@@ -32,6 +31,11 @@ void() Player_Hud =
 			if (player_menu == MENU_INVENTORY)
 			{
 				User_InventoryScreen();
+				Draw_ToolTip();
+			}
+			if (player_menu == MENU_MAGIC)
+			{
+				User_MagicScreen();
 				Draw_ToolTip();
 			}
 			if (player_menu == MENU_DIALOGUE)

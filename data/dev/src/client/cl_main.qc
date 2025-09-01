@@ -31,6 +31,7 @@ noref void() CSQC_WorldLoaded =
 	registercommand("+showscores", "Show scoreboard");
 	registercommand("show_character", "Displays character information screen\n");
 	registercommand("show_inventory", "Displays inventory information screen\n");
+	registercommand("show_magic", "Displays magic information screen\n");
 	registercommand("toggle_crouch", "Crouching & sneaking\n");
 	registercommand("toggle_camera", "3rd person camera toggle\n");
 	registercommand("+use", "Use what is in front of player\n");
@@ -99,6 +100,8 @@ float(string strCommand) CSQC_ConsoleCommand =
 		sendevent("PlayerShowStats", "");
 	if (argv(0) == "show_inventory")
 		sendevent("PlayerShowInventory", "");
+	if (argv(0) == "show_magic")
+		sendevent("PlayerShowMagic", "");
 	if (argv(0) == "toggle_crouch")
 		sendevent("PlayerCrouch", "");
 	if (argv(0) == "toggle_camera") // send camera mode to SSQC for various reasons

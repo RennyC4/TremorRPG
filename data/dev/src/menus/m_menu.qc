@@ -121,8 +121,9 @@ name_command bindlist[] =
 	{ "Right", "+moveright" },
 	{ "Jump", "+jump" },
 	{ "Attack", "+attack" },
-	{ "Stats", "show_character" },
-	{ "Inventory", "show_inventory" },
+	{ "Skills Menu", "show_character" },
+	{ "Inventory Menu", "show_inventory" },
+	{ "Magic Menu", "show_magic" },
 	{ "Sneak", "toggle_crouch" },
 	{ "Use", "+button3" },
 	{ "Block", "+button4" },
@@ -309,17 +310,17 @@ void() main_menu =
 
 	sui_pic(logo_pos, logo_size+[5,5,5], "textures/logo.png", colour, 1, 0); // logo shadow effect
 	sui_pic(logo_pos, logo_size, "textures/logo.png", '1 1 1', 1, 0);
-	
+
 	vector pos = [25, -100];
 	vector size = [120, 140];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
-	
+
 	sui_fill([0, 0], size, MENU_BG, 0.3, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.2, 0);
-	
+
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-	
+
 	my_button("mm_start", [0, 8], [size_x - 16, 20], "Single Player") ? singleplayer_button() : 0;
 	my_button("mm_connect", [0, 8 +24], [size_x - 16, 20], "Multiplayer") ? connect_mainserver() : 0; // rennyc
 	my_button("mm_settings", [0, 8 + 48], [size_x - 16, 20], "Settings") ? current_menu = MENU_SETTINGS : 0;
