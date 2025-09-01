@@ -295,7 +295,6 @@ void() main_menu =
 	float scale = 1 - 0.05 * sin(time * 0.2);
 	float s = sin(time * 0.375);
 	float colour_scale = 3 * pow(s, 4);
-	//print (ftos(colour_scale), "\n");
 	vector colour = [colour_scale, 0, 0]; // red tinge on text
 	logo_size = logo_size * scale;
 
@@ -321,6 +320,22 @@ void() main_menu =
 	sui_pop_frame();	
 
 	sui_set_default_kb_focus("mm_start");
+};
+
+void m_drawloading (vector screensize, float opaque)
+{
+	vector realsize = getproperty(VF_SCREENPSIZE);
+	string loading_msg = "Loading ...";
+    vector bar_size = [realsize_x * 0.6, 24];
+    vector bar_pos  = [(realsize_x - bar_size_x) * 0.5, realsize_y * 0.5];
+	vector pct_size = [0, 0];
+
+	// Draw background, darker than non-loading screen
+	vector bg_size = [realsize_x / 2, realsize_y / 2, 0];
+	sui_pic([0,0], bg_size, "textures/background.jpg", '0.05 0.05 0.05', 1, 0);
+
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	sui_text([0, 0], MENU_TEXT_LARGE, loading_msg, MENU_TEXT_1, 1, 0);
 };
 
 void() m_close;

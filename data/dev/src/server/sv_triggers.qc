@@ -1,5 +1,5 @@
 //
-// Used for when the player enters different zones
+// Used for when the player enters different zones (dungeons, towns, etc)
 //
 
 void() trigger_zone_touch =
