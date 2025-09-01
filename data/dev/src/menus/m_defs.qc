@@ -1047,3 +1047,6 @@ accessor filestream : float
 };
 #endif
 #pragma noref 0
+
+string(string key) serverkey = #354; /*
+		Look up a key in the server's public serverinfo string */

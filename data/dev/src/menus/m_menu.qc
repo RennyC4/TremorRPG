@@ -327,14 +327,17 @@ void() main_menu =
 	my_button("mm_quit", [0, -8], [size_x - 16, 20], "Quit") ? localcmd("cfg_save;disconnect;quit\n") : 0;
 	sui_pop_frame();	
 
-	// Draw connecting text
+	if (serverkey("constate") == "active")
+		connect_text = FALSE;
+
+	// Draw connecting to server text
 	if (connect_text && server_ip != "")
 	{
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 		string connectmsg = strcat("^b^1Attempting to connect to ^7", server_ip);
 		sui_text([0, 0], MENU_TEXT_SMALL, connectmsg, MENU_TEXT_1, 1, 0);
 	}
-	
+
 	sui_set_default_kb_focus("mm_start");
 };
 
