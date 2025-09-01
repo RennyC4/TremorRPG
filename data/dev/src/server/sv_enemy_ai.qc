@@ -125,7 +125,7 @@ void() monster_ai_move =
 	if (self.enemy)
 	{
 		if (self.ai_backup_finished > time)
-			walkmove(self.angles_y, self.speed * -1); // keep AI slightly back from target
+			walkmove(self.angles_y, self.speed * -1); // keep monster slightly back from target
 
 		if (range(self.enemy) == RANGE_CLOSE)
 			self.ai_backup_finished = time + random_range(0.7, 2.5); // too close, back up a bit
@@ -135,7 +135,7 @@ void() monster_ai_move =
 	movetogoal(self.speed);
 
 	self.velocity = '0 0 0';
-	if (self.ai_mode == AI_RUNBACK) // prevent monster from stepping into player
+	if (self.ai_mode == AI_RUNBACK) // monster is running back to origin
 	{
 		self.flags -= (self.flags & FL_ONGROUND);
 		vector forward = v_forward * 150;
