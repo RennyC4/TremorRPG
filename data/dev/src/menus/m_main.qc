@@ -116,12 +116,6 @@ void(float wantmode) m_toggle =
 		m_close();
 	else
 		print ("m_toggle error\n");
-/*
-	if (menu_active)
-		m_close();
-	else
-		m_open();
-*/
 };
 
 void() m_shutdown = {};

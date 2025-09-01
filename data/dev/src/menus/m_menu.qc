@@ -269,6 +269,7 @@ void() connect_mainserver =
 			server_ip = line;
 		localcmd(sprintf("connect %s\n", server_ip));
 		connect_text = TRUE; // flash connect message on screen
+		m_toggle(0); // close menu
 		return;
 	}
 	else
@@ -330,6 +331,7 @@ void() main_menu =
 	if (serverkey("constate") == "active")
 		connect_text = FALSE;
 
+	/*
 	// Draw connecting to server text
 	if (connect_text && server_ip != "")
 	{
@@ -337,6 +339,7 @@ void() main_menu =
 		string connectmsg = strcat("^b^1Attempting to connect to ^7", server_ip);
 		sui_text([0, 0], MENU_TEXT_SMALL, connectmsg, MENU_TEXT_1, 1, 0);
 	}
+	*/
 
 	sui_set_default_kb_focus("mm_start");
 };
