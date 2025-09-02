@@ -25,6 +25,11 @@ origin "-3321 -1460 85" /*EDITME*/
 angles "0 -30 0"
 }
 
+// spawn day/night entity
+{
+classname "spawn_daynight"
+}
+
 // first town (Elderfen)
 {
 classname "set_prop"

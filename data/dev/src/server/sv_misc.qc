@@ -34,6 +34,15 @@ void() set_prop =
 };
 
 //
+// set_dlight - set a dynamic light
+//
+
+void() set_dlight =
+{
+	self.pflags = PFLAGS_FULLDYNAMIC;
+};
+
+//
 // part_foundain - particle effect for water foundtains
 //
 
@@ -88,7 +97,7 @@ void() misc_model =
 
     if (self.first_frame)
 		self.frame = self.first_frame;
-	
+
     // Only animate if given a frame range
     if (!self.last_frame)
         return;
@@ -97,12 +106,12 @@ void() misc_model =
 	if (self.spawnflags & 1)
 	{
 		self.frame = self.first_frame;
-		local float diff;
+		float diff;
 		diff = self.last_frame - self.first_frame;
 
 		self.frame = self.frame + ceil(random()*diff);
 	}
-	
+
     // Default animation speed to 10 fps
     if (!self.speed)
         self.speed = 10 / 60;

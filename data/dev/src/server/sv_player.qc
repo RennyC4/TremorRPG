@@ -750,6 +750,27 @@ void() PlayerPostThink =
 			self.effects &= ~EF_FLAG2;
 		}
 	}
+
+	// day / night player handler
+	if (self.daynight_update_finished < time)
+	{
+		string vcshift_daynight = strcat("0 0 ", ftos(daynight_count2), " 50"); // stuffcmd to send (v_cshift)
+
+		stuffcmd(self, sprintf("r_shadow_realtime_world_lightmaps %s\n", ftos(daynight_count)));
+		stuffcmd(self, sprintf("v_cshift_empty %s\n", vcshift_daynight));
+
+		if (daynight_count < 0.25) // night skybox
+		{
+			stuffcmd(self, sprintf("fog 0.04 %s;r_skyfog 0.25\n", "0"));
+			stuffcmd(self, sprintf("r_skybox %s\n", night_skybox));
+		}
+		else if (daynight_count > 0.75) // day skybox
+		{
+			stuffcmd(self, sprintf("fog 0.02 %s;r_skyfog 0.5;\n", "0.3"));
+			stuffcmd(self, sprintf("r_skybox %s\n", day_skybox));
+		}
+		self.daynight_update_finished = time + 1;
+	}
 };
 
 void() ClientConnect =

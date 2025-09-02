@@ -9,6 +9,8 @@
 void() main = {};
 void() SpectatorConnect = {};
 
+void() spawn_daynight;
+
 //called for each frame that QC runs
 void() StartFrame = {};
 
@@ -124,4 +126,46 @@ void() worldspawn =
 	precache_sound ("item/drop.wav");
 
 	SSQC_SendValuesToCSQC();
+
+	// Setup day/night
+	spawn_daynight();
+};
+
+//
+// day night server handler
+//
+
+.float daynight_update_finished;
+entity daynight;
+float daynight_count; // lightmaps
+float daynight_count2; // v_cshift
+float daynight_speed; // counter
+string day_skybox = "skyworld";
+string night_skybox = "skyworld_star";
+
+void() daynight_think =
+{
+    daynight_speed += 0.05; // speed
+    if (daynight_speed > 2 * M_PI)
+        daynight_speed -= 2 * M_PI;
+
+    daynight_count = 0.05 + ((sin(daynight_speed) + 1) * 0.5) * (1 - 0.05); //  calculation for time, r_shadow_realtime_world_lightmaps stuffcmd
+	daynight_count2 = 0.05 + ((sin(daynight_speed * -1) + 1) * 0.5) * (1 - 0.05) * 100; // v_cshift calc
+
+	//print (ftos(val), "\n"); // , vcshift_daynight, "\n");
+
+	if (daynight_count < 0.25 || daynight_count > 0.99) // hold night time / day time for awhile
+		self.nextthink = time + 6;
+	else
+		self.nextthink = time + 3;
+};
+
+void() spawn_daynight =
+{
+	if (daynight) // only spawn once
+		return;
+
+	daynight = spawn();
+	daynight.think = daynight_think;
+	daynight.nextthink = time + 0.1;
 };
