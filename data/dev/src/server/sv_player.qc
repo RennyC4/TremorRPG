@@ -761,14 +761,19 @@ void() PlayerPostThink =
 
 		if (daynight_count < 0.25) // night skybox
 		{
+			timeofday = TIME_NIGHT;
 			stuffcmd(self, sprintf("fog 0.04 %s;r_skyfog 0.25\n", "0"));
 			stuffcmd(self, sprintf("r_skybox %s\n", night_skybox));
 		}
 		else if (daynight_count > 0.75) // day skybox
 		{
+			timeofday = TIME_DAY;
 			stuffcmd(self, sprintf("fog 0.02 %s;r_skyfog 0.5;\n", "0.3"));
 			stuffcmd(self, sprintf("r_skybox %s\n", day_skybox));
 		}
+		else
+			timeofday = TIME_MID;
+
 		self.daynight_update_finished = time + 1;
 	}
 };

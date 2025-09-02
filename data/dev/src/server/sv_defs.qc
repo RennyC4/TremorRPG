@@ -1958,3 +1958,7 @@ var float PART_BONFIRE;
 .string inventory[MAX_INVENTORY];
 .float inventory_count[MAX_INVENTORY]; // stack counts
 .float read_inv_count; // used for reading how many items the player has on resuming character
+float timeofday;
+const float TIME_DAY = 0;
+const float TIME_NIGHT = 1;
+const float TIME_MID = 2;
