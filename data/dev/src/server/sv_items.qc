@@ -115,6 +115,23 @@ void(float id, string itemname) Player_UseItem =
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
 	}
+	if (id == 1) // lantern
+	{
+		if (!self.lantern)
+		{
+			sound(self, CHAN_BODY, "lantern.wav", 0.5, ATTN_NORM);
+			sprint(self, PRINT_HIGH, strcat(itemname, " is lit\n"));
+			self.effects |= EF_BRIGHTLIGHT;
+			self.lantern = TRUE;
+		}
+		else
+		{
+			sound(self, CHAN_BODY, "lantern.wav", 0.25, ATTN_NORM);
+			sprint(self, PRINT_HIGH, strcat(itemname, " is unlit\n"));
+			self.effects = self.effects &= ~EF_BRIGHTLIGHT;
+			self.lantern = FALSE;
+		}
+	}
 	else
 		print("Player_UseItem: Item use ID not found\n");
 };

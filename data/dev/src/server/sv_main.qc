@@ -119,6 +119,7 @@ void() worldspawn =
 	precache_sound ("land1.wav");
 	precache_sound ("land2.wav");
 	precache_sound ("jump.wav");
+	precache_sound ("lantern.wav");
 	precache_sound ("move_step0.wav");
 	precache_sound ("move_step1.wav");
 	precache_sound ("move_wade0.wav");

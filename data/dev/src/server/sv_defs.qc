@@ -1792,6 +1792,7 @@ const float MENU_MAGIC = 6; // user magic screen
 .float camera_toggle; // boolean
 .float inair_count; // how long player is in the air
 .float canbackstab; // can be backstabbed
+.float lantern; // on or off
 .float sight_range; // used by monsters & npcs
 .float healthpot_heal_remaining;  // how much left to heal from this use
 .float healthpot_heal_rate;       // how much per tick

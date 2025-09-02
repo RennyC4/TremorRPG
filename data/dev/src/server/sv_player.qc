@@ -457,6 +457,9 @@ void() WaterUpdate =
 	{
 		if (self.waterlevel >= 3)
 		{
+			if (self.lantern)
+				self.lantern = FALSE;
+
 			if (self.underwatersfx_finished < time)
 			{
 				stuffcmd (self, sprintf("play %s\n", "inwater.wav")); // sound
@@ -812,6 +815,7 @@ void() PlayerDeath =
 	self.healthpot_heal_remaining = 0;
 	self.healthpot_heal_rate = 0;
 	self.healthpot_finished = time;
+	self.lantern = FALSE;
 
 	centerprint (self, "/P^1You're Dead!\n^7--------\n\nYou've lost ^3" , h, " ^7gold!" , "\n\n^b^5Press Attack to respawn\n");
 	

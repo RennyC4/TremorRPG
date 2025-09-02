@@ -1,4 +1,4 @@
-5
+6
 Short Sword
 200
 Health Potion
@@ -9,3 +9,5 @@ Rusty Dagger
 115
 Flimsy Buckler
 150
+Lantern
+80

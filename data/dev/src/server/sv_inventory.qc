@@ -166,6 +166,11 @@ float(entity targ, string itemname, float count) AddToInventory =
 			sprint (targ, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
 			return FALSE;
 		}
+		if (targ.classname == "player" && itemname == "Lantern" && targ.inventory_count[i] >= 1)
+		{
+			sprint (targ, PRINT_HIGH, "Can only hold 1 ", itemname, "s\n");
+			return FALSE;
+		}
         if (targ.inventory[i] == itemname)
         {
             targ.inventory_count[i] += count;
@@ -219,9 +224,9 @@ void() itemchest_think =
 	self.nextthink = time + 60;
 };
 
+// Spawn chest
 void(string itemname) CSEv_DropItem_s =
 {
-	// Spawn chest
 	makevectors (self.angles);
 
 	entity itemchest = spawn();
@@ -268,6 +273,8 @@ void(string itemname) CSEv_UseItem_s =
 	// Consumables
     if (itemname == "Health Potion")
 		Player_UseItem(0, itemname);
+    if (itemname == "Lantern")
+		Player_UseItem(1, itemname);
 
 	// Main hand equippables (weapons)
 	if (itemname == "Broken Sword")
@@ -289,7 +296,8 @@ void(string itemname) CSEv_UseItem_s =
 	else if (itemname == "Flimsy Buckler")
 		Player_EquipItem(itemname, 2);
 
-	RemoveFromInventory(self, itemname, 1);
+	if (itemname != "Lantern")
+		RemoveFromInventory(self, itemname, 1);
 };
 
 // called whenever we need to send player/client ONLY inventory data to CSQC
