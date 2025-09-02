@@ -119,14 +119,14 @@ void(float id, string itemname) Player_UseItem =
 	{
 		if (!self.lantern)
 		{
-			sound(self, CHAN_BODY, "lantern.wav", 0.5, ATTN_NORM);
+			sound(self, CHAN_AUTO, "lantern.wav", 0.5, ATTN_NORM);
 			sprint(self, PRINT_HIGH, strcat(itemname, " is lit\n"));
 			self.effects |= EF_BRIGHTLIGHT;
 			self.lantern = TRUE;
 		}
 		else
 		{
-			sound(self, CHAN_BODY, "lantern.wav", 0.25, ATTN_NORM);
+			sound(self, CHAN_AUTO, "lantern.wav", 0.25, ATTN_NORM);
 			sprint(self, PRINT_HIGH, strcat(itemname, " is unlit\n"));
 			self.effects = self.effects &= ~EF_BRIGHTLIGHT;
 			self.lantern = FALSE;
