@@ -864,8 +864,10 @@ void(float type) PlayerSpawn =
 		self.canbackstab = TRUE; // can be backstabbed
 		self.th_die = PlayerDeath;
 
-		// TODO: Follow gender rule
-		setmodel(self, "models/player_m.glb");
+		if (self.gender == "Male")
+			setmodel(self, "models/player_m.glb");
+		else
+			setmodel(self, "models/player_f.glb");
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
@@ -901,9 +903,6 @@ void(float type) PlayerSpawn =
 		self.angles = spawn_spot.angles;
 		self.fixangle = TRUE;
 		self.velocity = '0 0 0';
-
-		// TODO: Follow gender rule
-		setmodel(self, "models/player_m.glb");
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}

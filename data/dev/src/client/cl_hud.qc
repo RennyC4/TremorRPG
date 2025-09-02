@@ -275,16 +275,24 @@ void() Draw_Exp =
 entity doll;
 void(vector pos) Draw_3DPDoll =
 {
+	string gender = getstats(STAT_GENDER);
+
     if (!doll) // Call this one time so we're not spawning infinite head entities
     {
- 
-		doll = spawn();
+ 		doll = spawn();
+		
         precache_model("models/player_m.glb");
-		// TODO: Draw female player model
-        setmodel(doll, "models/player_m.glb");
+        precache_model("models/player_f.glb");
+
+		if (gender == "Male")
+			setmodel(doll, "models/player_m.glb");
+		else
+			setmodel(doll, "models/player_f.glb");
+
         setorigin(doll, '0 0 0');
 		doll.angles_y -= 180;
 		doll.origin_z -= 35;
+		doll.effects = EF_FULLBRIGHT;
     }
 	doll.angles_y += 0.2;
 	entdraw(doll, pos, '150 250', -245);
