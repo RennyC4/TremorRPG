@@ -58,11 +58,20 @@ angles "0 0 0"
 classname "set_npc"
 model "models/player_m.glb"
 origin "-1810 -1725 76"
-angles " 0 0"
+angles "0 0 0"
 netname "Keldran"
 gold "500"
 }
 
+// NPC (Magic Merchant)
+{
+classname "set_npc"
+model "models/player_f.glb"
+origin "-1449 -2455 76"
+angles "0 -121 0"
+netname "Sarzac"
+gold "0"
+}
 
 // monster (bandit lvl1)
 {

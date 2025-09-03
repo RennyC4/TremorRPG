@@ -31,14 +31,19 @@ void(float speed) TurnToTarget =
 	if (self.classname == "npc")
 	{
 		if (self.goalentity)
+		{
 			dir = normalize(self.goalentity.origin - self.origin);
+			target_angles = vectoangles(dir);
+		}
 		else
-			dir = normalize(self.idealangles);
+			target_angles = self.idealangles;
 	}
 	else
+	{
 		dir = normalize(self.goalentity.origin - self.origin); 
+		target_angles = vectoangles(dir);
+	}
 
-    target_angles = vectoangles(dir);
     diff = anglemod(target_angles_y - self.angles_y);
 
     if (diff > 180)		diff -= 360;

@@ -128,6 +128,13 @@ void(string itemname) CSEv_PlayerSellItem_s =
 
 	stuffcmd (self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
 
+	// Latern check
+	if (itemname == "Lantern" && self.lantern)
+	{
+		self.effects &= ~EF_BRIGHTLIGHT;
+		self.lantern = FALSE;
+	}
+
     for (i = 0; i < self.inv_count; i++)
     {
         if (self.inventory[i] == itemname)
@@ -164,11 +171,6 @@ float(entity targ, string itemname, float count) AddToInventory =
 		if (targ.classname == "player" && itemname == "Health Potion" && targ.inventory_count[i] >= 2)
 		{
 			sprint (targ, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
-			return FALSE;
-		}
-		if (targ.classname == "player" && itemname == "Lantern" && targ.inventory_count[i] >= 1)
-		{
-			sprint (targ, PRINT_HIGH, "Can only hold 1 ", itemname, "s\n");
 			return FALSE;
 		}
         if (targ.inventory[i] == itemname)
@@ -255,6 +257,12 @@ void(string itemname) CSEv_DropItem_s =
 
 	string eventlog_print = (strcat("Dropped ", itemname, "\n"));
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+
+	if (itemname == "Lantern" && self.lantern)
+	{
+		self.effects &= ~EF_BRIGHTLIGHT;
+		self.lantern = FALSE;
+	}
 
 	// Remove inventory item
 	RemoveFromInventory(self, itemname, 1);
