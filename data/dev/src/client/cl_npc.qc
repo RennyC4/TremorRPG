@@ -90,7 +90,7 @@ void() User_NPCBuySell =
 	newpos = [2.5, 2.5]; // reset newpos
 
 	// Display NPC name
-	newpos_x -= 2.5;
+	newpos_x -= 3.5;
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 	displaystat = strcat("^1", npc_name);
 	sui_text(newpos, MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
@@ -127,12 +127,9 @@ void() User_NPCBuySell =
 		string item_disp = strcat("^5", inventory[i], " ^7[^2", ftos(inventory_count[i]), "^7]");
 		if (inventory_count[i] > 0)
 		{
-			while (sellbutton_count < npc_inv_count) // setup buy buttons
-			{
-				sellbutton_count += 1;
-				j = strcat("s_", inventory[i]);
-				desc = strcat("desc_", string_remove_spaces(inventory[i]));
-			}
+			j = strcat("s_", inventory[i]);
+			desc = strcat("desc_", string_remove_spaces(inventory[i]));
+			
 			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 
 			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
@@ -142,6 +139,7 @@ void() User_NPCBuySell =
 			float hover_text_size = stringwidth(inventory[i], 1);
 			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
 		}
+		
 		linepos_y += 10;
 		buttonpos_y += 10; // move buy buttons down
     }
