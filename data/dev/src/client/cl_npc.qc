@@ -129,8 +129,6 @@ void() User_NPCBuySell =
 		{
 			j = strcat("s_", inventory[i]);
 			desc = strcat("desc_", string_remove_spaces(inventory[i]));
-			
-			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 
 			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 			my_button(j, buttonpos, [32, 10], "Sell") ? sendevent("PlayerSellItem", "s", inventory[i]) : 0;
@@ -139,7 +137,7 @@ void() User_NPCBuySell =
 			float hover_text_size = stringwidth(inventory[i], 1);
 			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
 		}
-		
+
 		linepos_y += 10;
 		buttonpos_y += 10; // move buy buttons down
     }
