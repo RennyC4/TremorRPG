@@ -156,6 +156,14 @@ void() daynight_think =
 
 	//print (ftos(val), "\n"); // , vcshift_daynight, "\n");
 
+	// make sure this matches in sv_player.qc night handling stuff
+	if (daynight_count < 0.25)
+		timeofday = TIME_NIGHT;
+	else if (daynight_count > 0.75)
+		timeofday = TIME_DAY;
+	else
+		timeofday = TIME_MID;
+
 	if (daynight_count < 0.25 || daynight_count > 0.99) // hold night time / day time for awhile
 		self.nextthink = time + 6;
 	else

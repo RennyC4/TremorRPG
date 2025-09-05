@@ -43,10 +43,7 @@ void() PlayerClimb =
 				self.stamina -= 1;
 				self.climb_stamina_finished = time + stamcalc;
 			}
-			if (self.gender == "Male")	// climb animation
-				player_climb_m();
-			else
-				player_climb_f();
+			player_climb(); // climb animation
 		}
 		else
 		{
@@ -102,17 +99,10 @@ void() PlayerJump =
 		self.stamina -= (50 - stamcalc);
 
 		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
-		
-		if (self.gender == "Male")
-		{
-			self.think = player_jump_m; // play animation
-			self.nextthink = time + 0.1; // give it a bit of lee-way so we're not calling relying on FL_ONGROUND too early
-		}
-		else
-		{
-			self.think = player_jump_f; // play animation
-			self.nextthink = time + 0.1; // give it a bit of lee-way so we're not calling relying on FL_ONGROUND too early
-		}
+
+		self.anim_count = 0;
+		self.think = player_jump; // play animation
+		self.nextthink = time + 0.1; // give it a bit of lee-way so we're not calling relying on FL_ONGROUND too early
 	}
 };
 
@@ -585,7 +575,14 @@ void() PlayerPreThink =
 		else
 		{
 			if (!self.blocking)
-				DoAttack_Melee();
+			{
+				if (self.melee_finished < time)
+				{
+					self.anim_count = 0;
+					player_slash();
+					//DoAttack_Melee();
+				}
+			}
 			else
 				DoAttack_ShieldBash();
 		}
@@ -782,18 +779,14 @@ void() PlayerPostThink =
 
 		if (daynight_count < 0.25) // night skybox
 		{
-			timeofday = TIME_NIGHT;
 			stuffcmd(self, sprintf("fog 0.04 %s;r_skyfog 0.25\n", "0"));
 			stuffcmd(self, sprintf("r_skybox %s\n", night_skybox));
 		}
 		else if (daynight_count > 0.75) // day skybox
 		{
-			timeofday = TIME_DAY;
 			stuffcmd(self, sprintf("fog 0.02 %s;r_skyfog 0.5;\n", "0.3"));
 			stuffcmd(self, sprintf("r_skybox %s\n", day_skybox));
 		}
-		else
-			timeofday = TIME_MID;
 
 		self.daynight_update_finished = time + 1;
 	}
@@ -825,7 +818,6 @@ void() PlayerDeath =
 
 	self.menu = MENU_OFF; // flip all menus off
 	self.incombat = FALSE;
-	setmodel(self, string_null); // remove me when we get actual animations
 	self.deadflag = DEAD_DEAD;
 	self.radius_candamage = FALSE;
 	self.movetype = MOVETYPE_NONE;
@@ -838,6 +830,7 @@ void() PlayerDeath =
 	centerprint (self, "/P^1You're Dead!\n^7--------\n\nYou've lost ^3" , h, " ^7gold!" , "\n\n^b^5Press Attack to respawn\n");
 	
 	self.respawn_finished = time + 5;
+	player_death();
 };
 
 void(float type) PlayerSpawn =
@@ -886,16 +879,8 @@ void(float type) PlayerSpawn =
 		self.canbackstab = TRUE; // can be backstabbed
 		self.th_die = PlayerDeath;
 
-		if (self.gender == "Male")
-		{
-			setmodel(self, "models/player_m.glb");
-			player_stand_m(); // male animations
-		}
-		else
-		{
-			setmodel(self, "models/player_f.glb");
-			player_stand_f(); // female animations
-		}
+		setmodel(self, "models/player_m.glb");
+		player_stand();
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}

@@ -98,6 +98,7 @@ attack_speed "2"
 attack_length "64"
 turn_speed "30"
 canbackstab "1"
+gender "Male"
 }
 
 // monster (bandit lvl1)
@@ -125,6 +126,7 @@ attack_speed "2"
 attack_length "64"
 turn_speed "30"
 canbackstab "1"
+gender "Male"
 }
 
 // monster (bandit lvl1)
@@ -152,4 +154,5 @@ attack_speed "2"
 attack_length "64"
 turn_speed "30"
 canbackstab "1"
+gender "Male"
 }

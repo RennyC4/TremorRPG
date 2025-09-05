@@ -1800,6 +1800,7 @@ const float MENU_MAGIC = 6; // user magic screen
 .float healthpot_use_finished;
 .float pushforward_finished;
 .float cnt;
+.float anim_count; // used for counting frames in an animation
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)

@@ -1,66 +1,111 @@
 //
 // Animation for players etc
 //
-$frame 0 1 2 3
 
-//
-// Male player model
-//
+$frame climb death stand jump move slash
 
-void() player_move_m;
-void() player_stand_m;
+void() player_move;
+void() player_stand;
 
-void() player_climb_m = [$0, player_climb_m]
+void() player_slash = [$slash, player_slash]
 {
-//	print ("WTF2\n");
+	if (self.anim_count > 0.6)
+	{
+		self.anim_count = 0;
+		player_stand();
+		return;
+	}
 
+	if (self.anim_count < 0.1)
+		self.pushforward_finished = time + (self.attack_speed / 6);
+
+	if (self.anim_count == 0.3)
+		DoAttack_Melee();
+
+	self.melee_finished = time + self.attack_speed;
+	self.lockview_finished = time + self.attack_speed;
+
+	self.anim_count += 0.1;
+};
+
+void() player_climb = [$climb, player_climb]
+{
 	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND || self.climbing == FALSE)
 	{
-		player_move_m();
+		self.anim_count = 0;
+		player_move();
 		return;
 	}
 };
 
-void() player_jump_m = [$2, player_jump_m]
+void() player_jump = [$jump, player_jump]
 {
 	if (self.climbing)
 	{
-		player_climb_m();
+		self.anim_count = 0;
+		player_climb();
 		return;
 	}
 	if (self.flags & FL_ONGROUND)
 	{
-		player_move_m();
+		self.anim_count = 0;
+		player_move();
 		return;
+	}
+
+	if (self.anim_count < 0.4)
+		self.anim_count += 0.1;
+	else
+	{
+		self.anim_count = 0;
+		player_move(); // TODO: Falling animation
 	}
 };
 
-void() player_move_m = [$3, player_move_m]
+void() player_move = [$move, player_move]
 {
 	if (!self.velocity_x && !self.velocity_y)
 	{
-		player_stand_m();
+		self.anim_count = 0;
+		player_stand();
 		return;
 	}
+	self.anim_count = 0;
 };
 
-void() player_stand_m = [$1, player_stand_m]
+void() player_stand = [$stand, player_stand]
 {
-	if (self.velocity_x || self.velocity_y)
+	if (self.melee_finished < time && (self.velocity_x || self.velocity_y))
 	{
-		player_move_m();
+		self.anim_count = 0;
+		player_move();
 		return;
 	}
+	self.anim_count = 0;
 };
 
+void() player_death = [$death, player_death] {};
+
+// Unneeded?
+/*
 //
 // Female player model
 //
-
 void() player_move_f;
 void() player_stand_f;
 
-void() player_climb_f = [$0, player_climb_f]
+void() player_slash_f = [$slash, player_slash_f]
+{
+	if (self.anim_count > 10)
+	{
+		self.anim_count = 0;
+		player_move_m();
+		return;
+	}
+	self.anim_count += 1;
+};
+
+void() player_climb_f = [$climb, player_climb_f]
 {
 	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND || self.climbing == FALSE)
 	{
@@ -69,7 +114,7 @@ void() player_climb_f = [$0, player_climb_f]
 	}
 };
 
-void() player_jump_f = [$2, player_jump_f]
+void() player_jump_f = [$jump, player_jump_f]
 {
 	if (self.climbing)
 	{
@@ -83,7 +128,7 @@ void() player_jump_f = [$2, player_jump_f]
 	}
 };
 
-void() player_move_f = [$3, player_move_f]
+void() player_move_f = [$move, player_move_f]
 {
 	if (!self.velocity_x && !self.velocity_y)
 	{
@@ -92,7 +137,7 @@ void() player_move_f = [$3, player_move_f]
 	}
 };
 
-void() player_stand_f = [$1, player_stand_f]
+void() player_stand_f = [$stand, player_stand_f]
 {
 	if (self.velocity_x || self.velocity_y)
 	{
@@ -100,3 +145,16 @@ void() player_stand_f = [$1, player_stand_f]
 		return;
 	}
 };
+
+//
+// Functions for both
+//
+
+void() player_slash =
+{
+	if (self.gender == "Male")
+		player_slash_m();
+	else
+		player_slash_f();
+};
+*/

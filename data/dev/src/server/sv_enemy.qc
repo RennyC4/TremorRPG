@@ -16,20 +16,6 @@ void() monster_respawn =
 	self.nextthink = time + 0.1;
 };
 
-void() monster_death =
-{
-	self.goalentity = self.enemy = world; // reset targets
-	self.velocity = '0 0 0'; // slide fix
-	self.alpha = 0.25;
-	self.solid = SOLID_NOT;
-	self.deadflag = DEAD_DEAD;
-	self.takedamage = DAMAGE_NO;
-	self.radius_candamage = FALSE;
-
-	self.think = monster_respawn;
-	self.nextthink = time + self.respawn_finished;
-};
-
 void() set_monster =
 {
 	if (self.model)
@@ -71,5 +57,5 @@ void() set_monster =
 	monster_ai_spawnrunback();
 
 	self.think = monster_ai_think;
-	self.nextthink = time + 0.1;
+	self.nextthink = time + 0.1 + random()*1; // stagger start think
 };

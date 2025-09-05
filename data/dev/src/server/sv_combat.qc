@@ -131,13 +131,10 @@ void() DoAttack_ShieldBash =
 .float staminamessage_finished;
 void() DoAttack_Melee =
 {
-	if (self.melee_finished > time)
-		return;
-
 	if (self.flags & FL_ONGROUND)
 		self.velocity = [0, 0];
 
-	// Stamina drain on swing
+	// Stamina drain on swing! TODO: move to animation
 	if (self.classname == "player")
 	{
 		float stamcalc = self.skill_endurance * 0.015; // calculation
@@ -292,9 +289,6 @@ void() DoAttack_Melee =
 			sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
 		}
 	}
-	self.pushforward_finished = time + (self.attack_speed / 4);
-	self.melee_finished = time + self.attack_speed;
-	self.lockview_finished = time + self.attack_speed;
 };
 
 void(entity targ) Player_CheckLevelUp;
