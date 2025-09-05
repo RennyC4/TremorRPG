@@ -187,9 +187,9 @@ float(entity targ, string itemname, float count) AddToInventory =
         return FALSE;
     }
 
-    targ.inventory[targ.inv_count] = itemname;
+	targ.inventory[targ.inv_count] = itemname;
 	targ.inventory_count[targ.inv_count] = count;
-    targ.inv_count++;
+	targ.inv_count++;
 	return TRUE;
 };
 

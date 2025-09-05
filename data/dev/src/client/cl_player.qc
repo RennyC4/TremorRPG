@@ -13,7 +13,7 @@ void() Player_Hud =
 		float player_menu = getstatf(STAT_MENU);
 		if (player_menu > 0)
 		{
-			setcursormode(TRUE,"gfx/xhair", [16, 16], cvar("vid_conautoscale")); // enable mouse cursor when menus are active
+			setcursormode(TRUE,"gfx/xhair", [5, 5], cvar("vid_conautoscale")); // enable mouse cursor when menus are active
 
 			if (player_menu == MENU_LOGIN)
 				User_LoginScreen();

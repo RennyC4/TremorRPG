@@ -479,7 +479,7 @@ void() User_CharacterScreen =
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
-	string fix_disp_magicspell;
+	string fix_disp_magicspell = "";
 	if (!disp_magicspell) fix_disp_magicspell = "None";
 	displaystat = strcat("^5Magic Spell: ^7", fix_disp_magicspell);
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
@@ -861,7 +861,7 @@ void() User_InventoryScreen =
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
-	string fix_disp_magicspell;
+	string fix_disp_magicspell = "";
 	if (!disp_magicspell) fix_disp_magicspell = "None";
 	displaystat = strcat("^5Magic Spell: ^7", fix_disp_magicspell);
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
@@ -1133,7 +1133,7 @@ void() User_MagicScreen =
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
-	string fix_disp_magicspell;
+	string fix_disp_magicspell = "";
 	if (!disp_magicspell) fix_disp_magicspell = "None";
 	displaystat = strcat("^5Magic Spell: ^7", fix_disp_magicspell);
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
