@@ -194,7 +194,7 @@ void() set_bonfire =
 
 	setmodel(self, "models/bonfire.glb");
 	setsize(self, [-16, -16, 0], [16, 16, 80]);
-	setorigin(self, self.origin + v_up * 64);
+	setorigin(self, self.origin);
 	droptofloor();
 
 	ambientsound(self.origin, "bonfire2.wav", 1, ATTN_STATIC);
