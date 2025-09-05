@@ -168,6 +168,7 @@ void() PlayerPrintStats =
 		self.gold = 99999;
 		self.level = 9999;
 	}
+	self.frame += 1; // test
 };
 
 // called from CSQC ("show_character" console command)
@@ -869,9 +870,14 @@ void(float type) PlayerSpawn =
 		self.th_die = PlayerDeath;
 
 		if (self.gender == "Male")
+		{
 			setmodel(self, "models/player_m.glb");
+		}
 		else
+		{
 			setmodel(self, "models/player_f.glb");
+			player_stand_f(); // female animations
+		}
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}

@@ -109,7 +109,6 @@ void() set_npc =
 	self.takedamage = DAMAGE_NO;
 	self.classname = "npc";
 	self.radius_candamage = FALSE;
-	self.colormod = '100 100 0'; // Yellow
 	self.idealangles = self.angles;
 	self.th_use = npc_use;
 
