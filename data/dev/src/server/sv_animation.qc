@@ -1,80 +1,102 @@
 //
 // Animation for players etc
 //
-$frame 0 1 2
+$frame 0 1 2 3
 
 //
 // Male player model
 //
 
+void() player_move_m;
 void() player_stand_m;
 
-void() player_jump_m = [$2, player_jump_m]
+void() player_climb_m = [$0, player_climb_m]
 {
-	if (self.flags & FL_ONGROUND)
-	{
-		player_stand_m();
-		return;
-	}
-	self.frame = 1; // jump, needs a loop / landing
-};
+//	print ("WTF2\n");
 
-void() player_move_m = [$0, player_move_f]
-{
-	if (!self.velocity_x && !self.velocity_y)
+	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND || self.climbing == FALSE)
 	{
-		//self.walkframe = 0;
-		player_stand_m();
-		return;
-	}
-	self.frame = 2; // walk cycle
-};
-
-void() player_stand_m = [$1, player_stand_f]
-{
-	if (self.velocity_x || self.velocity_y)
-	{
-		//self.walkframe = 0;
 		player_move_m();
 		return;
 	}
-	self.frame = 0; // stand cycle
+};
+
+void() player_jump_m = [$2, player_jump_m]
+{
+	if (self.climbing)
+	{
+		player_climb_m();
+		return;
+	}
+	if (self.flags & FL_ONGROUND)
+	{
+		player_move_m();
+		return;
+	}
+};
+
+void() player_move_m = [$3, player_move_m]
+{
+	if (!self.velocity_x && !self.velocity_y)
+	{
+		player_stand_m();
+		return;
+	}
+};
+
+void() player_stand_m = [$1, player_stand_m]
+{
+	if (self.velocity_x || self.velocity_y)
+	{
+		player_move_m();
+		return;
+	}
 };
 
 //
 // Female player model
 //
 
+void() player_move_f;
 void() player_stand_f;
+
+void() player_climb_f = [$0, player_climb_f]
+{
+	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND || self.climbing == FALSE)
+	{
+		player_move_f();
+		return;
+	}
+};
 
 void() player_jump_f = [$2, player_jump_f]
 {
-	if (self.flags & FL_ONGROUND)
+	if (self.climbing)
 	{
-		player_stand_f();
+		player_climb_f();
 		return;
 	}
-	self.frame = 1; // jump, needs a loop / landing
+	if (self.flags & FL_ONGROUND)
+	{
+		player_move_f();
+		return;
+	}
 };
 
-void() player_move_f = [$0, player_move_f]
+void() player_move_f = [$3, player_move_f]
 {
 	if (!self.velocity_x && !self.velocity_y)
 	{
-		//self.walkframe = 0;
 		player_stand_f();
 		return;
 	}
-	self.frame = 2; // walk cycle
 };
 
 void() player_stand_f = [$1, player_stand_f]
 {
 	if (self.velocity_x || self.velocity_y)
 	{
-		//self.walkframe = 0;
 		player_move_f();
 		return;
 	}
-	self.frame = 0; // stand cycle
 };

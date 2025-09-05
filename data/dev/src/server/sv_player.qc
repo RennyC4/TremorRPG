@@ -43,6 +43,10 @@ void() PlayerClimb =
 				self.stamina -= 1;
 				self.climb_stamina_finished = time + stamcalc;
 			}
+			if (self.gender == "Male")	// climb animation
+				player_climb_m();
+			else
+				player_climb_f();
 		}
 		else
 		{
@@ -76,6 +80,8 @@ void() PlayerJump =
 {
 	PlayerClimb();
 
+	if (self.climbing)
+		return;
 	if (!(self.flags & FL_ONGROUND))
 		return;
 	if (!(self.flags & FL_JUMPRELEASED))
