@@ -96,6 +96,17 @@ void() PlayerJump =
 		self.stamina -= (50 - stamcalc);
 
 		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
+		
+		if (self.gender == "Male")
+		{
+			self.think = player_jump_m; // play animation
+			self.nextthink = time + 0.1; // give it a bit of lee-way so we're not calling relying on FL_ONGROUND too early
+		}
+		else
+		{
+			self.think = player_jump_f; // play animation
+			self.nextthink = time + 0.1; // give it a bit of lee-way so we're not calling relying on FL_ONGROUND too early
+		}
 	}
 };
 
