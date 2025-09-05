@@ -289,6 +289,11 @@ void(vector pos) Draw_3DPDoll =
 		else
 			setmodel(doll, "models/player_f.glb");
 
+		doll.frame = 0; // TODO: Something cool with this? maybe match the current players animation
+
+		doll.drawflags = 7; // override engine lighting
+		doll.abslight = 500; // new lighting level
+
         setorigin(doll, '0 0 0');
 		doll.angles_y -= 180;
 		doll.origin_z -= 35;

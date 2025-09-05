@@ -872,6 +872,7 @@ void(float type) PlayerSpawn =
 		if (self.gender == "Male")
 		{
 			setmodel(self, "models/player_m.glb");
+			player_stand_m(); // male animations
 		}
 		else
 		{

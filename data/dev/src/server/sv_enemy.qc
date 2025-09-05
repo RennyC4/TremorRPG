@@ -52,7 +52,6 @@ void() set_monster =
 	self.takedamage = DAMAGE_AIM;
 	self.classname = "monster";
 	self.radius_candamage = TRUE; // can be affected by radius damage
-	self.colormod = '100 0 0'; // Red
 	self.flags |= FL_MONSTER;
 	self.th_die = monster_death;
 
