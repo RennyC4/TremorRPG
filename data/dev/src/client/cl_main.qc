@@ -169,6 +169,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
+const float CSQC_TIMEOFDAY = 4;
 void() CSQC_Parse_Event =
 {
 	float i;
@@ -200,6 +201,9 @@ void() CSQC_Parse_Event =
             npc_inventory_gold[i] = readfloat();
         }
 	}
+	// time of day for day / night effects
+	if (event == CSQC_TIMEOFDAY)
+		timeofday = readbyte();
 };
 
 noref void CSQC_Shutdown() = {};

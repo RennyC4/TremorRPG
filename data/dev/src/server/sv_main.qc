@@ -137,37 +137,40 @@ void() worldspawn =
 // day night server handler
 //
 
-.float daynight_update_finished;
 entity daynight;
-float daynight_count; // lightmaps
-float daynight_count2; // v_cshift
-float daynight_speed; // counter
-string day_skybox = "skyworld";
-string night_skybox = "skyworld_star";
-
+float daynight_count;
+float daynight_speed;
 void() daynight_think =
 {
-    daynight_speed += 0.05; // speed
+    daynight_speed += 0.05;
     if (daynight_speed > 2 * M_PI)
         daynight_speed -= 2 * M_PI;
 
-    daynight_count = 0.05 + ((sin(daynight_speed) + 1) * 0.5) * (1 - 0.05); //  calculation for time, r_shadow_realtime_world_lightmaps stuffcmd
-	daynight_count2 = 0.05 + ((sin(daynight_speed * -1) + 1) * 0.5) * (1 - 0.05) * 100; // v_cshift calc
+    daynight_count = (sin(daynight_speed) + 1) * 0.5;
 
-	//print (ftos(val), "\n"); // , vcshift_daynight, "\n");
+	//print (ftos(daynight_count), "\n");
 
-	// make sure this matches in sv_player.qc night handling stuff
-	if (daynight_count < 0.25)
-		timeofday = TIME_NIGHT;
-	else if (daynight_count > 0.75)
+	if (daynight_count > 0.75)
 		timeofday = TIME_DAY;
-	else
+	else if (daynight_count > 0.25)
 		timeofday = TIME_MID;
-
-	if (daynight_count < 0.25 || daynight_count > 0.99) // hold night time / day time for awhile
-		self.nextthink = time + 6;
 	else
-		self.nextthink = time + 3;
+		timeofday = TIME_NIGHT;
+
+	if (daynight_count < 0.25 || daynight_count > 0.75) // hold night time / day time for awhile
+		self.nextthink = time + 8;
+	else
+		self.nextthink = time + 2;
+
+	// send timeofday to CSQC player ents
+	for (entity b = world;(b = find(b, classname, "player"));)
+	{
+		msg_entity = b;
+		WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+		WriteByte(MSG_MULTICAST, CSQC_TIMEOFDAY);
+		WriteByte(MSG_MULTICAST, timeofday);
+		multicast(self.origin, MULTICAST_ONE_R);
+	}
 };
 
 void() spawn_daynight =

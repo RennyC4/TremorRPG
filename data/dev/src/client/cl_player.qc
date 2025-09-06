@@ -5,6 +5,45 @@ void() CSQC_Input_Frame =
 	input_movevalues_z = bound(-350, input_movevalues_z, 350);
 };
 
+string nightskybox = "skyworld_star";
+string dayskybox = "";
+void() Player_DayNightHandler =
+{
+	if (timeofday == 0) // day
+	{
+		if (cvar("r_shadow_realtime_world_lightmaps") != 1)
+		{
+			cvar_set("r_shadow_realtime_world_lightmaps", "1");
+			cvar_set("r_skybox", dayskybox);
+			localcmd("fog 0.02\n");
+			cvar_set("r_skyfog", "0.5");
+			cvar_set("v_cshift_empty", "0 0 0");
+		}
+	}
+	else if (timeofday == 1) // night
+	{
+		if (cvar("r_shadow_realtime_world_lightmaps") != 0.1)
+		{
+			cvar_set("r_shadow_realtime_world_lightmaps", "0.1");
+			cvar_set("r_skybox", nightskybox);
+			localcmd("fog 0.04 0\n");
+			cvar_set("r_skyfog", "0");
+			cvar_set("v_cshift_empty", "0 0 50 125");
+		}
+	}
+	else // mid afternoon/early morning
+	{
+		if (cvar("r_shadow_realtime_world_lightmaps") != 0.5)
+		{
+			cvar_set("r_shadow_realtime_world_lightmaps", "0.5");
+			cvar_set("r_skybox", dayskybox);
+			localcmd("fog 0.035\n");
+			cvar_set("r_skyfog", "0.25");
+			cvar_set("v_cshift_empty", "0 0 0");
+		}
+	}
+};
+
 void() Player_Hud =
 {
 	if (cvar("developer") == 0)
@@ -63,5 +102,6 @@ void() Player_Hud =
 
 			setcursormode(FALSE,"", 0, 0);
 		}
+		Player_DayNightHandler();
 	}
 };

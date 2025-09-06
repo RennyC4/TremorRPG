@@ -2177,6 +2177,7 @@ float showscores;
 float drawfont1;
 float drawfont2;
 float camera_mode;
+float timeofday;
 
 float MENU;
 const float MENU_OFF = 0;

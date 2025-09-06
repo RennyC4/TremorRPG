@@ -1702,6 +1702,7 @@ float	SVC_TEMPENTITY		= 23;
 const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
+const float CSQC_TIMEOFDAY = 4;
 
 // Function defs
 .void()		th_die;
@@ -1884,6 +1885,7 @@ const float SPELL_FIREDART = 1;
 //
 // Send stats to CSQC 
 //
+
 #define STAT_GUID 32
 #define STAT_LOGGEDIN 33
 #define STAT_PLAYER_X 34
