@@ -857,7 +857,11 @@ void(float type) PlayerSpawn =
 		self.canbackstab = TRUE; // can be backstabbed
 		self.th_die = PlayerDeath;
 
-		setmodel(self, "models/player_m.glb");
+		if (self.gender == "Male")
+			setmodel(self, "models/player_m.glb");
+		else
+			setmodel(self, "models/player_f.glb");
+		
 		player_stand();
 
 		stuffcmd (self, sprintf("music %s\n", self.music));

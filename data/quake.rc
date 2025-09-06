@@ -1,5 +1,5 @@
 //
-// allow quake to run the mod
+// allow FTE to run the mod
 //
 
 registered 1
@@ -16,9 +16,8 @@ exec settings.cfg
 
 stuffcmds
 
-
 //
-// set RenRacer defaults - be careful when changing these as things can break
+// set Tremor defaults - be careful when changing these as things can break
 //
 
 sv_sound_land ""
