@@ -160,6 +160,21 @@ void(string id, vector pos, vector size, __inout vector scrollofs) bind_list =
 	sui_list_view_end();	
 };
 
+float texturefilter;
+void() settings_texturefilter =
+{
+	if (!texturefilter)
+	{
+		localcmd ("gl_texturemode lll\n");
+		texturefilter = TRUE;
+	}
+	else
+	{
+		localcmd ("gl_texturemode nll\n");
+		texturefilter = FALSE;
+	}
+};
+
 float current_menu;
 const float MENU_MAIN = 1;
 const float MENU_SETTINGS = 2;
@@ -203,7 +218,11 @@ void() settings_menu =
 	ypos += 24;
 	sui_text([xpos, ypos], MENU_TEXT_SMALL, "Window can be resized.", MENU_TEXT_1, 0.8, 0);
 	ypos += 16;
-
+	my_button("tf_btn", [xpos, ypos], [width / 2, 20], "Texture Filtering") ? settings_texturefilter() : 0;
+	if (texturefilter)
+		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "On", MENU_TEXT_1, 1, 0);
+	else
+		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Off", MENU_TEXT_1, 1, 0);
 	ypos = 32;
 	xpos = 8 + width + 8 + 8;
 
