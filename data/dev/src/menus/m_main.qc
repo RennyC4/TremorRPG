@@ -1,5 +1,4 @@
 float menu_active;
-float splash_time;
 
 void() m_init =
 {

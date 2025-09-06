@@ -63,8 +63,12 @@ void(string id, vector pos, vector size, float maxlen, __inout string text, __in
 	sui_pop_frame();
 };
 
+float splash_time;
 float(string id, vector pos, vector size, string text) my_button =
 {
+	if (splash_time - 1 > time) // disallow button presses until splash screen is over
+		return FALSE;
+
 	sui_push_frame(pos, size);
 	vector basecolor = sui_is_hovered(id) ? MENU_BUTTON + MENU_HIGHLIGHT * 0.25 : MENU_BUTTON; 
 	basecolor = sui_is_held(id) ? MENU_BUTTON - MENU_DARKEN * 0.1 : basecolor;
