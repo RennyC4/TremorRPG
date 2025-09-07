@@ -134,7 +134,7 @@ void() Draw_InCombatorPVP =
 	float incombat = getstatf(STAT_INCOMBAT);
 	float pvp = getstatf(STAT_PVP);
 
-	vector pos = [(g_width / 100 + 155), (g_height - 38)];
+	vector pos = [135, (g_height - 42)];
 	vector size = [35, 35];
 
 	if (!pvp || pvp == 2)
