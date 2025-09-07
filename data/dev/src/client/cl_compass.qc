@@ -45,7 +45,7 @@ string(float v, float prec) ftoa_prec =
 
 void() Compass_Draw =
 {
-	vector center = [g_width - compass_radius, 0 + compass_radius];
+	vector center = [g_width - (compass_radius + 5), 0 + compass_radius];
 
 	// camera yaw
 	vector vang = getproperty(VF_ANGLES);
@@ -83,7 +83,7 @@ void() Coords_Draw =
 
 	vector scale = [10, 10];
 	float tw = stringwidth(txt, 1, 10);
-	vector pos = [g_width - tw - (compass_radius /4), compass_radius * 2];
+	vector pos = [g_width - tw - ((compass_radius / 4) + 5), compass_radius * 2];
 
 	// backdrop
 	drawfill(pos + [-8,-4], [tw+16, 16], '0,0,0', 0.35, 0);
