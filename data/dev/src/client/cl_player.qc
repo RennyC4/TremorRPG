@@ -110,4 +110,31 @@ void() Player_Hud =
 		}
 		Player_DayNightHandler();
 	}
+
+	float lockon = getstatf(STAT_LOCKEDON);
+	if (lockon)
+	{
+		// Get CSQC info
+		// Setup
+		vector plaque_pos = [LOCKON_COORD_X, LOCKON_COORD_Y, LOCKON_COORD_Z];
+		vector player_pos = [getstatf(STAT_PLAYER_X), getstatf(STAT_PLAYER_Y), getstatf(STAT_PLAYER_Z)];
+		vector plaque_coord = project(plaque_pos);
+
+		plaque_coord_x -= 16; // center it
+		plaque_coord_y -= 24;
+
+		drawstring(plaque_coord, LOCKON_NAME, 10, [1, 1, 1], 1, 0);
+
+		// Draw bar + level
+		plaque_coord_x -= 12;
+		plaque_coord_y += 8;
+
+		vector hbar_size = '50 4 0';
+		hbar_size_x = (LOCKON_HEALTH / LOCKON_MAXHEALTH) * hbar_size_x; // keep bar updated
+		drawfill(plaque_coord + [0 , 2], hbar_size, '0.5 0 0', 1, 0);
+
+		plaque_coord_x += 28;
+		string lvl = ftos(LOCKON_LEVEL);
+		drawstring(plaque_coord + [24, 0], lvl, 8, [1, .8, 0], 1, 0);
+	}
 };

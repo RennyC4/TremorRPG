@@ -170,6 +170,8 @@ const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
+const float CSQC_LOCKON_INFO = 5;
+
 void() CSQC_Parse_Event =
 {
 	float i;
@@ -204,6 +206,18 @@ void() CSQC_Parse_Event =
 	// time of day for day / night effects
 	if (event == CSQC_TIMEOFDAY)
 		timeofday = readbyte();
+	// Lock on sends info to CSQC to draw plaque
+	if (event == CSQC_LOCKON_INFO)
+	{
+		LOCKON_NAME = readstring();
+		LOCKON_LEVEL = readfloat();
+		LOCKON_HEALTH = readfloat();
+		LOCKON_MAXHEALTH = readfloat();
+
+		LOCKON_COORD_X = readfloat();
+		LOCKON_COORD_Y = readfloat();
+		LOCKON_COORD_Z = readfloat();
+	}
 };
 
 noref void CSQC_Shutdown() = {};

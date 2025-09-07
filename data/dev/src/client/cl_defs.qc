@@ -2179,6 +2179,14 @@ float drawfont2;
 float camera_mode;
 float timeofday;
 
+string LOCKON_NAME;
+float LOCKON_LEVEL;
+float LOCKON_HEALTH;
+float LOCKON_MAXHEALTH;
+float LOCKON_COORD_X;
+float LOCKON_COORD_Y;
+float LOCKON_COORD_Z;
+
 float MENU;
 const float MENU_OFF = 0;
 const float MENU_LOGIN = 1;
@@ -2247,6 +2255,7 @@ const float MENU_MAGIC = 6; // user magic screen
 #define STAT_BLOCKVALUE 84
 #define STAT_LOCKVIEW 85
 #define STAT_SPELLEQUIPPED 86
+#define STAT_LOCKEDON 87
 
 // Inventory - Player
 #define MAX_INVENTORY 32

@@ -1703,12 +1703,13 @@ const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
+const float CSQC_LOCKON_INFO = 5;
 
 // Function defs
 .void()		th_die;
 .void()		th_use; // for use key
 
-// Constants
+// Constants for terrain
 const float TEREDIT_RELOAD = 0;
 const float TEREDIT_SAVE = 1;
 const float TEREDIT_SETHOLE = 2;
@@ -1864,7 +1865,6 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float skill_archery;
 .float skill_healthregen;
 .float skill_manaregen;
-//
 .float skill_haggle;
 .float skill_climb;
 .float skill_swim;
@@ -1877,7 +1877,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float skill_woodwork;
 .float skill_blacksmithing;
 
-//
+// spells
 .float spell_equipped;
 const float SPELL_NONE = 0;
 const float SPELL_FIREDART = 1;
@@ -1941,6 +1941,7 @@ const float SPELL_FIREDART = 1;
 #define STAT_BLOCKVALUE 84
 #define STAT_LOCKVIEW 85
 #define STAT_SPELLEQUIPPED 86
+#define STAT_LOCKEDON 87
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001
@@ -1962,7 +1963,14 @@ var float PART_BONFIRE;
 .string inventory[MAX_INVENTORY];
 .float inventory_count[MAX_INVENTORY]; // stack counts
 .float read_inv_count; // used for reading how many items the player has on resuming character
+
+// Day/Night
 float timeofday;
 const float TIME_DAY = 0;
 const float TIME_NIGHT = 1;
 const float TIME_MID = 2;
+
+// Lock-on targetting
+.entity lock_target;	// current locked entity (monster/player)
+.float  lock_on; 	// 0/1 toggle
+.float  lock_next;	// debounce for toggles/switches (time)

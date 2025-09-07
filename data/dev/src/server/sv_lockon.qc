@@ -7,10 +7,6 @@ float(entity e) IsValidLockTarget;
 float(entity from, entity to) HasLOS;
 void(entity target) SmoothFaceEntity;
 
-.entity lock_target;	// current locked entity (monster/player)
-.float  lock_on; 	// 0/1 toggle
-.float  lock_next;	// debounce for toggles/switches (time)
-
 float LOCK_RANGE        = 2000;	// max distance to pick/keep a lock
 float LOCK_FOV_COS      = 0.60;	// cos(FOV/2). 0.60 ~ ~104° cone; tighten to ~0.90 for ~50°
 float LOCK_SWITCH_COOLD = 0.18;	// seconds between switch presses
@@ -205,8 +201,31 @@ void() LockOn_Update =
         self.lock_target = world;
         return;
     }
-	
+
 	SmoothFaceEntity(t); // gently steer the view
+
+	// Send lock on target info to CSQC
+	if (self.classname == "player")
+	{
+		msg_entity = self;
+		WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+		WriteByte(MSG_MULTICAST, CSQC_LOCKON_INFO);
+
+		if (!t.displayname)
+			WriteString(MSG_MULTICAST, t.netname);
+		else
+			WriteString(MSG_MULTICAST, t.displayname);
+		
+		WriteFloat(MSG_MULTICAST, t.level);
+		WriteFloat(MSG_MULTICAST, t.health);
+		WriteFloat(MSG_MULTICAST, t.max_health);
+
+		WriteCoord(MSG_MULTICAST, t.origin_x);
+		WriteCoord(MSG_MULTICAST, t.origin_y);
+		WriteCoord(MSG_MULTICAST, t.origin_z);
+
+		multicast(self.origin, MULTICAST_ONE_R);
+	}
 };
 
 // true if e is valid target
