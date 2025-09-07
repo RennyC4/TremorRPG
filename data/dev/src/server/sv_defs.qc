@@ -1942,6 +1942,7 @@ const float SPELL_FIREDART = 1;
 #define STAT_LOCKVIEW 85
 #define STAT_SPELLEQUIPPED 86
 #define STAT_LOCKEDON 87
+#define STAT_VENDOR 88 // Could be done with CGAMEPACKET instead
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001
@@ -1963,6 +1964,7 @@ var float PART_BONFIRE;
 .string inventory[MAX_INVENTORY];
 .float inventory_count[MAX_INVENTORY]; // stack counts
 .float read_inv_count; // used for reading how many items the player has on resuming character
+.float npc_vendor; // for csqc button drawing
 
 // Day/Night
 float timeofday;

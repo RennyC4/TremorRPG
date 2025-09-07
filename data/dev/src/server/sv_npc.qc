@@ -62,10 +62,14 @@ void() npc_use =
 				AddToInventory(self, what, stof(line));
 		}
 		SendNPCInventory(self, self.user); // Send NPC inventory to CSQC
+		self.user.npc_vendor = TRUE;
 		fclose(b);
 	}
 	else
+	{
 		SendNPCInventory(self, self.user); // Clear NPC inventory when they have nothing either
+		self.user.npc_vendor = FALSE; // CSQC: don't draw buy button for player
+	}
 
 	msg_entity = self.user;
 	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);

@@ -30,7 +30,11 @@ void() User_NPCDialogue =
 
 	newpos_x -= 5;
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-	my_button("npc_buy", newpos, [85, 22.5], "Buy / Sell") ? sendevent("PlayerShowBuySell", "") : 0;
+
+	// TODO: This button shouldn't exist if the NPC has nothing
+	float buysell = getstatf(STAT_VENDOR);
+	if (buysell)
+		my_button("npc_buy", newpos, [85, 22.5], "Buy / Sell") ? sendevent("PlayerShowBuySell", "") : 0;
 
 	// NPC chatter box
 	newpos = [2.5, 0]; //reset newpos
@@ -96,7 +100,7 @@ void() User_NPCBuySell =
 	sui_text(newpos, MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
 
 	// Bottom buttons
-	newpos_x += 2.5;
+	newpos_x += 3.25;
 	newpos_y -= 5;
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
 	my_button("npc_leave", newpos, [50, 22.5], "Leave") ? sendevent("ShutDownMenus", "") : 0;

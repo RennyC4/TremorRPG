@@ -73,6 +73,7 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_LOCKVIEW, EV_FLOAT, lockview_finished);
 	clientstat(STAT_SPELLEQUIPPED, EV_FLOAT, spell_equipped);
 	clientstat(STAT_LOCKEDON, EV_FLOAT, lock_on);
+	clientstat(STAT_VENDOR, EV_FLOAT, npc_vendor);
 	// Job Skills
 };
 
