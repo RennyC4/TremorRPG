@@ -4,6 +4,7 @@
 
 $frame climb death stand jump move slash
 
+// Monster plates
 void() Draw_LockOnInfo =
 {
 	float lockon = getstatf(STAT_LOCKEDON);
@@ -31,7 +32,7 @@ void() Draw_LockOnInfo =
 
 		plaque_coord_x += 28;
 		string lvl = ftos(LOCKON_LEVEL);
-		drawstring(plaque_coord + [24, 0], lvl, 8, [1, .8, 0], 1, 0);
+		drawstring(plaque_coord + [24, -2], lvl, 10, [1, .8, 0], 1, 0);
 	}
 };
 
