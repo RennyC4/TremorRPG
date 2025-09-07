@@ -2,7 +2,10 @@
 // NPCs, most are defined in the maps themselves (hmp / bsp)
 //
 
+$frame climb death stand jump move slash
+
 void(entity targ, entity client) SendNPCInventory;
+void(entity player) DeleteInventory;
 void() npc_ai_think;
 .string npc_dialog; // reference npc file scripts
 
@@ -35,6 +38,8 @@ void() npc_use =
 		return;
 	}
 	fclose(v);
+
+	DeleteInventory(self); // clear any inventory first, fixes gold doubling
 
 	// Grab NPC inventory from file
 	string what = "";
@@ -111,6 +116,7 @@ void() set_npc =
 	self.radius_candamage = FALSE;
 	self.idealangles = self.angles;
 	self.th_use = npc_use;
+	self.frame = $stand;
 
 	if (!self.sight_range)
 		self.sight_range = 100;

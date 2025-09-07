@@ -155,7 +155,7 @@ void(string itemname) CSEv_PlayerSellItem_s =
     }
 };
 
-// Add an item, mainly used for item pick ups
+// Add an item, mainly used for item pick ups / buying items and equipping NPCs for selling items
 // returns TRUE if player was able to grab the item
 float(entity targ, string itemname, float count) AddToInventory =
 {
@@ -186,7 +186,7 @@ float(entity targ, string itemname, float count) AddToInventory =
         sprint(targ, PRINT_HIGH, "Inventory full!\n");
         return FALSE;
     }
-
+	
 	targ.inventory[targ.inv_count] = itemname;
 	targ.inventory_count[targ.inv_count] = count;
 	targ.inv_count++;
@@ -216,6 +216,19 @@ void(entity player, string itemname, float count) RemoveFromInventory =
             return;
         }
     }
+};
+
+void(entity player) DeleteInventory =
+{
+	float i;
+
+	for (i = 0; i < player.inv_count; i++)
+	{
+		player.inventory[i] = __NULL__;
+		player.inventory_count[i] = 0;
+	}
+
+	player.inv_count = 0; // Reset inventory count
 };
 
 void() itemchest_think =

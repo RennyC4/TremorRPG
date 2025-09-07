@@ -2,6 +2,8 @@
 // Player HUD
 //
 
+$frame climb death stand jump move slash
+
 void() Draw_LockOnInfo =
 {
 	float lockon = getstatf(STAT_LOCKEDON);
@@ -329,6 +331,7 @@ void(vector pos) Draw_3DPDoll =
 		doll.angles_y -= 180;
 		doll.origin_z -= 35;
 		doll.effects = EF_FULLBRIGHT;
+		doll.frame = $stand;
     }
 	doll.angles_y += 0.2;
 	entdraw(doll, pos, '150 250', -245);
