@@ -120,8 +120,11 @@ void() Player_Hud =
 		vector player_pos = [getstatf(STAT_PLAYER_X), getstatf(STAT_PLAYER_Y), getstatf(STAT_PLAYER_Z)];
 		vector plaque_coord = project(plaque_pos);
 
+		if (plaque_coord_y > g_height / 2)
+			plaque_coord_y = g_height / 2;
+
 		plaque_coord_x -= 16; // center it
-		plaque_coord_y -= 24;
+		plaque_coord_y -= 16;
 
 		drawstring(plaque_coord, LOCKON_NAME, 10, [1, 1, 1], 1, 0);
 
