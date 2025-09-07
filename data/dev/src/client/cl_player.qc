@@ -1,3 +1,6 @@
+void() Compass_Draw;
+void() Coords_Draw;
+
 void() CSQC_Input_Frame =
 {
 	input_movevalues_x = bound(-350, input_movevalues_x, 350);
@@ -99,6 +102,9 @@ void() Player_Hud =
 			Draw_Stamina();
 			Draw_Exp();
 			Draw_InCombatorPVP();
+
+			Compass_Draw();
+			Coords_Draw();
 
 			setcursormode(FALSE,"", 0, 0);
 		}

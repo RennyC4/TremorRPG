@@ -12,3 +12,4 @@ client/cl_player.qc
 client/cl_camera.qc
 client/cl_main.qc
 client/cl_scoreboard.qc
+client/cl_compass.qc
