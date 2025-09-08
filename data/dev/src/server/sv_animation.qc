@@ -1,18 +1,15 @@
 //
-// Animation for players etc
+// Animation for players etc - Slowly being removed for CSQC animations
 //
 
 $frame climb death stand jump move slash
-
-void() player_move;
-void() player_stand;
 
 void() player_slash = [$slash, player_slash]
 {
 	if (self.anim_count > 0.6)
 	{
 		self.anim_count = 0;
-		player_stand();
+		//player_stand();
 		return;
 	}
 
@@ -33,7 +30,7 @@ void() player_climb = [$climb, player_climb]
 	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND || self.climbing == FALSE)
 	{
 		self.anim_count = 0;
-		player_move();
+		//player_move();
 		return;
 	}
 };
@@ -49,7 +46,7 @@ void() player_jump = [$jump, player_jump]
 	if (self.flags & FL_ONGROUND)
 	{
 		self.anim_count = 0;
-		player_move();
+		//player_move();
 		return;
 	}
 
@@ -58,30 +55,8 @@ void() player_jump = [$jump, player_jump]
 	else
 	{
 		self.anim_count = 0;
-		player_move(); // TODO: Falling animation
+		//player_move(); // TODO: Falling animation
 	}
-};
-
-void() player_move = [$move, player_move]
-{
-	if (!self.velocity_x && !self.velocity_y)
-	{
-		self.anim_count = 0;
-		player_stand();
-		return;
-	}
-	self.anim_count = 0;
-};
-
-void() player_stand = [$stand, player_stand]
-{
-	if (self.melee_finished < time && (self.velocity_x || self.velocity_y))
-	{
-		self.anim_count = 0;
-		player_move();
-		return;
-	}
-	self.anim_count = 0;
 };
 
 void() player_death = [$death, player_death] {};

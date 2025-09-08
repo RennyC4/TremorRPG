@@ -1,6 +1,7 @@
 void() Camera_IdleOrbit;
 void() Compass_Draw;
 void() Coords_Draw;
+void() Player_Animate;
 
 void() CSQC_Input_Frame =
 {
@@ -142,13 +143,13 @@ float(void) Player_PreDraw =
 
 			if (input_timelength == 0) // Partial frames are the worst
 				break;
+
 			runstandardplayerphysics( self );
 		}
 				
-		// Smooth stair stepping, this has to be done manually!
-		vPlayerOriginOld = vPlayerOrigin;
+		vPlayerOriginOld = vPlayerOrigin; // Smooth stair stepping, this has to be done manually!
 
-		if (( self.flags & FL_ONGROUND ) && (self.origin_z - vPlayerOriginOld_z > 0))
+		if ((self.flags & FL_ONGROUND) && (self.origin_z - vPlayerOriginOld_z > 0))
 		{
 			vPlayerOriginOld_z += frametime * 150;
 
@@ -173,8 +174,7 @@ float(void) Player_PreDraw =
 		self.pmove_flags = fOldPMoveFlags;
 		self.movetype = MOVETYPE_NONE;
 
-		// Set renderflag for mirrors!
-		self.renderflags = RF_EXTERNALMODEL;
+		self.renderflags = RF_EXTERNALMODEL; // Set renderflag for mirrors!
     }
 	else
         addentity(self);
@@ -182,6 +182,8 @@ float(void) Player_PreDraw =
     return PREDRAW_NEXT;
 };
 
+.string gender;
+.float climbing;
 void(float flIsNew) CSQC_Ent_Update =
 {
 	float flEntType = readbyte();
@@ -191,10 +193,9 @@ void(float flIsNew) CSQC_Ent_Update =
 		if (flIsNew == TRUE)
 		{
 			self.classname = "player";
-			self.solid = SOLID_SLIDEBOX;
+			self.solid = SOLID_TRIGGER;
 			self.predraw = Player_PreDraw;
 			self.drawmask = MASK_ENGINE;
-			setmodel(self, "models/player_m.glb");
 		}
 
 		self.origin_x = readcoord();
@@ -207,8 +208,18 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.velocity_y = readshort();
 		self.velocity_z = readshort();
 		self.flags = readfloat();
+		self.gender = readstring();
+		self.climbing = readshort();
 
-		setsize(self, '-16 -16 -24', '16 16 32');
+		if (self.gender == "Male")
+			setmodel(self, "models/player_m.glb");
+		else
+			setmodel(self, "models/player_f.glb");
+
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);
+		
+		self.think = Player_Animate;
+		self.nextthink = time;
 	}
 };

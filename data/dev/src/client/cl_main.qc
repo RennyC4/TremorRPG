@@ -36,8 +36,8 @@ noref void() CSQC_WorldLoaded =
 	registercommand("toggle_camera", "3rd person camera toggle\n");
 	registercommand("+use", "Use what is in front of player\n");
 
-	if (cvar("developer") == 1)
-		localcmd("sv_cheats 1\nsv_csqc_progname csaddon.dat\nrestart\n");
+//	if (cvar("developer") == 1)
+//		localcmd("sv_cheats 1\nsv_csqc_progname csaddon.dat\nrestart\n");
 };
 
 // CALLED EVERY CLIENT RENDER FRAME

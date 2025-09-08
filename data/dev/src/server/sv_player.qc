@@ -39,12 +39,13 @@ void() PlayerClimb =
 			self.climbing = TRUE;
 			self.velocity = [0, 0];
 			self.velocity_z += climbcalc;
+			self.flags &= ~FL_ONGROUND;
+			self.flags &= ~FL_PARTIALGROUND;
 			if (self.climb_stamina_finished < time)
 			{
 				self.stamina -= 1;
 				self.climb_stamina_finished = time + stamcalc;
 			}
-			player_climb(); // climb animation
 		}
 		else
 		{
@@ -758,7 +759,8 @@ void() PlayerPreThink =
 // Ran after physics
 void() PlayerPostThink =
 {
-	self.SendFlags = 1;
+	if (cvar("developer") == 0)
+		self.SendFlags = 1;
 
 	if (!self.loggedin)
 		return;
@@ -964,8 +966,6 @@ void(float type) PlayerSpawn =
 		else
 			setmodel(self, "models/player_f.glb");
 		
-		player_stand();
-
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
 	else // respawning from death
@@ -1018,6 +1018,9 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteShort(MSG_ENTITY, self.velocity_y); // Velocity X
 	WriteShort(MSG_ENTITY, self.velocity_z); // Velocity X
 	WriteFloat(MSG_ENTITY, self.flags); // Flags, important for physics
+
+	WriteString(MSG_ENTITY, self.gender); // Gender for model selection
+	WriteShort(MSG_ENTITY, self.climbing); // Climbing - Animation
 	return TRUE;
 };
 
