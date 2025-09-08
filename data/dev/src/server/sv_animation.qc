@@ -9,7 +9,7 @@ void() player_slash = [$slash, player_slash]
 	if (self.anim_count > 0.6)
 	{
 		self.anim_count = 0;
-		//player_stand();
+		self.think = info_null;
 		return;
 	}
 

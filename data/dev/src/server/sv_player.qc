@@ -2,6 +2,8 @@
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
+float modelindex_player_m, modelindex_player_f;
+
 void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;self.melee_finished = time + 0.25;};
 void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
@@ -923,6 +925,7 @@ void(float type) PlayerSpawn =
 		self.classname = "notloggedin";
 		self.solid = SOLID_NOT;
 		setmodel(self, string_null);
+		self.modelindex = 0;
 		if (cvar("developer") == 0)
 			self.movetype = MOVETYPE_NONE;
 		else
@@ -961,10 +964,16 @@ void(float type) PlayerSpawn =
 		self.th_die = PlayerDeath;
 
 		if (self.gender == "Male")
+		{
 			setmodel(self, "models/player_m.glb");
+			modelindex_player_m = self.modelindex;
+		}
 		else
+		{
 			setmodel(self, "models/player_f.glb");
-		
+			modelindex_player_f = self.modelindex;
+		}
+
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
 	else // respawning from death
@@ -1017,8 +1026,8 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteShort(MSG_ENTITY, self.velocity_y); // Velocity X
 	WriteShort(MSG_ENTITY, self.velocity_z); // Velocity X
 	WriteFloat(MSG_ENTITY, self.flags); // Flags, important for physics
-
-	WriteString(MSG_ENTITY, self.gender); // Gender for model selection
+	
+	WriteShort(MSG_ENTITY, self.modelindex);
 	WriteShort(MSG_ENTITY, self.climbing); // Climbing - Animation
 	return TRUE;
 };
@@ -1045,6 +1054,7 @@ void() ClientDisconnect =
 {
 	player_chain_remove(self); // clean up removed player
 	setmodel (self, string_null);
+	self.modelindex = 0;
 	self.solid = SOLID_NOT;
 	self.classname = "notloggedin";
 

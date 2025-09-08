@@ -184,6 +184,8 @@ float(void) Player_PreDraw =
 
 .string gender;
 .float climbing;
+float modelindex_player_m, modelindex_player_f;
+
 void(float flIsNew) CSQC_Ent_Update =
 {
 	float flEntType = readbyte();
@@ -208,13 +210,9 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.velocity_y = readshort();
 		self.velocity_z = readshort();
 		self.flags = readfloat();
-		self.gender = readstring();
-		self.climbing = readshort();
 
-		if (self.gender == "Male")
-			setmodel(self, "models/player_m.glb");
-		else
-			setmodel(self, "models/player_f.glb");
+		self.modelindex = readshort();
+		self.climbing = readshort();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);
