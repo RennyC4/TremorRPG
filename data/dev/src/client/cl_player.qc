@@ -1,3 +1,4 @@
+void() Camera_IdleOrbit;
 void() Compass_Draw;
 void() Coords_Draw;
 
@@ -96,15 +97,21 @@ void() Player_Hud =
 			else
 				ZoneName_alpha.doalpha = 0;
 
-			Draw_EventLog();
-			Draw_Health();
-			Draw_Mana();
-			Draw_Stamina();
-			Draw_Exp();
-			Draw_InCombatorPVP();
-			Compass_Draw();
-			Coords_Draw();
-			Draw_LockOnInfo();
+			if (!player_idle)
+			{
+				Draw_EventLog();
+				Draw_Health();
+				Draw_Mana();
+				Draw_Stamina();
+				Draw_Exp();
+				Draw_InCombatorPVP();
+				Compass_Draw();
+				Coords_Draw();
+				Draw_LockOnInfo();
+			}
+
+			if (time - last_input_time > idle_threshold)
+				player_idle = TRUE; // turn on camera orbit
 
 			setcursormode(FALSE,"", 0, 0);
 		}

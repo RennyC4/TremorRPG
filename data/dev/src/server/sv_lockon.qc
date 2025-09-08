@@ -5,12 +5,11 @@
 entity() FindLockTarget;
 float(entity e) IsValidLockTarget;
 float(entity from, entity to) HasLOS;
-void(entity target) SmoothFaceEntity;
+//void(entity target) SmoothFaceEntity;
 
 float LOCK_RANGE        = 2000;	// max distance to pick/keep a lock
 float LOCK_FOV_COS      = 0.60;	// cos(FOV/2). 0.60 ~ ~104° cone; tighten to ~0.90 for ~50°
 float LOCK_SWITCH_COOLD = 0.18;	// seconds between switch presses
-float LOCK_TURN_SPEED   = 32;	// higher = snappier turn toward target (server smoothing)
 float LOCK_BREAK_TIME   = 3;	// (was 0.25) grace time when LOS lost before breaking lock
 
 // impulses
@@ -18,39 +17,6 @@ float IMP_LOCK_TOGGLE = 140;
 float IMP_LOCK_CYCLE = 141;
 
 .float lock_los_lost_time; // remember last time we saw the target for grace period
-
-void() ShowLockMarker_think =
-{
-	if (self.scale > 4)
-		self.scale -= 0.5;
-	else
-		self.scale = 4;
-	self.nextthink = time;
-};
-
-void(entity player, entity target) ShowLockMarker =
-{
-    if (!target)
-		return;
-	if (player.reticle)
-		return;
-
-	entity x = spawn();
-	x.owner = player;
-	x.aiment = target;
-	x.drawonlytoclient = player;
-	x.movetype = MOVETYPE_FOLLOW;
-	x.effects = EF_NODEPTHTEST;
-	x.classname = "reticle";
-	x.scale = 24;
-	x.view_ofs_z = target.maxs_z / 2;
-	setmodel(x, "progs/targetdot.spr");
-	setsize(x, [-0, -0, 0], [0, 0, 0]);
-	x.think = ShowLockMarker_think;
-	x.nextthink = time;
-
-	player.reticle = x; // link 'em
-};
 
 // helper function (aim magnet) to bios aim vector towards the locked target
 vector() AttackDir =
@@ -84,17 +50,10 @@ void() LockOn_HandleInput =
                 self.lock_on = 1;
                 self.lock_target = t;
                 self.lock_los_lost_time = 0;
-                if (!self.reticle)
-                    ShowLockMarker(self, t); // flash on new target
             }
         }
         else // disengage lock
         {
-            if (self.reticle)
-            {
-                remove(self.reticle);
-                self.reticle = world;
-            }
             self.lock_on = 0;
             self.lock_target = world;
         }
@@ -134,18 +93,18 @@ void() LockOn_HandleInput =
         }
 
 		// find pvp players
-        entity e = find(world, classname, "player");
+        e = find(world, classname, "player");
         while (e)
         {
             if (IsValidLockTarget(e) && e != self.lock_target && vlen(e.origin - self.origin) <= LOCK_RANGE && HasLOS(self, e) && e.pvp == 1)
             {
                 makevectors(self.v_angle);
-                vector to = normalize((e.origin + e.view_ofs) - (self.origin + self.view_ofs));
-                float front = v_forward * to;
+                to = normalize((e.origin + e.view_ofs) - (self.origin + self.view_ofs));
+                front = v_forward * to;
 
                 if (front > 0.1) // must be somewhat in front
                 {
-                    float score = front * 100 - vlen(e.origin - self.origin);
+                    score = front * 100 - vlen(e.origin - self.origin);
                     if (score > bestScore)
                     {
                         bestScore = score;
@@ -157,15 +116,7 @@ void() LockOn_HandleInput =
         }
 
         if (best)
-        {
-            if (self.reticle)
-            {
-                remove(self.reticle);
-                self.reticle = world;
-            }
             self.lock_target = best;
-            ShowLockMarker(self, best);
-        }
 
         self.impulse = 0;
     }
@@ -179,11 +130,6 @@ void() LockOn_Update =
     entity t = self.lock_target;
     if (!IsValidLockTarget(t))
     {
-		if (self.reticle)
-		{
-			remove(self.reticle);
-			self.reticle = world;
-		}
 		self.lock_on = 0;
         self.lock_target = world;
         return;
@@ -199,11 +145,6 @@ void() LockOn_Update =
 			self.lock_los_lost_time = time;
         if (time - self.lock_los_lost_time > LOCK_BREAK_TIME)
         {
-			if (self.reticle)
-			{
-				remove(self.reticle);
-				self.reticle = world;
-			}
             self.lock_on = 0;
             self.lock_target = world;
             return;
@@ -214,17 +155,12 @@ void() LockOn_Update =
 
     if (d > LOCK_RANGE * 1.2) // a little hysteresis
     {
-		if (self.reticle)
-		{
-			remove(self.reticle);
-			self.reticle = world;
-		}
 		self.lock_on = 0;
         self.lock_target = world;
         return;
     }
 
-	SmoothFaceEntity(t); // gently steer the view
+	//SmoothFaceEntity(t); // gently steer the view
 
 	// Send lock on target info to CSQC
 	if (self.classname == "player")
@@ -345,45 +281,4 @@ entity() FindLockTarget =
     }
 
     return best;
-};
-
-// angular helpers
-float(float a, float b) AngleDelta =
-{
-    float d = a - b;
-    while (d > 180) d -= 360;
-    while (d < -180) d += 360;
-    return d;
-};
-
-float(float cur, float target, float speed, float dt) ApproachAngle =
-{
-    float d = AngleDelta(target, cur);
-    float step = speed * d * dt; // proportional
-    return cur + step;
-};
-
-// smoothly steer self.v_angle toward target (server-side assist)
-// NOTE: This adjusts server v_angle; CSQC camera can fully override if you use it
-void(entity target) SmoothFaceEntity =
-{
-    if (!target)
-		return;
-
-    vector a = self.origin + self.view_ofs;
-    vector b = target.origin + target.view_ofs;
-    vector dir = normalize(b - a);
-    vector ang = vectoangles(dir);
-
-    float dt = frametime; // or sys_frametime depending on your mod
-    //self.v_angle_y = ApproachAngle(self.v_angle_y, ang_y, LOCK_TURN_SPEED, dt);
-	self.angles_y = ApproachAngle(self.v_angle_y, ang_y, LOCK_TURN_SPEED, dt);
-
-    // clamp pitch a bit (no extreme up/down)
-    float desiredPitch = ang_x;
-    if (desiredPitch > 50) desiredPitch = 50;
-    if (desiredPitch < -50) desiredPitch = -50;
-    self.v_angle_x = ApproachAngle(self.v_angle_x, desiredPitch, LOCK_TURN_SPEED, dt);
-
-	self.fixangle = TRUE;
 };

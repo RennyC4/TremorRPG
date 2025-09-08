@@ -2,28 +2,23 @@
 // CSQC 3rd person camera
 //
 
-/*
-vector ang = [0, cltime, 0];
-makevectors(ang);
-setviewprop(VF_VIEWENTITY, 0.0);
-setviewprop(VF_ORIGIN, pmove_org - v_forward*64 + v_up*24);
-setviewprop(VF_ANGLES, ang);
-*/
-
 vector plyr_pos;
-void() Camera_Third =
-{
-	plyr_pos = getproperty(VF_ORIGIN);
 
-	// Enable this after player sits still for awhile, morrowind-style
-	/*
-	vector ang = [0, cltime*16, 0];
+// Turn on when player is idle for awhile
+void() Camera_IdleOrbit =
+{
+	vector plyr_pos = getproperty(VF_ORIGIN);
+	vector ang = [0, cltime * 16, 0];
+
 	makevectors(ang);
 	setviewprop(VF_VIEWENTITY, 0.0);
-	setviewprop(VF_ORIGIN, plyr_pos - v_forward*64);
-	pmove_org
+	setviewprop(VF_ORIGIN, plyr_pos - v_forward*64 - v_up * 16);
 	setviewprop(VF_ANGLES, ang);
-	*/
+};
+
+void() Camera_Third =
+{
+	vector plyr_pos = getproperty(VF_ORIGIN);
 
 	// Regular 3rd person camera
 	camang = getproperty(VF_ANGLES);

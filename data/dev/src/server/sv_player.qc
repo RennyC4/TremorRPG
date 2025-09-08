@@ -145,6 +145,12 @@ void() CSEv_PlayerCrouch =
 	}
 };
 
+void(vector player_ang) CSEv_PlayerUpdateAngles_v =
+{
+	self.angles = player_ang;
+	self.fixangle = TRUE;
+};
+
 void() SV_RunClientCommand =
 {
 	input_buttons &= ~2; // taking over +jump
@@ -778,11 +784,6 @@ void() ClientConnect =
 
 void() PlayerDeath =
 {
-	if (self.reticle)
-	{
-		remove(self.reticle);
-		self.reticle = world;
-	}
 	self.lock_on = 0;
 	self.lock_target = world;
 			
@@ -920,9 +921,6 @@ void() PutClientInServer =
 
 void() ClientDisconnect =
 {
-	if (self.reticle)
-		remove(self.reticle);
-
 	player_chain_remove(self); // clean up removed player
 	setmodel (self, string_null);
 	self.solid = SOLID_NOT;

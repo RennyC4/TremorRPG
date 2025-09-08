@@ -60,8 +60,14 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	//autoadd entities received from servers for drawing
 	addentities((intermission?0:MASK_VIEWMODEL)|MASK_ENGINE);
 
-	if (camera_mode)
-		Camera_Third();
+	float lockon = getstatf(STAT_LOCKEDON);
+	if (lockon) // lock on
+		FaceTarget();
+
+	if (player_idle)
+		Camera_IdleOrbit();
+	else if (camera_mode)
+		Camera_Third();		
 
 	//does what you think it does
 	renderscene();
@@ -130,6 +136,9 @@ float(string strCommand) CSQC_ConsoleCommand =
 
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
+	last_input_time = time;
+	player_idle = FALSE;
+
 	float player_menu = getstatf(STAT_MENU);
 	float player_lockview = getstatf(STAT_LOCKVIEW);
 

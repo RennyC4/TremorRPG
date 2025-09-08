@@ -5,6 +5,7 @@ sh_customdefs.qc
 client/cl_customdefs.qc
 sui_sys.qc
 client/cl_sui.qc
+client/cl_lockon.qc
 client/cl_hud.qc
 client/cl_login.qc
 client/cl_npc.qc

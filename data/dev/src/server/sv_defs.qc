@@ -1790,7 +1790,6 @@ const float MENU_MAGIC = 6; // user magic screen
 .float climbing; // boolean
 .float climb_finished;
 .float lockview_finished; // lock player view in certain situations, handled by CSQC
-.entity reticle; // used for targetting reticle
 .float camera_toggle; // boolean
 .float inair_count; // how long player is in the air
 .float canbackstab; // can be backstabbed
