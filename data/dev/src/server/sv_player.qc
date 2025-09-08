@@ -759,8 +759,7 @@ void() PlayerPreThink =
 // Ran after physics
 void() PlayerPostThink =
 {
-	if (cvar("developer") == 0)
-		self.SendFlags = 1;
+	self.SendFlags = 1;
 
 	if (!self.loggedin)
 		return;
@@ -1038,7 +1037,8 @@ void() PutClientInServer =
 	else
 		PlayerSpawn(0);
 
-	self.SendEntity = Player_SendEntity;
+	if (cvar("developer") == 0)
+		self.SendEntity = Player_SendEntity;
 };
 
 void() ClientDisconnect =
