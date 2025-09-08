@@ -1698,7 +1698,11 @@ void(string cmdname, optional string desc) registercommand = #352; /*
 // Misc
 string string_null = "";
 float(float min, float max) random_range;
-float	SVC_TEMPENTITY		= 23;
+float SVC_TEMPENTITY = 23;
+
+// Enums
+#define ENT_PLAYER 1
+//
 
 // CGAMEPACKET Events
 const float CSQC_INVENTORY = 1;
@@ -1706,7 +1710,7 @@ const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
 const float CSQC_LOCKON_INFO = 5;
-const float CSQC_NAMETAG_INFO = 6;
+//const float CSQC_NAMETAG_INFO = 6;
 
 // Function defs
 .void()		th_die;

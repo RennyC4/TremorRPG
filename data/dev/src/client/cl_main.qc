@@ -48,8 +48,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	framecount = framecount + 1;
 
-	//clear and update our global screen resolution vars
-	clearscene();
+	clearscene(); //clear and update our global screen resolution vars
 	g_width = width;
 	g_height = height;
 
@@ -60,8 +59,12 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	//autoadd entities received from servers for drawing
 	addentities((intermission?0:MASK_VIEWMODEL)|MASK_ENGINE);
 
+	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
+	setproperty(VF_ANGLES, view_angles);
+
+	// lock on
 	float lockon = getstatf(STAT_LOCKEDON);
-	if (lockon) // lock on
+	if (lockon)
 		FaceTarget();
 
 	if (player_idle)
@@ -69,8 +72,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else if (camera_mode)
 		Camera_Third();		
 
-	//does what you think it does
-	renderscene();
+	renderscene(); //does what you think it does
 
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well
 	sui_begin(g_width, g_height);
@@ -181,7 +183,7 @@ const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
 const float CSQC_LOCKON_INFO = 5;
-const float CSQC_NAMETAG_INFO = 6;
+//const float CSQC_NAMETAG_INFO = 6;
 
 void() CSQC_Parse_Event =
 {

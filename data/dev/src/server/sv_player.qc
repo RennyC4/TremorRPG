@@ -758,6 +758,8 @@ void() PlayerPreThink =
 // Ran after physics
 void() PlayerPostThink =
 {
+	self.SendFlags = 1;
+
 	if (!self.loggedin)
 		return;
 
@@ -1003,6 +1005,22 @@ void(float type) PlayerSpawn =
 	}
 };
 
+float(entity ePVEnt, float flChanged) Player_SendEntity =
+{
+	WriteByte(MSG_ENTITY, ENT_PLAYER); // Unique identifier
+	WriteCoord(MSG_ENTITY, self.origin_x); // Position X
+	WriteCoord(MSG_ENTITY, self.origin_y); // Position Y
+	WriteCoord(MSG_ENTITY, self.origin_z); // Position Z
+	WriteCoord(MSG_ENTITY, self.angles_x); // Angle X
+	WriteCoord(MSG_ENTITY, self.angles_y); // Angle Y
+	WriteCoord(MSG_ENTITY, self.angles_z); // Angle Z
+	WriteShort(MSG_ENTITY, self.velocity_x); // Velocity X
+	WriteShort(MSG_ENTITY, self.velocity_y); // Velocity X
+	WriteShort(MSG_ENTITY, self.velocity_z); // Velocity X
+	WriteFloat(MSG_ENTITY, self.flags); // Flags, important for physics
+	return TRUE;
+};
+
 void() PutClientInServer =
 {
 	player_chain_add(self);
@@ -1016,6 +1034,8 @@ void() PutClientInServer =
 	}
 	else
 		PlayerSpawn(0);
+
+	self.SendEntity = Player_SendEntity;
 };
 
 void() ClientDisconnect =

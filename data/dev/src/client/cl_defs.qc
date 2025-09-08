@@ -2163,8 +2163,16 @@ accessor filestream : float
 #endif
 #pragma noref 0
 
+// Enums
+#define ENT_PLAYER 1
+//
+
 float framecount;
 float pauseframe;
+
+vector vPlayerOrigin;
+vector vPlayerOriginOld;
+vector vPlayerVelocity;
 
 string LOGIN_NAME; // users login name
 string LOGIN_GENDER; // create gender
