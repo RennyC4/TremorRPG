@@ -134,8 +134,7 @@ name_command bindlist[] =
 	{ "Block", "+button4" },
 	{ "Camera", "toggle_camera" },
 	{ "Target", "impulse 140" },
-	{ "Right Target", "impulse 141" },
-	{ "Left Target", "impulse 142" },
+	{ "Cycle Target", "impulse 141" },
 };
 
 void(string id, vector pos, vector size, string name, string command) bind_button =

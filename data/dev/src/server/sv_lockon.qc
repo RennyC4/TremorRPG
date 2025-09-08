@@ -15,11 +15,9 @@ float LOCK_BREAK_TIME   = 3;	// (was 0.25) grace time when LOS lost before break
 
 // impulses
 float IMP_LOCK_TOGGLE = 140;
-float IMP_LOCK_NEXT   = 141;
-float IMP_LOCK_PREV   = 142;
+float IMP_LOCK_CYCLE = 141;
 
-// remember last time we saw the target for grace period
-.float lock_los_lost_time;
+.float lock_los_lost_time; // remember last time we saw the target for grace period
 
 void() ShowLockMarker_think =
 {
@@ -74,77 +72,101 @@ vector() AttackDir =
 
 void() LockOn_HandleInput =
 {
-    if (self.impulse == IMP_LOCK_TOGGLE && time >= self.lock_next)
+	if (self.impulse == IMP_LOCK_TOGGLE && time >= self.lock_next) // toggle
     {
         self.lock_next = time + 0.25;
-        if (!self.lock_on)
+
+        if (!self.lock_on) // engage lock
         {
             entity t = FindLockTarget();
             if (t)
             {
-				self.lock_on = 1;
+                self.lock_on = 1;
                 self.lock_target = t;
                 self.lock_los_lost_time = 0;
-				if (!self.reticle)
-					ShowLockMarker(self, t); // show flash on new target
+                if (!self.reticle)
+                    ShowLockMarker(self, t); // flash on new target
             }
         }
-        else
+        else // disengage lock
         {
-			if (self.reticle)
-			{
-				remove(self.reticle);
-				self.reticle = world;
-			}
+            if (self.reticle)
+            {
+                remove(self.reticle);
+                self.reticle = world;
+            }
             self.lock_on = 0;
             self.lock_target = world;
         }
+
         self.impulse = 0;
     }
-    else if (self.lock_on && time >= self.lock_next && (self.impulse == IMP_LOCK_NEXT || self.impulse == IMP_LOCK_PREV))
+
+    // cycle targets
+    else if (self.lock_on && self.impulse == IMP_LOCK_CYCLE && time >= self.lock_next)
     {
         self.lock_next = time + LOCK_SWITCH_COOLD;
 
-		// find best neighbor target to the RIGHT or LEFT of current target based on screen-space angle
-		entity best = world;
-		float bestAngle = -99999;
-		float wantSign = (self.impulse == IMP_LOCK_NEXT) ? 1 : -1;
+        entity best = world;
+        float bestScore = -99999;
 
+		// find monster
         entity e = find(world, classname, "monster");
         while (e)
         {
             if (IsValidLockTarget(e) && e != self.lock_target && vlen(e.origin - self.origin) <= LOCK_RANGE && HasLOS(self, e))
             {
-                // signed angle using right vector
                 makevectors(self.v_angle);
                 vector to = normalize((e.origin + e.view_ofs) - (self.origin + self.view_ofs));
-                float side = v_right * to;	// negative = left, positive = right
-                float front = v_forward * to;	// how centered
+                float front = v_forward * to;
 
-                if (front > 0.1 && side * wantSign > 0) // only candidates on the intended side and somewhat in front
+                if (front > 0.1) // must be somewhat in front
                 {
-                    float score = side * 100 + front * 10; // prefer farther to that side but still in front
-                    if (score > bestAngle)
-					{
-						bestAngle = score;
-						best = e;
-					}
+                    float score = front * 100 - vlen(e.origin - self.origin);
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        best = e;
+                    }
                 }
             }
             e = find(e, classname, "monster");
         }
 
+		// find pvp players
+        entity e = find(world, classname, "player");
+        while (e)
+        {
+            if (IsValidLockTarget(e) && e != self.lock_target && vlen(e.origin - self.origin) <= LOCK_RANGE && HasLOS(self, e) && e.pvp == 1)
+            {
+                makevectors(self.v_angle);
+                vector to = normalize((e.origin + e.view_ofs) - (self.origin + self.view_ofs));
+                float front = v_forward * to;
+
+                if (front > 0.1) // must be somewhat in front
+                {
+                    float score = front * 100 - vlen(e.origin - self.origin);
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        best = e;
+                    }
+                }
+            }
+            e = find(e, classname, "player");
+        }
+
         if (best)
-		{
-			if (self.reticle) // remove last target
-			{
-				remove(self.reticle);
-				self.reticle = world;
-			}
-			self.lock_target = best;
-			if (!self.reticle)
-				ShowLockMarker(self, best); // show reticle on new target
-		}
+        {
+            if (self.reticle)
+            {
+                remove(self.reticle);
+                self.reticle = world;
+            }
+            self.lock_target = best;
+            ShowLockMarker(self, best);
+        }
+
         self.impulse = 0;
     }
 };
