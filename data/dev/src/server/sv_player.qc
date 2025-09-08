@@ -565,81 +565,6 @@ void() FootstepThink =
     }
 };
 
-//
-// Update players nearby for name tags - Garbage/spammy
-//
-
-/*
-void() Debug_DisplayNearbyPlayers =
-{
-	float i;
-
-	print ("Function Ran: DisplayNearbyPlayers\n");
-
-    for (i = 0; i < NAMETAG_MAX_PLAYERS; i++)
-    {
-		if (self.track_names[i] != "")
-		{
-			sprint (self, PRINT_HIGH, self.track_names[i], "\n");
-
-			string msg = "coords: ";
-			msg = strcat(ftos(self.track_coords[i][0]), ",");
-			msg = strcat(msg, ftos(self.track_coords[i][1]));
-			msg = strcat(msg, ",");
-			msg = strcat(msg, ftos(self.track_coords[i][2]));
-
-			//sprint(self, PRINT_HIGH, msg); // print each vector as "x,y,z"
-			print (msg);
-		}
-	}
-};
-
-void() UpdateNearbyPlayers =
-{
-    int count = 0;
-    int i;
-    entity e = world;
-    vector dir;
-    float dist;
-
-    while ((e = find(e, classname, "player")))
-    {
-        if (e == self) continue;
-
-        dir = e.origin - self.origin;
-        dist = vlen(dir);
-
-        if (dist <= NAMETAG_DISTANCE && count < NAMETAG_MAX_PLAYERS)
-        {
-            self.track_names[count] = e.netname;
-            self.track_coords[count] = e.origin;
-            count++;
-        }
-    }
-
-    // fill remaining slots with blanks
-    for (; count < NAMETAG_MAX_PLAYERS; count++)
-    {
-        self.track_names[count] = "";
-        self.track_coords[count] = [0, 0, 0];
-    }
-
-    // Send all names in one packet
-    msg_entity = self;
-    WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
-    WriteByte(MSG_MULTICAST, CSQC_NAMETAG_INFO);
-    for (i = 0; i < NAMETAG_MAX_PLAYERS; i++)
-    {
-        WriteString(MSG_MULTICAST, self.track_names[i]);
-
-		WriteCoord(MSG_MULTICAST, self.track_coords[i][0]);
-		WriteCoord(MSG_MULTICAST, self.track_coords[i][1]);
-		WriteCoord(MSG_MULTICAST, self.track_coords[i][2]);
-    }
-    multicast(self.origin, MULTICAST_ONE);
-};
-*/
-
 void(float speed) Player_PushForward =
 {
 	if (self.pushforward_finished < time)
@@ -1026,8 +951,9 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteShort(MSG_ENTITY, self.velocity_y); // Velocity X
 	WriteShort(MSG_ENTITY, self.velocity_z); // Velocity X
 	WriteFloat(MSG_ENTITY, self.flags); // Flags, important for physics
-	
+	WriteFloat(MSG_ENTITY, self.effects); // Effects
 	WriteShort(MSG_ENTITY, self.modelindex);
+	WriteString(MSG_ENTITY, self.netname);
 	WriteShort(MSG_ENTITY, self.climbing); // Climbing - Animation
 	return TRUE;
 };

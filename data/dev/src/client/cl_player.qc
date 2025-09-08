@@ -2,6 +2,7 @@ void() Camera_IdleOrbit;
 void() Compass_Draw;
 void() Coords_Draw;
 void() Player_Animate;
+void() Draw_NameTag;
 
 void() CSQC_Input_Frame =
 {
@@ -110,8 +111,8 @@ void() Player_Hud =
 				Coords_Draw();
 				Draw_LockOnInfo();
 			}
+			Draw_NameTag();
 
-//			Draw_Nametags();
 			if (time - last_input_time > idle_threshold)
 				player_idle = TRUE; // turn on camera orbit
 
@@ -182,9 +183,21 @@ float(void) Player_PreDraw =
     return PREDRAW_NEXT;
 };
 
-.string gender;
-.float climbing;
-float modelindex_player_m, modelindex_player_f;
+void() Player_Think =
+{
+	if (input_buttons & 2)
+		print ("Jump\n");
+
+	// Lantern
+	if (self.effects == EF_BRIGHTLIGHT)
+	{
+	}
+	//findfloat(world, entnum, num).origin
+
+	Player_Animate();
+
+	self.nextthink = time;
+};
 
 void(float flIsNew) CSQC_Ent_Update =
 {
@@ -210,14 +223,15 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.velocity_y = readshort();
 		self.velocity_z = readshort();
 		self.flags = readfloat();
-
+		self.effects = readfloat();
 		self.modelindex = readshort();
+		self.netname = readstring();
 		self.climbing = readshort();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);
-		
-		self.think = Player_Animate;
+
+		self.think = Player_Think;
 		self.nextthink = time;
 	}
 };

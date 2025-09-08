@@ -1710,7 +1710,6 @@ const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
 const float CSQC_LOCKON_INFO = 5;
-//const float CSQC_NAMETAG_INFO = 6;
 
 // Function defs
 .void()		th_die;
@@ -1971,15 +1970,6 @@ var float PART_BONFIRE;
 .float inventory_count[MAX_INVENTORY]; // stack counts
 .float read_inv_count; // used for reading how many items the player has on resuming character
 .float npc_vendor; // for csqc button drawing
-
-/*
-// Player name plates
-#define NAMETAG_MAX_PLAYERS 32  // maximum players to track
-const float NAMETAG_DISTANCE = 512;
-.string track_names[NAMETAG_MAX_PLAYERS]; // store names
-.vector track_coords[NAMETAG_MAX_PLAYERS]; // store coords
-.float track_players;
-*/
 
 // Day/Night
 float timeofday;

@@ -2,8 +2,6 @@
 // CSQC 3rd person camera
 //
 
-vector plyr_pos;
-
 // Turn on when player is idle for awhile
 void() Camera_IdleOrbit =
 {

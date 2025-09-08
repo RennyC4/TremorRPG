@@ -183,7 +183,6 @@ const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
 const float CSQC_LOCKON_INFO = 5;
-//const float CSQC_NAMETAG_INFO = 6;
 
 void() CSQC_Parse_Event =
 {
@@ -231,19 +230,6 @@ void() CSQC_Parse_Event =
 		LOCKON_COORD_Y = readfloat();
 		LOCKON_COORD_Z = readfloat();
 	}
-	/*
-	// Name tag
-	if (event == CSQC_NAMETAG_INFO)
-	{
-        for (i = 0; i < NAMETAG_MAX_PLAYERS; i++)
-        {
-			track_names[i] = readstring();
-		    track_coords[i][0] = readcoord();	// read X
-			track_coords[i][1] = readcoord();	// read Y
-			track_coords[i][2] = readcoord();	// read Z
-		}
-	}
-	*/
 };
 
 noref void CSQC_Shutdown() = {};

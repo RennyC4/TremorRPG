@@ -2289,7 +2289,8 @@ vector tt_pos;
 vector tt_size;
 string tt_contents;
 
-// Name tags
-#define NAMETAG_MAX_PLAYERS 32  // maximum players to track
-string track_names[NAMETAG_MAX_PLAYERS]; // store names
-vector track_coords[NAMETAG_MAX_PLAYERS]; // store coords
+// Player defs
+.string gender;
+.string netname;
+.float climbing;
+float modelindex_player_m, modelindex_player_f;

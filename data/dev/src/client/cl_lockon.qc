@@ -42,7 +42,7 @@ void() Draw_LockOnInfo =
 		plaque_coord_x -= 16; // center it
 		plaque_coord_y -= 16;
 
-		drawstring(plaque_coord, LOCKON_NAME, 10, [1, 1, 1], 1, 0);
+		drawstring(plaque_coord, LOCKON_NAME, [10, 10], [1, 1, 1], 1, 0);
 
 		// Draw bar + level
 		plaque_coord_x -= 12;
@@ -54,7 +54,7 @@ void() Draw_LockOnInfo =
 
 		plaque_coord_x += 28;
 		string lvl = ftos(LOCKON_LEVEL);
-		drawstring(plaque_coord + [24, -2], lvl, 10, [1, .8, 0], 1, 0);
+		drawstring(plaque_coord + [24, -2], lvl, [10, 10], [1, .8, 0], 1, 0);
 		//
 		//
 

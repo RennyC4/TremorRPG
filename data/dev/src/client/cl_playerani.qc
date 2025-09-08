@@ -44,5 +44,4 @@ void() Player_Animate =
 
 	self.frame1time += frametime * speed;
 	self.frame2time = self.frame1time;
-	self.nextthink = time;
 };

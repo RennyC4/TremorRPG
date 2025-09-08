@@ -4,22 +4,17 @@
 
 $frame climb death stand jump move slash
 
-/*
-void() Draw_Nametags =
+void() Draw_NameTag =
 {
-    int i;
-
-    for (i = 0; i < NAMETAG_MAX_PLAYERS; i++)
-    {
-        if (track_names[i] != "")
-        {
-            vector screen = project(track_coords[i]);
-
-			drawstring(screen, track_names[i], 12, '1 1 1', 1, 0);
-        }
-    }
+	entity targ = find(world, classname, "player");
+	while (targ)
+	{
+		makevectors(targ.angles);
+		vector nametag_org = project(targ.origin + v_up * 60 - v_right * 6);
+		drawstring (nametag_org, targ.netname, [10, 10], '.5 .5 1', 1, 0);
+		targ = find(targ, classname, "player");
+	}
 };
-*/
 
 void() Draw_ToolTip =
 {
