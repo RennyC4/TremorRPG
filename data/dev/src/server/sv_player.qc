@@ -678,12 +678,12 @@ void() PlayerPreThink =
 							sprint(self, PRINT_HIGH, "^1Out of stamina ...\n");
 							self.staminamessage_finished = time + 1;
 						}
-						return;
 					}
 					else
 					{
 						self.anim_count = 0;
 						player_slash();
+						self.stamina -= (self.attack_stamina - stamcalc);
 					}
 				}
 			}
