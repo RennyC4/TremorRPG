@@ -2259,7 +2259,7 @@ const float MENU_MAGIC = 6; // user magic screen
 #define STAT_LOCKVIEW 85
 #define STAT_SPELLEQUIPPED 86
 #define STAT_LOCKEDON 87
-#define STAT_VENDOR 88 // Could be done with CGAMEPACKET instead
+#define STAT_VENDOR 88 // Could be done with CGAMEPACKET instead, got lazy
 
 // Inventory - Player
 #define MAX_INVENTORY 32
@@ -2276,7 +2276,12 @@ float npc_inv_count;
 string npc_name;
 string npc_dialogue;
 
-// tooltips
+// Tooltips
 vector tt_pos;
 vector tt_size;
 string tt_contents;
+
+// Name tags
+#define NAMETAG_MAX_PLAYERS 32  // maximum players to track
+string track_names[NAMETAG_MAX_PLAYERS]; // store names
+vector track_coords[NAMETAG_MAX_PLAYERS]; // store coords

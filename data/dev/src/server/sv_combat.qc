@@ -134,22 +134,6 @@ void() DoAttack_Melee =
 	if (self.flags & FL_ONGROUND)
 		self.velocity = [0, 0];
 
-	// Stamina drain on swing! TODO: move to animation
-	if (self.classname == "player")
-	{
-		float stamcalc = self.skill_endurance * 0.015; // calculation
-		if (self.stamina < self.attack_stamina)
-		{
-			if (self.staminamessage_finished < time)
-			{
-				sprint(self, PRINT_HIGH, "^1Out of stamina ...\n");
-				self.staminamessage_finished = time + 1;
-			}
-			return;
-		}
-		self.stamina -= (self.attack_stamina - stamcalc);
-	}
-
 	// calculate damage by weapon
 	float damage = ceil(random_range(self.attack_power_min, self.attack_power_max));
 

@@ -110,6 +110,7 @@ void() Player_Hud =
 				Draw_LockOnInfo();
 			}
 
+//			Draw_Nametags();
 			if (time - last_input_time > idle_threshold)
 				player_idle = TRUE; // turn on camera orbit
 

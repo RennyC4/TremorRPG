@@ -4,6 +4,22 @@
 
 $frame climb death stand jump move slash
 
+/*
+void() Draw_Nametags =
+{
+    int i;
+
+    for (i = 0; i < NAMETAG_MAX_PLAYERS; i++)
+    {
+        if (track_names[i] != "")
+        {
+            vector screen = project(track_coords[i]);
+
+			drawstring(screen, track_names[i], 12, '1 1 1', 1, 0);
+        }
+    }
+};
+*/
 
 void() Draw_ToolTip =
 {

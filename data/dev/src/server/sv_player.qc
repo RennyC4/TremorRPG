@@ -5,6 +5,7 @@
 void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;self.melee_finished = time + 0.25;};
 void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
+//void() Debug_DisplayNearbyPlayers;
 
 // Inventory stuff, temporary here for testing
 void(entity player) SendPlayerInventory;
@@ -181,7 +182,7 @@ void() PlayerPrintStats =
 		self.gold = 99999;
 		self.level = 9999;
 	}
-	self.frame += 1; // test
+	//self.frame += 1; // test
 };
 
 // called from CSQC ("show_character" console command)
@@ -328,6 +329,9 @@ void() CheckImpulses =
 		case 1:
 			PlayerPrintStats(); // Debugging
 		break;
+		case 2:
+			//Debug_DisplayNearbyPlayers();
+		break;
 		default:
 			break;
 	}
@@ -372,7 +376,10 @@ void() Player_Use =
 	self.button3_pressed = TRUE;
 };
 
+//
 // Block button
+//
+
 void() Player_ShieldBlock =
 {
 	if (self.blockvalue <= 0)
@@ -503,6 +510,10 @@ void() WaterUpdate =
 	}
 };
 
+//
+// Footstep sound handler
+//
+
 .float nextfootstep_finished;
 void() FootstepThink =
 {
@@ -551,6 +562,81 @@ void() FootstepThink =
     }
 };
 
+//
+// Update players nearby for name tags - Garbage/spammy
+//
+
+/*
+void() Debug_DisplayNearbyPlayers =
+{
+	float i;
+
+	print ("Function Ran: DisplayNearbyPlayers\n");
+
+    for (i = 0; i < NAMETAG_MAX_PLAYERS; i++)
+    {
+		if (self.track_names[i] != "")
+		{
+			sprint (self, PRINT_HIGH, self.track_names[i], "\n");
+
+			string msg = "coords: ";
+			msg = strcat(ftos(self.track_coords[i][0]), ",");
+			msg = strcat(msg, ftos(self.track_coords[i][1]));
+			msg = strcat(msg, ",");
+			msg = strcat(msg, ftos(self.track_coords[i][2]));
+
+			//sprint(self, PRINT_HIGH, msg); // print each vector as "x,y,z"
+			print (msg);
+		}
+	}
+};
+
+void() UpdateNearbyPlayers =
+{
+    int count = 0;
+    int i;
+    entity e = world;
+    vector dir;
+    float dist;
+
+    while ((e = find(e, classname, "player")))
+    {
+        if (e == self) continue;
+
+        dir = e.origin - self.origin;
+        dist = vlen(dir);
+
+        if (dist <= NAMETAG_DISTANCE && count < NAMETAG_MAX_PLAYERS)
+        {
+            self.track_names[count] = e.netname;
+            self.track_coords[count] = e.origin;
+            count++;
+        }
+    }
+
+    // fill remaining slots with blanks
+    for (; count < NAMETAG_MAX_PLAYERS; count++)
+    {
+        self.track_names[count] = "";
+        self.track_coords[count] = [0, 0, 0];
+    }
+
+    // Send all names in one packet
+    msg_entity = self;
+    WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+    WriteByte(MSG_MULTICAST, CSQC_NAMETAG_INFO);
+    for (i = 0; i < NAMETAG_MAX_PLAYERS; i++)
+    {
+        WriteString(MSG_MULTICAST, self.track_names[i]);
+
+		WriteCoord(MSG_MULTICAST, self.track_coords[i][0]);
+		WriteCoord(MSG_MULTICAST, self.track_coords[i][1]);
+		WriteCoord(MSG_MULTICAST, self.track_coords[i][2]);
+    }
+    multicast(self.origin, MULTICAST_ONE);
+};
+*/
+
 void(float speed) Player_PushForward =
 {
 	if (self.pushforward_finished < time)
@@ -584,16 +670,28 @@ void() PlayerPreThink =
 			{
 				if (self.melee_finished < time)
 				{
-					self.anim_count = 0;
-					player_slash();
-					//DoAttack_Melee();
+					float stamcalc = self.skill_endurance * 0.015; // calculation
+					if (self.stamina < self.attack_stamina) // Stamina drain on swing
+					{
+						if (self.staminamessage_finished < time)
+						{
+							sprint(self, PRINT_HIGH, "^1Out of stamina ...\n");
+							self.staminamessage_finished = time + 1;
+						}
+						return;
+					}
+					else
+					{
+						self.anim_count = 0;
+						player_slash();
+					}
 				}
 			}
 			else
 				DoAttack_ShieldBash();
 		}
 	}
-	
+
 	// Button1 we ignore
 	if (self.button2)
 		PlayerJump();
@@ -668,6 +766,7 @@ void() PlayerPostThink =
 	WaterUpdate();
 	FootstepThink();
 	FallDamage_Update();
+	//UpdateNearbyPlayers();
 
 	if (self.frags != self.level) // HACK: used to display level on the scoreboard
 		self.frags = self.level;
@@ -1234,7 +1333,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.armorname = "Plain Clothes";
 		self.armorvalue = 0;
 		self.pvp = FALSE;
-		
+
 		self.spell_equipped = SPELL_NONE;
 
 		forceinfokey(self, "name", LOGIN_NAME);
