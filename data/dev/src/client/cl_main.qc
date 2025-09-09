@@ -4,7 +4,13 @@
 
 void() Hud_UpdateScores;
 void(vector virtmin, vector virtsize) Hud_Scoreboard;
-void() CSQC_Ent_Remove = {self.modelindex = 0;remove(self);};
+
+void() CSQC_Ent_Remove = 
+{
+	self.classname = "";
+	self.modelindex = 0;
+	remove(self);
+};
 
 float(string key, string val) find_player_id =
 {

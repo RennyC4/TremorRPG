@@ -116,6 +116,7 @@ void() Player_Hud =
 
 			if (!player_idle)
 			{
+				Draw_NameTag();
 				Draw_EventLog();
 				Draw_Health();
 				Draw_Mana();
@@ -126,9 +127,7 @@ void() Player_Hud =
 				WorldMap_Draw([g_width - 115, 4], 110);
 				Compass_Draw();
 				Coords_Draw();
-
 			}
-			Draw_NameTag();
 
 			if (time - last_input_time > idle_threshold)
 				player_idle = TRUE; // turn on camera orbit
@@ -136,7 +135,6 @@ void() Player_Hud =
 			setcursormode(FALSE,"", 0, 0);
 		}
 		Player_DayNightHandler();
-
 	}
 };
 
@@ -235,12 +233,6 @@ void() Player_Think =
 		else
 			self.jump_released = TRUE;
 	}
-
-	// Lantern
-	if (self.effects == EF_BRIGHTLIGHT)
-		lantern = TRUE;
-	else
-		lantern = FALSE;
 
 	Player_Animate();
 	self.nextthink = time;
