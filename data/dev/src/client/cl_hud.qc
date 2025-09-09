@@ -7,18 +7,18 @@ $frame climb death stand jump move slash
 void() Draw_NameTag =
 {
 	entity targ = find(world, classname, "player");
-	while (targ)
+	for (entity b = world;(b = find(b, classname, "player"));)
 	{
-		if (targ.entnum != player_localentnum)
+		if (vlen(b.origin - vPlayerOrigin) <= 500)
 		{
-			// TODO: String width stuff for X centering
-			// TODO: Use camera's v_up also
-			makevectors(targ.angles);
-			vector nametag_org = project(targ.origin + v_up * 60 - v_right * 6);
-			if (nametag_org_z > 0)
-				drawstring (nametag_org, targ.netname, [10, 10], '.5 .5 1', 1, 0);
+			if (b.entnum != player_localentnum && b.loggedin)
+			{
+				makevectors(b.angles);
+				vector nametag_org = project(b.origin + v_up * 60 - v_right * 6);
+				if (nametag_org_z > 0)
+					drawstring (nametag_org, b.netname, [10, 10], '.5 .5 1', 1, 0);
+			}
 		}
-		targ = find(targ, classname, "player");
 	}
 };
 

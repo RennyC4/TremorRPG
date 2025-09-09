@@ -4,12 +4,9 @@
 
 float modelindex_player_m, modelindex_player_f;
 
-void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;self.melee_finished = time + 0.25;};
+void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;self.melee_finished = time + 0.2;};
 void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
-//void() Debug_DisplayNearbyPlayers;
-
-// Inventory stuff, temporary here for testing
 void(entity player) SendPlayerInventory;
 float(entity targ, string itemname, float count) AddToInventory;
 
@@ -104,6 +101,7 @@ void() PlayerJump =
 			stamcalc = 49;
 		self.stamina -= (50 - stamcalc);
 
+		self.jump = TRUE; // CSQC animation
 		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
 	}
 };
@@ -623,7 +621,10 @@ void() PlayerPreThink =
 
 	// Button1 we ignore
 	if (self.button2)
+	{
 		PlayerJump();
+		self.button2 = TRUE;
+	}
 	else
 	{
 		self.climbing = FALSE;
@@ -697,10 +698,12 @@ void() PlayerPostThink =
 	WaterUpdate();
 	FootstepThink();
 	FallDamage_Update();
-	//UpdateNearbyPlayers();
 
 	if (self.frags != self.level) // HACK: used to display level on the scoreboard
 		self.frags = self.level;
+
+	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND)
+		self.jump = FALSE;
 
 	if (self.deadflag != DEAD_DEAD)
 	{
@@ -955,6 +958,11 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteShort(MSG_ENTITY, self.modelindex);
 	WriteString(MSG_ENTITY, self.netname);
 	WriteShort(MSG_ENTITY, self.climbing); // Climbing - Animation
+	WriteShort(MSG_ENTITY, self.health); // Animation + additional checks
+	WriteShort(MSG_ENTITY, self.melee_finished); // Animation
+	WriteByte(MSG_ENTITY, self.jump); // Animation - Jump
+	WriteByte(MSG_ENTITY, self.loggedin); //
+
 	return TRUE;
 };
 

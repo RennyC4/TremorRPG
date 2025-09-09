@@ -214,10 +214,7 @@ void() Player_Think =
 		if (input_buttons & 1) // Attack
 		{
 			if (self.attack_released)
-			{
 				self.frame1time = 0; // start from beginning timestamp
-				self.attacking = TRUE;
-			}
 			self.attack_released = FALSE;
 		}
 		else
@@ -268,6 +265,10 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.modelindex = readshort();
 		self.netname = readstring();
 		self.climbing = readshort();
+		self.health = readshort();
+		self.melee_finished = readshort();
+		self.jump = readbyte();
+		self.loggedin = readbyte();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);

@@ -10,9 +10,8 @@ void() Player_Animate =
 
 	float speed = 3; // default animation speed 3 (normal), 1 (slow), 6 (fast)
 	float duration = frameduration(self.modelindex, self.frame);
-	float health = getstatf(STAT_HEALTH);
 
-	if (health <= 0) // Death
+	if (self.health <= 0) // Death
 	{
 		if (self.frame != $death)
 		{
@@ -29,23 +28,21 @@ void() Player_Animate =
 	}
 	else // Alive
 	{
-		if (self.velocity_z <= 0 && (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND))
-			self.jump = FALSE; // remove animation early
-
-		if (self.attacking) // Attack
+		if (self.melee_finished > time) // Attack
 		{
+			speed = 3; // TODO: Calculate speed with melee_finished timer stuff
 			self.frame = $slash;
-			// SendEvent Melee: DoAttack_Melee();
-			// TODO: Grab attack speed and calulate into duration
 			duration -= (frametime * speed);
-			if (self.frame1time >= duration)
-				self.attacking = FALSE;
+
+			// SendEvent Melee: DoAttack_Melee();
 		}
 		else
 		{
 			if (self.jump && !self.climbing) // Jump
 			{
-				speed = 4;
+				if (self.gender == "Male") speed = 4;
+				else 					   speed = 3;
+
 				duration -= (frametime * speed);
 				if (self.frame1time >= duration)
 					self.jump = FALSE;
@@ -63,10 +60,7 @@ void() Player_Animate =
 				if (!self.velocity_x && !self.velocity_y) // Idle
 					self.frame = $stand;
 				else // Moving
-				{
-					speed = 4;
 					self.frame = $move;
-				}
 			}
 		}
 	}
@@ -84,7 +78,7 @@ void() Player_Animate =
 	}
 	*/
 
-	if (health > 0)
+	if (self.health > 0)
 	{
 		self.frame1time += frametime * speed;
 		self.frame2time += frametime * speed;
