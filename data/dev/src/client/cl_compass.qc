@@ -83,7 +83,7 @@ void() Coords_Draw =
 
 	vector scale = [10, 10];
 	float tw = stringwidth(txt, 1, 10);
-	vector pos = [g_width - tw - ((compass_radius / 4) + 5), compass_radius * 2];
+	vector pos = [g_width - tw - 12.5, (compass_radius * 2) - 2];
 
 	// backdrop
 	drawfill(pos + [-8,-4], [tw+16, 16], '0,0,0', 0.35, 0);

@@ -52,7 +52,6 @@ void() Player_DayNightHandler =
 
 void() Player_Lantern =
 {
-	// Lantern light handler
 	entity targ = find(world, classname, "player");
 	while (targ)
 	{
@@ -123,9 +122,11 @@ void() Player_Hud =
 				Draw_Stamina();
 				Draw_Exp();
 				Draw_InCombatorPVP();
+				Draw_LockOnInfo();
+				WorldMap_Draw([g_width - 115, 4], 110);
 				Compass_Draw();
 				Coords_Draw();
-				Draw_LockOnInfo();
+
 			}
 			Draw_NameTag();
 

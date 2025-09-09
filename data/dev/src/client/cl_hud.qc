@@ -77,7 +77,23 @@ void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
     setviewprop(VF_ANGLES, '0 0 0');
  
     addentity(ent);
-    renderscene();
+	renderscene();
+};
+
+void(vector pos, vector canvas_size) WorldMap_Draw =
+{
+    clearscene();
+    setviewprop(VF_MIN, pos);
+    setviewprop(VF_SIZE, canvas_size);
+ 
+	setviewprop(VF_DRAWCROSSHAIR, 1);
+    setviewprop(VF_AFOV, 90);
+    setviewprop(VF_DRAWWORLD, TRUE);
+ 
+    setviewprop(VF_ORIGIN, [vPlayerOrigin_x, vPlayerOrigin_y, 2500]);
+	setviewprop(VF_ANGLES, [90, view_angles_y, 0]);
+ 
+	renderscene();
 };
 
 void(float screenwidth, float screenheight) Draw_ZoneName =
@@ -315,7 +331,6 @@ void(vector pos) Draw_3DPDoll =
         setorigin(doll, '0 0 0');
 		doll.angles_y -= 180;
 		doll.origin_z -= 35;
-		doll.effects = EF_FULLBRIGHT;
     }
 	doll.angles_y += 0.2;
 	doll.frame = $stand;
