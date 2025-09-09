@@ -188,36 +188,41 @@ float(void) Player_PreDraw =
 .float attack_released;
 void() Player_Think =
 {
-	// Get attack speed, tie it to animation speed
-	// Stamina check
-	if (input_buttons & 1) // Attack
+	float player_menu = getstatf(STAT_MENU);
+	if (!player_menu)
 	{
-		if (self.attack_released)
+		// Get attack speed, tie it to animation speed
+		// Stamina check
+		if (input_buttons & 1) // Attack
 		{
-			self.frame1time = 0; // start from beginning timestamp
-			self.attacking = TRUE;
+			if (self.attack_released)
+			{
+				self.frame1time = 0; // start from beginning timestamp
+				self.attacking = TRUE;
+			}
+			self.attack_released = FALSE;
 		}
-		self.attack_released = FALSE;
-	}
-	else
-		self.attack_released = TRUE;
+		else
+			self.attack_released = TRUE;
 
-	if (input_buttons & 2) // Jump
-	{
-		if (self.jump_released)
+		if (input_buttons & 2) // Jump
 		{
-			self.frame1time = 0; // start from beginning timestamp
-			self.jump = TRUE; // animation
+			if (self.jump_released)
+			{
+				self.frame1time = 0; // start from beginning timestamp
+				self.jump = TRUE; // animation
+			}
+			self.jump_released = FALSE;
 		}
-		self.jump_released = FALSE;
+		else
+			self.jump_released = TRUE;
 	}
-	else
-		self.jump_released = TRUE;
 
 	// Lantern
 	if (self.effects == EF_BRIGHTLIGHT)
-	{
-	}
+		lantern = TRUE;
+	else
+		lantern = FALSE;
 
 	Player_Animate();
 	self.nextthink = time;
