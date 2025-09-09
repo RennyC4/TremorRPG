@@ -50,6 +50,22 @@ void() Player_DayNightHandler =
 	}
 };
 
+void() Player_Lantern =
+{
+	// Lantern light handler
+	entity targ = find(world, classname, "player");
+	while (targ)
+	{
+		if (targ.effects == EF_BRIGHTLIGHT)
+		{
+			vector laternangle = [0, targ.angles_y, 0];
+			makevectors(laternangle);
+			dynamiclight_add(targ.origin + v_up * 24 + v_right * 12, 400, [1,1,1], 1, "", PFLAGS_CORONA);
+		}
+		targ = find(targ, classname, "player");
+	}
+};
+
 void() Player_Hud =
 {
 	if (cvar("developer") == 0)
@@ -119,6 +135,7 @@ void() Player_Hud =
 			setcursormode(FALSE,"", 0, 0);
 		}
 		Player_DayNightHandler();
+
 	}
 };
 

@@ -115,7 +115,7 @@ void(float id, string itemname) Player_UseItem =
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
 	}
-	if (id == 1) // lantern
+	else if (id == 1) // lantern
 	{
 		if (!self.lantern)
 		{

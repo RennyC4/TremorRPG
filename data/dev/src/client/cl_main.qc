@@ -62,13 +62,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);
 
-	// Lantern light handler
-	if (lantern)
-	{
-		vector laternangle = [0, view_angles_y, 0];
-		makevectors(laternangle);
-		dynamiclight_add(vPlayerOrigin + v_up * 24 + v_right * 24, 400, [1,1,1], 1, "", PFLAGS_CORONA);
-	}
+	Player_Lantern();
 
 	// lock on
 	float lockon = getstatf(STAT_LOCKEDON);
