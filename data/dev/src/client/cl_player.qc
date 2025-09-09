@@ -183,19 +183,33 @@ float(void) Player_PreDraw =
     return PREDRAW_NEXT;
 };
 
+.float jump;
+.float jump_released;
 void() Player_Think =
 {
-	if (input_buttons & 2)
-		print ("Jump\n");
+	if (input_buttons & 1) // Attack
+	{
+		print ("Attack\n");
+	}
+
+	if (input_buttons & 2) // Jump
+	{
+		if (self.jump_released)
+		{
+			self.frame1time = 0; // start from beginning timestamp
+			self.jump = TRUE; // animation
+		}
+		self.jump_released = FALSE;
+	}
+	else
+		self.jump_released = TRUE;
 
 	// Lantern
 	if (self.effects == EF_BRIGHTLIGHT)
 	{
 	}
-	//findfloat(world, entnum, num).origin
 
 	Player_Animate();
-
 	self.nextthink = time;
 };
 

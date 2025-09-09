@@ -105,8 +105,8 @@ void() PlayerJump =
 		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
 
 		self.anim_count = 0;
-		self.think = player_jump; // play animation
-		self.nextthink = time + 0.1; // give it a bit of lee-way so we're not calling relying on FL_ONGROUND too early
+		//self.think = player_jump; // play animation
+		//self.nextthink = time + 0.1; // give it a bit of lee-way so we're not calling relying on FL_ONGROUND too early
 	}
 };
 

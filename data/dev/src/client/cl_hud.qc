@@ -9,9 +9,13 @@ void() Draw_NameTag =
 	entity targ = find(world, classname, "player");
 	while (targ)
 	{
-		makevectors(targ.angles);
-		vector nametag_org = project(targ.origin + v_up * 60 - v_right * 6);
-		drawstring (nametag_org, targ.netname, [10, 10], '.5 .5 1', 1, 0);
+		if (targ.entnum != player_localentnum)
+		{
+			// TODO: String width stuff
+			makevectors(targ.angles);
+			vector nametag_org = project(targ.origin + v_up * 60 - v_right * 6);
+			drawstring (nametag_org, targ.netname, [10, 10], '.5 .5 1', 1, 0);
+		}
 		targ = find(targ, classname, "player");
 	}
 };
