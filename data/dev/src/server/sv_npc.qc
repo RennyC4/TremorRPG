@@ -139,13 +139,6 @@ void() set_npc =
 	self.nextthink = time + 0.1;
 };
 
-// TODO: Should update respawn location etc
-void() bonfire_think =
-{
-	pointparticles(PART_BONFIRE, self.origin);
-	self.nextthink = time + 0.1;
-};
-
 void() bonfire_use =
 {
 	if (self.user && self.user.bonfire_finished < time)
@@ -184,8 +177,6 @@ void() bonfire_use =
 			// Moved to sv_player.qc for various reasons
 		*/
 	}
-	self.think = bonfire_think;
-	self.nextthink = time + 0.1;
 };
 
 void() set_bonfire =
@@ -208,7 +199,4 @@ void() set_bonfire =
 	droptofloor();
 
 	ambientsound(self.origin, "bonfire2.wav", 1, ATTN_STATIC);
-
-	self.think = bonfire_think;
-	self.nextthink = time + 0.1;
 };

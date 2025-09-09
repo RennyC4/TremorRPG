@@ -178,6 +178,8 @@ void() spawn_daynight =
 {
 	if (daynight) // only spawn once
 		return;
+	if (cvar("developer") == 1)
+		return;
 
 	daynight = spawn();
 	daynight.think = daynight_think;
