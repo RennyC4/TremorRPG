@@ -11,13 +11,19 @@ void() Player_Animate =
 	float speed = 3; // default animation speed 3 (normal), 1 (slow), 6 (fast)
 	float duration = frameduration(self.modelindex, self.frame);
 
+	/*
 	// Grab health and do death stuff here
+	if (dead)
+	{
+	//call nextthink
+	//return;
+	}
+	*/
 
 	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND)
 		self.jump = FALSE; // remove animation early
 
-	// Attack
-	if (self.attacking)
+	if (self.attacking) // Attack
 	{
 		self.frame = $slash;
 		// SendEvent Melee: DoAttack_Melee();
@@ -28,8 +34,7 @@ void() Player_Animate =
 	}
 	else
 	{
-		// Jump
-		if (self.jump && !self.climbing)
+		if (self.jump && !self.climbing) // Jump
 		{
 			speed = 4;
 			duration -= (frametime * speed);
@@ -46,8 +51,7 @@ void() Player_Animate =
 		}
 		else
 		{
-			// Idle
-			if (!self.velocity_x && !self.velocity_y)
+			if (!self.velocity_x && !self.velocity_y) // Idle
 				self.frame = $stand;
 			else // Moving
 			{

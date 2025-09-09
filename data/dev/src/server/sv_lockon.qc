@@ -5,7 +5,6 @@
 entity() FindLockTarget;
 float(entity e) IsValidLockTarget;
 float(entity from, entity to) HasLOS;
-//void(entity target) SmoothFaceEntity;
 
 float LOCK_RANGE        = 2000;	// max distance to pick/keep a lock
 float LOCK_FOV_COS      = 0.60;	// cos(FOV/2). 0.60 ~ ~104° cone; tighten to ~0.90 for ~50°
@@ -60,16 +59,14 @@ void() LockOn_HandleInput =
 
         self.impulse = 0;
     }
-
-    // cycle targets
-    else if (self.lock_on && self.impulse == IMP_LOCK_CYCLE && time >= self.lock_next)
+	else if (self.lock_on && self.impulse == IMP_LOCK_CYCLE && time >= self.lock_next) // cycle targets
     {
         self.lock_next = time + LOCK_SWITCH_COOLD;
 
         entity best = world;
         float bestScore = -99999;
 
-		// find monster
+		// find monsters
         entity e = find(world, classname, "monster");
         while (e)
         {
@@ -159,8 +156,6 @@ void() LockOn_Update =
         self.lock_target = world;
         return;
     }
-
-	//SmoothFaceEntity(t); // gently steer the view
 
 	// Send lock on target info to CSQC
 	if (self.classname == "player")

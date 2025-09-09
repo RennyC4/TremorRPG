@@ -11,10 +11,12 @@ void() Draw_NameTag =
 	{
 		if (targ.entnum != player_localentnum)
 		{
-			// TODO: String width stuff
+			// TODO: String width stuff for X centering
+			// TODO: Use camera's v_up also
 			makevectors(targ.angles);
 			vector nametag_org = project(targ.origin + v_up * 60 - v_right * 6);
-			drawstring (nametag_org, targ.netname, [10, 10], '.5 .5 1', 1, 0);
+			if (nametag_org_z > 0)
+				drawstring (nametag_org, targ.netname, [10, 10], '.5 .5 1', 1, 0);
 		}
 		targ = find(targ, classname, "player");
 	}
