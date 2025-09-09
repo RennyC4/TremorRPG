@@ -4,23 +4,29 @@
 
 $frame climb death stand jump move slash
 
-.float jump_finished;
 void() Player_Animate =
 {
 	#define FIRSTFRAME 0
 
 	float speed = 3; // default animation speed 3 (normal), 1 (slow), 6 (fast)
-	float framedur = frameduration(self.modelindex, self.frame);
+	float duration = frameduration(self.modelindex, self.frame);
 
 	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND)
-		self.jump = FALSE;
+		self.jump = FALSE; // remove animation early
 
-	//Jump
+	// Attack
+	if (self.attacking)
+	{
+		self.frame = $slash;
+	}
+
+	// Jump
 	if (self.jump && !self.climbing)
 	{
-		if (self.frame1time >= framedur)
-			self.jump = FALSE;
 		speed = 4;
+		duration -= (frametime * speed);
+		if (self.frame1time >= duration)
+			self.jump = FALSE;
 		self.frame = $jump;
 	}
 	else if (self.climbing) // Climbing
@@ -42,14 +48,18 @@ void() Player_Animate =
 		}
 	}
 
+	// Lerping isn't working properly
+	/*
+	self.lerpfrac -= frametime * 4;
 	while (self.lerpfrac < 0) // protects against sudden low framerates
 	{
 		self.frame2 = self.frame; 				  // if we're at 0, frame2 became redundant anyway
 		self.frame += 1;						  // move on to the next frame
-		if (self.frame >= (self.frame + framedur)) //this should be relative to the current animation that should be shown
+		if (self.frame >= (self.frame + (duration -= (frametime * speed)))) //this should be relative to the current animation that should be shown
 			self.frame = FIRSTFRAME;			  // restart it
 		self.lerpfrac += 1;						  //go to the start of the frame
 	}
+	*/
 
 	self.frame1time += frametime * speed;
 	self.frame2time += frametime * speed;

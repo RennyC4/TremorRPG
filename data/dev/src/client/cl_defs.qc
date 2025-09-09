@@ -2293,4 +2293,5 @@ string tt_contents;
 .string gender;
 .string netname;
 .float climbing;
+.float attacking;
 float modelindex_player_m, modelindex_player_f;

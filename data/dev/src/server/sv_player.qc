@@ -38,6 +38,8 @@ void() PlayerClimb =
 	{
 		if (self.stamina > 0)
 		{
+			self.inair_count = 0; // reset inair counter on climbing
+			self.fall_maxspeed = 0;
 			self.climbing = TRUE;
 			self.velocity = [0, 0];
 			self.velocity_z += climbcalc;
@@ -103,10 +105,6 @@ void() PlayerJump =
 		self.stamina -= (50 - stamcalc);
 
 		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
-
-		self.anim_count = 0;
-		//self.think = player_jump; // play animation
-		//self.nextthink = time + 0.1; // give it a bit of lee-way so we're not calling relying on FL_ONGROUND too early
 	}
 };
 
@@ -431,7 +429,7 @@ void() FallDamage_Update =
     }
 
     // While airborne, keep the largest downward speed seen this airtime
-    if (!(self.flags & FL_ONGROUND))
+    if (!(self.flags & FL_ONGROUND) && !self.climbing)
     {
 		self.inair_count += 1;
 		if (self.inair_count >= 12 && !self.waterlevel && !self.climbing)
