@@ -31,7 +31,6 @@ void() User_NPCDialogue =
 	newpos_x -= 5;
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
 
-	// TODO: This button shouldn't exist if the NPC has nothing
 	float buysell = getstatf(STAT_VENDOR);
 	if (buysell)
 		my_button("npc_buy", newpos, [85, 22.5], "Buy / Sell") ? sendevent("PlayerShowBuySell", "") : 0;

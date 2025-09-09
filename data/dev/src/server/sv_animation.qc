@@ -24,5 +24,3 @@ void() player_slash = [$slash, player_slash]
 
 	self.anim_count += 0.1;
 };
-
-void() player_death = [$death, player_death] {};

@@ -32,10 +32,10 @@ void() FaceTarget =
     float dt = frametime * 2;   // frame delta time
     float turn_speed = 360; // degrees per second
 
-    // Smoothly approach target yaw/pitch
+    // Smoothly approach target yaw/pitch *broken / crap*
     //player_ang[0] = ApproachAngle(player_ang[0], ang_x, turn_speed, dt);
     //player_ang[1] = ApproachAngle(player_ang[1], ang_y, turn_speed, dt);
-	
+
 	player_ang[0] = ang_x;
 	player_ang[1] = ang_y;
 

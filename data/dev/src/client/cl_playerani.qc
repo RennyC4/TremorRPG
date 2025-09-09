@@ -10,53 +10,63 @@ void() Player_Animate =
 
 	float speed = 3; // default animation speed 3 (normal), 1 (slow), 6 (fast)
 	float duration = frameduration(self.modelindex, self.frame);
+	float health = getstatf(STAT_HEALTH);
 
-	/*
-	// Grab health and do death stuff here
-	if (dead)
+	if (health <= 0) // Death
 	{
-	//call nextthink
-	//return;
-	}
-	*/
-
-	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND)
-		self.jump = FALSE; // remove animation early
-
-	if (self.attacking) // Attack
-	{
-		self.frame = $slash;
-		// SendEvent Melee: DoAttack_Melee();
-		// TODO: Grab attack speed and calulate into duration
-		duration -= (frametime * speed);
-		if (self.frame1time >= duration)
-			self.attacking = FALSE;
-	}
-	else
-	{
-		if (self.jump && !self.climbing) // Jump
+		if (self.frame != $death)
 		{
-			speed = 4;
-			duration -= (frametime * speed);
-			if (self.frame1time >= duration)
-				self.jump = FALSE;
-			self.frame = $jump;
-		}
-		else if (self.climbing) // Climbing
-		{
-			self.jump = FALSE;
-			float skill_climb = getstatf(STAT_SKILL_CLIMB);
-			speed = 3 + (skill_climb * 0.02);
-			self.frame = $climb;
+			self.frame1time = 0; // reset timestamp
+			self.frame = $death;
 		}
 		else
 		{
-			if (!self.velocity_x && !self.velocity_y) // Idle
-				self.frame = $stand;
-			else // Moving
+			if (self.frame1time >= duration - 0.1)
+				self.frame1time = self.frame1time; // hold
+			else
+				self.frame1time += frametime * 3;
+		}
+	}
+	else // Alive
+	{
+		if (self.velocity_z <= 0 && (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND))
+			self.jump = FALSE; // remove animation early
+
+		if (self.attacking) // Attack
+		{
+			self.frame = $slash;
+			// SendEvent Melee: DoAttack_Melee();
+			// TODO: Grab attack speed and calulate into duration
+			duration -= (frametime * speed);
+			if (self.frame1time >= duration)
+				self.attacking = FALSE;
+		}
+		else
+		{
+			if (self.jump && !self.climbing) // Jump
 			{
 				speed = 4;
-				self.frame = $move;
+				duration -= (frametime * speed);
+				if (self.frame1time >= duration)
+					self.jump = FALSE;
+				self.frame = $jump;
+			}
+			else if (self.climbing) // Climbing
+			{
+				self.jump = FALSE;
+				float skill_climb = getstatf(STAT_SKILL_CLIMB);
+				speed = 3 + (skill_climb * 0.02);
+				self.frame = $climb;
+			}
+			else
+			{
+				if (!self.velocity_x && !self.velocity_y) // Idle
+					self.frame = $stand;
+				else // Moving
+				{
+					speed = 4;
+					self.frame = $move;
+				}
 			}
 		}
 	}
@@ -74,8 +84,10 @@ void() Player_Animate =
 	}
 	*/
 
-	self.frame1time += frametime * speed;
-	self.frame2time += frametime * speed;
-
+	if (health > 0)
+	{
+		self.frame1time += frametime * speed;
+		self.frame2time += frametime * speed;
+	}
 	//print (ftos(frameduration(self.modelindex,self.frame)), "\n");
 };

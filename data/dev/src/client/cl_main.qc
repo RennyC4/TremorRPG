@@ -69,16 +69,21 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	setproperty(VF_ANGLES, view_angles);
 
 	Player_Lantern();
-
+	float health = getstatf(STAT_HEALTH);
 	// lock on
 	float lockon = getstatf(STAT_LOCKEDON);
 	if (lockon)
 		FaceTarget();
 
-	if (player_idle)
-		Camera_IdleOrbit();
-	else if (camera_mode)
-		Camera_Third();		
+	if (health > 0)
+	{
+		if (player_idle)
+			Camera_IdleOrbit();
+		else if (camera_mode)
+			Camera_Third();	
+	}
+	else
+		Camera_DeathCam();
 
 	renderscene(); //does what you think it does
 
@@ -151,6 +156,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 
 	float player_menu = getstatf(STAT_MENU);
 	float player_lockview = getstatf(STAT_LOCKVIEW);
+	float health = getstatf(STAT_HEALTH);
 
 	if (player_menu > 1)
 		sui_input_event(evtype, scanx, chary, devid);
@@ -165,7 +171,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 				return FALSE;
 			case IE_MOUSEDELTA:
 			{
-				if (player_lockview > time) // disable mouse movement
+				if (player_lockview > time || health <= 0) // disable mouse movement
 					return TRUE;
 				else
 					return FALSE;

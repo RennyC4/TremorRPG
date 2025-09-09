@@ -149,6 +149,9 @@ void() CSEv_PlayerCrouch =
 
 void(vector player_ang) CSEv_PlayerUpdateAngles_v =
 {
+	if (self.health <= 0)
+		return;
+
 	self.angles = player_ang;
 	self.fixangle = TRUE;
 };
@@ -836,7 +839,6 @@ void() PlayerDeath =
 	centerprint (self, "/P^1You're Dead!\n^7--------\n\nYou've lost ^3" , h, " ^7gold!" , "\n\n^b^5Press Attack to respawn\n");
 	
 	self.respawn_finished = time + 5;
-	player_death();
 };
 
 void(float type) PlayerSpawn =

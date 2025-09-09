@@ -109,12 +109,14 @@ void() Player_Hud =
 		else // Regular gameplay
 		{
 			float zonedisplay_finished = getstatf(STAT_ZONENAME_TIME);
+			float health = getstatf(STAT_HEALTH);
+
 			if (zonedisplay_finished > time)
 				Draw_ZoneName(g_width, g_height);
 			else
 				ZoneName_alpha.doalpha = 0;
 
-			if (!player_idle)
+			if (!player_idle && health > 0)
 			{
 				Draw_NameTag();
 				Draw_EventLog();
@@ -161,7 +163,7 @@ float(void) Player_PreDraw =
 			if (input_timelength == 0) // Partial frames are the worst
 				break;
 
-			runstandardplayerphysics( self );
+			runstandardplayerphysics(self);
 		}
 				
 		vPlayerOriginOld = vPlayerOrigin; // Smooth stair stepping, this has to be done manually!
