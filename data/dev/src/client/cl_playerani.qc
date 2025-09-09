@@ -11,6 +11,8 @@ void() Player_Animate =
 	float speed = 3; // default animation speed 3 (normal), 1 (slow), 6 (fast)
 	float duration = frameduration(self.modelindex, self.frame);
 
+	// Grab health and do death stuff here
+
 	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND)
 		self.jump = FALSE; // remove animation early
 
@@ -18,33 +20,40 @@ void() Player_Animate =
 	if (self.attacking)
 	{
 		self.frame = $slash;
-	}
-
-	// Jump
-	if (self.jump && !self.climbing)
-	{
-		speed = 4;
+		// SendEvent Melee: DoAttack_Melee();
+		// TODO: Grab attack speed and calulate into duration
 		duration -= (frametime * speed);
 		if (self.frame1time >= duration)
-			self.jump = FALSE;
-		self.frame = $jump;
-	}
-	else if (self.climbing) // Climbing
-	{
-		self.jump = FALSE;
-		float skill_climb = getstatf(STAT_SKILL_CLIMB);
-		speed = 3 + (skill_climb * 0.02);
-		self.frame = $climb;
+			self.attacking = FALSE;
 	}
 	else
 	{
-		// Idle
-		if (!self.velocity_x && !self.velocity_y)
-			self.frame = $stand;
-		else // Moving
+		// Jump
+		if (self.jump && !self.climbing)
 		{
 			speed = 4;
-			self.frame = $move;
+			duration -= (frametime * speed);
+			if (self.frame1time >= duration)
+				self.jump = FALSE;
+			self.frame = $jump;
+		}
+		else if (self.climbing) // Climbing
+		{
+			self.jump = FALSE;
+			float skill_climb = getstatf(STAT_SKILL_CLIMB);
+			speed = 3 + (skill_climb * 0.02);
+			self.frame = $climb;
+		}
+		else
+		{
+			// Idle
+			if (!self.velocity_x && !self.velocity_y)
+				self.frame = $stand;
+			else // Moving
+			{
+				speed = 4;
+				self.frame = $move;
+			}
 		}
 	}
 

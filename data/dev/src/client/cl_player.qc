@@ -185,12 +185,22 @@ float(void) Player_PreDraw =
 
 .float jump;
 .float jump_released;
+.float attack_released;
 void() Player_Think =
 {
+	// Get attack speed, tie it to animation speed
+	// Stamina check
 	if (input_buttons & 1) // Attack
 	{
-		print ("Attack\n");
+		if (self.attack_released)
+		{
+			self.frame1time = 0; // start from beginning timestamp
+			self.attacking = TRUE;
+		}
+		self.attack_released = FALSE;
 	}
+	else
+		self.attack_released = TRUE;
 
 	if (input_buttons & 2) // Jump
 	{
