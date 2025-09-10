@@ -262,10 +262,12 @@ void() DoAttack_Melee =
 			// blood effects
 			float i;
 			vector eye_level = [9, 0];
-			eye_level_z = self.view_ofs_z; // match up blood spray to attackers view by z
+			if (self.classname == "player")
+				eye_level_z = self.view_ofs_z; // match up blood spray to attackers view by z
+			else eye_level_z = 32;
 
 			for (i=0; i < 2; i++)
-				te_blood(trace_ent.origin + eye_level, trace_ent.velocity, 12); // spawn blood
+				te_blood(trace_ent.origin + eye_level, trace_ent.velocity, 12); // spawn blood TODO: Add some randomness in direction
 
 			damage = ceil(damage); // round up final damage output
 			DoDamage(trace_ent, self, damage);
