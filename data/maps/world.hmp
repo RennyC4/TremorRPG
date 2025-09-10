@@ -56,7 +56,7 @@ angles "0 0 0"
 // NPC (Elderfen Weapon / Armor Merchant)
 {
 classname "set_npc"
-model "models/player_m.glb"
+model "models/merchant_m.glb"
 origin "-1810 -1725 76"
 angles "0 0 0"
 netname "Keldran"

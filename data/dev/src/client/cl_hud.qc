@@ -85,10 +85,15 @@ void(vector pos, vector canvas_size) WorldMap_Draw =
     clearscene();
     setviewprop(VF_MIN, pos);
     setviewprop(VF_SIZE, canvas_size);
+
 	//addentities((intermission?0:MASK_VIEWMODEL)|MASK_ENGINE);
-	setviewprop(VF_PERSPECTIVE, 1);
+	//setviewprop(VF_PERSPECTIVE, 1);
+	//setviewprop(VF_AFOV, 90);
+
+	setviewprop(VF_PERSPECTIVE, 0);
+	
+	
 	setviewprop(VF_DRAWCROSSHAIR, 1);
-    setviewprop(VF_AFOV, 90);
     setviewprop(VF_DRAWWORLD, TRUE);
 	setviewprop(VF_VIEWENTITY, 0.0);
     setviewprop(VF_ORIGIN, [vPlayerOrigin_x, vPlayerOrigin_y, 2000]);
