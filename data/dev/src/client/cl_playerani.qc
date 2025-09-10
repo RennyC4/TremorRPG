@@ -23,18 +23,20 @@ void() Player_Animate =
 			if (self.frame1time >= duration - 0.1)
 				self.frame1time = self.frame1time; // hold
 			else
-				self.frame1time += frametime * 3;
+				self.frame1time += frametime * speed;
 		}
 	}
 	else // Alive
 	{
-		if (self.melee_finished > time) // Attack
+		if (self.attack) // Attack
 		{
-			speed = 3; // TODO: Calculate speed with melee_finished timer stuff
+			float atkspeed = getstatf(STAT_ATTACKSPEED);
+			speed = 1 + (atkspeed * 0.2);
 			self.frame = $slash;
 			duration -= (frametime * speed);
 
-			// SendEvent Melee: DoAttack_Melee();
+			if (self.frame1time >= duration)
+				self.frame1time = self.frame1time; // hold
 		}
 		else
 		{

@@ -204,6 +204,7 @@ float(void) Player_PreDraw =
 .float jump;
 .float jump_released;
 .float attack_released;
+.float attack;
 void() Player_Think =
 {
 	float player_menu = getstatf(STAT_MENU);
@@ -213,7 +214,7 @@ void() Player_Think =
 		// Stamina check
 		if (input_buttons & 1) // Attack
 		{
-			if (self.attack_released)
+			if (self.attack_released && !self.attack)
 				self.frame1time = 0; // start from beginning timestamp
 			self.attack_released = FALSE;
 		}
@@ -222,11 +223,8 @@ void() Player_Think =
 
 		if (input_buttons & 2) // Jump
 		{
-			if (self.jump_released)
-			{
+			if (self.jump_released && !self.jump)
 				self.frame1time = 0; // start from beginning timestamp
-				self.jump = TRUE; // animation
-			}
 			self.jump_released = FALSE;
 		}
 		else
@@ -266,7 +264,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.netname = readstring();
 		self.climbing = readshort();
 		self.health = readshort();
-		self.melee_finished = readshort();
+		self.attack = readbyte();
 		self.jump = readbyte();
 		self.loggedin = readbyte();
 

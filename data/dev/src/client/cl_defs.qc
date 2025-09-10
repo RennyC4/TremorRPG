@@ -2295,7 +2295,8 @@ string tt_contents;
 .string netname;
 .float climbing;
 .float health;
-.float jump;
-.float melee_finished;
+.float jump; // boolean
+//.float melee_finished; // unused
+.float attack; // boolean
 .float loggedin;
 float modelindex_player_m, modelindex_player_f;

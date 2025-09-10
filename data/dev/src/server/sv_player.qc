@@ -174,17 +174,13 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 	
-	if (cvar("sv_cheats") > 0)
+	if (cvar("sv_cheats") > 0) // Give cheat stats
 	{
-		// Inventory debugging
-		AddToInventory(self, "Health Potion", 1);
-
-		// Give cheat stats
 		self.skillpoints = 99999;
 		self.gold = 99999;
 		self.level = 9999;
+		AddToInventory(self, "Health Potion", 1);
 	}
-	//self.frame += 1; // test
 };
 
 // called from CSQC ("show_character" console command)
@@ -609,6 +605,7 @@ void() PlayerPreThink =
 					else
 					{
 						self.anim_count = 0;
+						self.attack = TRUE; // CSQC animation
 						player_slash();
 						self.stamina -= (self.attack_stamina - stamcalc);
 					}
@@ -618,6 +615,9 @@ void() PlayerPreThink =
 				DoAttack_ShieldBash();
 		}
 	}
+
+	if (self.melee_finished < time && self.attack)
+		self.attack = FALSE; // CSQC animation
 
 	// Button1 we ignore
 	if (self.button2)
@@ -959,7 +959,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteString(MSG_ENTITY, self.netname);
 	WriteShort(MSG_ENTITY, self.climbing); // Climbing - Animation
 	WriteShort(MSG_ENTITY, self.health); // Animation + additional checks
-	WriteShort(MSG_ENTITY, self.melee_finished); // Animation
+	WriteByte(MSG_ENTITY, self.attack); // Animation - Melee
 	WriteByte(MSG_ENTITY, self.jump); // Animation - Jump
 	WriteByte(MSG_ENTITY, self.loggedin); //
 
