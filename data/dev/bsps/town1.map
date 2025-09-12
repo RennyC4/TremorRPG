@@ -1782,7 +1782,7 @@
 "origin" "408 376 64"
 "style" "1"
 "color" "1 0.33333334 0"
-"light_lev" "50"
+"light_lev" "125"
 }
 // entity 20
 {
@@ -1790,7 +1790,7 @@
 "origin" "408 272 64"
 "style" "1"
 "color" "1 0.33333334 0"
-"light_lev" "50"
+"light_lev" "125"
 }
 // entity 21
 {
