@@ -1,0 +1,9 @@
+^6Magic Spell:^2 Thorn^7
+
+^5Power:^7 7 - 14
+^5Type:^7 Offensive
+^5Cast Time:^7 Instant
+^5Mana Use:^7 8
+^5Distance:^7 250
+
+Sends an invisible blast of piercing wind at a target

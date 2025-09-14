@@ -1,0 +1,5 @@
+2
+Spell - Thorn
+100
+Mana Potion
+30

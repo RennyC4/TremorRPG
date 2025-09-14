@@ -59,6 +59,12 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 				sprint (self, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
 				return;
 			}
+			// Mana potion check
+			if (self.classname == "player" && itemname == "Mana Potion" && self.inventory_count[i] >= 2)
+			{
+				sprint (self, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
+				return;
+			}
 
 			string printgold = ftos(price);
 			sprint (self, PRINT_HIGH, itemname, " bought!\n");
@@ -167,17 +173,11 @@ float(entity targ, string itemname, float count) AddToInventory =
     // first see if item already exists, then add it
     for (i = 0; i < targ.inv_count; i++)
     {
-		// Health potion check
-		if (targ.classname == "player" && itemname == "Health Potion" && targ.inventory_count[i] >= 2)
-		{
-			sprint (targ, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
-			return FALSE;
+		if (targ.inventory[i] == itemname)
+		{	
+			targ.inventory_count[i] += count;
+			return TRUE;
 		}
-        if (targ.inventory[i] == itemname)
-        {
-            targ.inventory_count[i] += count;
-            return TRUE;
-        }
     }
 
     // if new item, check space
@@ -186,7 +186,7 @@ float(entity targ, string itemname, float count) AddToInventory =
         sprint(targ, PRINT_HIGH, "Inventory full!\n");
         return FALSE;
     }
-	
+
 	targ.inventory[targ.inv_count] = itemname;
 	targ.inventory_count[targ.inv_count] = count;
 	targ.inv_count++;
@@ -296,6 +296,8 @@ void(string itemname) CSEv_UseItem_s =
 		Player_UseItem(0, itemname);
     if (itemname == "Lantern")
 		Player_UseItem(1, itemname);
+    if (itemname == "Mana Potion")
+		Player_UseItem(2, itemname);
 
 	// Main hand equippables (weapons)
 	if (itemname == "Broken Sword")
@@ -368,6 +370,8 @@ void() Item_Touch =
 		return;
 
 	float check = AddToInventory(other, self.netname, 1); // self.netname is the item's identifier string
+
+	// TODO: Add check for health / mana potions
 
 	if (check) // player can grab item
 	{

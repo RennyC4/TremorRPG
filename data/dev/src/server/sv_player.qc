@@ -124,7 +124,7 @@ void() CSEv_PlayerCrouch =
 		return;
 	if (self.deadflag == DEAD_DEAD || self.health <= 0)
 		return;
-	if (self.healthpot_use_finished > time)
+	if (self.potion_use_finished > time)
 		return;
 
 	if (!self.crouch)
@@ -178,6 +178,8 @@ void() PlayerPrintStats =
 		self.gold = 99999;
 		self.level = 9999;
 		AddToInventory(self, "Health Potion", 1);
+		AddToInventory(self, "Mana Potion", 1);
+		self.mana = 0;
 	}
 };
 
@@ -536,7 +538,7 @@ void() FootstepThink =
 		{
 			if (!self.crouch)
 			{
-				if (self.healthpot_use_finished > time)
+				if (self.potion_use_finished > time)
 					self.nextfootstep_finished = time + 0.5;
 				if (!self.blocking)
 					self.nextfootstep_finished = time + 0.35;
@@ -635,7 +637,7 @@ void() PlayerPreThink =
 		self.button3_pressed = FALSE;
 	
 	// block button
-	if (self.button4 && self.healthpot_use_finished < time && !self.menu && self.blockvalue > 0)
+	if (self.button4 && self.potion_use_finished < time && !self.menu && self.blockvalue > 0)
 	{
 		if (!self.crouch)
 			Player_ShieldBlock();
@@ -655,7 +657,7 @@ void() PlayerPreThink =
 				self.maxspeed = 225;
 			if (self.maxspeed != 135 && self.blocking)
 				self.maxspeed = 135;
-			if ((self.crouch || self.healthpot_use_finished > time) && self.maxspeed != 100)
+			if ((self.crouch || self.potion_use_finished > time) && self.maxspeed != 100)
 				self.maxspeed = 100;
 		}
 	}
@@ -699,7 +701,7 @@ void() PlayerPostThink =
 	if (self.deadflag != DEAD_DEAD)
 	{
 		Player_PushForward(3);
-	    if (self.healthpot_heal_remaining > 0 && time > self.healthpot_finished) // apply ongoing healing
+	    if (self.healthpot_heal_remaining > 0 && time > self.healthpot_finished) // health potion - apply ongoing healing
 		{
 			if (self.health >= self.max_health)
 				self.healthpot_heal_remaining = 0;
@@ -708,6 +710,17 @@ void() PlayerPostThink =
 			self.healthpot_heal_remaining -= self.healthpot_heal_rate;
 			self.healthpot_finished = time + 0.1; // how fast to tick
 		}
+
+	    if (self.manapot_heal_remaining > 0 && time > self.manapot_finished) // mana potion - apply ongoing increase
+		{
+			if (self.mana >= self.max_mana)
+				self.manapot_heal_remaining = 0;
+
+			self.mana = min(self.max_mana, self.mana + self.manapot_heal_rate);
+			self.manapot_heal_remaining -= self.manapot_heal_rate;
+			self.manapot_finished = time + 0.1; // how fast to tick
+		}
+
 		if (!self.incombat)
 		{
 			// Non-combat health regeneration

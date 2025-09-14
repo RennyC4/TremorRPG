@@ -109,7 +109,7 @@ void(float id, string itemname) Player_UseItem =
 
 		self.healthpot_heal_rate = self.max_health * 0.01; // heal 1% of max health
 		self.healthpot_heal_remaining += ceil(self.max_health * 0.25); // add heal 25% per health potion
-		self.healthpot_use_finished = time + 3; // slow player movement
+		self.potion_use_finished = time + 3; // slow player movement
 		self.healthpot_finished = time + 3; // delay before first tick (drink time)
 
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
@@ -131,6 +131,21 @@ void(float id, string itemname) Player_UseItem =
 			self.effects &= ~EF_BRIGHTLIGHT;
 			self.lantern = FALSE;
 		}
+	}
+	else if (id == 2) // mana potion
+	{
+		self.crouch = FALSE; // remove crouching if enabled
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
+		self.view_ofs = [0, 0, 48];
+		self.alpha = 1;
+
+		self.manapot_heal_rate = self.max_mana * 0.01; // heal 1% of max health
+		self.manapot_heal_remaining += ceil(self.max_mana * 0.25); // add 25% per mana potion
+		self.potion_use_finished = time + 3; // slow player movement
+		self.manapot_finished = time + 3; // delay before first tick (drink time)
+
+		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
+		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
 	}
 	else
 		print("Player_UseItem: Item use ID not found\n");

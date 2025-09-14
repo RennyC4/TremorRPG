@@ -1801,12 +1801,21 @@ const float MENU_MAGIC = 6; // user magic screen
 .float canbackstab; // can be backstabbed
 .float lantern; // on or off
 .float sight_range; // used by monsters & npcs
+.float pushforward_finished;
+.float cnt;
+
+// health potion
 .float healthpot_heal_remaining;  // how much left to heal from this use
 .float healthpot_heal_rate;       // how much per tick
 .float healthpot_finished;
-.float healthpot_use_finished;
-.float pushforward_finished;
-.float cnt;
+// health potion
+
+// mana potion
+.float manapot_heal_remaining;  // how much left to heal from this use
+.float manapot_heal_rate;       // how much per tick
+.float manapot_finished;
+// mana potion
+.float potion_use_finished;
 
 // CSQC stuff, primarily for animations
 .float anim_count; // used for counting frames in an animation (REMOVEME)
@@ -1972,6 +1981,11 @@ var float PART_BONFIRE;
 .float inventory_count[MAX_INVENTORY]; // stack counts
 .float read_inv_count; // used for reading how many items the player has on resuming character
 .float npc_vendor; // for csqc button drawing
+
+// Magic
+#define MAX_SPELLS 64
+.string current_spell[MAX_SPELLS];
+.float read_spell_count; // used for reading how many spells the player has on resuming character
 
 // Day/Night
 float timeofday;

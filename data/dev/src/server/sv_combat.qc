@@ -350,15 +350,20 @@ void(entity targ, entity attacker, float damage) DoDamage =
 			}
 		}
 
-		// Knock player out of drinking a health potion
-		if (targ.healthpot_use_finished > time)
+		// Knock player out of drinking a potion
+		if (targ.potion_use_finished > time)
 		{
 			targ.healthpot_heal_rate = 0;
 			targ.healthpot_heal_remaining = 0;
-			targ.healthpot_use_finished = time;
 			targ.healthpot_finished = time;
 
-			eventlog_print = (strcat("^1You drop your health potion!\n"));
+			targ.manapot_heal_rate = 0;
+			targ.manapot_heal_remaining = 0;
+			targ.manapot_finished = time;
+
+			targ.potion_use_finished = time;
+
+			eventlog_print = (strcat("^1You drop your potion!\n"));
 			stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
 		}
 	}
