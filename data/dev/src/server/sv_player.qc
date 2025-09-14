@@ -100,8 +100,6 @@ void() PlayerJump =
 		if (stamcalc > 49)
 			stamcalc = 49;
 		self.stamina -= (50 - stamcalc);
-
-		self.jump = TRUE; // CSQC animation
 		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
 	}
 };
@@ -605,8 +603,7 @@ void() PlayerPreThink =
 					else
 					{
 						self.anim_count = 0;
-						self.attack = TRUE; // CSQC animation
-						player_slash();
+						player_slash(); // REMOVEME
 						self.stamina -= (self.attack_stamina - stamcalc);
 					}
 				}
@@ -615,9 +612,6 @@ void() PlayerPreThink =
 				DoAttack_ShieldBash();
 		}
 	}
-
-	if (self.melee_finished < time && self.attack)
-		self.attack = FALSE; // CSQC animation
 
 	// Button1 we ignore
 	if (self.button2)
@@ -701,9 +695,6 @@ void() PlayerPostThink =
 
 	if (self.frags != self.level) // HACK: used to display level on the scoreboard
 		self.frags = self.level;
-
-	if (self.flags & FL_ONGROUND || self.flags & FL_PARTIALGROUND)
-		self.jump = FALSE;
 
 	if (self.deadflag != DEAD_DEAD)
 	{
@@ -959,8 +950,8 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteString(MSG_ENTITY, self.netname);
 	WriteShort(MSG_ENTITY, self.climbing); // Climbing - Animation
 	WriteShort(MSG_ENTITY, self.health); // Animation + additional checks
-	WriteByte(MSG_ENTITY, self.attack); // Animation - Melee
-	WriteByte(MSG_ENTITY, self.jump); // Animation - Jump
+//	WriteByte(MSG_ENTITY, self.attack); // Animation - Melee
+//	WriteByte(MSG_ENTITY, self.jump); // Animation - Jump
 	WriteByte(MSG_ENTITY, self.loggedin); //
 
 	return TRUE;

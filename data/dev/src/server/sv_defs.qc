@@ -1810,8 +1810,6 @@ const float MENU_MAGIC = 6; // user magic screen
 
 // CSQC stuff, primarily for animations
 .float anim_count; // used for counting frames in an animation (REMOVEME)
-.float jump;
-.float attack;
 
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)

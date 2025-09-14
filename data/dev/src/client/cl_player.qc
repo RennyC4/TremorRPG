@@ -127,7 +127,7 @@ void() Player_Hud =
 				Draw_Exp();
 				Draw_InCombatorPVP();
 				Draw_LockOnInfo();
-				if (autocvar_minimap == "on")
+				if (autocvar_minimap != "off")
 					WorldMap_Draw([g_width - 115, 4], 110);
 				Compass_Draw();
 				Coords_Draw();
@@ -196,6 +196,8 @@ float(void) Player_PreDraw =
 		self.movetype = MOVETYPE_NONE;
 
 		self.renderflags = RF_EXTERNALMODEL; // Set renderflag for mirrors!
+
+		Player_Animate();
     }
 	else
         addentity(self);
@@ -232,9 +234,6 @@ void() Player_Think =
 		else
 			self.jump_released = TRUE;
 	}
-
-	Player_Animate();
-	self.nextthink = time;
 };
 
 void(float flIsNew) CSQC_Ent_Update =
@@ -266,14 +265,14 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.netname = readstring();
 		self.climbing = readshort();
 		self.health = readshort();
-		self.attack = readbyte();
-		self.jump = readbyte();
+//		self.attack = readbyte();
+//		self.jump = readbyte();
 		self.loggedin = readbyte();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);
 
 		self.think = Player_Think;
-		self.nextthink = time;
+		self.nextthink = cltime;
 	}
 };
