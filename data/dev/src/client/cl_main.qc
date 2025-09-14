@@ -52,11 +52,11 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	vector virtsize = [width, height];
 	float pause = serverkeyfloat(SERVERKEY_PAUSESTATE);
 
-	framecount = framecount + 1;
-
-	clearscene(); //clear and update our global screen resolution vars
 	g_width = width;
 	g_height = height;
+	framecount = framecount + 1;
+
+	clearscene(); // clear and update our global screen resolution vars
 
 	//disable quake status bar and quake crosshair
 	setproperty(VF_DRAWENGINESBAR, 0);
@@ -69,12 +69,13 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	setproperty(VF_ANGLES, view_angles);
 
 	Player_Lantern();
-	float health = getstatf(STAT_HEALTH);
+
 	// lock on
 	float lockon = getstatf(STAT_LOCKEDON);
 	if (lockon)
 		FaceTarget();
 
+	float health = getstatf(STAT_HEALTH);
 	if (health > 0)
 	{
 		if (player_idle)
@@ -85,7 +86,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		Camera_DeathCam();
 
-	renderscene(); //does what you think it does
+	renderscene(); // does what you think it does
 
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well
 	sui_begin(g_width, g_height);
@@ -95,9 +96,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		Hud_Scoreboard('0 0 0', virtsize);
 	}
 	else
-	{
 		Player_Hud();
-	}
 
 	sui_menu_nav();
 	sui_end();

@@ -83,6 +83,7 @@ void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
 void(vector pos, vector canvas_size) WorldMap_Draw =
 {
     clearscene();
+
     setviewprop(VF_MIN, pos);
     setviewprop(VF_SIZE, canvas_size);
 
@@ -90,14 +91,18 @@ void(vector pos, vector canvas_size) WorldMap_Draw =
 	//setviewprop(VF_PERSPECTIVE, 1);
 	//setviewprop(VF_AFOV, 90);
 
+    setviewprop(VF_ORIGIN, [vPlayerOrigin_x, vPlayerOrigin_y, 2500]);
+	setviewprop(VF_ANGLES, [90, view_angles_y, 0]);
+
 	setviewprop(VF_PERSPECTIVE, 0);
-	
-	
+	setviewprop(VF_FOVX, 2500);
+	setviewprop(VF_FOVY, 2500);
+	setviewprop(VF_MINDIST, 1);
+	setviewprop(VF_MAXDIST, 2500);
+
 	setviewprop(VF_DRAWCROSSHAIR, 1);
     setviewprop(VF_DRAWWORLD, TRUE);
 	setviewprop(VF_VIEWENTITY, 0.0);
-    setviewprop(VF_ORIGIN, [vPlayerOrigin_x, vPlayerOrigin_y, 2000]);
-	setviewprop(VF_ANGLES, [90, view_angles_y, 0]);
  
 	renderscene();
 };

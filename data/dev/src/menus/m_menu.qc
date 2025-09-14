@@ -173,6 +173,15 @@ void() settings_texturefilter =
 		localcmd ("gl_texturemode nll\n");
 };
 
+string autocvar_minimap;
+void() settings_minimap =
+{
+	if (autocvar_minimap == "off")
+		localcmd ("minimap on\n");
+	else
+		localcmd ("minimap off\n");
+};
+
 float current_menu;
 const float MENU_MAIN = 1;
 const float MENU_SETTINGS = 2;
@@ -219,6 +228,14 @@ void() settings_menu =
 	my_button("tf_btn", [xpos, ypos], [width / 2, 20], "Texture Filtering") ? settings_texturefilter() : 0;
 
 	if (autocvar_gl_texturemode == "nll")
+		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Off", MENU_TEXT_1, 1, 0);
+	else
+		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "On", MENU_TEXT_1, 1, 0);
+
+	ypos += 24;
+	my_button("mm_btn", [xpos, ypos], [width / 2, 20], "Mini-Map") ? settings_minimap() : 0;
+
+	if (autocvar_minimap == "off")
 		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Off", MENU_TEXT_1, 1, 0);
 	else
 		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "On", MENU_TEXT_1, 1, 0);
