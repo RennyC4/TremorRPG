@@ -218,8 +218,8 @@ void() Player_Think =
 		// Stamina check
 		if (input_buttons & 1) // Attack
 		{
-			if (self.attack_released && !self.attack)
-				self.frame1time = 0; // start from beginning timestamp
+//			if (self.attack_released)
+//				self.frame1time = 0; // start from beginning timestamp
 			self.attack_released = FALSE;
 		}
 		else
@@ -227,8 +227,8 @@ void() Player_Think =
 
 		if (input_buttons & 2) // Jump
 		{
-			if (self.jump_released && !self.jump)
-				self.frame1time = 0; // start from beginning timestamp
+//			if (self.jump_released)
+//				self.frame1time = 0; // start from beginning timestamp
 			self.jump_released = FALSE;
 		}
 		else
