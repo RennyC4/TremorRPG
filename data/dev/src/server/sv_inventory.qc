@@ -371,7 +371,19 @@ void() Item_Touch =
 
 	float check = AddToInventory(other, self.netname, 1); // self.netname is the item's identifier string
 
-	// TODO: Add check for health / mana potions
+	if (HasItem(other, "Health Potion"))
+	{
+		float h = GetItemCount(other, "Health Potion")
+		if (h > 2)
+			check = FALSE;
+	}
+
+	if (HasItem(other, "Mana Potion"))
+	{
+		float h = GetItemCount(other, "Mana Potion")
+		if (h > 2)
+			check = FALSE;
+	}
 
 	if (check) // player can grab item
 	{
@@ -380,6 +392,9 @@ void() Item_Touch =
 		stuffcmd (other, sprintf("play %s\n", "item/get.wav"));
 		remove(self);
 	}
-	else
-		self.stagger_finished = time + 1;
+	else if (self.stagger_finished < time)
+	{
+		sprint (other, PRINT_HIGH, "Cannot hold item: ", self.netname, "\n");
+		self.stagger_finished = time + 3;
+	}
 };
