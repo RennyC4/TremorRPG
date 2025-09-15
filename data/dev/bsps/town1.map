@@ -1773,13 +1773,14 @@
 // entity 18
 {
 "classname" "misc_model"
-"origin" "408 376 56"
+"origin" "416 376 56"
 "model" "models/candle.glb"
+"angle" "300"
 }
 // entity 19
 {
 "classname" "set_dlight"
-"origin" "408 376 64"
+"origin" "416 376 64"
 "style" "1"
 "color" "1 0.33333334 0"
 "light_lev" "125"
@@ -1811,4 +1812,19 @@
 ( 266 352 64 ) ( 266 352 128 ) ( 262 352 128 ) cix254 [ -1 0 0 0 ] [ 0 0 -1 0 ] 0 1 1
 ( 266 288 128 ) ( 266 352 128 ) ( 266 352 64 ) cix254 [ 0 1 0 0 ] [ 0 0 -1 0 ] 0 1 1
 }
+}
+// entity 23
+{
+"classname" "set_dlight"
+"origin" "520 -680 80"
+"style" "6"
+"color" "0.6666667 0.44313726 0"
+"light_lev" "200"
+}
+// entity 24
+{
+"classname" "misc_model"
+"origin" "520 -680 24"
+"model" "models/candelabra.glb"
+"angle" "90"
 }
