@@ -42,7 +42,7 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 	}
 	else
 		float gold_ok = TRUE;
-		
+
     // first see if item already exists, then add it
 	float count = 1;
     float i;
@@ -298,6 +298,8 @@ void(string itemname) CSEv_UseItem_s =
 		Player_UseItem(1, itemname);
     if (itemname == "Mana Potion")
 		Player_UseItem(2, itemname);
+	if (itemname == "Spell - Thorn")
+		Player_UseItem(3, itemname);
 
 	// Main hand equippables (weapons)
 	if (itemname == "Broken Sword")

@@ -1984,6 +1984,8 @@ var float PART_BONFIRE;
 
 // Magic
 #define MAX_SPELLS 64
+.float spell_count;
+.string spell[MAX_SPELLS];
 .string current_spell[MAX_SPELLS];
 .float read_spell_count; // used for reading how many spells the player has on resuming character
 
