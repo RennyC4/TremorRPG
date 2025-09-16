@@ -43,7 +43,7 @@ void() FaceTarget =
     makevectors(player_ang);
     setproperty(VF_ANGLES, player_ang);
 
-    sendevent("PlayerUpdateAngles", "v", player_ang); // update angles on SSQC
+    sendevent("PlayerUpdateAngles_Lockon", "v", player_ang); // update angles on SSQC
 };
 
 void() Draw_LockOnInfo =

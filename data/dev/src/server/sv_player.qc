@@ -144,9 +144,11 @@ void() CSEv_PlayerCrouch =
 	}
 };
 
-void(vector player_ang) CSEv_PlayerUpdateAngles_v =
+void(vector player_ang) CSEv_PlayerUpdateAngles_Lockon_v =
 {
 	if (self.health <= 0)
+		return;
+	if (self.stagger_finished > time)
 		return;
 
 	self.angles = player_ang;
