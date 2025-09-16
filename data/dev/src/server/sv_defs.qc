@@ -1804,6 +1804,7 @@ const float MENU_MAGIC = 6; // user magic screen
 .float sight_range; // used by monsters & npcs
 .float pushforward_finished;
 .float cnt;
+.float cnt2;
 
 // health potion
 .float healthpot_heal_remaining;  // how much left to heal from this use

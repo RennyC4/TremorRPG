@@ -43,21 +43,36 @@ void() set_dlight =
 };
 
 //
-// part_foundain - particle effect for water foundtains
+// part_foundain - particle effect for water fountains
 //
 
 void() part_fountain_think =
 {
-	pointparticles(PART_FOUNTAIN, self.origin);
+	if (timeofday != TIME_NIGHT)
+	{
+		pointparticles(PART_FOUNTAIN, self.origin);
+		if (self.cnt < time)
+		{
+			sound(self, CHAN_VOICE, "ambience/fountain.wav", 1, ATTN_IDLE);
+			self.cnt = time + 9.8;
+		}
+	}
+	else // shut off at night
+	{
+		if (self.cnt > time)
+		{
+			sound(self, CHAN_VOICE, __NULL__, 1, ATTN_IDLE);
+			self.cnt = time;
+		}
+	}
 	self.nextthink = time + 0.1;
-}
+};
 
 void() part_fountain =
 {
 	precache_sound ("ambience/fountain.wav");
-	ambientsound(self.origin, "ambience/fountain.wav", 1, ATTN_STATIC);
-
 	setmodel(self, string_null);
+
 	self.think = part_fountain_think;
 	self.nextthink = time + 0.1;
 };
