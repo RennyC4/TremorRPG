@@ -71,9 +71,11 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_SKILL_ACROBATIC, EV_FLOAT, skill_acrobatic);
 	clientstat(STAT_REAPERMARK, EV_FLOAT, reaper_marks);
 	clientstat(STAT_LOCKVIEW, EV_FLOAT, lockview_finished);
-	clientstat(STAT_SPELLEQUIPPED, EV_FLOAT, spell_equipped);
+	clientstat(STAT_SPELLEQUIPPED, EV_STRING, spell_equipped);
 	clientstat(STAT_LOCKEDON, EV_FLOAT, lock_on);
 	clientstat(STAT_VENDOR, EV_FLOAT, npc_vendor);
+	clientstat(STAT_SPELLMIN, EV_FLOAT, spell_power_min);
+	clientstat(STAT_SPELLMAX, EV_FLOAT, spell_power_max);
 	// Job Skills
 };
 
@@ -128,6 +130,7 @@ void() worldspawn =
 	precache_sound ("learnspell.wav");
 
 	precache_sound ("item/drop.wav");
+	precache_sound ("item/get.wav");
 
 	SSQC_SendValuesToCSQC();
 

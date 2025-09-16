@@ -2269,6 +2269,8 @@ const float MENU_MAGIC = 6; // user magic screen
 #define STAT_SPELLEQUIPPED 86
 #define STAT_LOCKEDON 87
 #define STAT_VENDOR 88 // Could be done with CGAMEPACKET instead, got lazy
+#define STAT_SPELLMIN 89
+#define STAT_SPELLMAX 90
 
 // Inventory - Player
 #define MAX_INVENTORY 32
@@ -2303,4 +2305,5 @@ string tt_contents;
 .float climbing;
 .float health;
 .float loggedin;
+.float pvp;
 float modelindex_player_m, modelindex_player_f;

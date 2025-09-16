@@ -116,6 +116,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 float(string strCommand) CSQC_ConsoleCommand =
 {
 	tokenize(strCommand);
+	if (argv(0) == "cast")
+		sendevent("DoAttack_Magic", "");
 	if (argv(0) == "show_character")
 		sendevent("PlayerShowStats", "");
 	if (argv(0) == "show_inventory")

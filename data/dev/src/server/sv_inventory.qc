@@ -375,14 +375,14 @@ void() Item_Touch =
 
 	if (HasItem(other, "Health Potion"))
 	{
-		float h = GetItemCount(other, "Health Potion")
+		float h = GetItemCount(other, "Health Potion");
 		if (h > 2)
 			check = FALSE;
 	}
 
 	if (HasItem(other, "Mana Potion"))
 	{
-		float h = GetItemCount(other, "Mana Potion")
+		h = GetItemCount(other, "Mana Potion");
 		if (h > 2)
 			check = FALSE;
 	}
@@ -391,7 +391,7 @@ void() Item_Touch =
 	{
 		string eventlog_print = (strcat("Got ", self.netname, "\n"));
 		stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
-		stuffcmd (other, sprintf("play %s\n", "item/get.wav"));
+		sound(other, CHAN_AUTO, "item/get.wav", 1, ATTN_NORM);
 		remove(self);
 	}
 	else if (self.stagger_finished < time)

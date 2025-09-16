@@ -117,9 +117,9 @@ void() Player_Hud =
 			else
 				ZoneName_alpha.doalpha = 0;
 
+			Draw_NameTag();
 			if (!player_idle && health > 0)
 			{
-				Draw_NameTag();
 				Draw_EventLog();
 				Draw_Health();
 				Draw_Mana();
@@ -265,8 +265,12 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.netname = readstring();
 		self.climbing = readshort();
 		self.health = readshort();
-//		self.attack = readbyte();
-//		self.jump = readbyte();
+
+		self.colormod_x = readcoord();
+		self.colormod_y = readcoord();
+		self.colormod_z = readcoord();
+
+		self.pvp = readbyte();
 		self.loggedin = readbyte();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);

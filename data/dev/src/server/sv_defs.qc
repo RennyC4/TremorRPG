@@ -1894,11 +1894,6 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float skill_woodwork;
 .float skill_blacksmithing;
 
-// spells
-.float spell_equipped;
-const float SPELL_NONE = 0;
-const float SPELL_FIREDART = 1;
-
 //
 // Send stats to CSQC 
 //
@@ -1960,6 +1955,8 @@ const float SPELL_FIREDART = 1;
 #define STAT_SPELLEQUIPPED 86
 #define STAT_LOCKEDON 87
 #define STAT_VENDOR 88 // Could be done with CGAMEPACKET instead
+#define STAT_SPELLMIN 89
+#define STAT_SPELLMAX 90
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001
@@ -1985,10 +1982,11 @@ var float PART_BONFIRE;
 
 // Magic
 #define MAX_SPELLS 64
+.string spell_equipped;
 .float spell_count;
 .string spell[MAX_SPELLS];
-.string current_spell[MAX_SPELLS];
-.float read_spell_count; // used for reading how many spells the player has on resuming character
+//.string current_spell[MAX_SPELLS];
+//.float read_spell_count; // used for reading how many spells the player has on resuming character
 
 // Day/Night
 float timeofday;

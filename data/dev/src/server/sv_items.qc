@@ -99,7 +99,6 @@ void(string itemname, float id) Player_EquipItem =
 	sprint(self, PRINT_HIGH, strcat(itemname, " equipped\n"));
 };
 
-
 void(float id, string itemname) Player_UseItem =
 {
 	if (id == 0) // health potion

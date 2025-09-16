@@ -344,7 +344,10 @@ entity() get_spawn_point =
 	return spawnpoint;
 };
 
+//
 // Use button
+//
+
 void() Player_Use =
 {
 	if (self.bonfire && self.bonfire_finished < time)
@@ -494,7 +497,7 @@ void() WaterUpdate =
 				self.underwatersfx_finished = time;
 			}
 		}
-		
+
 		float stamcalc = 0.01 + (self.skill_swim * 0.0025); // stamina calculation
 		if (self.stamina > 0)
 		{
@@ -826,7 +829,7 @@ void() PlayerDeath =
 {
 	self.lock_on = 0;
 	self.lock_target = world;
-			
+
 	float g = ceil(self.gold * 0.25);
 	if (self.gold > 1)
 		self.gold -= g; // drop some gold
@@ -847,7 +850,7 @@ void() PlayerDeath =
 	self.lantern = FALSE;
 
 	centerprint (self, "/P^1You're Dead!\n^7--------\n\nYou've lost ^3" , h, " ^7gold!" , "\n\n^b^5Press Attack to respawn\n");
-	
+
 	self.respawn_finished = time + 5;
 };
 
@@ -966,8 +969,12 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteString(MSG_ENTITY, self.netname);
 	WriteShort(MSG_ENTITY, self.climbing); // Climbing - Animation
 	WriteShort(MSG_ENTITY, self.health); // Animation + additional checks
-//	WriteByte(MSG_ENTITY, self.attack); // Animation - Melee
-//	WriteByte(MSG_ENTITY, self.jump); // Animation - Jump
+
+	WriteCoord(MSG_ENTITY, self.colormod_x); //
+	WriteCoord(MSG_ENTITY, self.colormod_y); // colormod
+	WriteCoord(MSG_ENTITY, self.colormod_z); //
+
+	WriteByte(MSG_ENTITY, self.pvp);
 	WriteByte(MSG_ENTITY, self.loggedin); //
 
 	return TRUE;
@@ -1012,6 +1019,8 @@ void(entity targ) CSEv_Player_SaveChar =
 	if (!targ.loggedin) // invalid player
 		return;
 
+	float i;
+
 	float v = fopen(targ.loginname, FILE_WRITE);
 	if (v >= 0)
 	{
@@ -1050,7 +1059,9 @@ void(entity targ) CSEv_Player_SaveChar =
 		fputs(v, ftos(targ.pvpenable_count), "\n");
 		fputs(v, ftos(targ.pvp_autoflagged), "\n");
 		fputs(v, ftos(targ.blockvalue), "\n");
-		fputs(v, ftos(targ.spell_equipped), "\n");
+		fputs(v, targ.spell_equipped, "\n");
+		fputs(v, ftos(targ.spell_power_min), "\n");
+		fputs(v, ftos(targ.spell_power_max), "\n");
 		//
 
 		// skills
@@ -1075,6 +1086,7 @@ void(entity targ) CSEv_Player_SaveChar =
 		//
 
 		fputs(v, ftos(targ.inv_count), "\n"); // inventory count, used for reading back on character resume
+		fputs(v, ftos(targ.spell_count), "\n"); // spell count, used for reading back on character resume
 
 		fclose(v);
 	}
@@ -1084,13 +1096,24 @@ void(entity targ) CSEv_Player_SaveChar =
 	float b = fopen(inv, FILE_WRITE);
 	if (b >= 0)
 	{
-		float i;
 		for (i = 0; i < targ.inv_count; i++)
 		{
 			fputs(b, targ.inventory[i], "\n");
 			fputs(b, ftos(targ.inventory_count[i]), "\n");
 		}
 		fclose(b);
+	}
+	
+	// save magic to seperate file
+	string mgc = strcat(targ.loginname, "_mgc");
+	float c = fopen(mgc, FILE_WRITE);
+	if (c >= 0)
+	{
+		for (i = 0; i < targ.spell_count; i++)
+		{
+			fputs(c, targ.spell[i], "\n");
+		}
+		fclose(c);
 	}
 	sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
 };
@@ -1185,7 +1208,11 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v))
 			self.blockvalue = stof(line);
 		if (line = fgets(v))
-			self.spell_equipped = stof(line);
+			self.spell_equipped = line;
+		if (line = fgets(v))
+			self.spell_power_min = stof(line);
+		if (line = fgets(v))
+			self.spell_power_max = stof(line);
 
 		//
 
@@ -1231,6 +1258,9 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v)) // inventory count
 			self.read_inv_count = stof(line);
 
+		if (line = fgets(v)) // spell count
+			self.spell_count = stof(line);
+
 		fclose(v);
 
 		setorigin (self, self.origin); // relink properly
@@ -1255,16 +1285,34 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		float i;
 		for (i = 0; i < self.read_inv_count; i++)
 		{
-			if (line = fgets(v)) // Add item
+			if (line = fgets(b)) // Add item
 			{
 				what = line;
 				AddToInventory(self, what, 0);
 			}
-			if (line = fgets(v)) // Add count to item
+			if (line = fgets(b)) // Add count to item
 				AddToInventory(self, what, stof(line));
 		}
 		fclose(b);
 	}
+
+	// load spells
+	string mgc = strcat(self.loginname, "_mgc");
+	float c = fopen(mgc, FILE_READ);
+	if (c >= 0)
+	{
+		float q;
+		for (q = 0; q < self.spell_count; q++)
+		{
+			if (line = fgets(c)) // add spell(s)
+			{
+				self.spell[q] = line;
+			}
+		}
+		fclose(c);
+	}
+
+	sprint(self, PRINT_HIGH, strcat(self.loginname, " character resumed\n"));
 };
 
 void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
@@ -1308,7 +1356,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.armorvalue = 0;
 		self.pvp = FALSE;
 
-		self.spell_equipped = SPELL_NONE;
+		self.spell_equipped = "None";
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		self.displayname = self.loginname;

@@ -9,14 +9,20 @@ void() Draw_NameTag =
 	entity targ = find(world, classname, "player");
 	for (entity b = world;(b = find(b, classname, "player"));)
 	{
-		if (vlen(b.origin - vPlayerOrigin) <= 500)
+		if (vlen(b.origin - vPlayerOrigin) <= 1250)
 		{
 			if (b.entnum != player_localentnum && b.loggedin)
 			{
 				makevectors(b.angles);
 				vector nametag_org = project(b.origin + v_up * 60 - v_right * 6);
+
 				if (nametag_org_z > 0)
-					drawstring (nametag_org, b.netname, [10, 10], '.5 .5 1', 1, 0);
+				{
+					if (b.pvp != 1)
+						drawstring (nametag_org, b.netname, [10, 10], '.5 .5 1', 1, 0);
+					else
+						drawstring (nametag_org, b.netname, [10, 10], '1 .25 .25', 1, 0);
+				}
 			}
 		}
 	}
@@ -399,7 +405,9 @@ void() User_CharacterScreen =
 	float disp_acrobatic = getstatf(STAT_SKILL_ACROBATIC);
 	float disp_reapermarks = getstatf(STAT_REAPERMARK);
 	float disp_blocking = getstatf(STAT_BLOCKVALUE);
-	float disp_magicspell = getstatf(STAT_SPELLEQUIPPED);
+	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
+	float disp_spellmin = getstatf(STAT_SPELLMIN);
+	float disp_spellmax = getstatf(STAT_SPELLMAX);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -525,9 +533,8 @@ void() User_CharacterScreen =
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
-	string fix_disp_magicspell = "";
-	if (!disp_magicspell) fix_disp_magicspell = "None";
-	displaystat = strcat("^5Magic Spell: ^7", fix_disp_magicspell);
+
+	displaystat = strcat("^5Magic Spell : ^7", disp_magicspell, " ^7(^8", ftos(disp_spellmin), "-", ftos(disp_spellmax), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -781,7 +788,9 @@ void() User_InventoryScreen =
 	float disp_bash = getstatf(STAT_SKILL_BASH);
 	float disp_reapermarks = getstatf(STAT_REAPERMARK);
 	float disp_blocking = getstatf(STAT_BLOCKVALUE);
-	float disp_magicspell = getstatf(STAT_SPELLEQUIPPED);
+	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
+	float disp_spellmin = getstatf(STAT_SPELLMIN);
+	float disp_spellmax = getstatf(STAT_SPELLMAX);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -895,7 +904,7 @@ void() User_InventoryScreen =
 
 	newpos_y += 10;
 
-		displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
+	displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -907,9 +916,8 @@ void() User_InventoryScreen =
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
-	string fix_disp_magicspell = "";
-	if (!disp_magicspell) fix_disp_magicspell = "None";
-	displaystat = strcat("^5Magic Spell: ^7", fix_disp_magicspell);
+
+	displaystat = strcat("^5Magic Spell : ^7", disp_magicspell, " ^7(^8", ftos(disp_spellmin), "-", ftos(disp_spellmax), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -1053,7 +1061,9 @@ void() User_MagicScreen =
 	float disp_bash = getstatf(STAT_SKILL_BASH);
 	float disp_reapermarks = getstatf(STAT_REAPERMARK);
 	float disp_blocking = getstatf(STAT_BLOCKVALUE);
-	float disp_magicspell = getstatf(STAT_SPELLEQUIPPED);
+	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
+	float disp_spellmin = getstatf(STAT_SPELLMIN);
+	float disp_spellmax = getstatf(STAT_SPELLMAX);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -1167,7 +1177,7 @@ void() User_MagicScreen =
 
 	newpos_y += 10;
 
-		displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
+	displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -1179,9 +1189,8 @@ void() User_MagicScreen =
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
-	string fix_disp_magicspell = "";
-	if (!disp_magicspell) fix_disp_magicspell = "None";
-	displaystat = strcat("^5Magic Spell: ^7", fix_disp_magicspell);
+
+	displaystat = strcat("^5Magic Spell : ^7", disp_magicspell, " ^7(^8", ftos(disp_spellmin), "-", ftos(disp_spellmax), "^7)");
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -1217,7 +1226,6 @@ void() User_MagicScreen =
 
 	float i;
 	string j = "";
-	string d = "";
 	string desc = "";
 
     for (i = 0; i < spell_count; i++)
@@ -1226,26 +1234,22 @@ void() User_MagicScreen =
 		if (spell[i])
 		{
 			float usebutton_count = 0;
-			while (usebutton_count < inventory_count[i]) // setup use buttons
+			while (usebutton_count < spell_count) // setup use buttons
 			{
 				usebutton_count += 1;
-				j = strcat("u_", inventory[i]); // use
+				j = strcat("u_", spell[i]); // use
 				desc = strcat("desc_", string_remove_spaces(spell[i])); // tooltip display
 			}
-			
-			//sui_text(linepos, MENU_TEXT_SMALL, spell_disp, MENU_TEXT_1, 1, 0);
 
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 			buttonpos_x = -2.5;
-			my_button(j, buttonpos, [32, 10], "Equip");// ? sendevent("UseItem", "s", inventory[i]) : 0;
-			//buttonpos_x = -34;
-			//my_button(d, buttonpos, [32, 10], "Drop") ? sendevent("DropItem", "s", inventory[i]) : 0;
+			my_button(j, buttonpos, [32, 10], "Equip")  ? sendevent("EquipSpell", "s", spell[i]) : 0;
+
 			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
 			// tooltip (draw last)
-			float hover_text_size = stringwidth(inventory[i], 1);
+			float hover_text_size = stringwidth(spell[i], 1);
 			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], spell_disp);
-
 		}
 		linepos_y += 10;
 		buttonpos_y += 10;
