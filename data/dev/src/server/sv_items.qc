@@ -115,7 +115,7 @@ void(string itemname) LearnSpell =
 	{
 		self.spell[self.spell_count] = itemname;
 		sprint(self, PRINT_HIGH, strcat(itemname, " has been learned!\n"));
-
+		stuffcmd (self, sprintf("play %s\n", "learnspell.wav")); // sound
 		self.spell_count = self.spell_count + 1;
 	}
 	else

@@ -196,6 +196,7 @@ const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
 const float CSQC_LOCKON_INFO = 5;
+const float CSQC_MAGIC = 6;
 
 void() CSQC_Parse_Event =
 {
@@ -242,6 +243,13 @@ void() CSQC_Parse_Event =
 		LOCKON_COORD_X = readfloat();
 		LOCKON_COORD_Y = readfloat();
 		LOCKON_COORD_Z = readfloat();
+	}
+	// magic update
+	if (event == CSQC_MAGIC)
+	{
+        spell_count = readbyte();
+        for (i = 0; i < spell_count; i++)
+			spell[i] = readstring();
 	}
 };
 

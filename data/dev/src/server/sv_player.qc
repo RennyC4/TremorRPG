@@ -8,6 +8,7 @@ void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MEN
 void(entity targ) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
 void(entity player) SendPlayerInventory;
+void(entity player) SendMagicSpells;
 float(entity targ, string itemname, float count) AddToInventory;
 
 void() ClientKill = {};
@@ -675,6 +676,8 @@ void() PlayerPreThink =
 
 	if (self.menu == MENU_INVENTORY || self.menu == MENU_BUYSELL)
 		SendPlayerInventory(self); // send inventory to CSQC
+	if (self.menu == MENU_MAGIC)
+		SendMagicSpells(self); // send magic spells to CSQC
 
 	LockOn_HandleInput();
 	LockOn_Update();

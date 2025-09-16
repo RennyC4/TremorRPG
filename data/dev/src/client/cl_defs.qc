@@ -2281,6 +2281,13 @@ string npc_inventory[MAX_INVENTORY];
 float npc_inventory_gold[MAX_INVENTORY];
 float npc_inv_count;
 
+// Magic Spells
+#define MAX_SPELLS 64
+float spell_count;
+string spell[MAX_SPELLS];
+string current_spell;
+float read_spell_count; // used for reading how many spells the player has on resuming character
+
 // NPC dialogue
 string npc_name;
 string npc_dialogue;

@@ -1209,7 +1209,6 @@ void() User_MagicScreen =
 	// magic spell list display
 	//
 
-/*
 	newpos = [2.5, 2.5];
 	vector buttonpos = [-2.5, 2.5];
 	vector linepos = [2.5, 2.5];
@@ -1221,38 +1220,36 @@ void() User_MagicScreen =
 	string d = "";
 	string desc = "";
 
-    for (i = 0; i < inv_count; i++)
+    for (i = 0; i < spell_count; i++)
     {
-		string item_disp = strcat("^5", inventory[i], " ^7[^2", ftos(inventory_count[i]), "^7]");
-		if (inventory_count[i] > 0)
+		string spell_disp = strcat("^5", spell[i], "\n");
+		if (spell[i])
 		{
 			float usebutton_count = 0;
 			while (usebutton_count < inventory_count[i]) // setup use buttons
 			{
 				usebutton_count += 1;
 				j = strcat("u_", inventory[i]); // use
-				d = strcat("d_", string_remove_spaces(inventory[i])); // drop
-				desc = strcat("desc_", string_remove_spaces(inventory[i])); // tooltip display
+				desc = strcat("desc_", string_remove_spaces(spell[i])); // tooltip display
 			}
 			
-			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+			//sui_text(linepos, MENU_TEXT_SMALL, spell_disp, MENU_TEXT_1, 1, 0);
 
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 			buttonpos_x = -2.5;
-			my_button(j, buttonpos, [32, 10], "Use") ? sendevent("UseItem", "s", inventory[i]) : 0;
-			buttonpos_x = -34;
-			my_button(d, buttonpos, [32, 10], "Drop") ? sendevent("DropItem", "s", inventory[i]) : 0;
+			my_button(j, buttonpos, [32, 10], "Equip");// ? sendevent("UseItem", "s", inventory[i]) : 0;
+			//buttonpos_x = -34;
+			//my_button(d, buttonpos, [32, 10], "Drop") ? sendevent("DropItem", "s", inventory[i]) : 0;
 			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
 			// tooltip (draw last)
 			float hover_text_size = stringwidth(inventory[i], 1);
-			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
+			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], spell_disp);
 
 		}
 		linepos_y += 10;
 		buttonpos_y += 10;
     }
-*/
 
 	//
 	// Bottom button list

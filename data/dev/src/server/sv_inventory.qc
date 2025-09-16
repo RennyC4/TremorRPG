@@ -364,6 +364,20 @@ void(entity targ, entity client) SendNPCInventory =
 	multicast(self.origin, MULTICAST_ONE_R);
 };
 
+// called whenever we need to send player/client ONLY magic spell data to CSQC
+void(entity player) SendMagicSpells =
+{
+    float i;
+
+	msg_entity = player;
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_MAGIC);
+	WriteByte(MSG_MULTICAST, player.spell_count);
+    for (i = 0; i < player.spell_count; i++)
+        WriteString(MSG_MULTICAST, player.spell[i]);
+	multicast(self.origin, MULTICAST_ONE_R);
+};
+
 void() Item_Touch =
 {
     if (other.classname != "player")
