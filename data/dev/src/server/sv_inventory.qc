@@ -117,7 +117,7 @@ void(string itemname) CSEv_PlayerSellItem_s =
 	}
 	else
 	{
-		print ("Error: item file not found\n");
+		print ("Error: item file: ", readfile, " not found\n");
 		return;
 	}
 

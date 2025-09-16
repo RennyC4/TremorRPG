@@ -62,7 +62,7 @@ void(string spellname) CSEv_EquipSpell_s =
 		self.spell_power_max = 14;
 	}
 
-	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
+	stuffcmd (self, sprintf("play %s\n", "equipspell.wav")); // sound
 	sprint(self, PRINT_HIGH, strcat("Magic spell: ", spellname, " memorized\n"));
 };
 
