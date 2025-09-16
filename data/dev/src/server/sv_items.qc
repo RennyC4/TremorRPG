@@ -99,28 +99,6 @@ void(string itemname, float id) Player_EquipItem =
 	sprint(self, PRINT_HIGH, strcat(itemname, " equipped\n"));
 };
 
-void(string itemname) LearnSpell =
-{
-	float i;
-	for (i = 0; i < self.spell_count; i=i+1)
-	{
-		if (self.spell[i] == itemname)
-		{
-			sprint(self, PRINT_HIGH, strcat(itemname, " is already known!\n"));
-			return;
-		}
-	}
-
-	if (self.spell_count < MAX_SPELLS)
-	{
-		self.spell[self.spell_count] = itemname;
-		sprint(self, PRINT_HIGH, strcat(itemname, " has been learned!\n"));
-		stuffcmd (self, sprintf("play %s\n", "learnspell.wav")); // sound
-		self.spell_count = self.spell_count + 1;
-	}
-	else
-		sprint(self, PRINT_HIGH, "You cannot learn any more spells!\n");
-};
 
 void(float id, string itemname) Player_UseItem =
 {
