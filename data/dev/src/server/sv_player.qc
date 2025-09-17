@@ -810,13 +810,13 @@ void() PlayerPostThink =
 			self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
 			if (self.alpha < 0.1)
 				self.alpha = 0.1;
-			self.effects |= EF_FLAG2; // Normally this is EF_ADDITIVE
+			self.effects |= EF_ADDITIVE;
 		}
 		else
 		{
 			self.alpha = 1;
 			self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
-			self.effects &= ~EF_FLAG2;
+			self.effects &= ~EF_ADDITIVE;
 		}
 	}
 };
