@@ -47,7 +47,7 @@ void() monster_attack = [$slash, monster_attack]
 
 void() monster_death2 = [$slash, monster_death2]
 {
-	if (self.anim_count > 1)
+	if (self.anim_count > 0)
 	{
 		self.anim_count = 0;
 		self.frame = $death;

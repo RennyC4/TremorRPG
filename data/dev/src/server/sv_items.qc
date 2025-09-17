@@ -140,8 +140,8 @@ void(float id, string itemname) Player_UseItem =
 		self.view_ofs = [0, 0, 48];
 		self.alpha = 1;
 
-		self.manapot_heal_rate = self.max_mana * 0.01; // heal 1% of max health
-		self.manapot_heal_remaining += ceil(self.max_mana * 0.25); // add 25% per mana potion
+		self.manapot_heal_rate = self.max_mana * 0.01; // heal 1% of max mana
+		self.manapot_heal_remaining += ceil(self.max_mana * 0.5); // add 50% per mana potion
 		self.potion_use_finished = time + 3; // slow player movement
 		self.manapot_finished = time + 3; // delay before first tick (drink time)
 
