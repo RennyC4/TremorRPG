@@ -184,7 +184,7 @@ void() Draw_Health =
 
 	drawfill(hbarpos + '1 1 0', hbar_size, '0.5 0 0', 1, 0);
 
-	//Text
+	// text
 	string h1 = FloatToIntString(h);
 	string h2 = ftos(hmax);
 
@@ -223,8 +223,8 @@ void() Draw_Mana =
 
 	drawfill(mbarpos + '1 1 0', mbar_size, '0 0 0.5', 1, 0);
 
-	// Text
-	string m1 = ftos(m);
+	// text
+	string m1 = FloatToIntString(m);
 	string m2 = ftos(mmax);
 
 	pos = [0, (g_height - 26)];

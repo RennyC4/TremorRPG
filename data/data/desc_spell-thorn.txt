@@ -4,6 +4,6 @@
 ^5Type:^7 Offensive
 ^5Cast Time:^7 Instant
 ^5Mana Use:^7 8
-^5Distance:^7 250
+^5Distance:^7 500
 
 Sends an invisible blast of piercing wind at a target

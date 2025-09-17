@@ -48,3 +48,8 @@ string(float f) FloatToIntString =
 		return substring(s, 0, i); // cut decimals
 	return s;
 };
+
+float() crandom =
+{
+    return (random() * 2) - 1;
+};

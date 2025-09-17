@@ -105,6 +105,11 @@ void() worldspawn =
 	PART_FOUNTAIN = particleeffectnum("fountain");
 	PART_BONFIRE = particleeffectnum("bonfire");
 	PART_WTORCH1 = particleeffectnum("wtorch1");
+
+	// Magic
+	PART_MAGIC_THORN1 = particleeffectnum("thornhit");
+	PART_MAGIC_THORN2 = particleeffectnum("thornwall");
+
 	//
 
 	precache_model("models/player_m.glb");
@@ -132,6 +137,11 @@ void() worldspawn =
 
 	precache_sound ("item/drop.wav");
 	precache_sound ("item/get.wav");
+
+	precache_sound ("magic/thorn_hit.wav");
+	precache_sound ("magic/thorn_miss.wav");
+	precache_sound ("magic/thorn_cast.wav");
+
 
 	SSQC_SendValuesToCSQC();
 

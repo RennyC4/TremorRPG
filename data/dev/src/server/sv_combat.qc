@@ -155,8 +155,7 @@ void() DoAttack_Melee =
 
 	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
 	{
-		// PVP
-		if (self.classname == "player" && trace_ent.classname == "player")
+		if (self.classname == "player" && trace_ent.classname == "player") // PVP checks
 		{
 			if (self.pvp != 1 || trace_ent.pvp != 1)
 				return;
@@ -238,7 +237,7 @@ void() DoAttack_Melee =
 			else // parry
 			{
 				parry = TRUE;
-				sound (self, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
+				sound (trace_ent, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
 				eventlog_print = (strcat("^2Successful parry!"));
 				stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 				// apply effects
@@ -259,16 +258,12 @@ void() DoAttack_Melee =
 			else
 				damage = damage - trace_ent.armorvalue;
 
-			// blood effects
-			float i;
-			vector eye_level = [9, 0];
-			if (self.classname == "player")
-				eye_level_z = self.view_ofs_z; // match up blood spray to attackers view by z
-			else eye_level_z = 32;
-
-			for (i=0; i < 2; i++)
-				te_blood(trace_ent.origin + eye_level, trace_ent.velocity, 12); // spawn blood TODO: Add some randomness in direction
-
+			// blood logic + effects
+			vector mid = trace_ent.origin;
+			vector vel = [crandom(), crandom(), fabs(crandom())] * 100;
+			mid_z += (trace_ent.mins_z + trace_ent.maxs_z) * 0.5;
+			te_blood(mid, vel, 12);
+			
 			damage = ceil(damage); // round up final damage output
 			DoDamage(trace_ent, self, damage);
 			DoCamera_Shake(trace_ent, 16);

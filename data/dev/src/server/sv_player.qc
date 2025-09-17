@@ -597,7 +597,7 @@ void() PlayerPreThink =
 		{
 			if (!self.blocking)
 			{
-				if (self.melee_finished < time)
+				if (self.melee_finished < time && self.cancast_finished < time)
 				{
 					float stamcalc = self.skill_endurance * 0.015; // calculation
 					if (self.stamina < self.attack_stamina) // Stamina drain on swing

@@ -1973,6 +1973,8 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 var float PART_FOUNTAIN;
 var float PART_BONFIRE;
 var float PART_WTORCH1;
+var float PART_MAGIC_THORN1; // Hit target
+var float PART_MAGIC_THORN2; // Hit wall
 
 // Inventory
 #define MAX_INVENTORY 32 // how many slots allowed
@@ -1987,8 +1989,7 @@ var float PART_WTORCH1;
 .string spell_equipped;
 .float spell_count;
 .string spell[MAX_SPELLS];
-//.string current_spell[MAX_SPELLS];
-//.float read_spell_count; // used for reading how many spells the player has on resuming character
+.float cancast_finished; // similar to quake's attack_finished
 
 // Day/Night
 float timeofday;

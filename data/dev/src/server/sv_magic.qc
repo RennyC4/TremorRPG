@@ -66,20 +66,114 @@ void(string spellname) CSEv_EquipSpell_s =
 	sprint(self, PRINT_HIGH, strcat("Magic spell: ", spellname, " memorized\n"));
 };
 
+void(float damage) Cast_Thorn =
+{
+	makevectors (self.angles);
+
+	sound (self, CHAN_WEAPON, "magic/thorn_cast.wav", 1, ATTN_NORM);
+
+	float howmuch = 0.1;
+	float spell_length = 500;
+	float parry = FALSE;
+
+	vector selfmid = self.origin;
+	selfmid_z += (self.mins_z + self.maxs_z) * 0.5;
+
+	vector source = self.origin + '0 0 16'; // + self.view_ofs_z;
+	if (self.flags & FL_MONSTER) source = selfmid; // TODO: Test me when monsters can cast spells
+
+	damage = damage + (self.skill_offensivemagic * howmuch); // initial damage
+	traceline (source, source + v_forward * spell_length, MOVE_TRIGGERS, self);
+
+	if (trace_fraction == 1.0)
+	{
+		sound (self, CHAN_AUTO, "magic/thorn_miss.wav", 1, ATTN_STATIC);
+		pointparticles(PART_MAGIC_THORN2, trace_endpos);
+		return; // hit nothing
+	}
+
+	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
+	{
+		if (self.classname == "player" && trace_ent.classname == "player") // PVP checks
+		{
+			if (self.pvp != 1 || trace_ent.pvp != 1)
+				return;
+			else
+			{
+				self.incombat = trace_ent.incombat = TRUE; // Turn off health regen, flag players for incombat
+				self.incombat_finished = trace_ent.incombat_finished = time + 30; // keep players locked in combat
+			}
+		}
+
+		if (trace_ent.parry_finished < time)
+			parry = FALSE;
+		else
+			parry = TRUE;
+
+		if (!parry)
+		{
+			// armor calculations, armor doesn't help as much compared to melee
+			if (trace_ent.armorvalue / 3 > damage)
+				damage = 1;
+			else
+				damage = damage - (trace_ent.armorvalue / 3);
+			// spell resist calculations
+			damage -= (trace_ent.skill_spellresist * 0.1);
+			// blocking calculations
+			if (check_block(self, trace_ent) && trace_ent.blocking)
+				damage = damage - (trace_ent.blockvalue / 3);
+
+			// blood logic + effects
+			vector mid = trace_ent.origin;
+			mid_z += (trace_ent.mins_z + trace_ent.maxs_z) * 0.5;
+			vector vel = [crandom(), crandom(), fabs(crandom())] * 100;
+			te_blood(mid, vel, 12);
+			
+			damage = ceil(damage); // round up final damage output
+			DoDamage(trace_ent, self, damage);
+
+			sound (trace_ent, CHAN_AUTO, "magic/thorn_hit.wav", 1, ATTN_NORM);
+			pointparticles(PART_MAGIC_THORN1, mid);
+		}
+		else // parry
+		{
+			sound (trace_ent, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
+			string eventlog_print = (strcat("^2Successful parry!"));
+			stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+		}
+	}
+	else
+	{
+		sound (self, CHAN_AUTO, "magic/thorn_miss.wav", 1, ATTN_STATIC);
+		pointparticles(PART_MAGIC_THORN2, trace_endpos);
+	}
+};
+
 void() CSEv_DoAttack_Magic_ = // CSQC
 {
 	if (self.deadflag == DEAD_DEAD || self.health <= 0)
 		return;
 	if (self.spell_equipped == "None")
 		return;
+	if (self.cancast_finished > time)
+		return;
+	if (self.melee_finished > time)
+		return;
 
-	// calculate damage by weapon
+	// calculate damage by selected spell
 	float damage = ceil(random_range(self.spell_power_min, self.spell_power_max));
 
 	if (self.spell_equipped == "Thorn")
 	{
-		print ("Magic attack GO!\n");
+		if (self.mana >= 8)
+		{
+			Cast_Thorn(damage);
+			self.cancast_finished = time + 0.5;
+			self.mana -= 8;
+		}
+		else
+			sprint (self, PRINT_HIGH, "^1Not enough mana!\n");
 	}
 	else
-		print ("Error: Magic spell doesn't exist!\n");
+		print ("Error CSEv_DoAttack_Magic_: Magic spell doesn't exist!\n");
 };
