@@ -1972,6 +1972,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 // Particle defs
 var float PART_FOUNTAIN;
 var float PART_BONFIRE;
+var float PART_WTORCH1;
 
 // Inventory
 #define MAX_INVENTORY 32 // how many slots allowed

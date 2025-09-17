@@ -74,9 +74,28 @@ void() part_fountain =
 	setmodel(self, string_null);
 
 	self.think = part_fountain_think;
+	self.nextthink = time + 0.1 + random()*1;
+};
+
+//
+// misc_walltorch1 - particle effect for fancy wall torch
+//
+
+void() misc_walltorch1_think =
+{
+	makevectors(self.angles);
+	pointparticles(PART_WTORCH1, self.origin);
 	self.nextthink = time + 0.1;
 };
 
+void() misc_walltorch1 =
+{
+	precache_model("models/walltorch1.glb");
+	setmodel(self, "models/walltorch1.glb");
+
+	self.think = misc_walltorch1_think;
+	self.nextthink = time + 0.1 + random()*1;
+};
 /*
 * misc_model.qc
 *

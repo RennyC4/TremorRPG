@@ -104,6 +104,7 @@ void() worldspawn =
 	//
 	PART_FOUNTAIN = particleeffectnum("fountain");
 	PART_BONFIRE = particleeffectnum("bonfire");
+	PART_WTORCH1 = particleeffectnum("wtorch1");
 	//
 
 	precache_model("models/player_m.glb");
