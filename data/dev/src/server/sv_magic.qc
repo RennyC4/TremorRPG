@@ -77,7 +77,7 @@ void(float damage) Cast_Thorn =
 
 	vector selfmid = self.origin;
 	selfmid_z += (self.mins_z + self.maxs_z) * 0.5;
-	vector source = selfmid; // TODO: Test me when monsters can cast spells
+	vector source = selfmid;
 
 	damage = damage + (self.skill_offensivemagic * howmuch); // initial damage
 	traceline (source, source + v_forward * spell_length, MOVE_TRIGGERS, self);
@@ -141,6 +141,8 @@ void(float damage) Cast_Thorn =
 		else // parry
 		{
 			sound (trace_ent, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
+			sound (trace_ent, CHAN_AUTO, "magic/thorn_miss.wav", 1, ATTN_STATIC);
+			pointparticles(PART_MAGIC_THORN2, trace_endpos);
 			string eventlog_print = (strcat("^2Successful parry!"));
 			stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 		}
