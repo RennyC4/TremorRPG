@@ -68,19 +68,16 @@ void(string spellname) CSEv_EquipSpell_s =
 
 void(float damage) Cast_Thorn =
 {
-	makevectors (self.angles);
-
-	sound (self, CHAN_WEAPON, "magic/thorn_cast.wav", 1, ATTN_NORM);
-
 	float howmuch = 0.1;
 	float spell_length = 500;
 	float parry = FALSE;
 
+	makevectors (self.v_angle);
+	sound (self, CHAN_WEAPON, "magic/thorn_cast.wav", 1, ATTN_NORM);
+
 	vector selfmid = self.origin;
 	selfmid_z += (self.mins_z + self.maxs_z) * 0.5;
-
-	vector source = self.origin + '0 0 16'; // + self.view_ofs_z;
-	if (self.flags & FL_MONSTER) source = selfmid; // TODO: Test me when monsters can cast spells
+	vector source = selfmid; // TODO: Test me when monsters can cast spells
 
 	damage = damage + (self.skill_offensivemagic * howmuch); // initial damage
 	traceline (source, source + v_forward * spell_length, MOVE_TRIGGERS, self);
