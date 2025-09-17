@@ -84,7 +84,7 @@ void() part_fountain =
 void() misc_walltorch1_think =
 {
 	makevectors(self.angles);
-	pointparticles(PART_WTORCH1, self.origin);
+	pointparticles(PART_WTORCH1, self.origin + v_forward * 18 + v_up * 22);
 	self.nextthink = time + 0.1;
 };
 
