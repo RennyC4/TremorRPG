@@ -139,7 +139,7 @@ void() worldspawn =
 	precache_sound ("item/get.wav");
 
 	precache_sound ("magic/thorn_hit.wav");
-	precache_sound ("magic/thorn_miss.wav");
+	precache_sound ("magic/thorn_misc.wav");
 	precache_sound ("magic/thorn_cast.wav");
 
 

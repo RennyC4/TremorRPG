@@ -89,7 +89,7 @@ void(float damage) Cast_Thorn =
 		setorigin (snd, trace_endpos);
 		snd.think = sub_remove;
 		snd.nextthink = time + 0.1;
-		sound (snd, CHAN_AUTO, "magic/thorn_miss.wav", 1, ATTN_STATIC);
+		sound (snd, CHAN_AUTO, "magic/thorn_misc.wav", 1, ATTN_STATIC);
 
 		pointparticles(PART_MAGIC_THORN2, trace_endpos);
 		return; // hit nothing
@@ -135,13 +135,14 @@ void(float damage) Cast_Thorn =
 			damage = ceil(damage); // round up final damage output
 			DoDamage(trace_ent, self, damage);
 
+			sound (trace_ent, CHAN_AUTO, "magic/thorn_misc.wav", 1, ATTN_STATIC);
 			sound (trace_ent, CHAN_AUTO, "magic/thorn_hit.wav", 1, ATTN_NORM);
 			pointparticles(PART_MAGIC_THORN1, mid);
 		}
 		else // parry
 		{
 			sound (trace_ent, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
-			sound (trace_ent, CHAN_AUTO, "magic/thorn_miss.wav", 1, ATTN_STATIC);
+			sound (trace_ent, CHAN_AUTO, "magic/thorn_misc.wav", 1, ATTN_STATIC);
 			pointparticles(PART_MAGIC_THORN2, trace_endpos);
 			string eventlog_print = (strcat("^2Successful parry!"));
 			stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
@@ -154,7 +155,7 @@ void(float damage) Cast_Thorn =
 		setorigin (snd, trace_endpos);
 		snd.think = sub_remove;
 		snd.nextthink = time + 0.1;
-		sound (snd, CHAN_AUTO, "magic/thorn_miss.wav", 1, ATTN_STATIC);
+		sound (snd, CHAN_AUTO, "magic/thorn_misc.wav", 1, ATTN_STATIC);
 
 		pointparticles(PART_MAGIC_THORN2, trace_endpos);
 	}
