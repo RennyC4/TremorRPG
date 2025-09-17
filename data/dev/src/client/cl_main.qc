@@ -51,6 +51,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 {
 	vector virtsize = [width, height];
 	float pause = serverkeyfloat(SERVERKEY_PAUSESTATE);
+	float lockon = getstatf(STAT_LOCKEDON);
+	float health = getstatf(STAT_HEALTH);
 
 	g_width = width;
 	g_height = height;
@@ -58,9 +60,13 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	clearscene(); // clear and update our global screen resolution vars
 
-	//disable quake status bar and quake crosshair
+	//disable quake status bar
 	setproperty(VF_DRAWENGINESBAR, 0);
-	setproperty(VF_DRAWCROSSHAIR, 0);
+
+	if (!lockon && !player_idle && health > 0)
+		setproperty(VF_DRAWCROSSHAIR, 1);
+	else
+		setproperty(VF_DRAWCROSSHAIR, 0);
 
 	//autoadd entities received from servers for drawing
 	addentities((intermission?0:MASK_VIEWMODEL)|MASK_ENGINE);
@@ -69,13 +75,9 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	setproperty(VF_ANGLES, view_angles);
 
 	Player_Lantern();
-
-	// lock on
-	float lockon = getstatf(STAT_LOCKEDON);
 	if (lockon)
 		FaceTarget();
 
-	float health = getstatf(STAT_HEALTH);
 	if (health > 0)
 	{
 		if (player_idle)

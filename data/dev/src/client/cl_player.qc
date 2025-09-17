@@ -128,7 +128,10 @@ void() Player_Hud =
 				Draw_InCombatorPVP();
 				Draw_LockOnInfo();
 				if (autocvar_minimap != "off")
-					WorldMap_Draw([g_width - 115, 4], 110);
+				{
+					WorldMap_Draw([g_width - 112.5, 0], 112.5);
+					
+				}
 				Compass_Draw();
 				Coords_Draw();
 			}

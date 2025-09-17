@@ -106,11 +106,13 @@ void(vector pos, vector canvas_size) WorldMap_Draw =
 	setviewprop(VF_MINDIST, 1);
 	setviewprop(VF_MAXDIST, 2500);
 
-	setviewprop(VF_DRAWCROSSHAIR, 1);
+	setviewprop(VF_DRAWCROSSHAIR, 0);
     setviewprop(VF_DRAWWORLD, TRUE);
 	setviewprop(VF_VIEWENTITY, 0.0);
- 
+
 	renderscene();
+
+	drawstring([g_width - 58, 48], ".", 12, '1 1 1', 1, 0);
 };
 
 void(float screenwidth, float screenheight) Draw_ZoneName =
