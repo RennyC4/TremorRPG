@@ -84,7 +84,13 @@ void(float damage) Cast_Thorn =
 
 	if (trace_fraction == 1.0)
 	{
-		sound (self, CHAN_AUTO, "magic/thorn_miss.wav", 1, ATTN_STATIC);
+		entity snd = spawn();
+		setmodel(snd, string_null);
+		setorigin (snd, trace_endpos);
+		snd.think = sub_remove;
+		snd.nextthink = time + 0.1;
+		sound (snd, CHAN_AUTO, "magic/thorn_miss.wav", 1, ATTN_STATIC);
+
 		pointparticles(PART_MAGIC_THORN2, trace_endpos);
 		return; // hit nothing
 	}
@@ -141,7 +147,13 @@ void(float damage) Cast_Thorn =
 	}
 	else
 	{
-		sound (self, CHAN_AUTO, "magic/thorn_miss.wav", 1, ATTN_STATIC);
+		entity snd = spawn();
+		setmodel(snd, string_null);
+		setorigin (snd, trace_endpos);
+		snd.think = sub_remove;
+		snd.nextthink = time + 0.1;
+		sound (snd, CHAN_AUTO, "magic/thorn_miss.wav", 1, ATTN_STATIC);
+
 		pointparticles(PART_MAGIC_THORN2, trace_endpos);
 	}
 };
