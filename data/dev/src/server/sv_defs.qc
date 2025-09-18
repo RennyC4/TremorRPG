@@ -1993,9 +1993,10 @@ var float PART_MAGIC_THORN2; // Hit wall
 
 // Day/Night
 float timeofday;
-const float TIME_DAY = 0;
-const float TIME_NIGHT = 1;
-const float TIME_MID = 2;
+const float TIME_DAWN = 0;
+const float TIME_DAY = 1;
+const float TIME_DUSK = 2;
+const float TIME_NIGHT = 3;
 
 // Lock-on targetting
 .entity lock_target;	// current locked entity (monster/player)

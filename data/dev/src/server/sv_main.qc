@@ -156,37 +156,54 @@ void() worldspawn =
 entity daynight;
 float daynight_count;
 float daynight_speed;
+
 void() daynight_think =
 {
     daynight_speed += 0.05;
-    if (daynight_speed > 2 * M_PI)
+    if (daynight_speed >= 2 * M_PI)
         daynight_speed -= 2 * M_PI;
 
     daynight_count = (sin(daynight_speed) + 1) * 0.5;
 
-	//print (ftos(daynight_count), "\n");
+    float cycle = 2 * M_PI;
+    float day_len  = 0.40 * cycle; // 40% of cycle
+    float dusk_len = 0.10 * cycle; // 10%
+    float night_len = 0.40 * cycle; // 40%
 
-	if (daynight_count > 0.75)
-		timeofday = TIME_DAY;
-	else if (daynight_count > 0.25)
-		timeofday = TIME_MID;
-	else
-		timeofday = TIME_NIGHT;
+    // float dawn_len = cycle - (day_len + dusk_len + night_len); // 10%
 
-	if (daynight_count < 0.25 || daynight_count > 0.75) // hold night time / day time for awhile
-		self.nextthink = time + 8;
-	else
-		self.nextthink = time + 2;
+    float a = daynight_speed; // 0..2PI
+    float newtimeofday;
 
-	// send timeofday to CSQC player ents
-	for (entity b = world;(b = find(b, classname, "player"));)
-	{
-		msg_entity = b;
-		WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
-		WriteByte(MSG_MULTICAST, CSQC_TIMEOFDAY);
-		WriteByte(MSG_MULTICAST, timeofday);
-		multicast(self.origin, MULTICAST_ONE_R);
-	}
+    if (a < day_len)
+        newtimeofday = TIME_DAY;
+    else if (a < day_len + dusk_len)
+        newtimeofday = TIME_DUSK;
+    else if (a < day_len + dusk_len + night_len)
+        newtimeofday = TIME_NIGHT;
+    else
+        newtimeofday = TIME_DAWN;
+
+    // only broadcast on change
+    if (newtimeofday != timeofday)
+    {
+        timeofday = newtimeofday;
+
+        for (entity b = world; (b = find(b, classname, "player")); )
+        {
+            msg_entity = b;
+            WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+            WriteByte(MSG_MULTICAST, CSQC_TIMEOFDAY);
+            WriteByte(MSG_MULTICAST, timeofday);
+            multicast(self.origin, MULTICAST_ONE_R);
+        }
+    }
+
+    // hold longer during DAY/NIGHT, shorter during transitions
+    if (timeofday == TIME_NIGHT || timeofday == TIME_DAY)
+        self.nextthink = time + 8;
+    else
+        self.nextthink = time + 2;
 };
 
 void() spawn_daynight =

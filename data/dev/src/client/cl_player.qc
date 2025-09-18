@@ -13,9 +13,14 @@ void() CSQC_Input_Frame =
 
 string nightskybox = "skyworld_star";
 string dayskybox = "";
+const float TIME_DAWN = 0;
+const float TIME_DAY = 1;
+const float TIME_DUSK = 2;
+const float TIME_NIGHT = 3;
+
 void() Player_DayNightHandler =
 {
-	if (timeofday == 0) // day
+	if (timeofday == TIME_DAY) // day
 	{
 		if (cvar("r_shadow_realtime_world_lightmaps") != 1)
 		{
@@ -26,18 +31,18 @@ void() Player_DayNightHandler =
 			cvar_set("v_cshift_empty", "0 0 0");
 		}
 	}
-	else if (timeofday == 1) // night
+	else if (timeofday == TIME_NIGHT) // night
 	{
 		if (cvar("r_shadow_realtime_world_lightmaps") != 0.1)
 		{
 			cvar_set("r_shadow_realtime_world_lightmaps", "0.1");
 			cvar_set("r_skybox", nightskybox);
-			localcmd("fog 0.04 0\n");
+			localcmd("fog 0.05 0\n");
 			cvar_set("r_skyfog", "0");
 			cvar_set("v_cshift_empty", "0 0 50 125");
 		}
 	}
-	else // mid afternoon/early morning
+	else if (timeofday == TIME_DAWN) // early morning (dawn)
 	{
 		if (cvar("r_shadow_realtime_world_lightmaps") != 0.5)
 		{
@@ -46,6 +51,17 @@ void() Player_DayNightHandler =
 			localcmd("fog 0.035\n");
 			cvar_set("r_skyfog", "0.25");
 			cvar_set("v_cshift_empty", "0 0 0");
+		}
+	}
+	else // sunset (dusk)
+	{
+		if (cvar("r_shadow_realtime_world_lightmaps") != 0.25)
+		{
+			cvar_set("r_shadow_realtime_world_lightmaps", "0.25");
+			cvar_set("r_skybox", dayskybox);
+			localcmd("fog 0.035 0.3 .15 0 1\n");
+			cvar_set("r_skyfog", "0.8");
+			cvar_set("v_cshift_empty", "130 25 0 32");
 		}
 	}
 };
