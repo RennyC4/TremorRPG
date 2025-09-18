@@ -240,13 +240,13 @@ void() CSQC_Parse_Event =
 	if (event == CSQC_LOCKON_INFO)
 	{
 		LOCKON_NAME = readstring();
-		LOCKON_LEVEL = readfloat();
-		LOCKON_HEALTH = readfloat();
-		LOCKON_MAXHEALTH = readfloat();
+		LOCKON_LEVEL = readshort();
+		LOCKON_HEALTH = readshort();
+		LOCKON_MAXHEALTH = readshort();
 
-		LOCKON_COORD_X = readfloat();
-		LOCKON_COORD_Y = readfloat();
-		LOCKON_COORD_Z = readfloat();
+		LOCKON_COORD_X = readcoord();
+		LOCKON_COORD_Y = readcoord();
+		LOCKON_COORD_Z = readcoord();
 	}
 	// magic update
 	if (event == CSQC_MAGIC)

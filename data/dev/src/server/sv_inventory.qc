@@ -279,7 +279,21 @@ void(string itemname) CSEv_DropItem_s =
 
 	// Remove inventory item
 	RemoveFromInventory(self, itemname, 1);
-}
+
+	// update inventory on item drop (fixing duping)
+	float i;
+	string inv = strcat(self.loginname, "_inv");
+	float b = fopen(inv, FILE_WRITE);
+	if (b >= 0)
+	{
+		for (i = 0; i < self.inv_count; i++)
+		{
+			fputs(b, self.inventory[i], "\n");
+			fputs(b, ftos(self.inventory_count[i]), "\n");
+		}
+		fclose(b);
+	}
+};
 
 void(string itemname) CSEv_UseItem_s =
 {

@@ -158,6 +158,7 @@ void() LockOn_Update =
     }
 
 	// Send lock on target info to CSQC
+	// TODO: Optimize this because it's sending *every* frame
 	if (self.classname == "player")
 	{
 		msg_entity = self;
@@ -169,15 +170,15 @@ void() LockOn_Update =
 		else
 			WriteString(MSG_MULTICAST, t.displayname);
 		
-		WriteFloat(MSG_MULTICAST, t.level);
-		WriteFloat(MSG_MULTICAST, t.health);
-		WriteFloat(MSG_MULTICAST, t.max_health);
+		WriteShort(MSG_MULTICAST, t.level);
+		WriteShort(MSG_MULTICAST, t.health);
+		WriteShort(MSG_MULTICAST, t.max_health);
 
 		WriteCoord(MSG_MULTICAST, t.origin_x);
 		WriteCoord(MSG_MULTICAST, t.origin_y);
 		WriteCoord(MSG_MULTICAST, t.origin_z);
 
-		multicast(self.origin, MULTICAST_ONE_R);
+		multicast(self.origin, MULTICAST_ONE);
 	}
 };
 
