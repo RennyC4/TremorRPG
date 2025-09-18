@@ -1866,6 +1866,8 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float reaper_marks; // for PVP kills
 .float parry_finished;
 .float parry_cooldown_finished;
+.float cast_finished;
+.string cast_finished_spell;
 //.float armorvalue; (this is already defined)
 
 // skill point stats
@@ -1973,8 +1975,10 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 var float PART_FOUNTAIN;
 var float PART_BONFIRE;
 var float PART_WTORCH1;
+var float PART_MAGIC_CASTING;
 var float PART_MAGIC_THORN1; // Hit target
 var float PART_MAGIC_THORN2; // Hit wall
+var float PART_MAGIC_LIGHTHEAL;
 
 // Inventory
 #define MAX_INVENTORY 32 // how many slots allowed

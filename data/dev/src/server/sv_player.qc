@@ -654,8 +654,8 @@ void() PlayerPreThink =
 	// Player movement + speed checks
 	if (self.stagger_finished < time)
 	{
-		// attack commitment / npc interaction menus
-		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL)
+		// attack / magic commitment / npc interaction menus
+		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.cast_finished > time)
 			self.maxspeed = 1;
 		else
 		{
@@ -818,6 +818,7 @@ void() PlayerPostThink =
 			self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
 			self.effects &= ~EF_ADDITIVE;
 		}
+		Player_CastMagic();
 	}
 };
 

@@ -1,0 +1,9 @@
+^6Magic Spell:^2 Light Heal^7
+
+^5Power:^7 25 - 50
+^5Type:^7 Defensive
+^5Cast Time:^7 3s
+^5Mana Use:^7 20
+^5Distance:^7 Self
+
+A small healing spell for light wounds

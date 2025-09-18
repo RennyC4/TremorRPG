@@ -298,7 +298,9 @@ void(string itemname) CSEv_UseItem_s =
 		Player_UseItem(1, itemname);
     if (itemname == "Mana Potion")
 		Player_UseItem(2, itemname);
-	if (itemname == "Spell - Thorn")
+
+	// Magic spells
+	if (itemname == "Spell - Thorn" || itemname == "Spell - Light Heal")
 		Player_UseItem(3, itemname);
 
 	// Main hand equippables (weapons)

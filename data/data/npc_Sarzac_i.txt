@@ -1,5 +1,7 @@
-2
+3
 Spell - Thorn
 100
+Spell - Light Heal
+250
 Mana Potion
 30

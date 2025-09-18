@@ -108,6 +108,10 @@ void() DoAttack_ShieldBash =
 				trace_ent.stagger_finished = time + 1.5;
 				trace_ent.lockview_finished = time + 1.5;
 			}
+			// Knock target out of casting
+			trace_ent.cast_finished_spell = "";
+			trace_ent.cast_finished = time;
+			//
 			DoCamera_Shake(trace_ent, 16);
 			sound (trace_ent, CHAN_BODY, "shield2.wav", 1, ATTN_NORM);
 		}

@@ -110,6 +110,8 @@ void() worldspawn =
 	PART_MAGIC_THORN1 = particleeffectnum("thornhit");
 	PART_MAGIC_THORN2 = particleeffectnum("thornwall");
 
+	PART_MAGIC_CASTING = particleeffectnum("magiccast");
+	PART_MAGIC_LIGHTHEAL = particleeffectnum("lightheal");
 	//
 
 	precache_model("models/player_m.glb");
@@ -141,7 +143,8 @@ void() worldspawn =
 	precache_sound ("magic/thorn_hit.wav");
 	precache_sound ("magic/thorn_misc.wav");
 	precache_sound ("magic/thorn_cast.wav");
-
+	precache_sound ("magic/lightheal.wav");
+	precache_sound ("magic/casting.wav");
 
 	SSQC_SendValuesToCSQC();
 
