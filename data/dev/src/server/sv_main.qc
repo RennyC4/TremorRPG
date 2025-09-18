@@ -206,7 +206,7 @@ void() daynight_think =
     if (timeofday == TIME_NIGHT || timeofday == TIME_DAY)
         self.nextthink = time + 8;
     else
-        self.nextthink = time + 2;
+        self.nextthink = time + 4;
 };
 
 void() spawn_daynight =
