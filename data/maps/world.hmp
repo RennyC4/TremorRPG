@@ -46,11 +46,18 @@ origin "-1125 3535 55"
 angles "0 0 0"
 }
 
-// first bonfire (near Elderfen mines)
+// first bonfire (Elderfen)
 {
 classname "set_bonfire"
-origin "-2986 -1825 52"
+origin "-2986 -1825 90"
 angles "0 0 0"
+}
+
+// second bonfire (Elderfen mines)
+{
+classname "set_bonfire"
+origin "-2449 8673 489"
+angles "0 -59 0"
 }
 
 // NPC (Elderfen Weapon / Armor Merchant)
