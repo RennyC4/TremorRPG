@@ -75,7 +75,7 @@ void() Player_Lantern =
 		{
 			vector laternangle = [0, targ.angles_y, 0];
 			makevectors(laternangle);
-			dynamiclight_add(targ.origin + v_up * 24 + v_right * 12, 400, [1,1,1], 1, "", PFLAGS_CORONA);
+			dynamiclight_add(targ.origin + v_up * 24 + v_right * 12, 800, [1,1,1], 1, "", PFLAGS_CORONA);
 		}
 		targ = find(targ, classname, "player");
 	}
