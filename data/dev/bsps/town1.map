@@ -2976,3 +2976,27 @@
 "color" "0.6666667 0.44313726 0"
 "light_lev" "200"
 }
+// entity 55
+{
+"classname" "misc_barrel"
+"origin" "488 168 48"
+"angle" "225"
+}
+// entity 56
+{
+"classname" "misc_barrel"
+"origin" "288 416 24"
+"angle" "330"
+}
+// entity 57
+{
+"classname" "misc_barrel"
+"origin" "296 384 24"
+"angle" "90"
+}
+// entity 58
+{
+"classname" "misc_barrel"
+"origin" "320 416 24"
+"angle" "135"
+}

@@ -96,6 +96,23 @@ void() misc_walltorch1 =
 	self.think = misc_walltorch1_think;
 	self.nextthink = time + 0.1 + random()*1;
 };
+
+//
+// misc_barrel - decor object
+//
+
+void() misc_barrel =
+{
+	precache_model("models/barrel.glb");
+
+	self.solid = SOLID_SLIDEBOX;
+
+	setmodel(self, "models/barrel.glb");
+	setsize(self, [-14, -14, 0], [14, 14, 28]);
+
+	droptofloor();
+};
+
 /*
 * misc_model.qc
 *
