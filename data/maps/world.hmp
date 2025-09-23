@@ -60,6 +60,15 @@ origin "-2449 8673 489"
 angles "0 -59 0"
 }
 
+// first dungeon entrance (Elderfen mines)
+{
+classname "set_prop"
+model "bsps/enter_dun1.bsp"
+origin "-2096 8145 458"
+angles "0 0 0"
+}
+
+
 // NPC (Elderfen Weapon / Armor Merchant)
 {
 classname "set_npc"

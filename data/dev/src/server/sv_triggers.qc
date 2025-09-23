@@ -1,5 +1,5 @@
 //
-// Used for when the player enters different zones (dungeons, towns, etc)
+// trigger_zone - used for when the player enters different zones (dungeons, towns, etc)
 //
 
 void() trigger_zone_touch =
@@ -34,6 +34,7 @@ void() trigger_zone_touch =
 	}
 };
 
+
 void() trigger_zone =
 {
 	self.modelindex = 0;
@@ -45,10 +46,34 @@ void() trigger_zone =
 	self.model = "";
 };
 
+//
+// func_illusionary - brush entity that can be walked through
+//
+
 void() func_illusionary =
 {
 	setmodel(self, self.model);
 	self.solid = SOLID_NOT;
+};
+
+//
+// changelevel- move players between maps
+//
+
+void() trigger_changeleveel_touch =
+{
+	print ("Touched\n");
+};
+
+void() trigger_changelevel =
+{
+	self.modelindex = 0;
+	self.solid = SOLID_TRIGGER;
+	self.touch = trigger_changeleveel_touch;
+
+	setmodel (self, self.model);
+	self.movetype = MOVETYPE_NONE;
+	self.model = "";
 };
 
 void() info_null ={};
