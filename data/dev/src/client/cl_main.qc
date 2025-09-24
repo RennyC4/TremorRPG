@@ -85,13 +85,13 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		else if (camera_mode)
 		{
 			if (thirdcam_dist < 100) // zoom out smoothly
-				thirdcam_dist += 2;
+				thirdcam_dist += (200 * frametime);
 			else if (thirdcam_dist != 100)
 				thirdcam_dist = 100;
 
 			// smooth z
 			if (thirdcam_distz < 20)
-				thirdcam_distz += 0.5;
+				thirdcam_distz += (50 * frametime);
 			else if (thirdcam_distz != 20)
 				thirdcam_distz = 20;
 
@@ -101,10 +101,10 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		{
 			if (thirdcam_dist > 45 || thirdcam_distz > 0) // smooth zoom in when camera is off
 			{
-				thirdcam_dist -= 2;
+				thirdcam_dist -= (200 * frametime);
 
 				if (thirdcam_distz > 0)
-					thirdcam_distz -= 0.5;
+					thirdcam_distz -= (75 * frametime);
 				else if (thirdcam_distz != 0)
 					thirdcam_distz = 0;
 

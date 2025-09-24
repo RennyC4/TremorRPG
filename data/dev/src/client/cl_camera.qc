@@ -11,7 +11,7 @@ void() Camera_DeathCam =
 	makevectors(ang);
 
 	if (deathcam_dist < 120)
-		deathcam_dist += 0.1;
+		deathcam_dist += (35 * frametime);
 
 	vector cam_start = plyr_pos;
 	vector cam_end = plyr_pos - v_forward * deathcam_dist;

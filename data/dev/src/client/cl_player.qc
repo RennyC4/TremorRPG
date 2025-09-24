@@ -142,7 +142,7 @@ void() Player_Hud =
 				Draw_Exp();
 				Draw_InCombatorPVP();
 				Draw_LockOnInfo();
-				if (autocvar_minimap != "off")
+				if (autocvar_minimap != "off" && autocvar_minimap != "")
 					WorldMap_Draw([g_width - 112.5, 0], 112.5);
 				Compass_Draw();
 				Coords_Draw();
