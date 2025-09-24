@@ -50,6 +50,10 @@ void() Camera_Third =
 
     setproperty(VF_ORIGIN, trace_endpos);
     setproperty(VF_AFOV, 90);
-	// TODO: dist check
-	setviewprop(VF_VIEWENTITY, 0); // Show player in world
+	
+	float dist = vlen(trace_endpos - plyr_pos);
+	if (dist < 24)
+		setviewprop(VF_VIEWENTITY, 1); // Stop drawing player
+	else
+		setviewprop(VF_VIEWENTITY, 0.0);
 };
