@@ -50,5 +50,6 @@ void() Camera_Third =
 
     setproperty(VF_ORIGIN, trace_endpos);
     setproperty(VF_AFOV, 90);
+	// TODO: dist check
 	setviewprop(VF_VIEWENTITY, 0); // Show player in world
 };

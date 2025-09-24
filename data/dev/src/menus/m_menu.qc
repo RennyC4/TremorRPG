@@ -176,8 +176,10 @@ void() settings_texturefilter =
 string autocvar_minimap;
 void() settings_minimap =
 {
-	if (autocvar_minimap == "off")
+	if (autocvar_minimap == "off" || autocvar_minimap == "")
 		localcmd ("minimap on\n");
+	else if (autocvar_minimap == "on")
+		localcmd ("minimap full\n");
 	else
 		localcmd ("minimap off\n");
 };
@@ -235,10 +237,12 @@ void() settings_menu =
 	ypos += 24;
 	my_button("mm_btn", [xpos, ypos], [width / 2, 20], "Mini-Map") ? settings_minimap() : 0;
 
-	if (autocvar_minimap == "off")
+	if (autocvar_minimap == "off" || autocvar_minimap == "")
 		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Off", MENU_TEXT_1, 1, 0);
-	else
-		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "On", MENU_TEXT_1, 1, 0);
+	else if (autocvar_minimap == "on")
+		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Lite", MENU_TEXT_1, 1, 0);
+	if (autocvar_minimap == "full")
+		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Full", MENU_TEXT_1, 1, 0);
 
 	ypos = 32;
 	xpos = 8 + width + 8 + 8;

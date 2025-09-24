@@ -6,7 +6,7 @@ void() User_ResumeCharacter_MapTransfer =
 {
 	string line;
 
-	// Read local(client) file for map transfer
+	// Read local (client) file for map transfer
 	float v = fopen("lastlogin", FILE_READ);
 	if (v >= 0)
 	{
@@ -17,7 +17,7 @@ void() User_ResumeCharacter_MapTransfer =
 
 	if (Send_LastLogin) // Send it to SSQC
 		sendevent("ResumeCharacterMapTransfer", "s", Send_LastLogin);
-	LOGIN_NAME = Send_LastLogin; // resend for CSQC's sake
+	LOGIN_NAME = Send_LastLogin; // set for CSQC's sake
 };
 
 void() User_ResumeCharacter =

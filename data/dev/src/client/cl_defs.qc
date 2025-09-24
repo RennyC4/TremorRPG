@@ -2190,6 +2190,7 @@ float last_input_time;
 float idle_threshold = 15; // 15 seconds until idle orbit cam is hit
 float player_idle;
 float lantern;
+string autocvar_minimap;
 
 string LOCKON_NAME;
 float LOCKON_LEVEL;

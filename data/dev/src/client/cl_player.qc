@@ -81,7 +81,6 @@ void() Player_Lantern =
 	}
 };
 
-string autocvar_minimap;
 void() Player_Hud =
 {
 	if (cvar("developer") == 0)
@@ -144,10 +143,7 @@ void() Player_Hud =
 				Draw_InCombatorPVP();
 				Draw_LockOnInfo();
 				if (autocvar_minimap != "off")
-				{
 					WorldMap_Draw([g_width - 112.5, 0], 112.5);
-					
-				}
 				Compass_Draw();
 				Coords_Draw();
 			}
