@@ -2272,6 +2272,7 @@ const float MENU_MAGIC = 6; // user magic screen
 #define STAT_VENDOR 88 // Could be done with CGAMEPACKET instead, got lazy
 #define STAT_SPELLMIN 89
 #define STAT_SPELLMAX 90
+#define STAT_BONFIRE 91
 
 // Inventory - Player
 #define MAX_INVENTORY 32

@@ -386,6 +386,7 @@ void() Player_Use =
 		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 		self.bonfire = FALSE;
 		self.bonfire_finished = time + 1; // fixes input bleed
+		CSEv_Player_SaveChar(self); // Save user character
 		return;
 	}
 

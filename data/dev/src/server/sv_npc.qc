@@ -166,8 +166,6 @@ void() bonfire_use =
 			string eventlog_print = "^5You rest at the bonfire ...\n";
 			stuffcmd (self.user, sprintf("conecho event %s\nwf\n", eventlog_print));
 
-			CSEv_Player_SaveChar(self.user); // Save user character
-
 			self.user.bonfire = TRUE;
 			self.user.bonfire_finished = time + 3;
 			sound (self, CHAN_AUTO, "bonfire1.wav", 1, ATTN_NORM);

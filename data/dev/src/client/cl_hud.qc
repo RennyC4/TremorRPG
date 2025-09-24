@@ -112,6 +112,7 @@ void(vector pos, vector canvas_size) WorldMap_Draw =
 	setviewprop(VF_MINDIST, 0);
 	setviewprop(VF_MAXDIST, 1000);
 	*/
+
 	renderscene();
 
 	drawstring([g_width - 58, 48], ".", 12, '1 1 1', 1, 0);
@@ -412,6 +413,7 @@ void() User_CharacterScreen =
 	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
 	float disp_spellmin = getstatf(STAT_SPELLMIN);
 	float disp_spellmax = getstatf(STAT_SPELLMAX);
+	float atbonfire = getstatf(STAT_BONFIRE);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -683,41 +685,44 @@ void() User_CharacterScreen =
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
-	my_button("skillpoint_unarmed", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 0) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_slash", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 1) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_pierce", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 2) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_bash", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 3) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_stealth", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 4) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_backstab", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 5) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_offensivemagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 6) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_defensivemagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 7) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_neutralmagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 8) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_endurance", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 9) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_spellresist", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 10) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_archery", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 11) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_healthregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 12) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_manaregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 13) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_haggling", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 14) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_climbing", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 15) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_swimming", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 16) : 0;
-	newpos_y +=10;
-	my_button("skillpoint_acrobatics", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 17) : 0;
+	if (atbonfire)
+	{
+		my_button("skillpoint_unarmed", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 0) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_slash", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 1) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_pierce", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 2) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_bash", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 3) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_stealth", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 4) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_backstab", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 5) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_offensivemagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 6) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_defensivemagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 7) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_neutralmagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 8) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_endurance", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 9) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_spellresist", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 10) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_archery", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 11) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_healthregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 12) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_manaregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 13) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_haggling", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 14) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_climbing", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 15) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_swimming", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 16) : 0;
+		newpos_y +=10;
+		my_button("skillpoint_acrobatics", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 17) : 0;
+	}
 
 	//
 	// Bottom button list

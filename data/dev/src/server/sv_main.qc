@@ -76,6 +76,7 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_VENDOR, EV_FLOAT, npc_vendor);
 	clientstat(STAT_SPELLMIN, EV_FLOAT, spell_power_min);
 	clientstat(STAT_SPELLMAX, EV_FLOAT, spell_power_max);
+	clientstat(STAT_BONFIRE, EV_FLOAT, bonfire);
 	// Job Skills
 };
 
