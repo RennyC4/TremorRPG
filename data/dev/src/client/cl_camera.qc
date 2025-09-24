@@ -14,20 +14,31 @@ void() Camera_DeathCam =
 	setviewprop(VF_ANGLES, ang);
 };
 
-// Turn on when player is idle for awhile
 void() Camera_IdleOrbit =
 {
-	float health = getstatf(STAT_HEALTH);
-	if (health <= 0)
-		return;
+    float health = getstatf(STAT_HEALTH);
+    if (health <= 0)
+        return;
 
-	vector plyr_pos = getproperty(VF_ORIGIN);
-	vector ang = [0, cltime * 16, 0];
+    vector plyr_pos = getproperty(VF_ORIGIN);
+    vector ang = [0, cltime * 16, 0];
 
-	makevectors(ang);
-	setviewprop(VF_VIEWENTITY, 0.0);
-	setviewprop(VF_ORIGIN, plyr_pos - v_forward*64 - v_up * 16);
-	setviewprop(VF_ANGLES, ang);
+    makevectors(ang);
+
+    vector cam_offset = -v_forward * 64 - v_up * 16;
+    vector cam_target = plyr_pos + cam_offset;
+
+	tracebox(plyr_pos, [-4, -4, -4], [4, 4, 4], cam_target, MOVE_NORMAL, world);
+
+	vector final_pos;
+    if (trace_fraction < 1) // hit wall
+        final_pos = trace_endpos + trace_plane_normal * 2;
+	else
+		final_pos = cam_target;
+
+    setviewprop(VF_VIEWENTITY, 0);
+    setviewprop(VF_ORIGIN, final_pos);
+    setviewprop(VF_ANGLES, ang);
 };
 
 // Regular 3rd person
