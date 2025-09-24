@@ -143,7 +143,10 @@ void() Player_Hud =
 				Draw_InCombatorPVP();
 				Draw_LockOnInfo();
 				if (autocvar_minimap != "off" && autocvar_minimap != "")
-					WorldMap_Draw([g_width - 112.5, 0], 112.5);
+				{
+					if (substring(world.model, -3, 3) == "hmp") // mini-map only on over world
+						WorldMap_Draw([g_width - 112.5, 0], 112.5);
+				}
 				Compass_Draw();
 				Coords_Draw();
 			}
