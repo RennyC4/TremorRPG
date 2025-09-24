@@ -484,6 +484,8 @@ void() initents;	/* Part of FTE_MULTIPROGS. Called after fields have been finali
 float parm17, parm18, parm19, parm20, parm21, parm22, parm23, parm24, parm25, parm26, parm27, parm28, parm29, parm30, parm31, parm32;
 float parm33, parm34, parm35, parm36, parm37, parm38, parm39, parm40, parm41, parm42, parm43, parm44, parm45, parm46, parm47, parm48;
 float parm49, parm50, parm51, parm52, parm53, parm54, parm55, parm56, parm57, parm58, parm59, parm60, parm61, parm62, parm63, parm64;
+string parm_string;	/* Like the regular parmN globals, but preserves string contents. */
+string startspot;	/* Receives the value of the second argument to changelevel from the previous map. */
 var float dimension_send;	/* Used by multicast functionality. Multicasts (and related builtins that multicast internally) will only be sent to players where (player.dimension_see & dimension_send) is non-zero. */
 //var float dimension_default = 255;
 /* Default dimension bitmask */
@@ -1699,6 +1701,7 @@ void(string cmdname, optional string desc) registercommand = #352; /*
 string string_null = "";
 float(float min, float max) random_range;
 float SVC_TEMPENTITY = 23;
+.string map;
 
 // Enums
 #define ENT_PLAYER 1

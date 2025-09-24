@@ -19,9 +19,10 @@ _defaultwaterheight "4"
 _wateralpha "0.6"
 }
 
+// player start
 {
 classname info_player_start
-origin "-3321 -1460 85" /*EDITME*/
+origin "-3321 -1460 85"
 angles "0 -30 0"
 }
 

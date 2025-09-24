@@ -62,7 +62,11 @@ void() func_illusionary =
 
 void() trigger_changeleveel_touch =
 {
-	print ("Touched\n");
+	if (other.classname != "player")
+		return;
+
+	string newmap = strcat(":", self.map);
+	clustertransfer(other, newmap);
 };
 
 void() trigger_changelevel =

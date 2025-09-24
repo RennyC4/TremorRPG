@@ -10,12 +10,35 @@ void(float type) PlayerSpawn;
 void(entity player) SendPlayerInventory;
 void(entity player) SendMagicSpells;
 float(entity targ, string itemname, float count) AddToInventory;
-
 void() ClientKill = {};
 void() SetNewParms = {};
-void() SetChangeParms = {};
 void(float elapsedtime) SV_PausedTic = {};
 void() info_player_start = {};
+void(string LOGIN_NAME) CSEv_ResumeCharacter_s;
+
+//
+// Parm usage
+//
+
+void() SetChangeParms =
+{
+	parm1 = self.loggedin;
+	parm2 = self.health;
+	parm3 = self.max_health;
+	parm4 = self.mana;
+	parm5 = self.max_mana;
+};
+
+void() SetCheckParms =
+{
+	self.loggedin = parm1;
+	self.health = parm2;
+	self.max_health = parm3;
+	self.mana = parm4;
+	self.max_mana = parm5;
+};
+
+//
 
 .float climb_stamina_finished;
 void() PlayerClimb =
@@ -587,7 +610,7 @@ void() PlayerPreThink =
 		{
 			if (self.respawn_finished < time)
 			{
-				PlayerSpawn(2); // respawn
+				PlayerSpawn(3); // respawn
 				self.melee_finished = time + 1; // prevent attack on spawn
 				self.pvp_autoflagged = FALSE;
 				return;
@@ -886,7 +909,7 @@ void(float type) PlayerSpawn =
 
 		stuffcmd (self, sprintf("music sound/music/track03.ogg\n")); // login screen music
 	}
-	else if (type == 1) // put actual player in
+	else if (type == 1) // put first time player in
 	{
 		self.flags |= FL_CLIENT;
 		self.classname = "player";
@@ -916,6 +939,40 @@ void(float type) PlayerSpawn =
 		}
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
+	}
+	else if (type == 2) // map transition
+	{
+		self.flags |= FL_CLIENT;
+		self.classname = "player";
+		self.takedamage = DAMAGE_AIM;
+		self.movetype = MOVETYPE_WALK;
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
+		self.view_ofs = [0, 0, 48];
+		self.menu = MENU_OFF;
+		self.radius_candamage = TRUE;
+		self.solid = SOLID_TRIGGER;
+		self.flags |= FL_FINDABLE_NONSOLID;
+		self.crouch = FALSE;
+		self.alpha = 1;
+		self.canbackstab = TRUE; // can be backstabbed
+		self.th_die = PlayerDeath;
+
+		if (self.gender == "Male")
+		{
+			setmodel(self, "models/player_m.glb");
+			modelindex_player_m = self.modelindex;
+		}
+		else
+		{
+			setmodel(self, "models/player_f.glb");
+			modelindex_player_f = self.modelindex;
+		}
+
+		setorigin(self, spawn_spot.origin + '0 0 1');
+		self.angles = spawn_spot.angles;
+		self.fixangle = TRUE;
+
+		print ("PlayerSpawn: Map Transition block exe\n");
 	}
 	else // respawning from death
 	{
@@ -986,6 +1043,18 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 void() PutClientInServer =
 {
 	player_chain_add(self);
+	SetCheckParms(); // grab parms
+
+	if (cvar("developer") == 0)
+		self.SendEntity = Player_SendEntity;
+
+	// map transition
+	if (self.loggedin)
+	{
+		CSEv_ResumeCharacter_s(self.netname);
+		PlayerSpawn(2);
+		return;
+	}
 
 	self.guid = infokey(self, INFOKEY_P_GUID);
 	if (!self.guid)
@@ -996,9 +1065,6 @@ void() PutClientInServer =
 	}
 	else
 		PlayerSpawn(0);
-
-	if (cvar("developer") == 0)
-		self.SendEntity = Player_SendEntity;
 };
 
 void() ClientDisconnect =
@@ -1142,7 +1208,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	if (v >= 0)
 	{
 		// stats
-		if (line = fgets(v)) // do not set GUID any longer
+		if (line = fgets(v)) {} // do not set GUID any longer
 			//self.guid = line;
 		if (line = fgets(v))
 			self.netname = self.loginname = line;
@@ -1152,18 +1218,32 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.music = line;
 		if (line = fgets(v))
 			self.zonename = line;
-		if (line = fgets(v))
-			self.origin_x = stof(line);
-		if (line = fgets(v))
-			self.origin_y = stof(line);
-		if (line = fgets(v))
-			self.origin_z = stof(line);
-		if (line = fgets(v))
-			self.angles_x = stof(line);
-		if (line = fgets(v))
-			self.angles_y = stof(line);
-		if (line = fgets(v))
-			self.angles_z = stof(line);
+
+		if (!self.loggedin)
+		{
+			if (line = fgets(v))
+				self.origin_x = stof(line);
+			if (line = fgets(v))
+				self.origin_y = stof(line);
+			if (line = fgets(v))
+				self.origin_z = stof(line);
+			if (line = fgets(v))
+				self.angles_x = stof(line);
+			if (line = fgets(v))
+				self.angles_y = stof(line);
+			if (line = fgets(v))
+				self.angles_z = stof(line);
+		}
+		else // skip 6 lines, already logged in; map transition
+		{
+			if (line = fgets(v)) {}
+			if (line = fgets(v)) {}
+			if (line = fgets(v)) {}
+			if (line = fgets(v)) {}
+			if (line = fgets(v)) {}
+			if (line = fgets(v)) {}
+		}
+
 		if (line = fgets(v))
 			self.health = stof(line);
 		if (line = fgets(v))

@@ -270,7 +270,7 @@
 {
 "classname" "trigger_changelevel"
 "delay" "0"
-"map" "dungeon1"
+"map" "mines"
 // brush 0
 {
 ( -128 48 272 ) ( -128 -48 272 ) ( -128 -48 16 ) trigger [ 0 -4 0 0 ] [ 0 0 -4 0 ] 90 1 1
