@@ -19,9 +19,15 @@ void() Draw_NameTag =
 				if (nametag_org_z > 0)
 				{
 					if (b.pvp != 1)
+					{
+						drawstring (nametag_org+[1,1], b.netname, [10, 10], '0 0 0', 1, 0); // shadow
 						drawstring (nametag_org, b.netname, [10, 10], '.5 .5 1', 1, 0);
+					}
 					else
+					{
+						drawstring (nametag_org+[1,1], b.netname, [10, 10], '0 0 0', 1, 0); // shadow
 						drawstring (nametag_org, b.netname, [10, 10], '1 .25 .25', 1, 0);
+					}
 				}
 			}
 		}
