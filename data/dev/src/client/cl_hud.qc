@@ -294,7 +294,7 @@ void() Draw_Stamina =
 	drawstring (pos, s2, '8 8 0', '1 1 1', 1, 0);
 };
 
-void() Draw_Exp = 
+void() Draw_Exp =
 {
 	float e = getstatf(STAT_EXP);
 	float e2 = getstatf(STAT_EXPNEEDED);

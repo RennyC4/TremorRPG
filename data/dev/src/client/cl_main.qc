@@ -201,6 +201,7 @@ const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
 const float CSQC_LOCKON_INFO = 5;
 const float CSQC_MAGIC = 6;
+const float CSQC_LASTLOGIN = 7;
 
 void() CSQC_Parse_Event =
 {
@@ -255,6 +256,9 @@ void() CSQC_Parse_Event =
         for (i = 0; i < spell_count; i++)
 			spell[i] = readstring();
 	}
+	// last login update, for map transfers
+	if (event == CSQC_LASTLOGIN)
+		User_ResumeCharacter_MapTransfer();
 };
 
 noref void CSQC_Shutdown() = {};

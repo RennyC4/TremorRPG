@@ -848,7 +848,7 @@ void() PlayerPostThink =
 void() ClientConnect =
 {
 	bprint(PRINT_HIGH, self.netname);
-	bprint(PRINT_HIGH, " has joined the realm\n");
+	bprint(PRINT_HIGH, " enters the zone\n");
 };
 
 void() PlayerDeath =
@@ -971,8 +971,7 @@ void(float type) PlayerSpawn =
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
 		self.fixangle = TRUE;
-
-		print ("PlayerSpawn: Map Transition block exe\n");
+		stuffcmd (self, sprintf("stopmusic\n")); // stop music
 	}
 	else // respawning from death
 	{
@@ -1045,14 +1044,16 @@ void() PutClientInServer =
 	player_chain_add(self);
 	SetCheckParms(); // grab parms
 
-	if (cvar("developer") == 0)
+	if (cvar("developer") == 0) // developer 1 uses teredit not Tremor CSQC
 		self.SendEntity = Player_SendEntity;
 
 	// map transition
 	if (self.loggedin)
 	{
-		CSEv_ResumeCharacter_s(self.netname);
-		PlayerSpawn(2);
+		msg_entity = self;
+		WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+		WriteByte(MSG_MULTICAST, CSQC_LASTLOGIN);
+		multicast(self.origin, MULTICAST_ONE_R);
 		return;
 	}
 
@@ -1076,12 +1077,20 @@ void() ClientDisconnect =
 	self.classname = "notloggedin";
 
 	bprint(PRINT_HIGH, self.netname);
-	bprint(PRINT_HIGH, " has left the realm.\n");
+	bprint(PRINT_HIGH, " has left the zone\n");
 };
 
 //
-// Saving / Loading / Character creation
+// Saving / Loading / Map Transfer / Character creation
 //
+
+void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s = 
+{
+	self.loginname = LOGIN_NAME;
+	self.netname = LOGIN_NAME;
+	CSEv_ResumeCharacter_s(self.loginname);
+	PlayerSpawn(2);
+};
 
 void(entity targ) CSEv_Player_SaveChar =
 {

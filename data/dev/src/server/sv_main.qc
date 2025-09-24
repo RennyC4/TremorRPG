@@ -198,7 +198,7 @@ void() daynight_think =
             WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
             WriteByte(MSG_MULTICAST, CSQC_TIMEOFDAY);
             WriteByte(MSG_MULTICAST, timeofday);
-            multicast(self.origin, MULTICAST_ONE_R);
+            multicast(self.origin, MULTICAST_ONE);
         }
     }
 
