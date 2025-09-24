@@ -2191,6 +2191,9 @@ float idle_threshold = 15; // 15 seconds until idle orbit cam is hit
 float player_idle;
 float lantern;
 string autocvar_minimap;
+float deathcam_dist;
+float thirdcam_dist;
+float thirdcam_distz;
 
 string LOCKON_NAME;
 float LOCKON_LEVEL;

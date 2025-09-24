@@ -1,19 +1,35 @@
 //
-// CSQC 3rd person camera
+// CSQC cameras
 //
 
-// Death camera
+// death camera
 void() Camera_DeathCam =
 {
 	vector plyr_pos = getproperty(VF_ORIGIN);
 	vector ang = [90, cltime * 16, 0];
 
 	makevectors(ang);
-	setviewprop(VF_VIEWENTITY, 0.0);
-	setviewprop(VF_ORIGIN, plyr_pos - v_forward * 120);
+
+	if (deathcam_dist < 120)
+		deathcam_dist += 0.1;
+
+	vector cam_start = plyr_pos;
+	vector cam_end = plyr_pos - v_forward * deathcam_dist;
+
+    tracebox(cam_start, '-8 -8 -8', '8 8 8', cam_end, MOVE_NOMONSTERS, self);
+
+	vector cam_pos;
+	if (trace_fraction < 1.0) // hit wall
+		cam_pos = trace_endpos;
+	else
+		cam_pos = cam_end;
+
+	setviewprop(VF_VIEWENTITY, 0);
+	setviewprop(VF_ORIGIN, cam_pos);
 	setviewprop(VF_ANGLES, ang);
 };
 
+// idle camera
 void() Camera_IdleOrbit =
 {
     float health = getstatf(STAT_HEALTH);
@@ -41,7 +57,7 @@ void() Camera_IdleOrbit =
     setviewprop(VF_ANGLES, ang);
 };
 
-// Regular 3rd person
+// regular 3rd person camera
 void() Camera_Third =
 {
 	float health = getstatf(STAT_HEALTH);
@@ -50,11 +66,11 @@ void() Camera_Third =
 
 	vector plyr_pos = getproperty(VF_ORIGIN);
 
-	// Regular 3rd person camera
 	camang = getproperty(VF_ANGLES);
 	makevectors(camang);
 
-    campos = getproperty(VF_ORIGIN) - v_forward * 100 + v_up * 20;
+
+    campos = getproperty(VF_ORIGIN) - v_forward * thirdcam_dist + v_up * thirdcam_distz;
     plyr_pos = getproperty(VF_ORIGIN);
 
     tracebox(plyr_pos, '-16 -16 -16', '16 16 16', campos, MOVE_NOMONSTERS, self);

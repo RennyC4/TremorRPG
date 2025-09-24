@@ -320,7 +320,8 @@ void() connect_mainserver =
 void() singleplayer_button =
 {
 	connect_text = FALSE;
-	localcmd("disconnect;map world\n");
+	m_toggle(0); // close menu
+	localcmd("disconnect;mapcluster world\n");
 };
 
 void() main_menu =

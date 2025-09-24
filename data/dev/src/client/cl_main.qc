@@ -83,7 +83,41 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		if (player_idle)
 			Camera_IdleOrbit();
 		else if (camera_mode)
-			Camera_Third();	
+		{
+			if (thirdcam_dist < 100) // zoom out smoothly
+				thirdcam_dist += 2;
+			else if (thirdcam_dist != 100)
+				thirdcam_dist = 100;
+
+			// smooth z
+			if (thirdcam_distz < 20)
+				thirdcam_distz += 0.5;
+			else if (thirdcam_distz != 20)
+				thirdcam_distz = 20;
+
+			Camera_Third();
+		}
+		if (!camera_mode)
+		{
+			if (thirdcam_dist > 45 || thirdcam_distz > 0) // smooth zoom in when camera is off
+			{
+				thirdcam_dist -= 2;
+
+				if (thirdcam_distz > 0)
+					thirdcam_distz -= 0.5;
+				else if (thirdcam_distz != 0)
+					thirdcam_distz = 0;
+
+				Camera_Third();
+			}
+			else
+			{
+				if (thirdcam_dist != 24) // inital cam distance
+					thirdcam_dist = 24;
+				if (thirdcam_distz != 0) // inital cam z origin
+					thirdcam_dist = 0;
+			}
+		}
 	}
 	else
 		Camera_DeathCam();

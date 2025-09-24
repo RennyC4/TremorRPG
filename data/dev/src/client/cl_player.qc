@@ -227,6 +227,7 @@ float(void) Player_PreDraw =
 void() Player_Think =
 {
 	float player_menu = getstatf(STAT_MENU);
+	float health = getstatf(STAT_HEALTH);
 	if (!player_menu)
 	{
 		// Get attack speed, tie it to animation speed
@@ -249,6 +250,8 @@ void() Player_Think =
 		else
 			self.jump_released = TRUE;
 	}
+	if (health > 0 && deathcam_dist != 45)
+		deathcam_dist = 45; // initial z start org for death camera
 };
 
 void(float flIsNew) CSQC_Ent_Update =
