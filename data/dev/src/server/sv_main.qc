@@ -215,7 +215,7 @@ void() spawn_daynight =
 		return;
 	if (daynight) // only spawn once
 		return;
-	if (cvar("developer") == 1)
+	if (cvar("developer") > 0)
 		return;
 
 	daynight = spawn();
