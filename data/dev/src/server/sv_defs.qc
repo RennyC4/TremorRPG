@@ -1979,6 +1979,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define FLAG_8 (1 << 7)  // 10000000
 
 // Particle defs
+var float PART_LEVELUP;
 var float PART_FOUNTAIN;
 var float PART_BONFIRE;
 var float PART_WTORCH1;

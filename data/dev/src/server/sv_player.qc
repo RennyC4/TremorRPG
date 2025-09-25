@@ -599,14 +599,19 @@ void() FootstepThink =
 
 void(float speed) Player_PushForward =
 {
-	if (self.pushforward_finished < time)
-		return;
-	if (!(self.flags & FL_ONGROUND))
-		return;
-	if (self.deadflag == DEAD_DEAD)
-		return;
+    if (self.pushforward_finished < time)
+        return;
+    if (!(self.flags & FL_ONGROUND))
+        return;
+    if (self.deadflag == DEAD_DEAD)
+        return;
 
-	walkmove(self.angles_y, speed);
+    makevectors([0, self.angles_y, 0]);
+
+	// Apply velocity in that direction
+	self.velocity = v_forward * speed;
+	self.flags &= ~FL_ONGROUND;
+	self.flags &= ~FL_PARTIALGROUND;
 };
 
 // Ran before physics
@@ -739,7 +744,7 @@ void() PlayerPostThink =
 
 	if (self.deadflag != DEAD_DEAD)
 	{
-		Player_PushForward(3);
+		Player_PushForward(200);
 	    if (self.healthpot_heal_remaining > 0 && time > self.healthpot_finished) // health potion - apply ongoing healing
 		{
 			if (self.health >= self.max_health)
@@ -1074,13 +1079,6 @@ void() PutClientInServer =
 	}
 	else
 		PlayerSpawn(0);
-		
-	// grab time of day global on join
-	msg_entity = self;
-	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
-	WriteByte(MSG_MULTICAST, CSQC_TIMEOFDAY);
-	WriteByte(MSG_MULTICAST, timeofday);
-	multicast(self.origin, MULTICAST_ONE);
 };
 
 void() ClientDisconnect =

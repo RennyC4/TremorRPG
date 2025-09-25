@@ -43,7 +43,6 @@ void() trigger_zone_touch =
 	}
 };
 
-
 void() trigger_zone =
 {
 	self.modelindex = 0;

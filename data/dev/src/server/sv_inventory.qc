@@ -408,6 +408,21 @@ void() Item_Touch =
 		string eventlog_print = (strcat("Got ", self.netname, "\n"));
 		stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
 		sound(other, CHAN_AUTO, "item/get.wav", 1, ATTN_NORM);
+
+		// update inventory on item pickup
+		float i;
+		string inv = strcat(other.loginname, "_inv");
+		float b = fopen(inv, FILE_WRITE);
+		if (b >= 0)
+		{
+			for (i = 0; i < other.inv_count; i++)
+			{
+				fputs(b, other.inventory[i], "\n");
+				fputs(b, ftos(other.inventory_count[i]), "\n");
+			}
+			fclose(b);
+		}
+
 		remove(self);
 	}
 	else if (self.stagger_finished < time)

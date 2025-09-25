@@ -103,6 +103,7 @@ void() worldspawn =
 	//
 	// Setup Particles
 	//
+	PART_LEVELUP = particleeffectnum("levelup");
 	PART_FOUNTAIN = particleeffectnum("fountain");
 	PART_BONFIRE = particleeffectnum("bonfire");
 	PART_WTORCH1 = particleeffectnum("wtorch1");

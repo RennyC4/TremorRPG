@@ -691,7 +691,7 @@ void() User_CharacterScreen =
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
-	if (atbonfire)
+	if (atbonfire && disp_skillpoints > 0)
 	{
 		my_button("skillpoint_unarmed", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 0) : 0;
 		newpos_y +=10;

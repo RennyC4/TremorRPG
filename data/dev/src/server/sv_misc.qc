@@ -145,9 +145,13 @@ void() misc_model =
 {
     precache_model(self.model);
     setmodel(self, self.model);
+	setsize(self, [0,0,0],[0,0,0]);
 
     if (self.first_frame)
 		self.frame = self.first_frame;
+
+	self.solid = SOLID_NOT;
+	self.movetype = MOVETYPE_NONE;
 
     // Only animate if given a frame range
     if (!self.last_frame)
