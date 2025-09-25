@@ -24,7 +24,16 @@ void() trigger_zone_touch =
 	if (other.music != self.music)
 	{
 		other.music = self.music;
-		stuffcmd (other, sprintf("music %s\n", self.music));
+
+		if (self.music2 != "")
+			float r = random();
+		else
+			r = 0;
+
+		if (r <= 0.5)
+			stuffcmd (other, sprintf("music %s\n", self.music));
+		else
+			stuffcmd (other, sprintf("music %s\n", self.music2));
 	}
 	if (other.zonename != self.zonename)
 	{

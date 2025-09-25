@@ -130,7 +130,7 @@ void(float screenwidth, float screenheight) Draw_ZoneName =
 	vector pos = [(screenwidth - stringwidth(zonename, TRUE, '18 18 0'))/2, (screenheight - 18)/3];
 
 	if (ZoneName_alpha.doalpha < 7.8)
-		ZoneName_alpha.doalpha += 0.01;
+		ZoneName_alpha.doalpha += (2.5 * frametime);
 	else
 		ZoneName_alpha.doalpha = 0;
 

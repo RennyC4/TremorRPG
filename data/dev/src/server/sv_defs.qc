@@ -1777,6 +1777,7 @@ const float MENU_MAGIC = 6; // user magic screen
 .vector idealangles;
 .float turn_speed; // how fast monsters/npcs can turn
 .string music; // what track to play for the client
+.string music2; // randomized second track to play for the client
 .string zonename; // name of zone player is in
 .float zonename_finished; // display on csqc hud
 .float melee_finished;
