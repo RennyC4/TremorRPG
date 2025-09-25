@@ -6,9 +6,8 @@ $frame climb death stand jump move slash
 
 void() Player_Animate =
 {
-	float speed = 1;
+	float speed = 1; // default base speed
 	float duration = frameduration(self.modelindex, self.frame);
-	float duration2 = duration + (frametime * speed); // if animation uses speed
 
 	if (self.health <= 0) // Death
 	{
@@ -30,7 +29,7 @@ void() Player_Animate =
 		if (self.climbing) // Climbing
 		{
 			float skill_climb = getstatf(STAT_SKILL_CLIMB);
-			speed = 1 + (skill_climb * 0.02);
+			speed += (skill_climb * 0.02);
 			self.frame = $climb;
 		}
 		else
@@ -42,10 +41,14 @@ void() Player_Animate =
 		}
 	}
 
+	speed = (speed * frametime);
+	if (autocvar_minimap == "full") // full mini-map affects player animation speed for some reason
+		speed /= 2;
+
 	if (self.health > 0)
 	{
-		self.frame1time += frametime * speed;
-		self.frame2time += frametime * speed;
+		self.frame1time += speed;
+		self.frame2time += speed;
 	}
 	//print (ftos(frameduration(self.modelindex,self.frame)), "\n");
 };

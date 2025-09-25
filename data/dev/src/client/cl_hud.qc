@@ -100,7 +100,7 @@ void(vector pos, vector canvas_size) WorldMap_Draw =
     setviewprop(VF_SIZE, canvas_size);
 
 	if (autocvar_minimap == "full")
-		addentities((intermission?0:MASK_VIEWMODEL)|MASK_ENGINE);
+		addentities(MASK_ENGINE);
 
 	setviewprop(VF_PERSPECTIVE, 1);
 	setviewprop(VF_AFOV, 90);
