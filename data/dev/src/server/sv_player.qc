@@ -1067,6 +1067,13 @@ void() PutClientInServer =
 	}
 	else
 		PlayerSpawn(0);
+		
+	// grab time of day global on join
+	msg_entity = self;
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_TIMEOFDAY);
+	WriteByte(MSG_MULTICAST, timeofday);
+	multicast(self.origin, MULTICAST_ONE);
 };
 
 void() ClientDisconnect =
