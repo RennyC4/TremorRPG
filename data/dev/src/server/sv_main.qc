@@ -149,13 +149,11 @@ void() worldspawn =
 	precache_sound ("magic/casting.wav");
 
 	SSQC_SendValuesToCSQC();
-
-	// Setup day/night
 	spawn_daynight();
 };
 
 //
-// day night server handler
+// day night server handler - spawned inside .hmp
 //
 
 entity daynight;
@@ -213,6 +211,8 @@ void() daynight_think =
 
 void() spawn_daynight =
 {
+	if (substring(world.model, -3, 3) != "hmp")
+		return;
 	if (daynight) // only spawn once
 		return;
 	if (cvar("developer") == 1)
