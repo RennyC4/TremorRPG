@@ -28,6 +28,21 @@ void() SetChangeParms =
 	parm4 = self.max_health;
 	parm5 = self.mana;
 	parm6 = self.max_mana;
+	parm7 = self.gold;
+	parm8 = self.exp;
+	parm9 = self.exp_next;
+	parm10 = self.level;
+	parm11 = self.skillpoints;
+	parm12 = self.attack_power_min;
+	parm13 = self.attack_power_max;
+	parm14 = self.attack_speed;
+	parm15 = self.attack_type;
+	parm16 = self.attack_stamina;
+	parm17 = self.attack_length;
+	parm18 = self.armorvalue;
+	parm19 = self.blockvalue;
+	parm20 = self.spell_power_min;
+	parm21 = self.spell_power_max;
 };
 
 void() SetCheckParms =
@@ -36,8 +51,23 @@ void() SetCheckParms =
 	self.spawnloc = parm2;
 	self.health = parm3;
 	self.max_health = parm4;
-	self.mana = parm5;
+	self.mana = parm5;  
 	self.max_mana = parm6;
+	self.gold = parm7;
+	self.exp = parm8;
+	self.exp_next = parm9;
+	self.level = parm10;
+	self.skillpoints = parm11;
+	self.attack_power_min = parm12;
+	self.attack_power_max = parm13;
+	self.attack_speed = parm14;
+	self.attack_type = parm15;
+	self.attack_stamina = parm16;
+	self.attack_length = parm17;
+	self.armorvalue = parm18;
+	self.blockvalue = parm19;
+	self.spell_power_min = parm20;
+	self.spell_power_max = parm21;
 };
 
 //
@@ -1055,7 +1085,13 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 void() PutClientInServer =
 {
 	player_chain_add(self);
-	SetCheckParms(); // grab parms
+
+	// this is important, do not remove them
+	self.loggedin = parm1;
+	self.spawnloc = parm2;
+	//
+
+	// SetCheckParms(); // this is now done after the player spawns, we load the players file, then set parms
 
 	if (cvar("developer") == 0) // developer 1 uses teredit not Tremor CSQC
 		self.SendEntity = Player_SendEntity;
@@ -1127,6 +1163,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s =
 	self.music = ""; // clear after load so music is loaded properly
 	self.zonename = ""; // clear after load
 	PlayerSpawn(2);
+	SetCheckParms(); // grab and restore parms after character is resumed
 };
 
 void(entity targ) CSEv_Player_SaveChar =
