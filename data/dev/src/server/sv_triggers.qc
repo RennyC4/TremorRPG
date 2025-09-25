@@ -74,6 +74,7 @@ void() trigger_changeleveel_touch =
 	if (other.classname != "player")
 		return;
 
+	other.spawnloc = self.spawnloc;
 	string newmap = strcat(":", self.map);
 	clustertransfer(other, newmap);
 };

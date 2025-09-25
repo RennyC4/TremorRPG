@@ -19,11 +19,19 @@ _defaultwaterheight "4"
 _wateralpha "0.6"
 }
 
-// player start
+// player main start point
 {
 classname info_player_start
 origin "-3321 -1460 85"
 angles "0 -30 0"
+}
+
+// player elderfen mine exit
+{
+classname info_player_start
+spawnloc "1"
+origin "-2083 8106 478"
+angles "0 90 0"
 }
 
 // spawn day/night entity

@@ -1770,6 +1770,7 @@ const float MENU_MAGIC = 6; // user magic screen
 .string guid; // guid security
 .float loggedin; // user successfully logged in
 .string loginname; // enforce this on the player
+.float spawnloc; // read on player map transfers, stored in info_player_start entity
 .string gender;
 .float menu; // menu float, send to CSQC
 .float radius_candamage; // TRUE, entity can be damaged by radius attacks

@@ -23,19 +23,21 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s;
 void() SetChangeParms =
 {
 	parm1 = self.loggedin;
-	parm2 = self.health;
-	parm3 = self.max_health;
-	parm4 = self.mana;
-	parm5 = self.max_mana;
+	parm2 = self.spawnloc;
+	parm3 = self.health;
+	parm4 = self.max_health;
+	parm5 = self.mana;
+	parm6 = self.max_mana;
 };
 
 void() SetCheckParms =
 {
 	self.loggedin = parm1;
-	self.health = parm2;
-	self.max_health = parm3;
-	self.mana = parm4;
-	self.max_mana = parm5;
+	self.spawnloc = parm2;
+	self.health = parm3;
+	self.max_health = parm4;
+	self.mana = parm5;
+	self.max_mana = parm6;
 };
 
 //
@@ -364,9 +366,14 @@ void() CheckImpulses =
 
 entity() get_spawn_point =
 {
-	entity spawnpoint = world;
-	spawnpoint = find(spawnpoint, classname, "info_player_start");
-	return spawnpoint;
+	entity spawnpoint;
+
+	for (spawnpoint = world; (spawnpoint = find(spawnpoint, classname, "info_player_start"));)
+	{
+		if (spawnpoint.spawnloc == self.spawnloc)
+			return spawnpoint;
+	}
+	return find(world, classname, "info_player_start"); // fallback: just return the first info_player_start
 };
 
 //
@@ -1120,6 +1127,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s =
 		}
 	}
 	self.music = ""; // clear after load so music is loaded properly
+	self.zonename = ""; // clear after load
 	PlayerSpawn(2);
 };
 
