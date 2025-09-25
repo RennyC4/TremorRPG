@@ -7,7 +7,7 @@
 #pragma warning disable Q201 // disable suggest parenthesis for assignment used as truth value
 
 void() main = {};
-void() SpectatorConnect = {};
+void() SpectatorConnect = {sprint(self, PRINT_HIGH, "Spectator mode is not supported\n");dropclient(self);}; // Tremor: No spectators allowed
 
 void() spawn_daynight;
 
