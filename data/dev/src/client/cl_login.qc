@@ -30,7 +30,7 @@ void() User_ResumeCharacter =
 	else
 	{
 		sendevent("ResumeCharacter", "s", LOGIN_NAME);
-		
+	
 		// write local(client) file for map transfer
 		float v = fopen("lastlogin", FILE_WRITE);
 		if (v >= 0)

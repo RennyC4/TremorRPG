@@ -321,7 +321,7 @@ void() singleplayer_button =
 {
 	connect_text = FALSE;
 	m_toggle(0); // close menu
-	localcmd("disconnect;mapcluster world\n");
+	localcmd("ssv * quit;mapcluster world\n");
 };
 
 void() main_menu =

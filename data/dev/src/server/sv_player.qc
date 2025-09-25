@@ -17,7 +17,7 @@ void() info_player_start = {};
 void(string LOGIN_NAME) CSEv_ResumeCharacter_s;
 
 //
-// Parm usage
+// Parms - for map transfers
 //
 
 void() SetChangeParms =
@@ -1094,9 +1094,32 @@ void() ClientDisconnect =
 
 void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s = 
 {
+	if (!LOGIN_NAME) // local user tampered with lastlogin
+	{
+		sprint(self, PRINT_HIGH, "Error: Last login is invalid\n");
+		dropclient(self);
+		return;
+	}
+
 	self.loginname = LOGIN_NAME;
 	self.netname = LOGIN_NAME;
 	CSEv_ResumeCharacter_s(self.loginname);
+
+	// security check
+	string line;
+	float f = fopen(LOGIN_NAME, FILE_READ);
+	if (f >= 0)
+	{
+		self.guid = infokey(self, INFOKEY_P_GUID);
+		if (line = fgets(f)) // grab guid from file
+		if (line != "" && line != self.guid) // compare guid from file & user, server owner can wipe guid line if needed
+		{
+			sprint(self, PRINT_HIGH, "Server GUID does not match clients\n");
+			dropclient(self);
+			return;
+		}
+	}
+	self.music = ""; // clear after load so music is loaded properly
 	PlayerSpawn(2);
 };
 
@@ -1215,7 +1238,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(f)) // grab guid from file
 		if (line != "" && line != self.guid) // compare guid from file & user, server owner can wipe guid line if needed
 		{
-			sprint(self, PRINT_HIGH, "Server GUID does not match players\n");
+			sprint(self, PRINT_HIGH, "Server GUID does not match clients\n");
 			return;
 		}
 	}
