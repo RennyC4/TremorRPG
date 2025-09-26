@@ -236,7 +236,7 @@ void() monster_ai_think =
 		{
 			self.angles_x = 0;
 			self.idealangles_y = random()*360;
-			if (self.ai_move_dist != 1)
+			if (self.ai_move_dist > 1)
 				self.ai_patrolidle = time + 3 + random()*6;
 			if (random() < 0.35)
 				self.ai_standstill = time + 1 + random()*8;
@@ -295,10 +295,24 @@ void() monster_ai_think =
 	{
 		if (b > 50)
 		{
-			if (self.origin_z > self.ai_runback_temp.origin_z)
-				self.origin_z -= 1;
-			else
-				self.origin_z += 1;
+			float base_speed = 50; // min speed
+			float scale = 2; // speed vs dist
+
+			float dz = self.ai_runback_temp.origin_z - self.origin_z;
+			if (dz != 0) 
+			{
+				float speed = base_speed + fabs(dz) * scale; // speed vs dist
+				float step = frametime * speed;
+
+				if (fabs(dz) < step)
+					self.origin_z = self.ai_runback_temp.origin_z; // snap when close
+				else
+					self.origin_z += step * (dz > 0 ? 1 : -1);
+			}
+
+			// ghost effect when moving back
+			self.alpha = 0.25;
+			self.effects |= EF_ADDITIVE;
 
 			self.enemy = world;
 			self.goalentity = self.ai_runback_temp;
@@ -315,6 +329,10 @@ void() monster_ai_think =
 			self.movetype = MOVETYPE_STEP;
 			self.ai_mode = AI_IDLE;
 			self.frame = $stand;
+
+			// remove ghost effect
+			self.alpha = 1;
+			self.effects &= ~EF_ADDITIVE;
 		}
 	}
 
