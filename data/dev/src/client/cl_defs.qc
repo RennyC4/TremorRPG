@@ -2297,7 +2297,6 @@ float npc_inv_count;
 float spell_count;
 string spell[MAX_SPELLS];
 string current_spell;
-float read_spell_count; // used for reading how many spells the player has on resuming character
 
 // NPC dialogue
 string npc_name;

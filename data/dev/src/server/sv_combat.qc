@@ -256,6 +256,10 @@ void() DoAttack_Melee =
 			if (jumpattack) // add jump attack damage
 				damage += (self.fall_maxspeed * 0.05);
 
+			// adds an additional half second on hit if someone is casting
+			if (trace_ent.cast_finished > time)
+				trace_ent.cast_finished += 0.5;
+
 			// armor calculations
 			if (trace_ent.armorvalue > damage)
 				damage = 1;

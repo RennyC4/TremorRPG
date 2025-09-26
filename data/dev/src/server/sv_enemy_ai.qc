@@ -226,21 +226,18 @@ void() monster_ai_think =
 	//string l = ftos(self.ai_mode);
 	//print(l, "\n");
 
-	if (self.ai_move_dist == 1)
-		self.ai_standstill = time + 999;
-
 	if (self.ai_mode == AI_IDLE)
 	{
 		if (self.health != self.max_health) // monsters have full health in patrol mode
 			self.health = self.max_health;
-		
 
 		// Randomly turn and move
 		if (self.ai_patrolidle < time)
 		{
 			self.angles_x = 0;
 			self.idealangles_y = random()*360;
-			self.ai_patrolidle = time + 3 + random()*6;
+			if (self.ai_move_dist != 1)
+				self.ai_patrolidle = time + 3 + random()*6;
 			if (random() < 0.35)
 				self.ai_standstill = time + 1 + random()*8;
 			TurnToTarget(self.turn_speed);
@@ -278,11 +275,17 @@ void() monster_ai_think =
 	float b = vlen(self.origin - self.saveorigin);
 	if (self.ai_mode != AI_RUNBACK)
 	{
-		if (b >= self.ai_move_dist)
+		// monsters have default range of 2000 for chasing a target if they're not patrolling
+		if (self.ai_move_dist <= 1)
+			float ai_move_dist_check = 2000;
+		else
+			ai_move_dist_check = self.ai_move_dist;
+			
+		if (b >= ai_move_dist_check)
 		{
 			self.goalentity = self.ai_runback_temp;
 			if (!self.goalentity)
-				print ("Error in monster ai\n");
+				print ("error in monster ai\n");
 
 			self.enemy = world;
 			self.ai_mode = AI_RUNBACK;

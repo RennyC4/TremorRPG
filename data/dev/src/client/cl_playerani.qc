@@ -29,7 +29,7 @@ void() Player_Animate =
 		if (self.climbing) // Climbing
 		{
 			float skill_climb = getstatf(STAT_SKILL_CLIMB);
-			speed += (skill_climb * 0.02);
+			speed += (skill_climb * 0.005);
 			self.frame = $climb;
 		}
 		else

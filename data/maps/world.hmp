@@ -206,11 +206,69 @@ gender "Male"
 ai_move_dist "500"
 }
 
+// monster (bandit lvl 2)
+{
+classname "set_monster"
+model "models/player_m.glb"
+origin "-1548 5147 556"
+angles "0 0 0"
+displayname "Bandit"
+max_health "37"
+level "2"
+exp "70"
+exp_min "38"
+gold "16"
+gold_min "9"
+attack_power_min "13"
+attack_power_max "18"
+respawn_finished "30"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "1"
+}
+
+// monster (bandit lvl 2)
+{
+classname "set_monster"
+model "models/player_m.glb"
+origin "-2335 6188 1256"
+angles "0 0 0"
+displayname "Bandit"
+max_health "37"
+level "2"
+exp "70"
+exp_min "38"
+gold "16"
+gold_min "9"
+attack_power_min "13"
+attack_power_max "18"
+respawn_finished "30"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "1"
+}
+
 // monster (bandit lvl 3)
 {
 classname "set_monster"
 model "models/player_m.glb"
-origin "-3743 7147 1261"
+origin "-3743 7147 1265"
 angles "0 0 0"
 displayname "Bandit"
 max_health "55"
@@ -233,4 +291,33 @@ turn_speed "30"
 canbackstab "1"
 gender "Male"
 ai_move_dist "1000"
+}
+
+// monster (bandit lvl 3)
+{
+classname "set_monster"
+model "models/player_m.glb"
+origin "-3036 9858 333"
+angles "0 0 0"
+displayname "Bandit"
+max_health "55"
+level "3"
+exp "88"
+exp_min "51"
+gold "24"
+gold_min "15"
+attack_power_min "18"
+attack_power_max "26"
+respawn_finished "10"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "800"
 }

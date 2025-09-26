@@ -1164,7 +1164,8 @@ void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s =
 
 	// security check
 	string line;
-	float f = fopen(LOGIN_NAME, FILE_READ);
+	string add_ext = strcat(LOGIN_NAME, ".chr");
+	float f = fopen(add_ext, FILE_READ);
 	if (f >= 0)
 	{
 		self.guid = infokey(self, INFOKEY_P_GUID);
@@ -1189,7 +1190,8 @@ void(entity targ) CSEv_Player_SaveChar =
 
 	float i;
 
-	float v = fopen(targ.loginname, FILE_WRITE);
+	string add_ext = strcat(targ.loginname, ".chr");
+	float v = fopen(add_ext, FILE_WRITE);
 	if (v >= 0)
 	{
 		// stats
@@ -1257,44 +1259,34 @@ void(entity targ) CSEv_Player_SaveChar =
 		fputs(v, ftos(targ.skill_fishing), "\n");
 		fputs(v, ftos(targ.skill_woodcutting), "\n");
 
-		fputs(v, ftos(targ.inv_count), "\n"); // inventory count, used for reading back on character resume
-		fputs(v, ftos(targ.spell_count), "\n"); // spell count, used for reading back on character resume
+		fputs(v, ftos(targ.inv_count), "\n"); // inventory count, used for reading back on character resume / hud setup
+		fputs(v, ftos(targ.spell_count), "\n"); // spell count, used for reading back on character resume / hud setup
+
+		// inventory
+		for (i = 0; i < targ.inv_count; i++)
+		{
+			fputs(v, targ.inventory[i], "\n");
+			fputs(v, ftos(targ.inventory_count[i]), "\n");
+		}
+
+		// magic
+		for (i = 0; i < targ.spell_count; i++)
+		{
+			fputs(v, targ.spell[i], "\n");
+		}
 
 		fclose(v);
 	}
 
-	// save inventory to seperate file
-	string inv = strcat(targ.loginname, "_inv");
-	float b = fopen(inv, FILE_WRITE);
-	if (b >= 0)
-	{
-		for (i = 0; i < targ.inv_count; i++)
-		{
-			fputs(b, targ.inventory[i], "\n");
-			fputs(b, ftos(targ.inventory_count[i]), "\n");
-		}
-		fclose(b);
-	}
-	
-	// save magic to seperate file
-	string mgc = strcat(targ.loginname, "_mgc");
-	float c = fopen(mgc, FILE_WRITE);
-	if (c >= 0)
-	{
-		for (i = 0; i < targ.spell_count; i++)
-		{
-			fputs(c, targ.spell[i], "\n");
-		}
-		fclose(c);
-	}
 	sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
 };
 
 void(string LOGIN_NAME) CSEv_ResumeCharacter_s = 
 {
 	string line;
+	string add_ext = strcat(LOGIN_NAME, ".chr");
 	// security check
-	float f = fopen(LOGIN_NAME, FILE_READ);
+	float f = fopen(add_ext, FILE_READ);
 	if (f >= 0)
 	{
 		self.guid = infokey(self, INFOKEY_P_GUID);	
@@ -1307,7 +1299,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	}
 
 	// passed security check, grab stats from user server file
-	float v = fopen(LOGIN_NAME, FILE_READ);
+	float v = fopen(add_ext, FILE_READ);
 	if (v >= 0)
 	{
 		// stats
@@ -1456,6 +1448,26 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		if (line = fgets(v)) // spell count
 			self.spell_count = stof(line);
 
+		// load inventory
+		float i;
+		string what = "";
+		for (i = 0; i < self.read_inv_count; i++)
+		{
+			if (line = fgets(v)) // add item
+			{
+				what = line;
+				AddToInventory(self, what, 0);
+			}
+			if (line = fgets(v)) // add count to item
+				AddToInventory(self, what, stof(line));
+		}
+		// load spells
+		for (i = 0; i < self.spell_count; i++)
+		{
+			if (line = fgets(v)) // add spell(s)
+				self.spell[i] = line;
+		}
+
 		fclose(v);
 
 		setorigin (self, self.origin); // relink properly
@@ -1470,42 +1482,6 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		sprint(self, PRINT_HIGH, "Character doesn't exist\n");
 		return;
 	}
-	
-	// load inventory
-	string what = "";
-	string inv = strcat(self.loginname, "_inv");
-	float b = fopen(inv, FILE_READ);
-	if (b >= 0)
-	{
-		float i;
-		for (i = 0; i < self.read_inv_count; i++)
-		{
-			if (line = fgets(b)) // Add item
-			{
-				what = line;
-				AddToInventory(self, what, 0);
-			}
-			if (line = fgets(b)) // Add count to item
-				AddToInventory(self, what, stof(line));
-		}
-		fclose(b);
-	}
-
-	// load spells
-	string mgc = strcat(self.loginname, "_mgc");
-	float c = fopen(mgc, FILE_READ);
-	if (c >= 0)
-	{
-		float q;
-		for (q = 0; q < self.spell_count; q++)
-		{
-			if (line = fgets(c)) // add spell(s)
-			{
-				self.spell[q] = line;
-			}
-		}
-		fclose(c);
-	}
 
 	sprint(self, PRINT_HIGH, strcat(self.loginname, " character resumed\n"));
 };
@@ -1514,8 +1490,9 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 {
 	self.loginname = LOGIN_NAME; // Grab login name from CSQC
 	self.gender = LOGIN_GENDER; // Grab gender from CSQC
-
-	float v = fopen(self.loginname, FILE_READ);
+	
+	string add_ext = strcat(self.loginname, ".chr");
+	float v = fopen(add_ext, FILE_READ);
 	if (v >= 0) // User exists
 	{
 		print ("That characters name is already taken\n");

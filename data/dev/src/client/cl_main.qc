@@ -46,6 +46,11 @@ noref void() CSQC_WorldLoaded =
 		localcmd("sv_cheats 1\nsv_csqc_progname teredit.dat\nrestart\n");
 };
 
+void(string rendererdescription) CSQC_RendererRestarted =
+{
+	localcmd("exec haze.cfg\n");
+};
+
 // CALLED EVERY CLIENT RENDER FRAME
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
