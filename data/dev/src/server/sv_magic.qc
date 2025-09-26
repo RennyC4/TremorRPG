@@ -141,7 +141,7 @@ void(float damage) Cast_Thorn =
 			te_blood(mid, vel, 12);
 			
 			damage = ceil(damage); // round up final damage output
-			DoDamage(trace_ent, self, damage);
+			DoDamage(trace_ent, self, damage, FALSE);
 
 			sound (trace_ent, CHAN_AUTO, "magic/thorn_misc.wav", 1, ATTN_STATIC);
 			sound (trace_ent, CHAN_AUTO, "magic/thorn_hit.wav", 1, ATTN_NORM);

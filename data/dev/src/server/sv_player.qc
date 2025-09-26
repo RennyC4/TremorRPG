@@ -526,7 +526,7 @@ void() FallDamage_Update =
             {
                 float dmg = (impact - FALL_DAMAGE_SPEED) * FALL_SCALE;
 				dmg = ceil(dmg);
-				DoDamage(self, world, dmg);
+				DoDamage(self, world, dmg, TRUE);
                 sound (self, CHAN_AUTO, "land2.wav", 1, ATTN_NORM);
             }
         }
@@ -537,6 +537,7 @@ void() FallDamage_Update =
 
 .float swim_stamina_finished;
 .float underwatersfx_finished;
+.float drowning_finished;
 void() WaterUpdate =
 {
 	if (self.waterlevel > 1)
@@ -571,7 +572,16 @@ void() WaterUpdate =
 			}
 		}
 		else
-			DoDamage(self, world, self.health); // drowned
+		{
+			if (self.drowning_finished < time)
+			{
+				if (ceil(self.health > self.max_health / 5))
+					DoDamage(self, world, ceil(self.max_health / 5), TRUE); // drowning
+				else
+					DoDamage(self, world, self.max_health, TRUE); // drowned
+				self.drowning_finished = time + 3;
+			}
+		}
 	}
 };
 

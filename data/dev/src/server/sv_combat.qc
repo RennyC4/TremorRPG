@@ -2,7 +2,7 @@
 // Damage routines
 //
 
-void(entity targ, entity attacker, float damage) DoDamage;
+void(entity targ, entity attacker, float damage, float silent) DoDamage;
 vector() AttackDir;
 
 // Camera shake
@@ -269,7 +269,7 @@ void() DoAttack_Melee =
 			te_blood(mid, vel, 12);
 			
 			damage = ceil(damage); // round up final damage output
-			DoDamage(trace_ent, self, damage);
+			DoDamage(trace_ent, self, damage, FALSE);
 			DoCamera_Shake(trace_ent, 16);
 			sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
 		}
@@ -307,7 +307,7 @@ void(entity targ, entity attacker) DoDeath =
 };
 
 // Main damage function
-void(entity targ, entity attacker, float damage) DoDamage =
+void(entity targ, entity attacker, float damage, float silent) DoDamage =
 {
 	if (!targ)
 		return;
@@ -331,7 +331,7 @@ void(entity targ, entity attacker, float damage) DoDamage =
 			eventlog_print = (strcat("You hit for ^2", ftos(damage), " ^7damage\n"));
 			stuffcmd (attacker, sprintf("conecho event %s\n", eventlog_print));
 		}
-		if (targ.classname == "player")
+		if (targ.classname == "player" && !silent)
 		{
 			eventlog_print = (strcat("You've taken ^1", ftos(damage), " ^7damage\n"));
 			stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
@@ -384,7 +384,7 @@ void(entity targ, entity attacker, float damage) DoDamage =
 	}
 };
 
-void(entity attacker, float radius, float damage, float setfire, float diminish) DoRadiusDamage =
+void(entity attacker, float radius, float damage, float setfire, float diminish, float silent) DoRadiusDamage =
 {
 	for (entity targ = world;(targ = findfloat(targ, radius_candamage, TRUE));)
 	{
@@ -397,7 +397,10 @@ void(entity attacker, float radius, float damage, float setfire, float diminish)
 				float distance_factor = 1 - (distance_length / radius);
 				dmg = ceil(damage * distance_factor);
 			}
-			DoDamage(targ, attacker, dmg);
+			if (!silent)
+				DoDamage(targ, attacker, dmg, FALSE);
+			else
+				DoDamage(targ, attacker, dmg, TRUE);  // no event log update
 		}
 	}
 };
