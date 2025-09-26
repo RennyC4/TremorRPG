@@ -530,7 +530,7 @@ void() User_CharacterScreen =
 
 	// add skill calculation to DPS
 	if (!disp_attacktype) // unarmed
-		disp_dps = disp_dps + (disp_unarmed * 0.1);
+		disp_dps = (disp_unarmed * 0.055) / disp_attackspeed; // DPS is calculated differently for unarmed
 	else if (disp_attacktype == 1) // slashing
 		disp_dps = disp_dps + (disp_slash * 0.1);
 	else if (disp_attacktype == 2) // piercing
@@ -963,7 +963,7 @@ void() User_InventoryScreen =
 	
 	// add skill calculation to DPS
 	if (!disp_attacktype) // unarmed
-		disp_dps = disp_dps + (disp_unarmed * 0.1);
+		disp_dps = (disp_unarmed * 0.055) / disp_attackspeed; // DPS is calculated differently for unarmed
 	else if (disp_attacktype == 1) // slashing
 		disp_dps = disp_dps + (disp_slash * 0.1);
 	else if (disp_attacktype == 2) // piercing
@@ -1236,7 +1236,7 @@ void() User_MagicScreen =
 	
 	// add skill calculation to DPS
 	if (!disp_attacktype) // unarmed
-		disp_dps = disp_dps + (disp_unarmed * 0.1);
+		disp_dps = (disp_unarmed * 0.055) / disp_attackspeed; // DPS is calculated differently for unarmed
 	else if (disp_attacktype == 1) // slashing
 		disp_dps = disp_dps + (disp_slash * 0.1);
 	else if (disp_attacktype == 2) // piercing

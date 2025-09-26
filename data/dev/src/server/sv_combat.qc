@@ -137,14 +137,19 @@ void() DoAttack_Melee =
 {
 	if (self.flags & FL_ONGROUND)
 		self.velocity = [0, 0];
-
+	
 	// calculate damage by weapon
 	float damage = ceil(random_range(self.attack_power_min, self.attack_power_max));
 
 	// add skill damage
 	float howmuch = 0.1;
 	if (!self.attack_type) // unarmed
-		damage = damage + (self.skill_unarmed * howmuch);
+	{
+		damage = damage + (self.skill_unarmed * 0.055);
+		self.attack_speed = 3 - (self.skill_unarmed * 0.0145); // unarmed speed is tied to skill
+		if (self.attack_speed < 0.1)
+			self.attack_speed = 0.1; // cap
+	}
 	else if (self.attack_type == 1) // slash
 		damage = damage + (self.skill_slash * howmuch);
 	else if (self.attack_type == 2) // pierce

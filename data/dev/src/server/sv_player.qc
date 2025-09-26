@@ -326,7 +326,11 @@ void() CSEv_User_UnequipMainhand_ =
 	// equipped unarmed
 	self.attack_power_min = 1;
 	self.attack_power_max = 1;
-	self.attack_speed = 1;
+	
+	self.attack_speed = 3 - (self.skill_unarmed * 0.0145); // unarmed speed is tied to skill
+	if (self.attack_speed < 0.1)
+		self.attack_speed = 0.1; // cap
+
 	self.attack_stamina = 5;
 	self.attack_type = 0; // unarmed
 	self.attack_length = 32; // weapon length

@@ -247,7 +247,8 @@ void() monster_ai_think =
 		{
 			if (self.ai_standstill < time)
 			{
-				walkmove(self.angles_y, self.speed / 4);
+				if (!walkmove(self.angles_y, self.speed / 4)) // failed, changed direction
+					self.idealangles_y = random() * 360;
 				self.frame = $move;
 			}
 		}
