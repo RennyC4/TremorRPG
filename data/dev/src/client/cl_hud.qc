@@ -72,35 +72,38 @@ void() Draw_ToolTip =
 	drawtextfield(tt_pos+[2.5,2.5], [tt_size[0],tt_size[1]], 3, tt_contents);
 };
 
-void() Draw_CastingBar =
+void() Draw_CastingStat =
 {
 	float casting = getstatf(STAT_CASTING);
 	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
-	
-	float progress = 1 - (time / casting);
 	float remaining = (casting - time);
 	string cast_string = strcat("^6", disp_magicspell, (sprintf("^7: %.2f", remaining)));
 
-	vector bar_size = [200, 20]; // width, height
-	bar_size_x = bar_size_x * progress;	// width of the filled part
+	// position
+	float str_width = stringwidth(cast_string, 1, 12);
+	vector text_pos = [(g_width / 2) - (str_width / 2), g_height - 15];
 
-	vector border_color = '1 1 1';
-	float border_alpha = 1.0;
-	vector fill_color = '0.6 0.6 0';
-	float base_fill_alpha = 0.8;
-	float glow = 0.1 * sin(time * 15);
-	float fill_alpha = base_fill_alpha + glow;
-	float border_thickness = 2;
+	// text effects
+	float wobble = sin(time * 3) * 0.5;
+	float pulse = sin(time * 2) * 0.1;
+	vector color_main = [0.8, 0.5 + 0.25 * sin(time), 0.8];
+	vector color_shadow = [0, 0, 0];
 
-	vector bar_pos = [(g_width / 2) - (bar_size[0] / 2), g_height - 40, 0];
-	// bar border
-	drawfill(bar_pos - [border_thickness, border_thickness, 0], bar_size + [border_thickness*2, border_thickness*2, 0], border_color, border_alpha);
-	drawfill(bar_pos, [bar_size_x, bar_size_y], fill_color, fill_alpha); // draw fill
+	drawstring(text_pos + [1, 1 + wobble], cast_string, '12 12'+pulse, color_shadow, 1, 1); // shadow
+	drawstring(text_pos + [0, wobble], cast_string, '12 12'+pulse, color_main, 1, 1);
 
-	// text
-	vector text_pos = [(g_width / 2) - (stringwidth(cast_string, 1, 12) / 2), g_height - 15];
-	drawstring(text_pos+[1,1], cast_string, '12 12', '0 0 0', 1, 1); // text shadow
-	drawstring(text_pos, cast_string, '12 12', '1 1 1', 1, 1);
+	// sparkles
+	int i = 0;
+	while (i < strlen(cast_string))
+	{
+		if (random() < 0.05) // 5% chance per letter per frame
+		{
+			float offset_x = stringwidth(substring(cast_string,0,i), 1, 12) + crandom()*2;
+			float offset_y = wobble - random()*4; // float above text
+			drawstring(text_pos + [offset_x, offset_y], "*", [8, 8], [1,1,1], 1, 1);
+		}
+		i += 1;
+	}
 };
 
 //

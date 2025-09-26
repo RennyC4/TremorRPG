@@ -151,7 +151,7 @@ void() Player_Hud =
 				Compass_Draw();
 				Coords_Draw();
 				if (casting > time)
-					Draw_CastingBar();
+					Draw_CastingStat();
 			}
 
 			if (time - last_input_time > idle_threshold)
