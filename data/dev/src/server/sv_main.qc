@@ -79,6 +79,9 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_BONFIRE, EV_FLOAT, bonfire);
 	clientstat(STAT_CASTING, EV_FLOAT, cast_finished);
 	// Job Skills
+	clientstat(STAT_MINING, EV_FLOAT, skill_mining);
+	clientstat(STAT_FISHING, EV_FLOAT, skill_fishing);
+	clientstat(STAT_WOODCUTTING, EV_FLOAT, skill_woodcutting);
 };
 
 void() worldspawn =

@@ -454,6 +454,9 @@ void() User_CharacterScreen =
 	float disp_spellmin = getstatf(STAT_SPELLMIN);
 	float disp_spellmax = getstatf(STAT_SPELLMAX);
 	float atbonfire = getstatf(STAT_BONFIRE);
+	float disp_mining = getstatf(STAT_MINING);
+	float disp_fishing = getstatf(STAT_FISHING);
+	float disp_woodcutting = getstatf(STAT_WOODCUTTING);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -787,6 +790,29 @@ void() User_CharacterScreen =
 		newpos_y +=10;
 		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 	}
+
+	// Job skills
+	
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	line_length = 245;
+	drawline_pos = [0, 0];
+	newpos = [2.5, 50];
+
+	// seperation line
+	sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], MENU_BORDER, 1);
+	newpos_x = 5;
+	
+	newpos_y += 10;
+	displaystat = strcat("^5Mining: ^7", ftos(disp_mining));
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+	displaystat = strcat("^5Fishing: ^7", ftos(disp_fishing));
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+
+	newpos_y += 10;
+	displaystat = strcat("^5Wood Cutting: ^7", ftos(disp_woodcutting));
+	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	//
 	// Bottom button list

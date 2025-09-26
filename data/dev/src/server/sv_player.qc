@@ -43,6 +43,9 @@ void() SetChangeParms =
 	parm19 = self.blockvalue;
 	parm20 = self.spell_power_min;
 	parm21 = self.spell_power_max;
+	parm22 = self.skill_mining;
+	parm23 = self.skill_fishing;
+	parm24 = self.skill_woodcutting;
 };
 
 void() SetCheckParms =
@@ -68,6 +71,9 @@ void() SetCheckParms =
 	self.blockvalue = parm19;
 	self.spell_power_min = parm20;
 	self.spell_power_max = parm21;
+	self.skill_mining = parm22;
+	self.skill_fishing = parm23;
+	self.skill_woodcutting = parm24;
 };
 
 //
@@ -1240,12 +1246,16 @@ void(entity targ) CSEv_Player_SaveChar =
 		fputs(v, ftos(targ.skill_spellresist), "\n");
 		fputs(v, ftos(targ.skill_archery), "\n");
 		fputs(v, ftos(targ.skill_healthregen), "\n");
-		fputs(v, ftos(targ.skill_manaregen), "\n");		
-		fputs(v, ftos(targ.skill_haggle), "\n");		
-		fputs(v, ftos(targ.skill_climb), "\n");		
-		fputs(v, ftos(targ.skill_swim), "\n");		
-		fputs(v, ftos(targ.skill_acrobatic), "\n");		
-		//
+		fputs(v, ftos(targ.skill_manaregen), "\n");
+		fputs(v, ftos(targ.skill_haggle), "\n");
+		fputs(v, ftos(targ.skill_climb), "\n");
+		fputs(v, ftos(targ.skill_swim), "\n");
+		fputs(v, ftos(targ.skill_acrobatic), "\n");
+
+		//jobs
+		fputs(v, ftos(targ.skill_mining), "\n");
+		fputs(v, ftos(targ.skill_fishing), "\n");
+		fputs(v, ftos(targ.skill_woodcutting), "\n");
 
 		fputs(v, ftos(targ.inv_count), "\n"); // inventory count, used for reading back on character resume
 		fputs(v, ftos(targ.spell_count), "\n"); // spell count, used for reading back on character resume
@@ -1431,6 +1441,15 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.skill_acrobatic = stof(line);
 		//
 
+		//jobs
+		if (line = fgets(v))
+			self.skill_mining = stof(line);
+		if (line = fgets(v))
+			self.skill_fishing = stof(line);
+		if (line = fgets(v))
+			self.skill_woodcutting = stof(line);
+		//
+		
 		if (line = fgets(v)) // inventory count
 			self.read_inv_count = stof(line);
 

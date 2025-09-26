@@ -1897,11 +1897,10 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float skill_acrobatic;
 //
 
-// job skills (wip)
+// job skills
 .float skill_mining;
 .float skill_fishing;
-.float skill_woodwork;
-.float skill_blacksmithing;
+.float skill_woodcutting;
 
 //
 // Send stats to CSQC 
@@ -1967,7 +1966,10 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define STAT_SPELLMIN 89
 #define STAT_SPELLMAX 90
 #define STAT_BONFIRE 91
-#define STAT_CASTING 92 // casting bar
+#define STAT_CASTING 92 // casting time
+#define STAT_MINING 93
+#define STAT_FISHING 94
+#define STAT_WOODCUTTING 95
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

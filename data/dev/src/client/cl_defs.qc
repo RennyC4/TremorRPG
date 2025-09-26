@@ -2277,6 +2277,9 @@ const float MENU_MAGIC = 6; // user magic screen
 #define STAT_SPELLMAX 90
 #define STAT_BONFIRE 91
 #define STAT_CASTING 92 // casting bar
+#define STAT_MINING 93
+#define STAT_FISHING 94
+#define STAT_WOODCUTTING 95
 
 // Inventory - Player
 #define MAX_INVENTORY 32
