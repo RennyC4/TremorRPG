@@ -72,6 +72,37 @@ void() Draw_ToolTip =
 	drawtextfield(tt_pos+[2.5,2.5], [tt_size[0],tt_size[1]], 3, tt_contents);
 };
 
+void() Draw_CastingBar =
+{
+	float casting = getstatf(STAT_CASTING);
+	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
+	
+	float progress = 1 - (time / casting);
+	float remaining = (casting - time);
+	string cast_string = strcat("^6", disp_magicspell, (sprintf("^7: %.2f", remaining)));
+
+	vector bar_size = [200, 20]; // width, height
+	bar_size_x = bar_size_x * progress;	// width of the filled part
+
+	vector border_color = '1 1 1';
+	float border_alpha = 1.0;
+	vector fill_color = '0.6 0.6 0';
+	float base_fill_alpha = 0.8;
+	float glow = 0.1 * sin(time * 15);
+	float fill_alpha = base_fill_alpha + glow;
+	float border_thickness = 2;
+
+	vector bar_pos = [(g_width / 2) - (bar_size[0] / 2), g_height - 40, 0];
+	// bar border
+	drawfill(bar_pos - [border_thickness, border_thickness, 0], bar_size + [border_thickness*2, border_thickness*2, 0], border_color, border_alpha);
+	drawfill(bar_pos, [bar_size_x, bar_size_y], fill_color, fill_alpha); // draw fill
+
+	// text
+	vector text_pos = [(g_width / 2) - (stringwidth(cast_string, 1, 12) / 2), g_height - 15];
+	drawstring(text_pos+[1,1], cast_string, '12 12', '0 0 0', 1, 1); // text shadow
+	drawstring(text_pos, cast_string, '12 12', '1 1 1', 1, 1);
+};
+
 //
 // Reki's Code to draw 3D objects on the HUD
 //

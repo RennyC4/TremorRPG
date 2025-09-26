@@ -126,6 +126,7 @@ void() Player_Hud =
 		{
 			float zonedisplay_finished = getstatf(STAT_ZONENAME_TIME);
 			float health = getstatf(STAT_HEALTH);
+			float casting = getstatf(STAT_CASTING);
 
 			if (zonedisplay_finished > time)
 				Draw_ZoneName(g_width, g_height);
@@ -149,6 +150,8 @@ void() Player_Hud =
 				}
 				Compass_Draw();
 				Coords_Draw();
+				if (casting > time)
+					Draw_CastingBar();
 			}
 
 			if (time - last_input_time > idle_threshold)

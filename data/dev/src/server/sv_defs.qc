@@ -1967,6 +1967,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define STAT_SPELLMIN 89
 #define STAT_SPELLMAX 90
 #define STAT_BONFIRE 91
+#define STAT_CASTING 92 // casting bar
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

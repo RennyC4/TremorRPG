@@ -180,7 +180,6 @@ void(float amount) Cast_LightHeal =
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 	sound (self, CHAN_AUTO, "magic/lightheal.wav", 1, ATTN_NORM);
 
-	self.cast_finished_spell = ""; // important: always clear this after the spell is fired
 	pointparticles(PART_MAGIC_LIGHTHEAL, self.origin);
 };
 
@@ -208,6 +207,7 @@ void() Player_CastMagic = // called from player postthink
 			Cast_LightHeal(spellpower);
 			self.mana -= 20;
 		}
+		self.cast_finished_spell = ""; // important: always clear this after the spell is fired, or else it'll refire
 	}
 };
 
