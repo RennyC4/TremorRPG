@@ -226,10 +226,14 @@ void() monster_ai_think =
 	//string l = ftos(self.ai_mode);
 	//print(l, "\n");
 
+	if (self.ai_move_dist == 1)
+		self.ai_standstill = time + 999;
+
 	if (self.ai_mode == AI_IDLE)
 	{
 		if (self.health != self.max_health) // monsters have full health in patrol mode
 			self.health = self.max_health;
+		
 
 		// Randomly turn and move
 		if (self.ai_patrolidle < time)

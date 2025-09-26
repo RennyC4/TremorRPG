@@ -912,6 +912,8 @@ void() ClientConnect =
 
 void() PlayerDeath =
 {
+	self.respawn_finished = time + 5;
+
 	self.lock_on = 0;
 	self.lock_target = world;
 
@@ -935,8 +937,6 @@ void() PlayerDeath =
 	self.lantern = FALSE;
 
 	centerprint (self, "/P^1You're Dead!\n^7--------\n\nYou've lost ^3" , h, " ^7gold!" , "\n\n^b^5Press Attack to respawn\n");
-
-	self.respawn_finished = time + 5;
 };
 
 void(float type) PlayerSpawn =

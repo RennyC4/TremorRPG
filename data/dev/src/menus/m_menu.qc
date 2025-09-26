@@ -192,9 +192,10 @@ const float MENU_HELP = 3;
 vector binds_scroll;
 void() settings_menu =
 {
+	vector realsize = getproperty(VF_SCREENVSIZE);
+	
 	// Draw background
-	vector realsize = getproperty(VF_SCREENPSIZE);
-	vector bg_size = [realsize_x / 2, realsize_y / 2, 0];
+	vector bg_size = [realsize_x, realsize_y];
 	sui_pic([0,0], bg_size, "textures/background.jpg", '0.5 0.5 0.5', 1, 0);
 
 	vector pos = [0, 0];
@@ -270,10 +271,10 @@ void() help_menu =
 {
 	vector pos = [0, 0];
 	vector size = [360, 280];
-
+	vector realsize = getproperty(VF_SCREENVSIZE);
+	
 	// Draw background
-	vector realsize = getproperty(VF_SCREENPSIZE);
-	vector bg_size = [realsize_x / 2, realsize_y / 2, 0];
+	vector bg_size = [realsize_x, realsize_y];
 	sui_pic([0,0], bg_size, "textures/background.jpg", '0.5 0.5 0.5', 1, 0);
 
 	sui_push_frame(pos, size);
@@ -326,10 +327,10 @@ void() singleplayer_button =
 
 void() main_menu =
 {
-	vector realsize = getproperty(VF_SCREENPSIZE);
+	vector realsize = getproperty(VF_SCREENVSIZE);
 	
 	// Draw background
-	vector bg_size = [realsize_x / 2, realsize_y / 2, 0];
+	vector bg_size = [realsize_x, realsize_y];
 	sui_pic([0,0], bg_size, "textures/background.jpg", '0.5 0.5 0.5', 1, 0);
 
 	// Draw version #
@@ -340,7 +341,7 @@ void() main_menu =
 	// Draw logo
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	
-	vector logo_size = [realsize_x / 2, realsize_y / 2, 0];
+	vector logo_size = [realsize_x, realsize_y];
 	vector logo_pos = [(realsize_x - logo_size_x) * 0.1, 0, 0];
 
 	float scale = 1 - 0.05 * sin(time * 0.2);
@@ -388,15 +389,15 @@ void() main_menu =
 
 void m_drawloading (vector screensize, float opaque)
 {
-	vector realsize = getproperty(VF_SCREENPSIZE);
+	vector realsize = getproperty(VF_SCREENVSIZE);
 	string loading_msg = "Loading ...";
     vector bar_size = [realsize_x * 0.6, 24];
     vector bar_pos  = [(realsize_x - bar_size_x) * 0.5, realsize_y * 0.5];
 	vector pct_size = [0, 0];
-
-	// Draw background, darker than non-loading screen
-	vector bg_size = [realsize_x / 2, realsize_y / 2, 0];
-	sui_pic([0,0], bg_size, "textures/background.jpg", '0.05 0.05 0.05', 1, 0);
+	
+	// Draw background
+	vector bg_size = [realsize_x, realsize_y];
+	sui_pic([0,0], bg_size, "textures/background.jpg", '0.5 0.5 0.5', 1, 0);
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_text([0, 0], MENU_TEXT_LARGE, loading_msg, MENU_TEXT_1, 1, 0);
