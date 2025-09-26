@@ -47,6 +47,8 @@ void() set_monster =
 		self.exp = 1;
 	if (!self.noise)
 		self.noise = "monsters/sight1.wav";
+	if (!self.ai_move_dist)
+		self.ai_move_dist = 2000;
 
 	self.saveorigin = self.origin + v_up * 1; // stash initial spawn spot
 

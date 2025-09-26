@@ -15,6 +15,7 @@ const float AI_RUNBACK = 3;
 .float ai_standstill;
 .float ai_backup_finished;
 .entity ai_runback_temp;
+.float ai_move_dist;
 
 void() monster_ai_think;
 void() DoAttack_Melee;
@@ -273,7 +274,7 @@ void() monster_ai_think =
 	float b = vlen(self.origin - self.saveorigin);
 	if (self.ai_mode != AI_RUNBACK)
 	{
-		if (b >= 2000)
+		if (b >= self.ai_move_dist)
 		{
 			self.goalentity = self.ai_runback_temp;
 			if (!self.goalentity)
