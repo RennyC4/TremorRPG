@@ -687,87 +687,71 @@ void() User_CharacterScreen =
 	// skill buttons for stat increases
 	//
 
-	newpos = [-5, 5]; // reset newpos
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	newpos = [-5, 5]; // reset newpos
 
 	if (atbonfire && disp_skillpoints > 0)
 	{
 		vector drawline_pos;
 		float line_length = 118;
-		drawline_pos = [g_width - 210, 0];
-		drawline_pos_y = newpos_y + 52.5;
+		drawline_pos = [25, -5];
 		
 		my_button("skillpoint_unarmed", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 0) : 0;
 		newpos_y +=10;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		my_button("skillpoint_slash", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 1) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_pierce", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 2) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_bash", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 3) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_stealth", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 4) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_backstab", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 5) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_offensivemagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 6) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_defensivemagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 7) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_neutralmagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 8) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_endurance", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 9) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_spellresist", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 10) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_archery", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 11) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_healthregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 12) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_manaregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 13) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_haggling", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 14) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_climbing", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 15) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_swimming", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 16) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		drawline_pos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 		newpos_y +=10;
 		my_button("skillpoint_acrobatics", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 17) : 0;
-		drawline(1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
+		newpos_y +=10;
+		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
 	}
 
 	//

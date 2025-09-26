@@ -99,3 +99,10 @@ void(string id, vector pos, vector size, string text) sui_tooltip =
 	else if (tt_clear_finished < time)
 		tt_contents = "";
 };
+
+void(vector pos, float width, vector pos1, vector pos2, vector rgb, float alpha, optional float flags) sui_line =
+{
+	vector size = pos1 + pos2;
+	sui_transform_box(pos, [pos1_x + pos2_x, size_y]);
+	drawline(width, pos + pos1, pos + pos2, rgb, alpha, flags);
+};

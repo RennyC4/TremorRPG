@@ -158,7 +158,7 @@ void(float damage) Cast_Thorn =
 	}
 	else
 	{
-		entity snd = spawn();
+		snd = spawn();
 		setmodel(snd, string_null);
 		setorigin (snd, trace_endpos);
 		snd.think = sub_remove;
