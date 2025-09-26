@@ -237,7 +237,7 @@ void(float which) CSEv_User_AddSkillPoint_f =
 	{
 		if (self.skill_acrobatic < cap)
 		{
-			if (self.skill_climb < 300)
+			if (self.skill_acrobatic < 300)
 			{
 				self.skill_acrobatic += 1;
 				self.skillpoints -= 1;
