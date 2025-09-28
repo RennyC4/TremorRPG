@@ -37,9 +37,25 @@ void() set_prop =
 // set_dlight - set a dynamic light
 //
 
+string autocvar_tremor_lighting;
 void() set_dlight =
 {
-	self.pflags = PFLAGS_FULLDYNAMIC;
+	if (autocvar_tremor_lighting == "simple")
+	{
+		self.pflags = PFLAGS_FULLDYNAMIC;
+		self.pflags |= PFLAGS_NOSHADOW;
+	}
+	else
+	{
+		self.pflags = PFLAGS_FULLDYNAMIC;
+		if (self.spawnflags & 1)
+		{
+			self.pflags |= PFLAGS_NOSHADOW;
+			self.light_lev /= 1.5;
+		}
+	}
+	if (self.spawnflags & 2)
+		self.pflags |= PFLAGS_CORONA;
 };
 
 //

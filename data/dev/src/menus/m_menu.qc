@@ -173,6 +173,15 @@ void() settings_texturefilter =
 		localcmd ("gl_texturemode nll\n");
 };
 
+string autocvar_tremor_lighting;
+void() settings_lighting =
+{
+	if (autocvar_tremor_lighting == "simple")
+		localcmd ("tremor_lighting full\n");
+	else
+		localcmd ("tremor_lighting simple\n");
+};
+
 string autocvar_minimap;
 void() settings_minimap =
 {
@@ -227,7 +236,7 @@ void() settings_menu =
 	my_button("wn_btn", [xpos, ypos], [width, 20], "Windowed") ? localcmd("vid_fullscreen 0; vid_width 1024; vid_height 768; vid_restart\n") : 0;
 	ypos += 24;
 	sui_text([xpos, ypos], MENU_TEXT_SMALL, "Window can be resized.", MENU_TEXT_1, 0.8, 0);
-	ypos += 16;
+	ypos += 8;
 	my_button("tf_btn", [xpos, ypos], [width / 2, 20], "Texture Filtering") ? settings_texturefilter() : 0;
 
 	if (autocvar_gl_texturemode == "nll")
@@ -235,7 +244,7 @@ void() settings_menu =
 	else
 		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "On", MENU_TEXT_1, 1, 0);
 
-	ypos += 24;
+	ypos += 22;
 	my_button("mm_btn", [xpos, ypos], [width / 2, 20], "Mini-Map") ? settings_minimap() : 0;
 
 	if (autocvar_minimap == "off" || autocvar_minimap == "")
@@ -244,6 +253,14 @@ void() settings_menu =
 		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Lite", MENU_TEXT_1, 1, 0);
 	if (autocvar_minimap == "full")
 		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Full", MENU_TEXT_1, 1, 0);
+
+	ypos += 22;
+	my_button("tl_btn", [xpos, ypos], [width / 2, 20], "Lighting") ? settings_lighting() : 0;
+	if (autocvar_tremor_lighting == "simple" || autocvar_tremor_lighting == "")
+		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Simple", MENU_TEXT_1, 1, 0);
+	else
+		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Full", MENU_TEXT_1, 1, 0);
+	sui_text([xpos+110, ypos+6], MENU_TEXT_SMALL, "- (Requires Restart)", MENU_TEXT_1, 1, 0);
 
 	ypos = 32;
 	xpos = 8 + width + 8 + 8;
@@ -254,10 +271,10 @@ void() settings_menu =
 	ypos += 160 + 8;
 
 	cvar_slider([xpos, ypos], [width, 32], [0.1, 20], "sensitivity", "Sensitivity", "%.2f");
-	ypos += 32;
+	ypos += 38;
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	my_button("stg_back", [8, -8], [80, 20], "Back") ? current_menu = MENU_MAIN : 0;
+	my_button("stg_back", [8, -8], [40, 20], "Back") ? current_menu = MENU_MAIN : 0;
 
 	sui_set_default_kb_focus("volume");
 

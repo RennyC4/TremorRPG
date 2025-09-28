@@ -18,7 +18,6 @@ void() player_slash = [$slash, player_slash]
 
 	if (!self.attack_type)
 	{
-		print ("Yo\n");
 		if (self.anim_count == 0) // unarmed comes out immediately
 			DoAttack_Melee();
 	}
