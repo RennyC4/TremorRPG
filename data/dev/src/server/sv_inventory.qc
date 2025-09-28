@@ -239,6 +239,47 @@ void() itemchest_think =
 	self.nextthink = time + 60;
 };
 
+void(entity targ) SaveInventory =
+{
+	float i, s;
+	string line;
+	string inv = strcat(targ.loginname, ".chr");
+
+	// read original contents
+	float f = fopen(inv, FILE_READ);
+	if (!f)
+		return;
+
+	string buffer = "";
+	for (s = 0; s < 60; s++) // copy first 60 lines untouched
+	{
+		line = fgets(f);
+		if (!line)
+			break; // stop if file shorter than 60 lines
+		buffer = strcat(buffer, line, "\n");
+	}
+	fclose(f);
+
+	// Now rewrite the file
+	float b = fopen(inv, FILE_WRITE);
+	if (!b)
+		return;
+
+	// write back first 60 lines
+	fputs(b, buffer);
+
+    // now overwrite inventory section
+    for (i = 0; i < targ.inv_count; i++)
+    {
+        fputs(b, targ.inventory[i]);
+        fputs(b, "\n");
+        fputs(b, ftos(targ.inventory_count[i]));
+        fputs(b, "\n");
+    }
+
+	fclose(b);
+};
+
 // Spawn chest
 void(string itemname) CSEv_DropItem_s =
 {
@@ -279,20 +320,7 @@ void(string itemname) CSEv_DropItem_s =
 
 	// Remove inventory item
 	RemoveFromInventory(self, itemname, 1);
-
-	// update inventory on item drop (fixing duping)
-	float i;
-	string inv = strcat(self.loginname, "_inv");
-	float b = fopen(inv, FILE_WRITE);
-	if (b >= 0)
-	{
-		for (i = 0; i < self.inv_count; i++)
-		{
-			fputs(b, self.inventory[i], "\n");
-			fputs(b, ftos(self.inventory_count[i]), "\n");
-		}
-		fclose(b);
-	}
+	SaveInventory(self);
 };
 
 void(string itemname) CSEv_UseItem_s =
@@ -409,20 +437,7 @@ void() Item_Touch =
 		stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
 		sound(other, CHAN_AUTO, "item/get.wav", 1, ATTN_NORM);
 
-		// update inventory on item pickup
-		float i;
-		string inv = strcat(other.loginname, "_inv");
-		float b = fopen(inv, FILE_WRITE);
-		if (b >= 0)
-		{
-			for (i = 0; i < other.inv_count; i++)
-			{
-				fputs(b, other.inventory[i], "\n");
-				fputs(b, ftos(other.inventory_count[i]), "\n");
-			}
-			fclose(b);
-		}
-
+		SaveInventory(other);
 		remove(self);
 	}
 	else if (self.stagger_finished < time)

@@ -4867,35 +4867,19 @@
 // entity 101
 {
 "classname" "set_dlight"
-"origin" "-800 -584 176"
-"style" "1"
-"color" "1 0.33333334 0"
-"light_lev" "125"
-"angle" "180"
-"spawnflags" "1"
-}
-// entity 102
-{
-"classname" "misc_walltorch1"
-"origin" "-776 -584 160"
-"angle" "180"
-}
-// entity 103
-{
-"classname" "set_dlight"
 "origin" "720 -352 64"
 "style" "1"
 "color" "1 0.33333334 0"
 "light_lev" "125"
 "spawnflags" "1"
 }
-// entity 104
+// entity 102
 {
 "classname" "misc_model"
 "origin" "720 -352 56"
 "model" "models/candle.glb"
 }
-// entity 105
+// entity 103
 {
 "classname" "set_dlight"
 "origin" "744 -504 64"
@@ -4905,10 +4889,40 @@
 "spawnflags" "1"
 "angle" "60"
 }
-// entity 106
+// entity 104
 {
 "classname" "misc_model"
 "origin" "744 -504 56"
 "model" "models/candle.glb"
 "angle" "60"
+}
+// entity 105
+{
+"classname" "set_dlight"
+"origin" "-616 -864 136"
+"style" "1"
+"color" "1 0.33333334 0"
+"light_lev" "125"
+"spawnflags" "1"
+}
+// entity 106
+{
+"classname" "misc_walltorch1"
+"origin" "-616 -840 120"
+"angle" "270"
+}
+// entity 107
+{
+"classname" "set_dlight"
+"origin" "240 -864 136"
+"style" "1"
+"color" "1 0.33333334 0"
+"light_lev" "125"
+"spawnflags" "1"
+}
+// entity 108
+{
+"classname" "misc_walltorch1"
+"origin" "240 -840 120"
+"angle" "270"
 }
