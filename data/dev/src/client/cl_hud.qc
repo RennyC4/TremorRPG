@@ -394,7 +394,7 @@ void(vector pos) Draw_3DPDoll =
 		doll.angles_y -= 180;
 		doll.origin_z -= 35;
     }
-	doll.angles_y += 0.2;
+	doll.angles_y += 50 * frametime;
 	doll.frame = $stand;
 	doll.frame1time += frametime;
 	entdraw(doll, pos, '150 250', -245);
