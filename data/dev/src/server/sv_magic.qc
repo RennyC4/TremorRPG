@@ -175,6 +175,7 @@ void(float amount) Cast_LightHeal =
 	self.health += amount;
 	if (self.health > self.max_health)
 		self.health = self.max_health;
+	amount = ceil(amount);
 
 	string eventlog_print = (strcat("^6Light Heal: ^2+", ftos(amount), "hp\n"));
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
