@@ -233,7 +233,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 	return FALSE;
 };
 
-// CGAMEPACKET Events
+// CGAMEPACKET events
 const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
@@ -241,6 +241,8 @@ const float CSQC_TIMEOFDAY = 4;
 const float CSQC_LOCKON_INFO = 5;
 const float CSQC_MAGIC = 6;
 const float CSQC_LASTLOGIN = 7;
+const float CSQC_WRITESPARM = 8;
+const float CSQC_READSPARM = 9;
 
 void() CSQC_Parse_Event =
 {
@@ -276,7 +278,7 @@ void() CSQC_Parse_Event =
 	// time of day for day / night effects
 	if (event == CSQC_TIMEOFDAY)
 		timeofday = readbyte();
-	// Lock on
+	// lock on
 	if (event == CSQC_LOCKON_INFO)
 	{
 		LOCKON_NAME = readstring();
@@ -298,6 +300,10 @@ void() CSQC_Parse_Event =
 	// last login update, for map transfers
 	if (event == CSQC_LASTLOGIN)
 		User_ResumeCharacter_MapTransfer();
+	if (event == CSQC_WRITESPARM)
+		sParms_Write();
+	if (event == CSQC_READSPARM)
+		sParms_Read();
 };
 
 noref void CSQC_Shutdown() = {};

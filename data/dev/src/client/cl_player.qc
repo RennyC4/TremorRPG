@@ -4,6 +4,46 @@ void() Coords_Draw;
 void() Player_Animate;
 void() Draw_NameTag;
 
+void() sParms_Read =
+{
+	string line;
+
+	float v = fopen("sparms", FILE_READ); // read sParms
+	if (v)
+	{
+		if (line = fgets(v)) // skip first line
+		if (line = fgets(v))
+			sparm1 = line;
+		if (line = fgets(v))
+			sparm2 = line;
+		if (line = fgets(v))
+			sparm3 = line;
+		if (line = fgets(v))
+			sparm4 = line;
+		fclose(v);
+	}
+	sendevent("SSQC_ReadsParms", "ssss", sparm1, sparm2, sparm3, sparm4); // send sParms to SSQC
+};
+
+void() sParms_Write =
+{
+	sparm1 = getstats(STAT_MAINHAND);
+	sparm2 = getstats(STAT_OFFHAND);
+	sparm3 = getstats(STAT_ARMORNAME);
+	sparm4 = getstats(STAT_SPELLEQUIPPED);
+
+	float v = fopen("sparms", FILE_WRITE); // write sParm file
+	if (v)
+	{
+		fputs(v, LOGIN_NAME, "\n");
+		fputs(v, sparm1, "\n");
+		fputs(v, sparm2, "\n");
+		fputs(v, sparm3, "\n");
+		fputs(v, sparm4, "\n");
+		fclose(v);
+	}
+};
+
 void() CSQC_Input_Frame =
 {
 	input_movevalues_x = bound(-350, input_movevalues_x, 350);

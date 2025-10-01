@@ -2167,6 +2167,8 @@ accessor filestream : float
 #define ENT_PLAYER 1
 //
 
+string sparm1, sparm2, sparm3, sparm4;
+
 float framecount;
 float pauseframe;
 

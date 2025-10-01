@@ -5,7 +5,7 @@
 float modelindex_player_m, modelindex_player_f;
 
 void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;self.melee_finished = time + 0.2;};
-void(entity targ) CSEv_Player_SaveChar;
+void(entity targ, float type) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
 void(entity player) SendPlayerInventory;
 void(entity player) SendMagicSpells;
@@ -20,8 +20,25 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s;
 // Parms - for map transfers
 //
 
+void(string reads1, string reads2, string reads3, string reads4) CSEv_SSQC_ReadsParms_ssss =
+{
+	self.main_hand = reads1;
+	self.off_hand = reads2;
+	self.armorname = reads3;
+	self.spell_equipped = reads4;
+};
+
 void() SetChangeParms =
 {
+	CSEv_Player_SaveChar(self, 1); // map transfer save user character before map change (saves inventory/spells properly etc)
+	
+	// write updated client string parms
+	msg_entity = self;
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_WRITESPARM);
+	multicast(self.origin, MULTICAST_ONE_R);
+	//
+
 	parm1 = self.loggedin;
 	parm2 = self.spawnloc;
 	parm3 = self.health;
@@ -74,6 +91,14 @@ void() SetCheckParms =
 	self.skill_mining = parm22;
 	self.skill_fishing = parm23;
 	self.skill_woodcutting = parm24;
+};
+
+void() SetCheckStringParms = // read updated client string parms
+{
+	msg_entity = self;
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_READSPARM);
+	multicast(self.origin, MULTICAST_ONE_R);
 };
 
 //
@@ -235,7 +260,7 @@ void() PlayerPrintStats =
 
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
-	
+
 	if (cvar("sv_cheats") > 0) // Give cheat stats
 	{
 		self.skillpoints = 99999;
@@ -433,7 +458,7 @@ void() Player_Use =
 		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 		self.bonfire = FALSE;
 		self.bonfire_finished = time + 1; // fixes input bleed
-		CSEv_Player_SaveChar(self); // Save user character
+		CSEv_Player_SaveChar(self, 0); // full save user character
 		return;
 	}
 
@@ -1003,8 +1028,8 @@ void(float type) PlayerSpawn =
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
-	else if (type == 2) // map transition
-	{
+	else if (type == 2) // map transition spawn
+	{	
 		self.flags |= FL_CLIENT;
 		self.classname = "player";
 		self.takedamage = DAMAGE_AIM;
@@ -1038,7 +1063,7 @@ void(float type) PlayerSpawn =
 	}
 	else // respawning from death
 	{
-		if (self.underwatersfx_finished > time) // Remove left over un
+		if (self.underwatersfx_finished > time) // remove left over sound
 		{
 			stuffcmd (self, sprintf("stopsound %s\n", "inwater.wav")); // sound
 			self.underwatersfx_finished = time;
@@ -1111,8 +1136,6 @@ void() PutClientInServer =
 	self.spawnloc = parm2;
 	//
 
-	// SetCheckParms(); // this is now done after the player spawns, we load the players file, then set parms
-
 	if (cvar("developer") == 0) // developer 1 uses teredit not Tremor CSQC
 		self.SendEntity = Player_SendEntity;
 
@@ -1123,6 +1146,9 @@ void() PutClientInServer =
 		WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
 		WriteByte(MSG_MULTICAST, CSQC_LASTLOGIN);
 		multicast(self.origin, MULTICAST_ONE_R);
+
+		SetCheckStringParms();
+
 		return;
 	}
 
@@ -1184,105 +1210,137 @@ void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s =
 	self.music = ""; // clear after load so music is loaded properly
 	self.zonename = ""; // clear after load
 	PlayerSpawn(2);
-	SetCheckParms(); // grab and restore parms after character is resumed
+	SetCheckParms(); // grab and restore parms AFTER character is resumed
 };
 
-void(entity targ) CSEv_Player_SaveChar =
+void(entity targ, float type) CSEv_Player_SaveChar =
 {
-	if (!targ.loggedin) // invalid player
-		return;
+    if (!targ.loggedin)
+        return;
 
-	float i;
+	string filename = strcat(targ.loginname, ".chr");
 
-	string add_ext = strcat(targ.loginname, ".chr");
-	float v = fopen(add_ext, FILE_WRITE);
-	if (v >= 0)
+	// -read existing file (only if doing map transfer)
+	string old_origin[6];
+	float f, i;
+
+    if (type == 1) // map transfer
+    {
+        f = fopen(filename, FILE_READ);
+        if (f >= 0)
+        {
+            // skip first 5 lines (guid, loginname, gender, music, zonename)
+            for (i = 0; i < 5; i++)
+                fgets(f);
+
+            // store the next 6 lines (old origin + angles)
+            for (i = 0; i < 6; i++)
+                old_origin[i] = fgets(f);
+
+            fclose(f);
+        }
+    }
+
+    // write new file
+    f = fopen(filename, FILE_WRITE);
+    if (f < 0)
+        return;
+
+    fputs(f, targ.guid, "\n");
+    fputs(f, targ.loginname, "\n");
+    fputs(f, targ.gender, "\n");
+    fputs(f, targ.music, "\n");
+    fputs(f, targ.zonename, "\n");
+
+    if (!type) // normal save: write fresh origin + angles
+    {
+        fputs(f, ftos(targ.origin_x), "\n");
+        fputs(f, ftos(targ.origin_y), "\n");
+        fputs(f, ftos(targ.origin_z), "\n");
+        fputs(f, ftos(targ.angles_x), "\n");
+        fputs(f, ftos(targ.angles_y), "\n");
+        fputs(f, ftos(targ.angles_z), "\n");
+    }
+    else // map transfer: keep old values
+    {
+        for (i = 0; i < 6; i++)
+            fputs(f, old_origin[i], "\n");
+    }
+
+	// continue writing rest of stats/skills/inventory etc
+
+	fputs(f, ftos(targ.health), "\n");
+	fputs(f, ftos(targ.max_health), "\n");
+	fputs(f, ftos(targ.mana), "\n");
+	fputs(f, ftos(targ.max_mana), "\n");
+	fputs(f, ftos(targ.level), "\n");
+	fputs(f, ftos(targ.skillpoints), "\n");
+	fputs(f, ftos(targ.exp), "\n");
+	fputs(f, ftos(targ.exp_next), "\n");
+	fputs(f, ftos(targ.gold), "\n");
+	fputs(f, ftos(targ.attack_power_min), "\n");
+	fputs(f, ftos(targ.attack_power_max), "\n");
+	fputs(f, ftos(targ.attack_speed), "\n");
+	fputs(f, ftos(targ.attack_type), "\n");
+	fputs(f, ftos(targ.attack_stamina), "\n");
+	fputs(f, ftos(targ.attack_length), "\n");
+	fputs(f, targ.main_hand, "\n");
+	fputs(f, targ.off_hand, "\n");
+	fputs(f, targ.armorname, "\n");
+	fputs(f, ftos(targ.armorvalue), "\n");
+	fputs(f, ftos(targ.pvp), "\n");
+	fputs(f, ftos(targ.pvpenable_count), "\n");
+	fputs(f, ftos(targ.pvp_autoflagged), "\n");
+	fputs(f, ftos(targ.blockvalue), "\n");
+	fputs(f, targ.spell_equipped, "\n");
+	fputs(f, ftos(targ.spell_power_min), "\n");
+	fputs(f, ftos(targ.spell_power_max), "\n");
+	//
+
+	// skills
+	fputs(f, ftos(targ.skill_unarmed), "\n");
+	fputs(f, ftos(targ.skill_slash), "\n");
+	fputs(f, ftos(targ.skill_pierce), "\n");
+	fputs(f, ftos(targ.skill_bash), "\n");
+	fputs(f, ftos(targ.skill_stealth), "\n");
+	fputs(f, ftos(targ.skill_backstab), "\n");
+	fputs(f, ftos(targ.skill_offensivemagic), "\n");
+	fputs(f, ftos(targ.skill_defensivemagic), "\n");
+	fputs(f, ftos(targ.skill_neutralmagic), "\n");
+	fputs(f, ftos(targ.skill_endurance), "\n");
+	fputs(f, ftos(targ.skill_spellresist), "\n");
+	fputs(f, ftos(targ.skill_archery), "\n");
+	fputs(f, ftos(targ.skill_healthregen), "\n");
+	fputs(f, ftos(targ.skill_manaregen), "\n");
+	fputs(f, ftos(targ.skill_haggle), "\n");
+	fputs(f, ftos(targ.skill_climb), "\n");
+	fputs(f, ftos(targ.skill_swim), "\n");
+	fputs(f, ftos(targ.skill_acrobatic), "\n");
+
+	//jobs
+	fputs(f, ftos(targ.skill_mining), "\n");
+	fputs(f, ftos(targ.skill_fishing), "\n");
+	fputs(f, ftos(targ.skill_woodcutting), "\n");
+
+	fputs(f, ftos(targ.inv_count), "\n"); // inventory count, used for reading back on character resume / hud setup
+	fputs(f, ftos(targ.spell_count), "\n"); // spell count, used for reading back on character resume / hud setup
+
+	// inventory
+	for (i = 0; i < targ.inv_count; i++)
 	{
-		// stats
-		fputs(v, targ.guid, "\n");
-		fputs(v, targ.loginname, "\n");
-		fputs(v, targ.gender, "\n");
-		fputs(v, targ.music, "\n");
-		fputs(v, targ.zonename, "\n");
-		fputs(v, ftos(targ.origin_x), "\n");
-		fputs(v, ftos(targ.origin_y), "\n");
-		fputs(v, ftos(targ.origin_z), "\n");
-		fputs(v, ftos(targ.angles_x), "\n");
-		fputs(v, ftos(targ.angles_y), "\n");
-		fputs(v, ftos(targ.angles_z), "\n");
-		fputs(v, ftos(targ.health), "\n");
-		fputs(v, ftos(targ.max_health), "\n");
-		fputs(v, ftos(targ.mana), "\n");
-		fputs(v, ftos(targ.max_mana), "\n");
-		fputs(v, ftos(targ.level), "\n");
-		fputs(v, ftos(targ.skillpoints), "\n");
-		fputs(v, ftos(targ.exp), "\n");
-		fputs(v, ftos(targ.exp_next), "\n");
-		fputs(v, ftos(targ.gold), "\n");
-		fputs(v, ftos(targ.attack_power_min), "\n");
-		fputs(v, ftos(targ.attack_power_max), "\n");
-		fputs(v, ftos(targ.attack_speed), "\n");
-		fputs(v, ftos(targ.attack_type), "\n");
-		fputs(v, ftos(targ.attack_stamina), "\n");
-		fputs(v, ftos(targ.attack_length), "\n");
-		fputs(v, targ.main_hand, "\n");
-		fputs(v, targ.off_hand, "\n");
-		fputs(v, targ.armorname, "\n");
-		fputs(v, ftos(targ.armorvalue), "\n");
-		fputs(v, ftos(targ.pvp), "\n");
-		fputs(v, ftos(targ.pvpenable_count), "\n");
-		fputs(v, ftos(targ.pvp_autoflagged), "\n");
-		fputs(v, ftos(targ.blockvalue), "\n");
-		fputs(v, targ.spell_equipped, "\n");
-		fputs(v, ftos(targ.spell_power_min), "\n");
-		fputs(v, ftos(targ.spell_power_max), "\n");
-		//
-
-		// skills
-		fputs(v, ftos(targ.skill_unarmed), "\n");
-		fputs(v, ftos(targ.skill_slash), "\n");
-		fputs(v, ftos(targ.skill_pierce), "\n");
-		fputs(v, ftos(targ.skill_bash), "\n");
-		fputs(v, ftos(targ.skill_stealth), "\n");
-		fputs(v, ftos(targ.skill_backstab), "\n");
-		fputs(v, ftos(targ.skill_offensivemagic), "\n");
-		fputs(v, ftos(targ.skill_defensivemagic), "\n");
-		fputs(v, ftos(targ.skill_neutralmagic), "\n");
-		fputs(v, ftos(targ.skill_endurance), "\n");
-		fputs(v, ftos(targ.skill_spellresist), "\n");
-		fputs(v, ftos(targ.skill_archery), "\n");
-		fputs(v, ftos(targ.skill_healthregen), "\n");
-		fputs(v, ftos(targ.skill_manaregen), "\n");
-		fputs(v, ftos(targ.skill_haggle), "\n");
-		fputs(v, ftos(targ.skill_climb), "\n");
-		fputs(v, ftos(targ.skill_swim), "\n");
-		fputs(v, ftos(targ.skill_acrobatic), "\n");
-
-		//jobs
-		fputs(v, ftos(targ.skill_mining), "\n");
-		fputs(v, ftos(targ.skill_fishing), "\n");
-		fputs(v, ftos(targ.skill_woodcutting), "\n");
-
-		fputs(v, ftos(targ.inv_count), "\n"); // inventory count, used for reading back on character resume / hud setup
-		fputs(v, ftos(targ.spell_count), "\n"); // spell count, used for reading back on character resume / hud setup
-
-		// inventory
-		for (i = 0; i < targ.inv_count; i++)
-		{
-			fputs(v, targ.inventory[i], "\n");
-			fputs(v, ftos(targ.inventory_count[i]), "\n");
-		}
-
-		// magic
-		for (i = 0; i < targ.spell_count; i++)
-		{
-			fputs(v, targ.spell[i], "\n");
-		}
-
-		fclose(v);
+		fputs(f, targ.inventory[i], "\n");
+		fputs(f, ftos(targ.inventory_count[i]), "\n");
 	}
 
-	sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
+	// magic
+	for (i = 0; i < targ.spell_count; i++)
+	{
+		fputs(f, targ.spell[i], "\n");
+	}
+
+    fclose(f);
+
+    sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
 };
 
 void(string LOGIN_NAME) CSEv_ResumeCharacter_s = 
@@ -1537,7 +1595,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		forceinfokey(self, "name", LOGIN_NAME);
 		self.displayname = self.loginname;
 		PlayerSpawn(1); // Put player in game
-		CSEv_Player_SaveChar(self); // Save on creation
+		CSEv_Player_SaveChar(self, 0); // full save on creation
 	}
 };
 

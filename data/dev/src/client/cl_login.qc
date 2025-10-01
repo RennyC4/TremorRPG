@@ -2,13 +2,15 @@
 // nameforplayerent = getplayerkeyvalue(csqcplayerent.entnum-1, "name");
 
 string Send_LastLogin;
+void() sParms_Write;
+
 void() User_ResumeCharacter_MapTransfer =
 {
 	string line;
 
-	// Read local (client) file for map transfer
-	float v = fopen("lastlogin", FILE_READ);
-	if (v >= 0)
+	// read sParms
+	float v = fopen("sparms", FILE_READ);
+	if (v)
 	{
 		if (line = fgets(v))
 			Send_LastLogin = line;
@@ -17,6 +19,7 @@ void() User_ResumeCharacter_MapTransfer =
 
 	if (Send_LastLogin) // Send it to SSQC
 		sendevent("ResumeCharacterMapTransfer", "s", Send_LastLogin);
+
 	LOGIN_NAME = Send_LastLogin; // set for CSQC's sake
 };
 
@@ -28,17 +31,7 @@ void() User_ResumeCharacter =
 		return;
 	}
 	else
-	{
 		sendevent("ResumeCharacter", "s", LOGIN_NAME);
-	
-		// write local(client) file for map transfer
-		float v = fopen("lastlogin", FILE_WRITE);
-		if (v >= 0)
-		{
-			fputs(v, LOGIN_NAME);
-			fclose(v);
-		}
-	}
 };
 
 void(string sendgender) User_NewCharacter =
@@ -53,15 +46,9 @@ void(string sendgender) User_NewCharacter =
 		print("Please select your gender!\n");
 		return;
 	}
-	sendevent("CreateNewCharacter", "ss", LOGIN_NAME, sendgender);
 
-	// write local(client) file for map transfer
-	float v = fopen("lastlogin", FILE_WRITE);
-	if (v >= 0)
-	{
-		fputs(v, LOGIN_NAME);
-		fclose(v);
-	}
+	sendevent("CreateNewCharacter", "ss", LOGIN_NAME, sendgender);
+	sParms_Write(); // write local(client) file for map transfer
 };
 
 void(int what) SetGender =
