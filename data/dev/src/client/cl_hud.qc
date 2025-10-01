@@ -40,7 +40,8 @@ void() Draw_ToolTip =
 		return;
 
 	vector tt_pos = [_cursor_position_x, _cursor_position_y, 0];
-	tt_pos += [2.5, 2.5];
+	//tt_pos += [2.5, 2.5];
+	tt_pos += [14, 14];
 
 	float i, numlines = 0;
 	vector linepos = [0, 0];

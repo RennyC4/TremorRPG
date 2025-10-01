@@ -69,7 +69,6 @@ void(string id, vector pos, vector size, float maxlen, __inout string text, __in
 float tt_clear_finished;
 void(string id, vector pos, vector size, string text) sui_tooltip =
 {
-	// Draw hover-able element
 	sui_push_frame(pos, size);
 	sui_fill([0, 0], size, MENU_BG_DARK, 0.6, 0);
 	sui_text([0, 0], MENU_TEXT_SMALL, text, MENU_TEXT_1, 1, 0);	
