@@ -1403,7 +1403,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		}
 	}
 
-	if (cvar("sv_cheats") > 0) // cheats allows multi-boxing
+	if (cvar("sv_cheats") == 0) // cheats allows multi-boxing
 	{
 		// check GUID against all other players on the server, if they match, kick new client
 		for (entity targ = world;(targ = find(targ, classname, "player"));)
