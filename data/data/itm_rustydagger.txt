@@ -6,3 +6,4 @@ Rusty Dagger
 0.4
 10
 40
+1

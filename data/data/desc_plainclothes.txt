@@ -3,3 +3,4 @@
 ^5Armor Power:^7 0
 
 ^6Item Level:^7 0
+^6Required Level:^7 1

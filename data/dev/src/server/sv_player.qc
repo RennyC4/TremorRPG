@@ -213,6 +213,8 @@ void() CSEv_PlayerCrouch =
 		return;
 	if (self.potion_use_finished > time)
 		return;
+	if (self.bonfire)
+		return;
 
 	if (!self.crouch)
 	{
@@ -265,7 +267,7 @@ void() PlayerPrintStats =
 	{
 		self.skillpoints = 99999;
 		self.gold = 99999;
-		self.level = 9999;
+		//self.level = 9999;
 		AddToInventory(self, "Health Potion", 1);
 		AddToInventory(self, "Mana Potion", 1);
 		self.mana = 0;

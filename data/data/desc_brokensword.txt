@@ -7,3 +7,4 @@
 ^5Length:^7 64
 
 ^6Item Level:^7 0
+^6Required Level:^7 0

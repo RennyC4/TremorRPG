@@ -365,8 +365,8 @@ void(string itemname) CSEv_UseItem_s =
 	else if (itemname == "Flimsy Buckler")
 		Player_EquipItem(itemname, 2);
 
-	if (itemname != "Lantern")
-		RemoveFromInventory(self, itemname, 1);
+//	if (itemname != "Lantern")
+//		RemoveFromInventory(self, itemname, 1);
 };
 
 // called whenever we need to send player/client ONLY inventory data to CSQC

@@ -1,6 +1,7 @@
 //
 // Items and all their different uses
 //
+void(entity player, string itemname, float count) RemoveFromInventory;
 
 void(string itemname, float id) Player_EquipItem =
 {
@@ -29,6 +30,8 @@ void(string itemname, float id) Player_EquipItem =
 				float attack_stamina_e = stof(line);
 			if (line = fgets(v)) // attack length
 				float attack_length_e = stof(line);
+			if (line = fgets(v)) // item required player level
+				float required_level = stof(line);
 		}
 		else
 		{
@@ -36,17 +39,28 @@ void(string itemname, float id) Player_EquipItem =
 			return;
 		}
 
-		// Add weapon to inventory
-		AddToInventory(self, self.main_hand, 1);
+		if (self.level >= required_level)
+		{
+			// Add weapon to inventory
+			AddToInventory(self, self.main_hand, 1);
 
-		// Equip new weapon
-		self.main_hand = main_hand_e;
-		self.attack_type = attack_type_e;
-		self.attack_power_min = attack_power_min_e;
-		self.attack_power_max = attack_power_max_e;
-		self.attack_speed = attack_speed_e;
-		self.attack_stamina = attack_stamina_e;
-		self.attack_length = attack_length_e;
+			// Equip new weapon
+			self.main_hand = main_hand_e;
+			self.attack_type = attack_type_e;
+			self.attack_power_min = attack_power_min_e;
+			self.attack_power_max = attack_power_max_e;
+			self.attack_speed = attack_speed_e;
+			self.attack_stamina = attack_stamina_e;
+			self.attack_length = attack_length_e;
+
+			// Remove new equipped from inventory
+			RemoveFromInventory(self, itemname, 1);
+		}
+		else
+		{
+			sprint(self, PRINT_HIGH, "Level requirement has not been met\n");
+			return;
+		}
 	}
 	else if (id == 1) // Main armor to equip
 	{
@@ -57,6 +71,8 @@ void(string itemname, float id) Player_EquipItem =
 				string armorname_e = line;
 			if (line = fgets(v)) // armor value
 				float armorvalue_e = stof(line);
+			if (line = fgets(v)) // item required player level
+				float required_level = stof(line);
 		}
 		else
 		{
@@ -64,12 +80,22 @@ void(string itemname, float id) Player_EquipItem =
 			return;
 		}
 
-		// Add old armor to inventory
-		AddToInventory(self, self.armorname, 1);
+		if (self.level >= required_level)
+		{
+			// Add old armor to inventory
+			AddToInventory(self, self.armorname, 1);
 
-		// Equip new armor
-		self.armorname = armorname_e;
-		self.armorvalue = armorvalue_e;
+			// Equip new armor
+			self.armorname = armorname_e;
+			self.armorvalue = armorvalue_e;
+			// Remove new equipped from inventory
+			RemoveFromInventory(self, itemname, 1);
+		}
+		else
+		{
+			sprint(self, PRINT_HIGH, "Level requirement has not been met\n");
+			return;
+		}
 	}
 	else if (id == 2) // Off-hand to equip
 	{
@@ -80,6 +106,8 @@ void(string itemname, float id) Player_EquipItem =
 				string off_hand_e = line;
 			if (line = fgets(v)) // armor value
 				float blockvalue_e = stof(line);
+			if (line = fgets(v)) // item required player level
+				float required_level = stof(line);
 		}
 		else
 		{
@@ -87,12 +115,23 @@ void(string itemname, float id) Player_EquipItem =
 			return;
 		}
 
-		// Add old armor to inventory
-		AddToInventory(self, self.off_hand, 1);
+		if (self.level >= required_level)
+		{
+			// Add old armor to inventory
+			AddToInventory(self, self.off_hand, 1);
 
-		// Equip new armor
-		self.off_hand = off_hand_e;
-		self.blockvalue = blockvalue_e;
+			// Equip new armor
+			self.off_hand = off_hand_e;
+			self.blockvalue = blockvalue_e;
+
+			// Remove new equipped from inventory
+			RemoveFromInventory(self, itemname, 1);
+		}
+		else
+		{
+			sprint(self, PRINT_HIGH, "Level requirement has not been met\n");
+			return;
+		}
 	}
 
 	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound

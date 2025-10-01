@@ -3,3 +3,4 @@
 ^5Blocking Power:^7 1
 
 ^6Item Level:^7 0
+^6Required Level:^7 0
