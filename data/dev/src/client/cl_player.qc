@@ -275,7 +275,6 @@ float(void) Player_PreDraw =
 	{
 	    if (cltime - self.last_update > 0.5 || !self.entnum) // hasn’t been updated for 0.5s, probably gone
 		{
-			print ("CSQC: Player disconnected?\n");
 			CSQC_Ent_Remove();
 			return PREDRAW_NEXT;
 		}
