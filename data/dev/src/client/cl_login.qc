@@ -87,7 +87,7 @@ void() User_LoginScreen =
 	my_button("login_login", [0, size_y - 90], [size_x, 40], "Login") ? User_ResumeCharacter() : 0;
 	my_button("login_newchar", [0, size_y], [size_x, 40], "New Character") ? User_NewCharacter(LOGIN_GENDER) : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	my_button("login_quit", [g_width / 2.18, g_height / 2.25], [40, 40], "Quit") ? localcmd("disconnect\n") : 0;
+	my_button("login_quit", [g_width / 2.18, g_height / 2.25], [40, 40], "Disconnect") ? localcmd("disconnect\n") : 0;
 
 	// Name Entry
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
