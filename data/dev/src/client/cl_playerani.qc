@@ -42,7 +42,7 @@ void() Player_Animate =
 	}
 
 	speed = (speed * frametime);
-	if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp") // mini-map only on over world) // full mini-map affects player animation speed for some reason
+	if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp") // mini-map only on over world, full mini-map affects player animation speed for some reason
 		speed /= 2;
 
 	if (self.health > 0)

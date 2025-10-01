@@ -261,7 +261,10 @@ float(void) Player_PreDraw =
 		Player_Animate();
     }
 	else
+	{
+		Player_Animate(); // animate other players
         addentity(self);
+	}
 
     return PREDRAW_NEXT;
 };
