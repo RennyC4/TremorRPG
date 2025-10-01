@@ -28,6 +28,34 @@ void(string reads1, string reads2, string reads3, string reads4) CSEv_SSQC_Reads
 	self.spell_equipped = reads4;
 };
 
+void() WipeParms =
+{
+	parm1 = 0;
+	parm2 = 0;
+	parm3 = 0;
+	parm4 = 0;
+	parm5 = 0;
+	parm6 = 0;
+	parm7 = 0;
+	parm8 = 0;
+	parm9 = 0;
+	parm10 = 0;
+	parm11 = 0;
+	parm12 = 0;
+	parm13 = 0;
+	parm14 = 0;
+	parm15 = 0;
+	parm16 = 0;
+	parm17 = 0;
+	parm18 = 0;
+	parm19 = 0;
+	parm20 = 0;
+	parm21 = 0;
+	parm22 = 0;
+	parm23 = 0;
+	parm24 = 0;
+};
+
 void() SetChangeParms =
 {
 	CSEv_Player_SaveChar(self, 1); // map transfer save user character before map change (saves inventory/spells properly etc)
@@ -1182,6 +1210,7 @@ void() ClientDisconnect =
 	self.solid = SOLID_NOT;
 	self.classname = "notloggedin";
 	self.loggedin = FALSE;
+	WipeParms();
 
 	bprint(PRINT_HIGH, self.netname);
 	bprint(PRINT_HIGH, " has left the zone\n");
