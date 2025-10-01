@@ -241,6 +241,7 @@ const float CSQC_MAGIC = 6;
 const float CSQC_LASTLOGIN = 7;
 const float CSQC_WRITESPARM = 8;
 const float CSQC_READSPARM = 9;
+const float CSQC_WIPESPARM = 10;
 
 void() CSQC_Parse_Event =
 {
@@ -302,6 +303,8 @@ void() CSQC_Parse_Event =
 		sParms_Write();
 	if (event == CSQC_READSPARM)
 		sParms_Read();
+	if (event == CSQC_WIPESPARM)
+		sParms_Wipe();
 };
 
 noref void CSQC_Shutdown() = {};

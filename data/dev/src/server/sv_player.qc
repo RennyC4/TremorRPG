@@ -1153,6 +1153,13 @@ void() PutClientInServer =
 
 		return;
 	}
+	else // wipe string parms on first entrance
+	{
+		msg_entity = self;
+		WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+		WriteByte(MSG_MULTICAST, CSQC_WIPESPARM);
+		multicast(self.origin, MULTICAST_ONE_R);
+	}
 
 	self.guid = infokey(self, INFOKEY_P_GUID);
 	if (!self.guid)
@@ -1174,6 +1181,7 @@ void() ClientDisconnect =
 	self.modelindex = 0;
 	self.solid = SOLID_NOT;
 	self.classname = "notloggedin";
+	self.loggedin = FALSE;
 
 	bprint(PRINT_HIGH, self.netname);
 	bprint(PRINT_HIGH, " has left the zone\n");

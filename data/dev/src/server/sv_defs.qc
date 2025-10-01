@@ -1717,6 +1717,7 @@ const float CSQC_MAGIC = 6;
 const float CSQC_LASTLOGIN = 7;
 const float CSQC_WRITESPARM = 8;
 const float CSQC_READSPARM = 9;
+const float CSQC_WIPESPARM = 10;
 
 // Function defs
 .void()		th_die;

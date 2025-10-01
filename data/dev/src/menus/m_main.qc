@@ -8,6 +8,13 @@ void() m_init =
 	drawfont = loadfont("", "fonts/trpg", "12", -1, 0, 0);
 	setcursormode(TRUE,"gfx/xhair", [5, 5], cvar("vid_conautoscale"));
 	current_menu = MENU_MAIN;
+	
+	float v = fopen("sparms", FILE_WRITE); // write and wipe sParm file
+	if (v)
+	{
+		fputs(v, "");
+		fclose(v);
+	}
 };
 
 vector() randomofs = { return [random() - 0.5, random() - 0.5] * 2; };

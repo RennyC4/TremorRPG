@@ -11,7 +11,7 @@ void() Draw_NameTag =
 	{
 		if (vlen(b.origin - vPlayerOrigin) <= 1250)
 		{
-			if (b.entnum != player_localentnum && b.loggedin)
+			if (b.entnum != player_localentnum && b.loggedin && b.modelindex != 0)
 			{
 				makevectors(b.angles);
 				vector nametag_org = project(b.origin + v_up * 60 - v_right * 6);

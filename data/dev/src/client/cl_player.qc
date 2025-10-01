@@ -44,6 +44,17 @@ void() sParms_Write =
 	}
 };
 
+void() sParms_Wipe =
+{
+	float v = fopen("sparms", FILE_WRITE); // write and wipe sParm file
+	if (v)
+	{
+		fputs(v, "");
+		fclose(v);
+	}
+};
+
+
 void() CSQC_Input_Frame =
 {
 	input_movevalues_x = bound(-350, input_movevalues_x, 350);
@@ -262,6 +273,12 @@ float(void) Player_PreDraw =
     }
 	else
 	{
+		if (!self.entnum) // client disconnected
+		{
+			print ("Player disconnected?\n");
+			CSQC_Ent_Remove();
+			return;
+		}
 		Player_Animate(); // animate other players
         addentity(self);
 	}
