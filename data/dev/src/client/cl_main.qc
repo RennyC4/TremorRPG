@@ -144,7 +144,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	//
 	//
-
+	if (framecount == 10)
+		localcmd("exec haze.cfg\n");
 	if (pause > 0)
 		pauseframe += 1;
 	else
