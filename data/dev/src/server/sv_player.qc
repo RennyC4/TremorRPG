@@ -1211,6 +1211,7 @@ void() ClientDisconnect =
 	self.classname = "notloggedin";
 	self.loggedin = FALSE;
 	WipeParms();
+	self.SendEntity = 0; // wipe this so CSQC can clean up player ents
 
 	bprint(PRINT_HIGH, self.netname);
 	bprint(PRINT_HIGH, " has left the zone\n");
@@ -1388,6 +1389,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 {
 	string line;
 	string add_ext = strcat(LOGIN_NAME, ".chr");
+
 	// security check
 	float f = fopen(add_ext, FILE_READ);
 	if (f >= 0)
@@ -1398,6 +1400,19 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 		{
 			sprint(self, PRINT_HIGH, "Server GUID does not match clients\n");
 			return;
+		}
+	}
+
+	if (cvar("sv_cheats") > 0) // cheats allows multi-boxing
+	{
+		// check GUID against all other players on the server, if they match, kick new client
+		for (entity targ = world;(targ = find(targ, classname, "player"));)
+		{
+			if (targ != self && targ.guid == self.guid)
+			{
+				sprint(self, PRINT_HIGH, "You cannot run multiple instances of Tremor RPG on the same server\n");
+				dropclient(self);
+			}
 		}
 	}
 

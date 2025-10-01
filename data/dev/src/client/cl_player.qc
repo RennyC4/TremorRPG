@@ -273,11 +273,6 @@ float(void) Player_PreDraw =
     }
 	else
 	{
-	    if (cltime - self.last_update > 0.5 || !self.entnum) // hasn’t been updated for 0.5s, probably gone
-		{
-			CSQC_Ent_Remove();
-			return PREDRAW_NEXT;
-		}
 		Player_Animate(); // animate other players
         addentity(self);
 	}
@@ -318,8 +313,9 @@ void() Player_Think =
 	if (health > 0 && deathcam_dist != 45)
 		deathcam_dist = 45; // initial z start org for death camera
 
-    if (cltime - self.last_update > 0.5) // hasn’t been updated for 0.5s, probably gone
-		CSQC_Ent_Remove();
+	// hasn’t been updated, probably gone
+    //if (cltime - self.last_update > 1 && self.entnum != player_localentnum)
+	//	CSQC_Ent_Remove();
 };
 
 void(float flIsNew) CSQC_Ent_Update =
@@ -358,7 +354,7 @@ void(float flIsNew) CSQC_Ent_Update =
 
 		self.pvp = readbyte();
 		self.loggedin = readbyte();
-		self.last_update = cltime;
+		//self.last_update = cltime;
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);
