@@ -1167,6 +1167,8 @@ void() PutClientInServer =
 
 void() ClientDisconnect =
 {
+	CSEv_Player_SaveChar(self, 1); // save character on disconnect, do not update X/Y position
+
 	player_chain_remove(self); // clean up removed player
 	setmodel (self, string_null);
 	self.modelindex = 0;
