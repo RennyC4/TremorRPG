@@ -2318,3 +2318,4 @@ string tt_contents;
 .float loggedin;
 .float pvp;
 float modelindex_player_m, modelindex_player_f;
+.float last_update;
