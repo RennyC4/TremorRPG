@@ -5219,3 +5219,45 @@
 ( 694 -68 182 ) ( 694 -64 182 ) ( 694 -64 178 ) dlv_metalgen2 [ 0 1 0 0 ] [ 0 0 -1 0 ] 90 1 1
 }
 }
+// entity 125
+{
+"classname" "misc_tree"
+"origin" "-1208 240 8"
+"angle" "300"
+}
+// entity 126
+{
+"classname" "misc_tree"
+"origin" "-1304 328 8"
+"angle" "165"
+}
+// entity 127
+{
+"classname" "misc_tree"
+"origin" "-1144 312 8"
+"angle" "0"
+}
+// entity 128
+{
+"classname" "misc_tree"
+"origin" "-1240 424 8"
+"angle" "165"
+}
+// entity 129
+{
+"classname" "misc_tree"
+"origin" "184 -40 8"
+"angle" "300"
+}
+// entity 130
+{
+"classname" "misc_tree"
+"origin" "-120 536 8"
+"angle" "300"
+}
+// entity 131
+{
+"classname" "misc_tree"
+"origin" "88 696 8"
+"angle" "300"
+}

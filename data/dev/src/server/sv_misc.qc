@@ -129,6 +129,22 @@ void() misc_barrel =
 	droptofloor();
 };
 
+//
+// misc_tree1 - pine tree
+//
+
+void() misc_tree =
+{
+	precache_model("models/tree.glb");
+
+	self.solid = SOLID_SLIDEBOX;
+
+	setmodel(self, "models/tree.glb");
+	setsize(self, [-12, -12, 0], [12, 12, 100]);
+
+	droptofloor();
+};
+
 /*
 * misc_model.qc
 *
