@@ -134,84 +134,84 @@ void() Player_Lantern =
 
 void() Player_Hud =
 {
-	if (cvar("developer") == 0)
+	if (cvar("developer") != 0)
+		return;
+
+	float player_loggedin = getstatf(STAT_LOGGEDIN);
+	float player_menu = getstatf(STAT_MENU);
+	if (player_menu > 0)
 	{
-		float player_loggedin = getstatf(STAT_LOGGEDIN);
-		float player_menu = getstatf(STAT_MENU);
-		if (player_menu > 0)
+		setcursormode(TRUE,"gfx/xhair", [5, 5], cvar("vid_conautoscale")); // enable mouse cursor when menus are active
+
+		if (player_menu == MENU_LOGIN)
+			User_LoginScreen();
+		else
 		{
-			setcursormode(TRUE,"gfx/xhair", [5, 5], cvar("vid_conautoscale")); // enable mouse cursor when menus are active
-
-			if (player_menu == MENU_LOGIN)
-				User_LoginScreen();
-			else
-			{
-				Draw_Health();
-				Draw_Mana();
-				Draw_Stamina();
-				Draw_Exp();
-				Draw_InCombatorPVP();
-			}
-
-			if (player_menu == MENU_CHARACTER)
-				User_CharacterScreen();
-			if (player_menu == MENU_INVENTORY)
-			{
-				User_InventoryScreen();
-				Draw_ToolTip();
-			}
-			if (player_menu == MENU_MAGIC)
-			{
-				User_MagicScreen();
-				Draw_ToolTip();
-			}
-			if (player_menu == MENU_DIALOGUE)
-				User_NPCDialogue();
-			if (player_menu == MENU_BUYSELL)
-			{
-				User_NPCBuySell();
-				Draw_ToolTip();
-			}
+			Draw_Health();
+			Draw_Mana();
+			Draw_Stamina();
+			Draw_Exp();
+			Draw_InCombatorPVP();
 		}
-		else // Regular gameplay
+
+		if (player_menu == MENU_CHARACTER)
+			User_CharacterScreen();
+		if (player_menu == MENU_INVENTORY)
 		{
-			float zonedisplay_finished = getstatf(STAT_ZONENAME_TIME);
-			float health = getstatf(STAT_HEALTH);
-			float casting = getstatf(STAT_CASTING);
-
-			if (zonedisplay_finished > time)
-				Draw_ZoneName(g_width, g_height);
-			else
-				ZoneName_alpha.doalpha = 0;
-
-			Draw_NameTag();
-			if (!player_idle && health > 0)
-			{
-				Draw_EventLog();
-				Draw_Health();
-				Draw_Mana();
-				Draw_Stamina();
-				Draw_Exp();
-				Draw_InCombatorPVP();
-				Draw_LockOnInfo();
-				if (autocvar_minimap != "off" && autocvar_minimap != "")
-				{
-					if (substring(world.model, -3, 3) == "hmp") // mini-map only on over world
-						WorldMap_Draw([g_width - 112.5, 0], 112.5);
-				}
-				Compass_Draw();
-				Coords_Draw();
-				if (casting > time)
-					Draw_CastingStat();
-			}
-
-			if (time - last_input_time > idle_threshold)
-				player_idle = TRUE; // turn on camera orbit
-
-			setcursormode(FALSE,"", 0, 0);
+			User_InventoryScreen();
+			Draw_ToolTip();
 		}
-		Player_DayNightHandler();
+		if (player_menu == MENU_MAGIC)
+		{
+			User_MagicScreen();
+			Draw_ToolTip();
+		}
+		if (player_menu == MENU_DIALOGUE)
+			User_NPCDialogue();
+		if (player_menu == MENU_BUYSELL)
+		{
+			User_NPCBuySell();
+			Draw_ToolTip();
+		}
 	}
+	else // Regular gameplay
+	{
+		float zonedisplay_finished = getstatf(STAT_ZONENAME_TIME);
+		float health = getstatf(STAT_HEALTH);
+		float casting = getstatf(STAT_CASTING);
+
+		if (zonedisplay_finished > time)
+			Draw_ZoneName(g_width, g_height);
+		else
+			ZoneName_alpha.doalpha = 0;
+
+		Draw_NameTag();
+		if (!player_idle && health > 0)
+		{
+			Draw_EventLog();
+			Draw_Health();
+			Draw_Mana();
+			Draw_Stamina();
+			Draw_Exp();
+			Draw_InCombatorPVP();
+			Draw_LockOnInfo();
+			if (autocvar_minimap != "off" && autocvar_minimap != "")
+			{
+				if (substring(world.model, -3, 3) == "hmp") // mini-map only on over world
+					WorldMap_Draw([g_width - 112.5, 0], 112.5);
+			}
+			Compass_Draw();
+			Coords_Draw();
+			if (casting > time)
+				Draw_CastingStat();
+		}
+
+		if (time - last_input_time > idle_threshold)
+			player_idle = TRUE; // turn on camera orbit
+
+		setcursormode(FALSE,"", 0, 0);
+	}
+	Player_DayNightHandler();
 };
 
 float(void) Player_PreDraw =

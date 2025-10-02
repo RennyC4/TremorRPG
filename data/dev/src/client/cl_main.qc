@@ -36,7 +36,7 @@ noref void() CSQC_WorldLoaded =
 	registercommand("toggle_camera", "3rd person camera toggle\n");
 	registercommand("+use", "Use what is in front of player\n");
 
-	if (cvar("developer") == 1)
+	if (cvar("developer") > 0)
 		localcmd("sv_cheats 1\nsv_csqc_progname teredit.dat\nrestart\n");
 };
 
@@ -48,6 +48,9 @@ void(string rendererdescription) CSQC_RendererRestarted =
 // CALLED EVERY CLIENT RENDER FRAME
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
+	if (cvar("developer") != 0)
+		return;
+
 	vector virtsize = [width, height];
 	float pause = serverkeyfloat(SERVERKEY_PAUSESTATE);
 	float lockon = getstatf(STAT_LOCKEDON);

@@ -1159,6 +1159,9 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 
 void() PutClientInServer =
 {
+	if (cvar("developer") != 0)
+		return;
+
 	player_chain_add(self);
 
 	// this is important, do not remove them
@@ -1166,8 +1169,7 @@ void() PutClientInServer =
 	self.spawnloc = parm2;
 	//
 
-	if (cvar("developer") == 0) // developer 1 uses teredit not Tremor CSQC
-		self.SendEntity = Player_SendEntity;
+	self.SendEntity = Player_SendEntity;
 
 	// map transition
 	if (self.loggedin)

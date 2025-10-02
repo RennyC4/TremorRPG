@@ -1697,11 +1697,15 @@ void(string cmdname, optional string desc) registercommand = #352; /*
 		Register the given console command, for easy console use.
 		Console commands that are later used will invoke CSQC_ConsoleCommand/m_consolecommand/ConsoleCmd according to module. */
 
-// Misc
+// Misc, and shared defs from quake for portability sake
 string string_null = "";
 float(float min, float max) random_range;
 float SVC_TEMPENTITY = 23;
 .string map;
+.string killtarget;
+entity activator; // entity for cause of a trigger activation
+.float wait;
+.float delay;
 
 // Enums
 #define ENT_PLAYER 1

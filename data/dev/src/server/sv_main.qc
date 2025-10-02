@@ -8,6 +8,7 @@
 
 void() main = {};
 void() SpectatorConnect = {sprint(self, PRINT_HIGH, "Spectator mode is not supported\n");dropclient(self);}; // Tremor: No spectators allowed
+void() info_null ={};
 
 void() spawn_daynight;
 

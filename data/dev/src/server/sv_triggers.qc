@@ -55,16 +55,6 @@ void() trigger_zone =
 };
 
 //
-// func_illusionary - brush entity that can be walked through
-//
-
-void() func_illusionary =
-{
-	setmodel(self, self.model);
-	self.solid = SOLID_NOT;
-};
-
-//
 // changelevel- move players between maps
 //
 
@@ -89,4 +79,157 @@ void() trigger_changelevel =
 	self.model = "";
 };
 
-void() info_null ={};
+/*
+===============
+SUB_UseTargets
+===============
+- Fires all entities with matching targetname
+- Supports killtarget
+- Supports delay (spawns a helper thinker)
+*/
+
+void(entity ent, entity activator) SUB_FireTargets;
+
+void(entity th) SUB_DelayThink =
+{
+	SUB_FireTargets(th.owner, th.enemy);
+	remove(th);
+};
+
+void(entity ent, entity activator) SUB_UseTargets =
+{
+	entity t;
+
+	if (ent.killtarget) // killtarget first
+	{
+		t = find(world, targetname, ent.killtarget);
+		while (t)
+		{
+			remove(t);
+			t = find(t, targetname, ent.killtarget);
+		}
+	}
+
+	if (ent.delay > 0) // delay handling
+	{
+		t = spawn();
+		t.owner = ent;
+		t.enemy = activator;
+		t.think = SUB_DelayThink;
+		t.nextthink = time + ent.delay;
+		return;
+	}
+
+	// fire immediately
+	SUB_FireTargets(ent, activator);
+};
+
+void(entity ent, entity activator) SUB_FireTargets =
+{
+	entity t;
+
+	if (!ent.target)
+		return;
+
+	t = find(world, targetname, ent.target);
+	while (t)
+	{
+		if (t.use)
+			t.use(t, activator);
+		t = find(t, targetname, ent.target);
+	}
+};
+
+/*
+================
+trigger_multiple
+================
+- Fires target(s) when touched
+- Can be set to repeat with wait/delay
+- Use spawnflag 1 ("notouch") for only use-activated
+*/
+void() trigger_multi_use;
+void() trigger_multi_reset;
+
+void() trigger_multi_touch =
+{
+    if (other.classname != "player")
+        return;
+
+    SUB_UseTargets(self, other);
+
+	// prevent spam
+	self.touch = info_null;
+	self.nextthink = time + self.wait;
+	self.think = trigger_multi_reset;
+};
+
+void() trigger_multi_reset =
+{
+	self.touch = trigger_multi_touch;
+};
+
+void() trigger_multi_use_reset =
+{
+	self.use = trigger_multi_use;
+};
+
+void() trigger_multi_use =
+{
+	SUB_UseTargets(self, activator);
+
+	self.use = info_null;
+	self.nextthink = time + self.wait;
+	self.think = trigger_multi_use_reset;
+};
+
+void() trigger_multiple =
+{
+	self.modelindex = 0;
+	self.solid = SOLID_TRIGGER;
+	
+	if (self.spawnflags & 1) // "notouch" mode
+		self.use = trigger_multi_use;
+	else
+		self.touch = trigger_multi_touch;
+
+	setmodel (self, self.model);
+	self.movetype = MOVETYPE_NONE;
+	self.model = "";
+};
+
+/*
+===============
+trigger_once
+===============
+- Fires targets once on touch or use
+- Supports wait/delay via SUB_UseTargets
+- Spawnflag 1 = use only (not touch)
+*/
+
+void(entity self) trigger_once_touch =
+{
+    if (other.classname != "player")
+        return;
+
+    SUB_UseTargets(self, other);
+    remove(self);
+};
+
+void(entity self) trigger_once_use =
+{
+    SUB_UseTargets(self, activator);
+    remove(self);
+};
+
+void() trigger_once =
+{
+	self.solid = SOLID_TRIGGER;
+    if (self.spawnflags & 1) // "notouch" mode
+        self.use = trigger_once_use;
+    else
+    {
+        setsize(self, self.mins, self.maxs);
+        self.touch = trigger_once_touch;
+    }
+};
