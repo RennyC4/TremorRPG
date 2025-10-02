@@ -5248,25 +5248,25 @@
 // entity 125
 {
 "classname" "misc_tree"
-"origin" "-1208 240 8"
+"origin" "-1192 160 8"
 "angle" "300"
 }
 // entity 126
 {
 "classname" "misc_tree"
-"origin" "-1304 328 8"
+"origin" "-1288 248 8"
 "angle" "105"
 }
 // entity 127
 {
 "classname" "misc_tree"
-"origin" "-1144 312 8"
+"origin" "-1128 232 8"
 "angle" "0"
 }
 // entity 128
 {
 "classname" "misc_tree"
-"origin" "-1240 424 8"
+"origin" "-1224 344 8"
 "angle" "165"
 }
 // entity 129
