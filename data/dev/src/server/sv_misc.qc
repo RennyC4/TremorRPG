@@ -114,6 +114,27 @@ void() misc_walltorch1 =
 };
 
 //
+// misc_walltorch2 - wall torch 2, same as above w/ different design
+//
+
+void() misc_walltorch2_think =
+{
+	makevectors(self.angles);
+	pointparticles(PART_WTORCH2, self.origin + v_forward * 4 + v_up * 36);
+	self.nextthink = time + 0.1;
+};
+
+void() misc_walltorch2 =
+{
+	precache_model("models/walltorch2.glb");
+	setmodel(self, "models/walltorch2.glb");
+
+	self.think = misc_walltorch2_think;
+	self.nextthink = time + 0.1 + random()*1;
+};
+
+
+//
 // misc_barrel - decor object
 //
 

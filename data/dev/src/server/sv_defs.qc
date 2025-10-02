@@ -1993,6 +1993,7 @@ var float PART_LEVELUP;
 var float PART_FOUNTAIN;
 var float PART_BONFIRE;
 var float PART_WTORCH1;
+var float PART_WTORCH2;
 var float PART_MAGIC_CASTING;
 var float PART_MAGIC_THORN1; // Hit target
 var float PART_MAGIC_THORN2; // Hit wall

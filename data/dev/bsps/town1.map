@@ -5293,3 +5293,35 @@
 "origin" "840 -776 8"
 "angle" "300"
 }
+// entity 133
+{
+"classname" "misc_walltorch2"
+"origin" "-200 -768 88"
+"angle" "90"
+}
+// entity 134
+{
+"classname" "set_dlight"
+"origin" "-200 -744 104"
+"style" "1"
+"color" "1 0.33333334 0"
+"light_lev" "125"
+"spawnflags" "1"
+"angle" "90"
+}
+// entity 135
+{
+"classname" "misc_walltorch2"
+"origin" "-200 -512 88"
+"angle" "270"
+}
+// entity 136
+{
+"classname" "set_dlight"
+"origin" "-200 -536 104"
+"style" "1"
+"color" "1 0.33333334 0"
+"light_lev" "125"
+"spawnflags" "1"
+"angle" "270"
+}
