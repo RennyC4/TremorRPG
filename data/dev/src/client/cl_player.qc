@@ -312,10 +312,6 @@ void() Player_Think =
 	}
 	if (health > 0 && deathcam_dist != 45)
 		deathcam_dist = 45; // initial z start org for death camera
-
-	// hasn’t been updated, probably gone
-    //if (cltime - self.last_update > 1 && self.entnum != player_localentnum)
-	//	CSQC_Ent_Remove();
 };
 
 void(float flIsNew) CSQC_Ent_Update =
