@@ -6,8 +6,12 @@ void() Hud_UpdateScores;
 void(vector virtmin, vector virtsize) Hud_Scoreboard;
 void() CSQC_Ent_Remove =
 {
+	// clean up CSQC ents
 	if (self.skeletonindex)
 		skel_delete(self.skeletonindex);
+	if (self.lantern_vfx)
+		remove(self.lantern_vfx);
+	//
 	remove(self);
 };
 
@@ -81,7 +85,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);
 
-	Player_Lantern();
 	if (lockon)
 		FaceTarget();
 

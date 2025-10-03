@@ -1642,6 +1642,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.main_hand = "Broken Sword";
 		self.off_hand = "Broken Buckler";
 		self.blockvalue = 1;
+		self.gold = 999;
 
 		// default armor
 		self.armorname = "Plain Clothes";

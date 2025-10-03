@@ -33,15 +33,14 @@ void() Skeleton_ObjectDraw =
 			org += v_forward * offset_x;
 			org += v_right   * offset_y;
 			org += v_up      * offset_z;
-
 			self.lantern_vfx.origin = org;
 
-			// Fix angles
+			// fix angles
 			vector ang = vectoangles(v_forward, v_up);
-			//ang_x += -1 * ang_x; // flip
 			ang_z += -1 * ang_z; // flip
-			
 			self.lantern_vfx.angles = ang;
+
+			dynamiclight_add(org, 800, [1,1,1], 1, "", PFLAGS_CORONA);
 		}
 	}
 	else if (self.lantern_vfx)
@@ -50,16 +49,6 @@ void() Skeleton_ObjectDraw =
 		self.lantern_vfx = world;
 	}
 };
-
-/*
-float which_bone = skel_find_bone(self.skeletonindex, "mixamorig:RightUpLeg");
-vector lantern_bone_org = skel_get_boneabs(self.skeletonindex, which_bone);
-
-entity lantern_vfx = spawn();
-lantern_vfx.drawmask = MASK_ENGINE;
-setmodel(lantern_vfx, "models/lantern.glb");
-setorigin(lantern_vfx, lantern_bone_org);
-*/
 
 //
 // String parms
@@ -177,21 +166,6 @@ void() Player_DayNightHandler =
 			cvar_set("r_skyfog", "0.8");
 			cvar_set("v_cshift_empty", "130 25 0 32");
 		}
-	}
-};
-
-void() Player_Lantern =
-{
-	entity targ = find(world, classname, "player");
-	while (targ)
-	{
-		if (targ.effects == EF_BRIGHTLIGHT)
-		{
-			vector laternangle = [0, targ.angles_y, 0];
-			makevectors(laternangle);
-			dynamiclight_add(targ.origin + v_up * 24 + v_right * 12, 800, [1,1,1], 1, "", PFLAGS_CORONA);
-		}
-		targ = find(targ, classname, "player");
 	}
 };
 
