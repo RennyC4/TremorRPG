@@ -12,7 +12,7 @@ void() Draw_NameTag;
 //
 
 void() Skeleton_ObjectDraw =
-{	
+{
 	if (!self.skeletonindex)
 		self.skeletonindex = skel_create(self.modelindex);
 	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
@@ -24,7 +24,7 @@ void() Skeleton_ObjectDraw =
 		if (!self.lantern_vfx)
 		{
 			self.lantern_vfx = spawn();
-			self.lantern_vfx.drawmask = MASK_ENGINE;
+			self.lantern_vfx.drawmask = MASK_VIEWMODEL; // don't show in first person
 			setmodel(self.lantern_vfx, "models/lantern.glb");
 		}
 		else
@@ -43,7 +43,8 @@ void() Skeleton_ObjectDraw =
 			ang_z += -1 * ang_z; // flip
 			self.lantern_vfx.angles = ang;
 
-			pointparticles(PART_LANTERN, org, ang);
+			if (camera_mode)
+				pointparticles(PART_LANTERN, org, ang);
 			dynamiclight_add(org, 800, [1,1,1], 1, "", PFLAGS_CORONA);
 		}
 	}

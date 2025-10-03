@@ -79,8 +79,10 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
-	//autoadd entities received from servers for drawing
-	addentities((intermission?0:MASK_VIEWMODEL)|MASK_ENGINE);
+	if (camera_mode)
+		addentities(MASK_VIEWMODEL | MASK_ENGINE);
+	else 
+		addentities(MASK_ENGINE); // first person, don't render viewmodel mask
 
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);
