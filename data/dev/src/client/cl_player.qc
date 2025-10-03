@@ -4,6 +4,67 @@ void() Coords_Draw;
 void() Player_Animate;
 void() Draw_NameTag;
 
+.entity lantern_vfx;
+
+//
+// Player skeleton attach objects
+//
+
+void() Skeleton_ObjectDraw =
+{
+	if (!self.skeletonindex)
+		self.skeletonindex = skel_create(self.modelindex);
+	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
+
+	if (self.effects == EF_BRIGHTLIGHT) // lantern
+	{
+		if (!self.lantern_vfx)
+		{
+			self.lantern_vfx = spawn();
+			self.lantern_vfx.drawmask = MASK_ENGINE;
+			setmodel(self.lantern_vfx, "models/lantern.glb");
+		}
+		else
+		{
+			vector org = gettaginfo(self, gettagindex(self, "mixamorig:RightUpLeg"));
+			vector offset = '16 -18 0';  // offset relative to the bone
+			
+			// local offset into world space
+			org += v_forward * offset_x;
+			org += v_right   * offset_y;
+			org += v_up      * offset_z;
+
+			self.lantern_vfx.origin = org;
+
+			// Fix angles
+			vector ang = vectoangles(v_forward, v_up);
+			//ang_x += -1 * ang_x; // flip
+			ang_z += -1 * ang_z; // flip
+			
+			self.lantern_vfx.angles = ang;
+		}
+	}
+	else if (self.lantern_vfx)
+	{
+		remove(self.lantern_vfx);
+		self.lantern_vfx = world;
+	}
+};
+
+/*
+float which_bone = skel_find_bone(self.skeletonindex, "mixamorig:RightUpLeg");
+vector lantern_bone_org = skel_get_boneabs(self.skeletonindex, which_bone);
+
+entity lantern_vfx = spawn();
+lantern_vfx.drawmask = MASK_ENGINE;
+setmodel(lantern_vfx, "models/lantern.glb");
+setorigin(lantern_vfx, lantern_bone_org);
+*/
+
+//
+// String parms
+//
+
 void() sParms_Read =
 {
 	string line;
@@ -54,6 +115,8 @@ void() sParms_Wipe =
 	}
 };
 
+//
+//
 
 void() CSQC_Input_Frame =
 {
@@ -214,6 +277,13 @@ void() Player_Hud =
 	Player_DayNightHandler();
 };
 
+void() Player_Skeleton =
+{
+	if (!self.skeletonindex)
+		self.skeletonindex = skel_create(self.modelindex);
+	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
+};
+
 float(void) Player_PreDraw =
 {
     if (self.entnum == player_localentnum)
@@ -270,10 +340,12 @@ float(void) Player_PreDraw =
 		self.renderflags = RF_EXTERNALMODEL; // Set renderflag for mirrors!
 
 		Player_Animate();
+		Skeleton_ObjectDraw();
     }
-	else
+	else // other players
 	{
-		Player_Animate(); // animate other players
+		Player_Animate();
+		Skeleton_ObjectDraw();
         addentity(self);
 	}
 
@@ -350,7 +422,6 @@ void(float flIsNew) CSQC_Ent_Update =
 
 		self.pvp = readbyte();
 		self.loggedin = readbyte();
-		//self.last_update = cltime;
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);
