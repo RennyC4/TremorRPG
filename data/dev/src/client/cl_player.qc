@@ -11,7 +11,7 @@ void() Draw_NameTag;
 //
 
 void() Skeleton_ObjectDraw =
-{
+{	
 	if (!self.skeletonindex)
 		self.skeletonindex = skel_create(self.modelindex);
 	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
@@ -251,17 +251,13 @@ void() Player_Hud =
 	Player_DayNightHandler();
 };
 
-void() Player_Skeleton =
-{
-	if (!self.skeletonindex)
-		self.skeletonindex = skel_create(self.modelindex);
-	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
-};
-
 float(void) Player_PreDraw =
 {
+	Player_Animate();
+	Skeleton_ObjectDraw();
     if (self.entnum == player_localentnum)
 	{
+
 		self.movetype = MOVETYPE_WALK;
 		
 		// Prepare rollback
@@ -312,14 +308,9 @@ float(void) Player_PreDraw =
 		self.movetype = MOVETYPE_NONE;
 
 		self.renderflags = RF_EXTERNALMODEL; // Set renderflag for mirrors!
-
-		Player_Animate();
-		Skeleton_ObjectDraw();
     }
 	else // other players
 	{
-		Player_Animate();
-		Skeleton_ObjectDraw();
         addentity(self);
 	}
 
