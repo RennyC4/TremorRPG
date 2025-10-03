@@ -4,6 +4,7 @@ void() Coords_Draw;
 void() Player_Animate;
 void() Draw_NameTag;
 
+
 .entity lantern_vfx;
 
 //
@@ -18,6 +19,8 @@ void() Skeleton_ObjectDraw =
 
 	if (self.effects == EF_BRIGHTLIGHT) // lantern
 	{
+		var float PART_LANTERN = particleeffectnum("lantern");;
+		
 		if (!self.lantern_vfx)
 		{
 			self.lantern_vfx = spawn();
@@ -40,6 +43,7 @@ void() Skeleton_ObjectDraw =
 			ang_z += -1 * ang_z; // flip
 			self.lantern_vfx.angles = ang;
 
+			pointparticles(PART_LANTERN, org, ang);
 			dynamiclight_add(org, 800, [1,1,1], 1, "", PFLAGS_CORONA);
 		}
 	}

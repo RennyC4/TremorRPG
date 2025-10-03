@@ -151,7 +151,7 @@ void() misc_barrel =
 };
 
 //
-// misc_tree1 - pine tree
+// misc_tree1 - regular tree
 //
 
 void() misc_tree =
@@ -161,6 +161,22 @@ void() misc_tree =
 	self.solid = SOLID_SLIDEBOX;
 
 	setmodel(self, "models/tree.glb");
+	setsize(self, [-16, -16, 0], [16, 16, 100]);
+
+	droptofloor();
+};
+
+//
+// misc_tree2 - dead tree
+//
+
+void() misc_tree2 =
+{
+	precache_model("models/tree2.glb");
+
+	self.solid = SOLID_SLIDEBOX;
+
+	setmodel(self, "models/tree2.glb");
 	setsize(self, [-12, -12, 0], [12, 12, 100]);
 
 	droptofloor();

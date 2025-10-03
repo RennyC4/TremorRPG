@@ -42,6 +42,13 @@ origin "-2194 -2046 60"
 angles "0 0 0"
 }
 
+// dead tree decor (Elderfen)
+{
+classname "misc_tree2"
+origin "-1564 -684 122"
+angles "0 35 0"
+}
+
 // first bridge (Elderfen)
 {
 classname "set_prop"
