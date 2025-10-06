@@ -5302,7 +5302,7 @@
 // entity 134
 {
 "classname" "set_dlight"
-"origin" "-200 -744 104"
+"origin" "-200 -760 120"
 "style" "1"
 "color" "1 0.33333334 0"
 "light_lev" "125"
@@ -5318,7 +5318,7 @@
 // entity 136
 {
 "classname" "set_dlight"
-"origin" "-200 -536 104"
+"origin" "-200 -520 120"
 "style" "1"
 "color" "1 0.33333334 0"
 "light_lev" "125"
