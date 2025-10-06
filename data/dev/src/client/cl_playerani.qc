@@ -9,7 +9,7 @@ void() Player_Animate =
 	float speed = 1; // default base speed
 	float duration = frameduration(self.modelindex, self.frame);
 
-	if (self.health <= 0) // Death
+	if (self.health <= 0) // death
 	{
 		if (self.frame != $death)
 		{
@@ -24,9 +24,9 @@ void() Player_Animate =
 				self.frame1time += frametime;
 		}
 	}
-	else // Alive
+	else // alive
 	{
-		if (self.climbing) // Climbing
+		if (self.climbing) // climbing
 		{
 			float skill_climb = getstatf(STAT_SKILL_CLIMB);
 			speed += (skill_climb * 0.005);
@@ -34,9 +34,9 @@ void() Player_Animate =
 		}
 		else
 		{
-			if (!self.velocity_x && !self.velocity_y) // Idle
+			if (!self.velocity_x && !self.velocity_y) // idle
 				self.frame = $stand;
-			else // Moving
+			else // moving
 				self.frame = $move;
 		}
 	}

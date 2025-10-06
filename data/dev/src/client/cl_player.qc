@@ -4,7 +4,6 @@ void() Coords_Draw;
 void() Player_Animate;
 void() Draw_NameTag;
 
-
 .entity lantern_vfx;
 
 //
@@ -45,6 +44,7 @@ void() Skeleton_ObjectDraw =
 
 			if (camera_mode)
 				pointparticles(PART_LANTERN, org, ang);
+
 			dynamiclight_add(org, 800, [1,1,1], 1, "", PFLAGS_CORONA);
 		}
 	}
@@ -258,23 +258,21 @@ void() Player_Hud =
 
 float(void) Player_PreDraw =
 {
-	Player_Animate();
-	Skeleton_ObjectDraw();
     if (self.entnum == player_localentnum)
 	{
-
+		Player_Animate();
 		self.movetype = MOVETYPE_WALK;
-		
-		// Prepare rollback
+
+		// prepare rollback
 		vector vOldOrigin = self.origin;
 		vector vOldVelocity = self.velocity;
 		float fOldPMoveFlags = self.pmove_flags;
 
-		// Apply physics for every single input-frame that has not yet been
+		// apply physics for every single input-frame that has not yet been
 		// acknowledged by the server (servercommandframe = last acknowledged frame)
 		for (int i = servercommandframe + 1; i <= clientcommandframe; i++)
 		{
-		   float flSuccess = getinputstate(i);
+			float flSuccess = getinputstate(i);
 
 			if (flSuccess == FALSE)
 				continue;
@@ -284,8 +282,11 @@ float(void) Player_PreDraw =
 
 			runstandardplayerphysics(self);
 		}
-				
-		vPlayerOriginOld = vPlayerOrigin; // Smooth stair stepping, this has to be done manually!
+
+		// draw objects on bones (armor, lantern, swords, etc)
+		Skeleton_ObjectDraw();
+
+		vPlayerOriginOld = vPlayerOrigin; // smooth stair stepping, this has to be done manually!
 
 		if ((self.flags & FL_ONGROUND) && (self.origin_z - vPlayerOriginOld_z > 0))
 		{
@@ -300,22 +301,24 @@ float(void) Player_PreDraw =
 		}
 		else
 			vPlayerOriginOld_z = self.origin_z;
-			
+
 		vPlayerOrigin = [self.origin_x, self.origin_y, vPlayerOriginOld_z];
 		vPlayerVelocity = self.velocity;
 		addentity(self);
 
-		// Time to roll back
+		// time to roll back
 		self.origin = vOldOrigin;
 		setorigin(self, self.origin);
 		self.velocity = vOldVelocity;
 		self.pmove_flags = fOldPMoveFlags;
 		self.movetype = MOVETYPE_NONE;
 
-		self.renderflags = RF_EXTERNALMODEL; // Set renderflag for mirrors!
-    }
+		self.renderflags = RF_EXTERNALMODEL; // set renderflag for mirrors!
+	}
 	else // other players
 	{
+		Player_Animate();
+		Skeleton_ObjectDraw();
         addentity(self);
 	}
 
