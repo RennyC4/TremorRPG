@@ -120,7 +120,7 @@ void() misc_walltorch1 =
 void() misc_walltorch2_think =
 {
 	makevectors(self.angles);
-	pointparticles(PART_WTORCH2, self.origin + v_forward * 4 + v_up * 36);
+	pointparticles(PART_WTORCH2, self.origin + v_forward * 2 + v_up * 38);
 	self.nextthink = time + 0.1;
 };
 
