@@ -6,6 +6,7 @@ void() Draw_NameTag;
 
 .entity lantern_vfx;
 .entity weapon_vfx;
+.entity offhand_vfx;
 
 //
 // Player skeleton attach objects
@@ -35,7 +36,7 @@ void() Skeleton_ObjectDraw =
 		{
 			vector org = gettaginfo(self, gettagindex(self, "mixamorig:RightUpLeg"));
 			vector offset = '16 -18 0';  // offset relative to the bone
-			
+
 			// local offset into world space
 			org += v_forward * offset_x;
 			org += v_right   * offset_y;
@@ -70,6 +71,7 @@ void() Skeleton_ObjectDraw =
 		}
 		else
 		{
+
 			//
 			// Models to draw
 			//
@@ -84,6 +86,10 @@ void() Skeleton_ObjectDraw =
 			if (currentweapon == "Rusty Dagger")
 				setmodel(self.weapon_vfx, "models/dagger0.glb");
 
+			//
+			//
+			//
+
 			vector org = gettaginfo(self, gettagindex(self, "mixamorig:RightHandIndex2"));
 			vector offset = '0 0 0';  // offset relative to the bone
 
@@ -95,8 +101,8 @@ void() Skeleton_ObjectDraw =
 
 			// fix angles
 			vector ang = vectoangles(v_forward, v_up);
-			ang_z += -1 * ang_z; // flip
 			ang_x += 90;
+			ang_z += -1 * ang_z; // flip
 			self.weapon_vfx.angles = ang;
 		}
 	}
@@ -106,6 +112,52 @@ void() Skeleton_ObjectDraw =
 		self.weapon_vfx = world;
 	}
 
+	// draw offhand
+	string currentoffhand = getstats(STAT_OFFHAND);
+	if (currentoffhand != "" && currentoffhand != "Empty")
+	{
+		if (!self.offhand_vfx)
+		{
+			self.offhand_vfx = spawn();
+			self.offhand_vfx.drawmask = MASK_VIEWMODEL; // don't show in first person
+		}
+		else
+		{
+			//
+			// Models to draw
+			//
+			
+			// Shields
+			if (currentoffhand == "Broken Buckler")
+				setmodel(self.offhand_vfx, "models/shield0.glb");
+			if (currentoffhand == "Flimsy Buckler")
+				setmodel(self.offhand_vfx, "models/shield1.glb");
+
+			//
+			//
+			//
+
+			vector org = gettaginfo(self, gettagindex(self, "mixamorig:LeftHandIndex2"));
+			vector offset = '0 0 0';  // offset relative to the bone
+
+			// local offset into world space
+			org += v_forward * offset_x;
+			org += v_right   * offset_y;
+			org += v_up      * offset_z;
+			self.offhand_vfx.origin = org;
+
+			// fix angles
+			vector ang = vectoangles(v_forward, v_up);
+			ang_x += 180;
+			ang_y += 90;
+			self.offhand_vfx.angles = ang;
+		}
+	}
+	else if (self.offhand_vfx)
+	{
+		remove(self.offhand_vfx);
+		self.offhand_vfx = world;
+	}
 };
 
 //
