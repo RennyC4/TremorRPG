@@ -29,7 +29,9 @@ void() Skeleton_ObjectDraw =
 		if (!self.lantern_vfx)
 		{
 			self.lantern_vfx = spawn();
-			self.lantern_vfx.drawmask = MASK_LANTERN; // don't show in first person
+			self.lantern_vfx.owner = self;
+			self.lantern_vfx.drawmask = MASK_VIEWMODEL;
+
 			setmodel(self.lantern_vfx, "models/lantern.glb");
 		}
 		else

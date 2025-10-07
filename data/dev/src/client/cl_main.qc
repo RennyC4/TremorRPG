@@ -83,10 +83,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
-	if (camera_mode || player_idle || health <= 0)
-		addentities(MASK_VIEWMODEL | MASK_ENGINE | MASK_LANTERN);
-	else
-		addentities(MASK_VIEWMODEL | MASK_ENGINE);
+	addentities(MASK_VIEWMODEL | MASK_ENGINE);
 
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);
