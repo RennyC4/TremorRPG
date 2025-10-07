@@ -70,11 +70,19 @@ void() Skeleton_ObjectDraw =
 		}
 		else
 		{
-			// Model to draw
+			//
+			// Models to draw
+			//
+			
+			// Swords
 			if (currentweapon == "Broken Sword")
 				setmodel(self.weapon_vfx, "models/sword0.glb");
 			if (currentweapon == "Short Sword")
 				setmodel(self.weapon_vfx, "models/sword1.glb");
+
+			// Daggers
+			if (currentweapon == "Rusty Dagger")
+				setmodel(self.weapon_vfx, "models/dagger0.glb");
 
 			vector org = gettaginfo(self, gettagindex(self, "mixamorig:RightHandIndex2"));
 			vector offset = '0 0 0';  // offset relative to the bone
