@@ -2320,3 +2320,5 @@ string tt_contents;
 .float pvp;
 float modelindex_player_m, modelindex_player_f;
 .float last_update;
+.string main_hand; // string for main hand
+.string off_hand; // string for off hand

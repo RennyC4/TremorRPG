@@ -61,8 +61,7 @@ void() Skeleton_ObjectDraw =
 	}
 
 	// draw weapon
-	string currentweapon = getstats(STAT_MAINHAND);
-	if (currentweapon != "" && currentweapon != "Unarmed")
+	if (self.main_hand != "" && self.main_hand != "Unarmed")
 	{
 		if (!self.weapon_vfx)
 		{
@@ -77,13 +76,13 @@ void() Skeleton_ObjectDraw =
 			//
 			
 			// Swords
-			if (currentweapon == "Broken Sword")
+			if (self.main_hand == "Broken Sword")
 				setmodel(self.weapon_vfx, "models/sword0.glb");
-			if (currentweapon == "Short Sword")
+			if (self.main_hand == "Short Sword")
 				setmodel(self.weapon_vfx, "models/sword1.glb");
 
 			// Daggers
-			if (currentweapon == "Rusty Dagger")
+			if (self.main_hand == "Rusty Dagger")
 				setmodel(self.weapon_vfx, "models/dagger0.glb");
 
 			//
@@ -113,8 +112,7 @@ void() Skeleton_ObjectDraw =
 	}
 
 	// draw offhand
-	string currentoffhand = getstats(STAT_OFFHAND);
-	if (currentoffhand != "" && currentoffhand != "Empty")
+	if (self.off_hand != "" && self.off_hand != "Empty")
 	{
 		if (!self.offhand_vfx)
 		{
@@ -128,9 +126,9 @@ void() Skeleton_ObjectDraw =
 			//
 			
 			// Shields
-			if (currentoffhand == "Broken Buckler")
+			if (self.off_hand == "Broken Buckler")
 				setmodel(self.offhand_vfx, "models/shield0.glb");
-			if (currentoffhand == "Flimsy Buckler")
+			if (self.off_hand == "Flimsy Buckler")
 				setmodel(self.offhand_vfx, "models/shield1.glb");
 
 			//
@@ -500,6 +498,10 @@ void(float flIsNew) CSQC_Ent_Update =
 
 		self.pvp = readbyte();
 		self.loggedin = readbyte();
+
+		self.main_hand = readstring();
+		self.off_hand = readstring();
+
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);

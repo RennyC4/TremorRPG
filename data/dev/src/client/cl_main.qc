@@ -11,6 +11,10 @@ void() CSQC_Ent_Remove =
 		skel_delete(self.skeletonindex);
 	if (self.lantern_vfx)
 		remove(self.lantern_vfx);
+	if (self.weapon_vfx)
+		remove(self.weapon_vfx);
+	if (self.offhand_vfx)
+		remove(self.offhand_vfx);
 	//
 	remove(self);
 };

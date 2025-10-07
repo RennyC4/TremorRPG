@@ -1157,6 +1157,10 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteByte(MSG_ENTITY, self.pvp);
 	WriteByte(MSG_ENTITY, self.loggedin); //
 
+	WriteString(MSG_ENTITY, self.main_hand);
+	WriteString(MSG_ENTITY, self.off_hand);
+
+
 	return TRUE;
 };
 
