@@ -54,6 +54,7 @@ void() WipeParms =
 	parm22 = 0;
 	parm23 = 0;
 	parm24 = 0;
+	parm25 = 0;
 };
 
 void() SetChangeParms =
@@ -91,6 +92,7 @@ void() SetChangeParms =
 	parm22 = self.skill_mining;
 	parm23 = self.skill_fishing;
 	parm24 = self.skill_woodcutting;
+	parm25 = self.lantern;
 };
 
 void() SetCheckParms =
@@ -119,6 +121,7 @@ void() SetCheckParms =
 	self.skill_mining = parm22;
 	self.skill_fishing = parm23;
 	self.skill_woodcutting = parm24;
+	self.lantern = parm25;
 };
 
 void() SetCheckStringParms = // read updated client string parms
@@ -1255,6 +1258,9 @@ void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s =
 	self.zonename = ""; // clear after load
 	PlayerSpawn(2);
 	SetCheckParms(); // grab and restore parms AFTER character is resumed
+
+	if (parm25)
+		self.effects |= EF_BRIGHTLIGHT;
 };
 
 void(entity targ, float type) CSEv_Player_SaveChar =
