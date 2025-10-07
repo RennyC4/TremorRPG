@@ -49,7 +49,7 @@ void() Skeleton_ObjectDraw =
 			self.lantern_vfx.angles = ang;
 
 			if (camera_mode)
-				pointparticles(PART_LANTERN, org, self.angles);
+				pointparticles(PART_LANTERN, org, [0, 0, 0]);
 
 			dynamiclight_add(org, 800, [1,1,1], 1, "", PFLAGS_CORONA);
 		}
