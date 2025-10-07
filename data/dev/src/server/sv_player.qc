@@ -722,7 +722,7 @@ void(float speed) Player_PushForward =
 // Ran before physics
 void() PlayerPreThink =
 {	
-	if (self.button0 && self.menu == MENU_OFF)
+	if (self.button0 && self.menu == MENU_OFF && !self.bonfire)
 	{
 		if (self.deadflag == DEAD_DEAD)
 		{

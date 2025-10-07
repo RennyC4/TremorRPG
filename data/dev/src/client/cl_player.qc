@@ -29,7 +29,7 @@ void() Skeleton_ObjectDraw =
 		if (!self.lantern_vfx)
 		{
 			self.lantern_vfx = spawn();
-			self.lantern_vfx.drawmask = MASK_VIEWMODEL; // don't show in first person
+			self.lantern_vfx.drawmask = MASK_LANTERN; // don't show in first person
 			setmodel(self.lantern_vfx, "models/lantern.glb");
 		}
 		else
@@ -67,7 +67,7 @@ void() Skeleton_ObjectDraw =
 		if (!self.weapon_vfx)
 		{
 			self.weapon_vfx = spawn();
-			self.weapon_vfx.drawmask = MASK_VIEWMODEL; // don't show in first person
+			self.weapon_vfx.drawmask = MASK_VIEWMODEL;
 		}
 		else
 		{
@@ -119,7 +119,7 @@ void() Skeleton_ObjectDraw =
 		if (!self.offhand_vfx)
 		{
 			self.offhand_vfx = spawn();
-			self.offhand_vfx.drawmask = MASK_VIEWMODEL; // don't show in first person
+			self.offhand_vfx.drawmask = MASK_VIEWMODEL;
 		}
 		else
 		{

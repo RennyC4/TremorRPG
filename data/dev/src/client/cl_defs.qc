@@ -2166,6 +2166,7 @@ accessor filestream : float
 // Enums
 #define ENT_PLAYER 1
 //
+const float MASK_LANTERN = 4;
 
 string sparm1, sparm2, sparm3, sparm4;
 
