@@ -71,7 +71,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	clearscene(); // clear and update our global screen resolution vars
 
-	//disable quake status bar
+	// disable quake status bar
 	setproperty(VF_DRAWENGINESBAR, 0);
 
 	if (!lockon && !player_idle && health > 0)
@@ -79,7 +79,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
-	if (camera_mode)
+	if (camera_mode || player_idle || health <= 0)
 		addentities(MASK_VIEWMODEL | MASK_ENGINE);
 	else 
 		addentities(MASK_ENGINE); // first person, don't render viewmodel mask

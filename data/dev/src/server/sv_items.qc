@@ -190,7 +190,10 @@ void(float id, string itemname) Player_UseItem =
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
 	}
 	else if (id == 3) // Magic spell to add to magic screen
+	{
 		LearnSpell(itemname);
+		RemoveFromInventory(self, itemname, 1);
+	}
 	else
 		print("Player_UseItem: Item use ID not found\n");
 };

@@ -5,6 +5,7 @@ void() Player_Animate;
 void() Draw_NameTag;
 
 .entity lantern_vfx;
+.entity weapon_vfx;
 
 //
 // Player skeleton attach objects
@@ -12,11 +13,15 @@ void() Draw_NameTag;
 
 void() Skeleton_ObjectDraw =
 {
+	if (!self.loggedin)
+		return;
+
 	if (!self.skeletonindex)
 		self.skeletonindex = skel_create(self.modelindex);
 	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
 
-	if (self.effects == EF_BRIGHTLIGHT) // lantern
+	// draw lantern
+	if (self.effects == EF_BRIGHTLIGHT)
 	{
 		var float PART_LANTERN = particleeffectnum("lantern");;
 		
@@ -53,6 +58,46 @@ void() Skeleton_ObjectDraw =
 		remove(self.lantern_vfx);
 		self.lantern_vfx = world;
 	}
+
+	// draw weapon
+	string currentweapon = getstats(STAT_MAINHAND);
+	if (currentweapon != "" && currentweapon != "Unarmed")
+	{
+		if (!self.weapon_vfx)
+		{
+			self.weapon_vfx = spawn();
+			self.weapon_vfx.drawmask = MASK_VIEWMODEL; // don't show in first person
+		}
+		else
+		{
+			// Model to draw
+			if (currentweapon == "Broken Sword")
+				setmodel(self.weapon_vfx, "models/sword0.glb");
+			if (currentweapon == "Short Sword")
+				setmodel(self.weapon_vfx, "models/sword1.glb");
+
+			vector org = gettaginfo(self, gettagindex(self, "mixamorig:RightHandIndex2"));
+			vector offset = '0 0 0';  // offset relative to the bone
+
+			// local offset into world space
+			org += v_forward * offset_x;
+			org += v_right   * offset_y;
+			org += v_up      * offset_z;
+			self.weapon_vfx.origin = org;
+
+			// fix angles
+			vector ang = vectoangles(v_forward, v_up);
+			ang_z += -1 * ang_z; // flip
+			ang_x += 90;
+			self.weapon_vfx.angles = ang;
+		}
+	}
+	else if (self.weapon_vfx)
+	{
+		remove(self.weapon_vfx);
+		self.weapon_vfx = world;
+	}
+
 };
 
 //
