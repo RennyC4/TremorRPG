@@ -91,7 +91,7 @@ void() Skeleton_ObjectDraw =
 			//
 			//
 
-			vector org = gettaginfo(self, gettagindex(self, "mixamorig:RightHandIndex2"));
+			vector org = gettaginfo(self, gettagindex(self, "mixamorig:RightHand"));
 			vector offset = '0 0 0';  // offset relative to the bone
 
 			// local offset into world space
@@ -102,8 +102,8 @@ void() Skeleton_ObjectDraw =
 
 			// fix angles
 			vector ang = vectoangles(v_forward, v_up);
-			ang_x += 90;
-			ang_z += -1 * ang_z; // flip
+			//ang_x += 90;
+			//ang_z += -1 * ang_z; // flip
 			self.weapon_vfx.angles = ang;
 		}
 	}
@@ -137,7 +137,7 @@ void() Skeleton_ObjectDraw =
 			//
 			//
 
-			vector org = gettaginfo(self, gettagindex(self, "mixamorig:LeftHandIndex3"));
+			vector org = gettaginfo(self, gettagindex(self, "mixamorig:LeftHand"));
 			vector offset = '0 0 0';  // offset relative to the bone
 
 			// local offset into world space
@@ -148,9 +148,6 @@ void() Skeleton_ObjectDraw =
 
 			// fix angles
 			vector ang = vectoangles(v_forward, v_up);
-			//ang_x += 180;
-			//ang_y += 45;
-			//ang_z += 90;
 			self.offhand_vfx.angles = ang;
 		}
 	}
