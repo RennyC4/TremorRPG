@@ -2,8 +2,6 @@
 // Player animations
 //
 
-$frame climb death stand jump move slash
-
 void() Player_Animate =
 {
 	float speed = 1; // default base speed
@@ -14,7 +12,7 @@ void() Player_Animate =
 		if (self.frame != $death)
 		{
 			self.frame1time = 0; // reset timestamp
-			self.frame = $death;
+			self.frame = frameforname(self.modelindex, "Death");
 		}
 		else
 		{
@@ -30,14 +28,14 @@ void() Player_Animate =
 		{
 			float skill_climb = getstatf(STAT_SKILL_CLIMB);
 			speed += (skill_climb * 0.005);
-			self.frame = $climb;
+			self.frame = frameforname(self.modelindex, "Climb");
 		}
 		else
 		{
 			if (!self.velocity_x && !self.velocity_y) // idle
-				self.frame = $stand;
+				self.frame = frameforname(self.modelindex, "Idle");
 			else // moving
-				self.frame = $move;
+				self.frame = frameforname(self.modelindex, "Run");
 		}
 	}
 
