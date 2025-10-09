@@ -976,9 +976,6 @@ void() PlayerDeath =
 {
 	self.respawn_finished = time + 5;
 
-	self.lock_on = 0;
-	self.lock_target = world;
-
 	float g = ceil(self.gold * 0.25);
 	if (self.gold > 1)
 		self.gold -= g; // drop some gold

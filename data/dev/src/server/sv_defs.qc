@@ -1969,7 +1969,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define STAT_BLOCKVALUE 84
 #define STAT_LOCKVIEW 85
 #define STAT_SPELLEQUIPPED 86
-#define STAT_LOCKEDON 87
+//#define STAT_LOCKEDON 87
 #define STAT_VENDOR 88 // Could be done with CGAMEPACKET instead
 #define STAT_SPELLMIN 89
 #define STAT_SPELLMAX 90
@@ -2021,8 +2021,3 @@ const float TIME_DAWN = 0;
 const float TIME_DAY = 1;
 const float TIME_DUSK = 2;
 const float TIME_NIGHT = 3;
-
-// Lock-on targetting
-.entity lock_target;	// current locked entity (monster/player)
-.float  lock_on; 	// 0/1 toggle
-.float  lock_next;	// debounce for toggles/switches (time)
