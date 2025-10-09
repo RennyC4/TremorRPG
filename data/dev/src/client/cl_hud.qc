@@ -2,7 +2,33 @@
 // Player HUD
 //
 
-$frame climb death stand jump move slash
+void() Draw_NameTag_Test =
+{
+	entity targ = find(world, classname, "monster");
+	for (entity b = world;(b = find(b, classname, "monster"));)
+	{
+		if (vlen(b.origin - vPlayerOrigin) <= 1250)
+		{
+			makevectors(b.angles);
+			vector nametag_org = project(b.origin + v_up * 60 - v_right * 6);
+
+			if (nametag_org_z > 0)
+			{
+				if (b.pvp != 1)
+				{
+					drawstring (nametag_org+[1,1], b.displayname, [10, 10], '0 0 0', 1, 0); // shadow
+					drawstring (nametag_org, b.displayname, [10, 10], '.5 .5 1', 1, 0);
+				}
+				else
+				{
+					drawstring (nametag_org+[1,1], b.displayname, [10, 10], '0 0 0', 1, 0); // shadow
+					drawstring (nametag_org, b.displayname, [10, 10], '1 .25 .25', 1, 0);
+				}
+			}
+		}
+	}
+};
+
 
 void() Draw_NameTag =
 {
@@ -32,7 +58,9 @@ void() Draw_NameTag =
 			}
 		}
 	}
+	Draw_NameTag_Test();
 };
+
 
 void() Draw_ToolTip =
 {

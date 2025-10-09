@@ -66,7 +66,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	vector virtsize = [width, height];
 	float pause = serverkeyfloat(SERVERKEY_PAUSESTATE);
-	float lockon = getstatf(STAT_LOCKEDON);
 	float health = getstatf(STAT_HEALTH);
 
 	g_width = width;
@@ -78,7 +77,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	// disable quake status bar
 	setproperty(VF_DRAWENGINESBAR, 0);
 
-	if (!lockon && !player_idle && health > 0)
+	if (!player_idle && health > 0)
 		setproperty(VF_DRAWCROSSHAIR, 1);
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
@@ -87,9 +86,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);
-
-	if (lockon)
-		FaceTarget();
 
 	if (health > 0)
 	{
@@ -163,6 +159,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 float(string strCommand) CSQC_ConsoleCommand =
 {
 	tokenize(strCommand);
+
 	if (argv(0) == "cast")
 		sendevent("DoAttack_Magic", "");
 	if (argv(0) == "show_character")
@@ -244,7 +241,7 @@ const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
-const float CSQC_LOCKON_INFO = 5;
+//const float CSQC_LOCKON_INFO = 5;
 const float CSQC_MAGIC = 6;
 const float CSQC_LASTLOGIN = 7;
 const float CSQC_WRITESPARM = 8;
@@ -285,18 +282,13 @@ void() CSQC_Parse_Event =
 	// time of day for day / night effects
 	if (event == CSQC_TIMEOFDAY)
 		timeofday = readbyte();
-	// lock on
+
+	/*
 	if (event == CSQC_LOCKON_INFO)
 	{
-		LOCKON_NAME = readstring();
-		LOCKON_LEVEL = readshort();
-		LOCKON_HEALTH = readshort();
-		LOCKON_MAXHEALTH = readshort();
-
-		LOCKON_COORD_X = readcoord();
-		LOCKON_COORD_Y = readcoord();
-		LOCKON_COORD_Z = readcoord();
 	}
+	*/
+
 	// magic update
 	if (event == CSQC_MAGIC)
 	{

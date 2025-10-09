@@ -26,7 +26,7 @@ void() Skeleton_ObjectDraw =
 	// draw lantern
 	if (self.effects == EF_BRIGHTLIGHT)
 	{
-		var float PART_LANTERN = particleeffectnum("lantern");;
+		var float PART_LANTERN = particleeffectnum("lantern");
 		
 		if (!self.lantern_vfx)
 		{
@@ -345,7 +345,6 @@ void() Player_Hud =
 			Draw_Stamina();
 			Draw_Exp();
 			Draw_InCombatorPVP();
-			Draw_LockOnInfo();
 			if (autocvar_minimap != "off" && autocvar_minimap != "")
 			{
 				if (substring(world.model, -3, 3) == "hmp") // mini-map only on over world
@@ -442,6 +441,8 @@ void() Player_Think =
 {
 	float player_menu = getstatf(STAT_MENU);
 	float health = getstatf(STAT_HEALTH);
+
+/*
 	if (!player_menu)
 	{
 		// Get attack speed, tie it to animation speed
@@ -464,6 +465,11 @@ void() Player_Think =
 		else
 			self.jump_released = TRUE;
 	}
-	if (health > 0 && deathcam_dist != 45)
-		deathcam_dist = 45; // initial z start org for death camera
+*/
+
+	if (health > 0)
+	{
+		if (deathcam_dist != 45)
+			deathcam_dist = 45; // initial z start org for death camera
+	}
 };

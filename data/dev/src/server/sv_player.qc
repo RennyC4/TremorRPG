@@ -828,8 +828,8 @@ void() PlayerPreThink =
 	if (self.menu == MENU_MAGIC)
 		SendMagicSpells(self); // send magic spells to CSQC
 
-	LockOn_HandleInput();
-	LockOn_Update();
+//	LockOn_HandleInput();
+//	LockOn_Update();
 	CheckImpulses();
 };
 

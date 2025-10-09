@@ -3,7 +3,6 @@
 //
 
 void(entity targ, entity attacker, float damage, float silent) DoDamage;
-vector() AttackDir;
 
 // Camera shake
 void(entity e, float howmuch) DoCamera_Shake =
@@ -78,7 +77,7 @@ void() DoAttack_ShieldBash =
 
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
-	traceline (source, source + AttackDir() * 48, MOVE_TRIGGERS, self);
+	traceline (source, source + v_forward * 48, MOVE_TRIGGERS, self);
 
 	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
 	{
@@ -159,7 +158,7 @@ void() DoAttack_Melee =
 
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
-	traceline (source, source + AttackDir() * self.attack_length, MOVE_TRIGGERS, self);
+	traceline (source, source + v_forward * self.attack_length, MOVE_TRIGGERS, self);
 	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 
 	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)

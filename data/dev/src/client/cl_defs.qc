@@ -2199,14 +2199,6 @@ float deathcam_dist;
 float thirdcam_dist;
 float thirdcam_distz;
 
-string LOCKON_NAME;
-float LOCKON_LEVEL;
-float LOCKON_HEALTH;
-float LOCKON_MAXHEALTH;
-float LOCKON_COORD_X;
-float LOCKON_COORD_Y;
-float LOCKON_COORD_Z;
-
 float MENU;
 const float MENU_OFF = 0;
 const float MENU_LOGIN = 1;
