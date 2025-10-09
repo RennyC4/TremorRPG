@@ -1470,6 +1470,8 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 
 		if (line = fgets(v))
 			self.health = stof(line);
+		if (self.health < 0)
+			self.health = 1;
 		if (line = fgets(v))
 			self.max_health = stof(line);
 		if (line = fgets(v))

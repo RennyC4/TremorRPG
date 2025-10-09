@@ -2,13 +2,11 @@
 // Player-type monster and enemy AI functions are handled here
 //
 
-// Animation for monsters based on player models
-$frame climb death stand jump move slash
-
 const float AI_IDLE = 0;
 const float AI_CHASE = 1;
 const float AI_ATTACK = 2;
 const float AI_RUNBACK = 3;
+const float AI_PATROL = 4;
 
 .float ai_mode;
 .float ai_patrolidle;
@@ -28,12 +26,12 @@ float	RANGE_NEAR				= 2;
 float	RANGE_MID				= 3;
 float	RANGE_FAR				= 4;
 
-void() monster_attack = [$slash, monster_attack]
+void() monster_attack =
 {
+	self.SendFlags = 1;
 	if (self.anim_count > 0.6)
 	{
 		self.anim_count = 0;
-		self.frame = $stand;
 		self.think = monster_ai_think;
 		self.nextthink = time + 0.1;
 		return;
@@ -43,25 +41,31 @@ void() monster_attack = [$slash, monster_attack]
 		DoAttack_Melee();
 
 	self.anim_count += 0.1;
+
+	self.think = monster_attack;
 	self.nextthink = time + 0.1;
 };
 
-void() monster_death2 = [$slash, monster_death2]
+void() monster_death2 =
 {
+//	self.SendFlags = 1;
 	if (self.anim_count > 0)
 	{
 		self.anim_count = 0;
-		self.frame = $death;
 		self.think = monster_respawn;
 		self.nextthink = time + self.respawn_finished;
 		return;
 	}
 
 	self.anim_count += 0.1;
+
+	self.think = monster_death2;
+	self.nextthink = time + 0.1;
 };
 
 void() monster_death =
 {
+	self.SendFlags = 1;
 	self.goalentity = self.enemy = world; // reset targets
 	self.velocity = '0 0 0'; // slide fix
 	self.solid = SOLID_NOT;
@@ -185,10 +189,7 @@ void() monster_ai_move =
 	if (self.enemy)
 	{
 		if (self.ai_backup_finished > time)
-		{
 			walkmove(self.angles_y, self.speed * -1); // keep monster slightly back from target
-			self.frame = $move;
-		}
 
 		if (range(self.enemy) == RANGE_CLOSE)
 			self.ai_backup_finished = time + random_range(0.7, 2.5); // too close, back up a bit
@@ -227,7 +228,7 @@ void() monster_ai_think =
 	//string l = ftos(self.ai_mode);
 	//print(l, "\n");
 
-	if (self.ai_mode == AI_IDLE)
+	if (self.ai_mode == AI_IDLE || self.ai_mode == AI_PATROL)
 	{
 		if (self.health != self.max_health) // monsters have full health in patrol mode
 			self.health = self.max_health;
@@ -242,7 +243,7 @@ void() monster_ai_think =
 			if (random() < 0.35)
 				self.ai_standstill = time + 1 + random()*8;
 			TurnToTarget(self.turn_speed);
-			self.frame = $stand;
+			self.ai_mode = AI_IDLE;
 		}
 		else
 		{
@@ -250,7 +251,7 @@ void() monster_ai_think =
 			{
 				if (!walkmove(self.angles_y, self.speed / 4)) // failed, changed direction
 					self.idealangles_y = random() * 360;
-				self.frame = $move;
+				self.ai_mode = AI_PATROL;
 			}
 		}
 
@@ -263,7 +264,6 @@ void() monster_ai_think =
 					sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
 				self.goalentity = self.enemy = targ;
 				self.ai_mode = AI_CHASE;
-				self.frame = $move;
 				targ.incombat = TRUE; // flag player for combat
 				targ.incombat_finished = time + 15;
 				string eventlog_print = (strcat("^1You engage in combat!\n"));
@@ -321,7 +321,6 @@ void() monster_ai_think =
 			self.movetype = MOVETYPE_NOCLIP; // cheating but eh
 			if (self.health != self.max_health)
 				self.health = self.max_health; // restore health on trip back
-			self.frame = $move;
 		}
 		else
 		{
@@ -330,7 +329,6 @@ void() monster_ai_think =
 			self.goalentity = world;
 			self.movetype = MOVETYPE_STEP;
 			self.ai_mode = AI_IDLE;
-			self.frame = $stand;
 
 			// remove ghost effect
 			self.alpha = 1;
@@ -360,21 +358,15 @@ void() monster_ai_think =
 					self.enemy.incombat = TRUE; // turn on during an attack incase another monster somehow flags it off
 					self.enemy.incombat_finished = time + 15;
 				}
-				self.frame = $stand;
 				self.ai_mode = AI_ATTACK;
 				self.think = monster_ai_melee;
 				self.nextthink = time + 0.1;
 			}
 			else
-			{
-				self.frame = $move;
 				self.ai_mode = AI_CHASE;
-			}
 		}
 		monster_ai_move();
 	}
-	else
-		self.ai_mode = AI_IDLE;
 
 	// enemy dead / used a bonfire
 	if (self.enemy && self.enemy.health <= 0 || self.enemy.bonfire == TRUE)
@@ -382,7 +374,6 @@ void() monster_ai_think =
 		self.oldenemy = self.enemy; // stash last killed or lost to bonfire
 		self.enemy = self.goalentity = world;
 		self.ai_mode = AI_IDLE;
-		self.frame = $stand;
 	}
 
 	// Debugging

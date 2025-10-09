@@ -2324,3 +2324,4 @@ float modelindex_player_m, modelindex_player_f;
 .string off_hand; // string for off hand
 .float max_health;
 .string displayname;
+.float ai_mode;

@@ -11,6 +11,7 @@ client/cl_login.qc
 client/cl_npc.qc
 client/cl_player.qc
 client/cl_playerani.qc
+client/cl_enemy.qc
 client/cl_camera.qc
 client/cl_main.qc
 client/cl_scoreboard.qc

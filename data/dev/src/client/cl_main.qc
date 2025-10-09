@@ -315,4 +315,81 @@ void() CSQC_Parse_Event =
 		sParms_Wipe();
 };
 
+void(float flIsNew) CSQC_Ent_Update =
+{
+	float flEntType = readbyte();
+	
+	if (flEntType == ENT_PLAYER)
+	{
+		if (flIsNew == TRUE)
+		{
+			self.classname = "player";
+			self.solid = SOLID_TRIGGER;
+			self.predraw = Player_PreDraw;
+			self.drawmask = MASK_ENGINE;
+		}
+
+		self.origin_x = readcoord();
+		self.origin_y = readcoord();
+		self.origin_z = readcoord();
+		self.angles_x = readcoord();
+		self.angles_y = readcoord();
+		self.angles_z = readcoord();
+		self.velocity_x = readshort();
+		self.velocity_y = readshort();
+		self.velocity_z = readshort();
+		self.flags = readfloat();
+		self.effects = readfloat();
+		self.modelindex = readshort();
+		self.netname = readstring();
+		self.climbing = readshort();
+		self.health = readshort();
+
+		self.colormod_x = readcoord();
+		self.colormod_y = readcoord();
+		self.colormod_z = readcoord();
+
+		self.pvp = readbyte();
+		self.loggedin = readbyte();
+
+		self.main_hand = readstring();
+		self.off_hand = readstring();
+
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
+		setorigin(self, self.origin);
+
+		self.think = Player_Think;
+		self.nextthink = cltime;
+	}
+
+	if (flEntType == ENT_MONSTER)
+	{
+		if (flIsNew == TRUE)
+		{
+			self.classname = "monster";
+			self.solid = SOLID_SLIDEBOX;
+			self.predraw = Monster_PreDraw;
+			self.drawmask = MASK_ENGINE;
+		}
+
+		self.origin_x = readcoord();
+		self.origin_y = readcoord();
+		self.origin_z = readcoord();
+		self.angles_x = readcoord();
+		self.angles_y = readcoord();
+		self.angles_z = readcoord();
+		self.velocity_x = readshort();
+		self.velocity_y = readshort();
+		self.velocity_z = readshort();
+		self.flags = readfloat();
+		self.effects = readfloat();
+		self.alpha = readbyte();
+		self.modelindex = readshort();
+		self.health = readshort();
+		self.max_health = readshort();
+		self.displayname = readstring();
+		self.ai_mode = readbyte();
+	}
+};
+
 noref void CSQC_Shutdown() = {};

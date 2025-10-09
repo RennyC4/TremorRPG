@@ -2,6 +2,8 @@
 // Player animations
 //
 
+.float ani_death;
+
 void() Player_Animate =
 {
 	float speed = 1; // default base speed
@@ -9,10 +11,11 @@ void() Player_Animate =
 
 	if (self.health <= 0) // death
 	{
-		if (self.frame != $death)
+		if (!self.ani_death)
 		{
 			self.frame1time = 0; // reset timestamp
 			self.frame = frameforname(self.modelindex, "Death");
+			self.ani_death = TRUE;
 		}
 		else
 		{
@@ -24,6 +27,8 @@ void() Player_Animate =
 	}
 	else // alive
 	{
+		if (self.ani_death)
+			self.ani_death = FALSE;
 		if (self.climbing) // climbing
 		{
 			float skill_climb = getstatf(STAT_SKILL_CLIMB);
