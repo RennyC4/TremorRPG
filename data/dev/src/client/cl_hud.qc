@@ -375,7 +375,7 @@ void(vector pos) Draw_3DPDoll =
 {
 	string gender = getstats(STAT_GENDER);
 
-    if (!doll) // Call this one time so we're not spawning infinite head entities
+    if (!doll) // Call this one time so we're not spawning infinite entities
     {
  		doll = spawn();
 		
@@ -393,12 +393,14 @@ void(vector pos) Draw_3DPDoll =
         setorigin(doll, '0 0 0');
 		doll.angles_y -= 180;
 		doll.origin_z -= 35;
+		doll.frame = frameforname(self.modelindex, "Idle");
     }
-	doll.angles_y += 50 * frametime;
-	doll.frame = frameforname(self.modelindex, "Idle");
 
-	if (gender == "Female")	doll.frame1time += frametime * 0.5; // slower idle anim for female
-	else doll.frame1time += frametime;
+	doll.angles_y += 50 * frametime;
+	if (gender == "Female")
+		doll.frame1time += frametime / 2;
+	else
+		doll.frame1time += frametime;
 
 	entdraw(doll, pos, '150 250', -245);
 };

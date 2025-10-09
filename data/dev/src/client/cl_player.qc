@@ -39,7 +39,10 @@ void() Skeleton_ObjectDraw =
 		else
 		{
 			vector org = gettaginfo(self, gettagindex(self, "mixamorig:RightUpLeg"));
-			vector offset = '16 -18 0';  // offset relative to the bone
+			if (gender == "Male") // offset relative to the bone
+				vector offset = '24 -26 0';
+			else
+				offset = '16 -18 0';
 
 			// local offset into world space
 			org += v_forward * offset_x;
@@ -49,13 +52,13 @@ void() Skeleton_ObjectDraw =
 
 			// fix angles
 			vector ang = vectoangles(v_forward, v_up);
-			ang_z += -1 * ang_z; // flip
+			ang_z += (-1 * ang_z); // flip
 			self.lantern_vfx.angles = ang;
 
 			if (camera_mode)
 				pointparticles(PART_LANTERN, org, [0, 0, 0]);
 
-			dynamiclight_add(org, 800, [1,1,1], 1, "", PFLAGS_CORONA);
+			dynamiclight_add(org, 700, [1, .7, .7], 1, "", PFLAGS_CORONA);
 		}
 	}
 	else if (self.lantern_vfx)
