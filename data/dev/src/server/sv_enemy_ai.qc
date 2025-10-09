@@ -220,6 +220,7 @@ void() monster_ai_spawnrunback =
 // main monster ai execution function
 void() monster_ai_think =
 {
+	self.SendFlags = 1;
 	makevectors(self.angles);
 
 	// Debugging

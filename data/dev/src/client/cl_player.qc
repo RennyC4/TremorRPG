@@ -465,6 +465,7 @@ void() Player_Think =
 		deathcam_dist = 45; // initial z start org for death camera
 };
 
+// TODO: MOVE THIS TO A BETTER SPOT
 void(float flIsNew) CSQC_Ent_Update =
 {
 	float flEntType = readbyte();
@@ -511,5 +512,38 @@ void(float flIsNew) CSQC_Ent_Update =
 
 		self.think = Player_Think;
 		self.nextthink = cltime;
+	}
+
+	if (flEntType == ENT_MONSTER)
+	{
+		if (flIsNew == TRUE)
+		{
+			self.classname = "monster";
+			self.solid = SOLID_SLIDEBOX;
+			//self.predraw = Player_PreDraw;
+			self.drawmask = MASK_ENGINE;
+		}
+
+		self.origin_x = readcoord();
+		self.origin_y = readcoord();
+		self.origin_z = readcoord();
+		self.angles_x = readcoord();
+		self.angles_y = readcoord();
+		self.angles_z = readcoord();
+		self.velocity_x = readshort();
+		self.velocity_y = readshort();
+		self.velocity_z = readshort();
+		self.flags = readfloat();
+		self.effects = readfloat();
+		self.alpha = readbyte();
+		self.modelindex = readshort();
+		self.health = readshort();
+		self.max_health = readshort();
+		self.displayname = readstring();
+
+		setsize(self, [-16, -16, 0], [16, 16, 56]); // is this needed?
+		setorigin(self, self.origin); // same?
+		//self.think = Player_Think;
+		//self.nextthink = cltime;
 	}
 };

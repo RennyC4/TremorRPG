@@ -396,7 +396,10 @@ void(vector pos) Draw_3DPDoll =
     }
 	doll.angles_y += 50 * frametime;
 	doll.frame = frameforname(self.modelindex, "Idle");
-	doll.frame1time += frametime;
+
+	if (gender == "Female")	doll.frame1time += frametime * 0.5; // slower idle anim for female
+	else doll.frame1time += frametime;
+
 	entdraw(doll, pos, '150 250', -245);
 };
 

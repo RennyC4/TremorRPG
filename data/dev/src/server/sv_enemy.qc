@@ -1,4 +1,28 @@
-// Enemies, most are defined in the maps themselves (hmp / bsp)
+//
+// Monsters: Most are defined in the maps themselves (hmp / bsp)
+//
+
+float(entity ePVEnt, float flChanged) Monster_SendEntity =
+{
+	WriteByte(MSG_ENTITY, ENT_MONSTER); // Unique identifier
+	WriteCoord(MSG_ENTITY, self.origin_x); // Position X
+	WriteCoord(MSG_ENTITY, self.origin_y); // Position Y
+	WriteCoord(MSG_ENTITY, self.origin_z); // Position Z
+	WriteCoord(MSG_ENTITY, self.angles_x); // Angle X
+	WriteCoord(MSG_ENTITY, self.angles_y); // Angle Y
+	WriteCoord(MSG_ENTITY, self.angles_z); // Angle Z
+	WriteShort(MSG_ENTITY, self.velocity_x); // Velocity X
+	WriteShort(MSG_ENTITY, self.velocity_y); // Velocity X
+	WriteShort(MSG_ENTITY, self.velocity_z); // Velocity X
+	WriteFloat(MSG_ENTITY, self.flags); // Flags, important for physics
+	WriteFloat(MSG_ENTITY, self.effects);
+	WriteByte(MSG_ENTITY, self.alpha);
+	WriteShort(MSG_ENTITY, self.modelindex);
+	WriteShort(MSG_ENTITY, self.health);
+	WriteShort(MSG_ENTITY, self.max_health);
+	WriteString(MSG_ENTITY, self.displayname);
+	return TRUE;
+};
 
 void() monster_respawn =
 {
@@ -60,4 +84,6 @@ void() set_monster =
 
 	self.think = monster_ai_think;
 	self.nextthink = time + 0.1 + random()*1; // stagger start think
+	
+	self.SendEntity = Monster_SendEntity;
 };

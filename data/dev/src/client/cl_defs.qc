@@ -2165,6 +2165,7 @@ accessor filestream : float
 
 // Enums
 #define ENT_PLAYER 1
+#define ENT_MONSTER 2
 //
 
 string sparm1, sparm2, sparm3, sparm4;
@@ -2310,7 +2311,7 @@ vector tt_pos;
 vector tt_size;
 string tt_contents;
 
-// Player defs
+// Player/Monster defs
 .string gender;
 .string netname;
 .float climbing;
@@ -2321,3 +2322,5 @@ float modelindex_player_m, modelindex_player_f;
 .float last_update;
 .string main_hand; // string for main hand
 .string off_hand; // string for off hand
+.float max_health;
+.string displayname;
