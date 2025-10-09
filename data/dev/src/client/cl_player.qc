@@ -17,6 +17,8 @@ void() Skeleton_ObjectDraw =
 	if (!self.loggedin)
 		return;
 
+	string gender = getstats(STAT_GENDER);
+
 	if (!self.skeletonindex)
 		self.skeletonindex = skel_create(self.modelindex);
 	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
@@ -93,6 +95,8 @@ void() Skeleton_ObjectDraw =
 
 			vector org = gettaginfo(self, gettagindex(self, "mixamorig:RightHand"));
 			vector offset = '0 0 0';  // offset relative to the bone
+			if (gender == "Female")
+				offset = '0 10 0';
 
 			// local offset into world space
 			org += v_forward * offset_x;
@@ -100,10 +104,8 @@ void() Skeleton_ObjectDraw =
 			org += v_up      * offset_z;
 			self.weapon_vfx.origin = org;
 
-			// fix angles
+			// angles
 			vector ang = vectoangles(v_forward, v_up);
-			//ang_x += 90;
-			//ang_z += -1 * ang_z; // flip
 			self.weapon_vfx.angles = ang;
 		}
 	}
@@ -144,9 +146,10 @@ void() Skeleton_ObjectDraw =
 			org += v_forward * offset_x;
 			org += v_right   * offset_y;
 			org += v_up      * offset_z;
+
 			self.offhand_vfx.origin = org;
 
-			// fix angles
+			// angles
 			vector ang = vectoangles(v_forward, v_up);
 			self.offhand_vfx.angles = ang;
 		}

@@ -33,7 +33,13 @@ void() Player_Animate =
 		else
 		{
 			if (!self.velocity_x && !self.velocity_y) // idle
+			{
+				string gender = getstats(STAT_GENDER);
+				if (gender == "Female")
+					speed = 0.5;
+
 				self.frame = frameforname(self.modelindex, "Idle");
+			}
 			else // moving
 				self.frame = frameforname(self.modelindex, "Run");
 		}
