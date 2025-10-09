@@ -50,21 +50,23 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
     {
         if (self.inventory[i] == itemname)
         {
-			if (gold_ok)
-				self.gold -= price;
-
 			// Health potion check
 			if (self.classname == "player" && itemname == "Health Potion" && self.inventory_count[i] >= 2)
 			{
 				sprint (self, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
+				gold_ok = FALSE;
 				return;
 			}
 			// Mana potion check
 			if (self.classname == "player" && itemname == "Mana Potion" && self.inventory_count[i] >= 2)
 			{
 				sprint (self, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
+				gold_ok = FALSE;
 				return;
 			}
+			
+			if (gold_ok)
+				self.gold -= price;
 
 			string printgold = ftos(price);
 			sprint (self, PRINT_HIGH, itemname, " bought!\n");

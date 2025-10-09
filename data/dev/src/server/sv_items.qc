@@ -155,6 +155,7 @@ void(float id, string itemname) Player_UseItem =
 
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
+		RemoveFromInventory(self, itemname, 1);		
 	}
 	else if (id == 1) // lantern
 	{
@@ -188,6 +189,7 @@ void(float id, string itemname) Player_UseItem =
 
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
+		RemoveFromInventory(self, itemname, 1);		
 	}
 	else if (id == 3) // Magic spell to add to magic screen
 	{

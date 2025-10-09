@@ -48,7 +48,6 @@ void() monster_attack =
 
 void() monster_death2 =
 {
-//	self.SendFlags = 1;
 	if (self.anim_count > 0)
 	{
 		self.anim_count = 0;
