@@ -2319,3 +2319,5 @@ float modelindex_player_m, modelindex_player_f;
 .float ai_mode;
 .float speed;
 float LockOn_Toggle;
+.string main_hand;
+.string off_hand;

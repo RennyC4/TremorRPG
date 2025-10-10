@@ -14,10 +14,10 @@ void() Draw_NameTag;
 
 void() Skeleton_ObjectDraw =
 {
-	if (!self.loggedin)
+	if (!self.loggedin && self.classname == "player")
 		return;
 
-	string gender = getstats(STAT_GENDER);
+	string gender = getstats(STAT_GENDER); // TODO send .gender from SSQC, this is shared with monsters that use player bones
 
 	if (!self.skeletonindex)
 		self.skeletonindex = skel_create(self.modelindex);
@@ -77,7 +77,6 @@ void() Skeleton_ObjectDraw =
 		}
 		else
 		{
-
 			//
 			// Models to draw
 			//

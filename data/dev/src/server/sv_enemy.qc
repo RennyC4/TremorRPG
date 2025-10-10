@@ -23,6 +23,8 @@ float(entity ePVEnt, float flChanged) Monster_SendEntity =
 	WriteString(MSG_ENTITY, self.displayname);
 	WriteByte(MSG_ENTITY, self.ai_mode);
 	WriteByte(MSG_ENTITY, self.speed);
+	WriteString(MSG_ENTITY, self.main_hand);
+	WriteString(MSG_ENTITY, self.off_hand);
 
 	return TRUE;
 };

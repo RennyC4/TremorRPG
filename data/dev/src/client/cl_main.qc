@@ -387,6 +387,8 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.displayname = readstring();
 		self.ai_mode = readbyte();
 		self.speed = readbyte();
+		self.main_hand = readstring();
+		self.off_hand = readstring();
 	}
 };
 

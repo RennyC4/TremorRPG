@@ -65,6 +65,8 @@ void() Monster_Animate =
 float(void) Monster_PreDraw =
 {
     Monster_Animate();
+	Skeleton_ObjectDraw();
+
     self.movetype = MOVETYPE_STEP;
 
 	// prepare rollback
@@ -84,6 +86,7 @@ float(void) Monster_PreDraw =
             continue;
 
 		self.origin += v_forward * self.speed * input_timelength; // extra smoothing - slides monsters though
+		
         movetogoal(self.speed);
     }
 
