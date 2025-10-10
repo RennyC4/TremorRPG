@@ -5325,3 +5325,31 @@
 "spawnflags" "1"
 "angle" "270"
 }
+// entity 137
+{
+"classname" "set_ally"
+"origin" "-224 880 40"
+"angle" "330"
+"model" "models/guard.glb"
+}
+// entity 138
+{
+"classname" "set_ally"
+"origin" "216 -1096 40"
+"angle" "225"
+"model" "models/guard.glb"
+}
+// entity 139
+{
+"classname" "set_ally"
+"origin" "-256 -456 32"
+"angle" "210"
+"model" "models/guard.glb"
+}
+// entity 140
+{
+"classname" "set_ally"
+"origin" "504 408 40"
+"angle" "300"
+"model" "models/guard.glb"
+}

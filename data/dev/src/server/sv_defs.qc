@@ -1698,6 +1698,8 @@ void(string cmdname, optional string desc) registercommand = #352; /*
 		Console commands that are later used will invoke CSQC_ConsoleCommand/m_consolecommand/ConsoleCmd according to module. */
 
 // Misc, and shared defs from quake for portability sake
+float modelindex_player_m, modelindex_player_f;
+
 string string_null = "";
 float(float min, float max) random_range;
 float SVC_TEMPENTITY = 23;
