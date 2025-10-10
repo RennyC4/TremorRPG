@@ -133,7 +133,7 @@ name_command bindlist[] =
 	{ "Use", "+button3" },
 	{ "Block", "+button4" },
 	{ "Camera", "toggle_camera" },
-	{ "Target", "impulse 140" },
+	{ "Target", "target" },
 	{ "Cycle Target", "impulse 141" },
 };
 

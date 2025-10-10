@@ -69,7 +69,6 @@ void() Camera_Third =
 	camang = getproperty(VF_ANGLES);
 	makevectors(camang);
 
-
     campos = getproperty(VF_ORIGIN) - v_forward * thirdcam_dist + v_up * thirdcam_distz;
     plyr_pos = getproperty(VF_ORIGIN);
 

@@ -87,6 +87,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);
 
+	CSQC_LockOn_Update();
+
 	if (health > 0)
 	{
 		if (player_idle)
@@ -160,6 +162,11 @@ float(string strCommand) CSQC_ConsoleCommand =
 {
 	tokenize(strCommand);
 
+	if (argv(0) == "target")
+	{
+		LockOn_Toggle = TRUE;
+		//CSQC_LockOn_Toggle();
+	}
 	if (argv(0) == "cast")
 		sendevent("DoAttack_Magic", "");
 	if (argv(0) == "show_character")
@@ -233,6 +240,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 		sui_input_event(evtype, scanx, chary, devid); // Should only be activated when menus are on
 		return TRUE;
 	}
+	
 	return FALSE;
 };
 
@@ -349,9 +357,6 @@ void(float flIsNew) CSQC_Ent_Update =
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);
-
-		self.think = Player_Think;
-		self.nextthink = cltime;
 	}
 
 	if (flEntType == ENT_MONSTER)

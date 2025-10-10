@@ -2318,3 +2318,4 @@ float modelindex_player_m, modelindex_player_f;
 .string displayname;
 .float ai_mode;
 .float speed;
+float LockOn_Toggle;

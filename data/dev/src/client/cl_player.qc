@@ -364,6 +364,7 @@ void() Player_Hud =
 	Player_DayNightHandler();
 };
 
+void() Player_Think;
 float(void) Player_PreDraw =
 {
     if (self.entnum == player_localentnum)
@@ -422,6 +423,7 @@ float(void) Player_PreDraw =
 		self.movetype = MOVETYPE_NONE;
 
 		self.renderflags = RF_EXTERNALMODEL; // set renderflag for mirrors!
+		Player_Think();
 	}
 	else // other players
 	{
@@ -433,14 +435,9 @@ float(void) Player_PreDraw =
     return PREDRAW_NEXT;
 };
 
-.float jump;
-.float jump_released;
-.float attack_released;
-.float attack;
 void() Player_Think =
 {
 	float player_menu = getstatf(STAT_MENU);
-	float health = getstatf(STAT_HEALTH);
 
 /*
 	if (!player_menu)
@@ -467,9 +464,14 @@ void() Player_Think =
 	}
 */
 
-	if (health > 0)
+	if (self.health > 0)
 	{
 		if (deathcam_dist != 45)
 			deathcam_dist = 45; // initial z start org for death camera
+		if (LockOn_Toggle)
+		{
+			CSQC_LockOn_Toggle();
+			LockOn_Toggle = FALSE;
+		}
 	}
 };
