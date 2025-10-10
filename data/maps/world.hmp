@@ -1,7 +1,6 @@
 {
 classname "worldspawn"
 message "main world"
-//_sky "sky25_64"
 _sky "skyworld"
 _fog 0.02
 _maxdrawdist 0 /*overrides fog distance (if greater)*/
@@ -42,14 +41,135 @@ origin "-2194 -2046 60"
 angles "0 0 0"
 }
 
-// dead tree decor (Elderfen)
+// dead tree decor (Elderfen wilderness)
 {
 classname "misc_tree2"
 origin "-1564 -684 122"
 angles "0 35 0"
 }
 
-// first bridge (Elderfen)
+// dead tree decor (Elderfen wilderness)
+{
+classname "misc_tree2"
+origin "-2321 245 115"
+angles "0 99 0"
+}
+
+// dead tree decor (Elderfen wilderness)
+{
+classname "misc_tree2"
+origin "-2599 1743 139"
+angles "0 125 0"
+}
+
+// dead tree decor (Elderfen wilderness)
+{
+classname "misc_tree2"
+origin "-217 -1390 228"
+angles "0 -151 0"
+}
+
+// dead tree decor (Elderfen wilderness)
+{
+classname "misc_tree2"
+origin "-368 -2654 161"
+angles "0 -26 0"
+}
+
+// dead tree decor (Elderfen wilderness)
+{
+classname "misc_tree2"
+origin "-3124 -3636 46"
+angles "0 -135 0"
+}
+
+// dead tree decor (Elderfen wilderness)
+{
+classname "misc_tree2"
+origin "-861 4474 240"
+angles "0 -155 0"
+}
+
+// tree decor (Elderfen wilderness)
+{
+classname "misc_tree"
+origin "-4343 -1895 41"
+angles "0 -45 0"
+}
+
+// tree decor (Elderfen wilderness)
+{
+classname "misc_tree"
+origin "-1272 -3920 380"
+angles "0 92 0"
+}
+
+// tree decor (Elderfen wilderness)
+{
+classname "misc_tree"
+origin "-3229 -518 57"
+angles "0 -90 0"
+}
+
+// tree decor (Elderfen wilderness)
+{
+classname "misc_tree"
+origin "-568 1335 278"
+angles "0 45 0"
+}
+
+// tree decor (Elderfen wilderness)
+{
+classname "misc_tree"
+origin "173 1720 425"
+angles "0 67 0"
+}
+
+// tree decor (Elderfen wilderness)
+{
+classname "misc_tree"
+origin "-399 -128 119"
+angles "0 -17 0"
+}
+
+// tree decor (Elderfen wilderness)
+{
+classname "misc_tree"
+origin "67 -1957 432"
+angles "0 98 0"
+}
+
+// tree decor (Elderfen wilderness)
+{
+classname "misc_tree"
+origin "-1811 544 136"
+angles "0 222 0"
+}
+
+// tree decor (Elderfen wilderness)
+{
+classname "misc_tree"
+origin "-2060 2850 135"
+angles "0 222 0"
+}
+
+// rock 1 decor (Elderfen wilderness)
+{
+classname "set_prop"
+model "bsps/rocks1.bsp"
+origin "-3075 -100 47"
+angles "0 0 0"
+}
+
+// rock 1 decor (Elderfen wilderness)
+{
+classname "set_prop"
+model "bsps/rocks1.bsp"
+origin "-266 908 100"
+angles "0 -83 0"
+}
+
+// first bridge (Elderfen wilderness)
 {
 classname "set_prop"
 model "bsps/bridge1.bsp"
