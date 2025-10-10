@@ -2317,3 +2317,4 @@ float modelindex_player_m, modelindex_player_f;
 .float max_health;
 .string displayname;
 .float ai_mode;
+.float speed;

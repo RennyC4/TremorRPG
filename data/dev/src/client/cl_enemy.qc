@@ -64,7 +64,35 @@ void() Monster_Animate =
 
 float(void) Monster_PreDraw =
 {
-	Monster_Animate();
-	addentity(self);
+    Monster_Animate();
+    self.movetype = MOVETYPE_STEP;
+
+	// prepare rollback
+	vector OldOrigin = self.origin;
+	vector OldAngles = self.angles;
+		
+    float flSuccess;
+
+    for (int i = servercommandframe + 1; i <= clientcommandframe; i++)
+    {
+        if (input_timelength == 0)
+            break;
+
+		flSuccess = walkmove(self.angles_y, self.speed);
+
+        if (!flSuccess)
+            continue;
+
+		self.origin += v_forward * self.speed * input_timelength; // extra smoothing - slides monsters though
+        movetogoal(self.speed);
+    }
+
+    // rollback
+    setorigin(self, OldOrigin);
+    self.angles = OldAngles;
+    self.movetype = MOVETYPE_NONE;
+
+    addentity(self);
+
     return PREDRAW_NEXT;
 };

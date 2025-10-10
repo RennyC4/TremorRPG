@@ -381,6 +381,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.max_health = readshort();
 		self.displayname = readstring();
 		self.ai_mode = readbyte();
+		self.speed = readbyte();
 	}
 };
 

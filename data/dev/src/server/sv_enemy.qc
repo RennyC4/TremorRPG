@@ -22,6 +22,8 @@ float(entity ePVEnt, float flChanged) Monster_SendEntity =
 	WriteShort(MSG_ENTITY, self.max_health);
 	WriteString(MSG_ENTITY, self.displayname);
 	WriteByte(MSG_ENTITY, self.ai_mode);
+	WriteByte(MSG_ENTITY, self.speed);
+
 	return TRUE;
 };
 

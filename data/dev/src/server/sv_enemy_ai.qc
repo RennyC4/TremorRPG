@@ -232,7 +232,7 @@ void() monster_ai_think =
 		if (self.health != self.max_health) // monsters have full health in patrol mode
 			self.health = self.max_health;
 
-		// Randomly turn and move
+		// randomly turn and move
 		if (self.ai_patrolidle < time)
 		{
 			self.angles_x = 0;
