@@ -157,7 +157,7 @@ void(vector pos, vector canvas_size) WorldMap_Draw =
 };
 
 void(float screenwidth, float screenheight) Draw_ZoneName =
-{	
+{
 	string zonename = getstats(STAT_ZONENAME);
 	vector pos = [(screenwidth - stringwidth(zonename, TRUE, '18 18 0'))/2, (screenheight - 18)/3];
 
@@ -182,7 +182,7 @@ void() Draw_EventLog =
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 	sui_pop_frame();
 
-	// Draw text
+	// draw text
 	pos = [(g_width * 0.0001), (g_height - 146)];
 	size = [330, 100];
 	if (drawfont != drawfont2)
@@ -369,6 +369,7 @@ void() Draw_Exp =
 //
 
 entity doll;
+void() Skeleton_ObjectDraw;
 void(vector pos) Draw_3DPDoll =
 {
 	string gender = getstats(STAT_GENDER);
@@ -376,14 +377,20 @@ void(vector pos) Draw_3DPDoll =
     if (!doll) // Call this one time so we're not spawning infinite entities
     {
  		doll = spawn();
-		
+
         precache_model("models/player_m.glb");
         precache_model("models/player_f.glb");
 
 		if (gender == "Male")
+		{
 			setmodel(doll, "models/player_m.glb");
+			modelindex_player_m = doll.modelindex;
+		}
 		else
+		{
 			setmodel(doll, "models/player_f.glb");
+			modelindex_player_f = doll.modelindex;
+		}
 
 		doll.drawflags = 7; // override engine lighting
 		doll.abslight = 500; // new lighting level
@@ -391,8 +398,8 @@ void(vector pos) Draw_3DPDoll =
         setorigin(doll, '0 0 0');
 		doll.angles_y -= 180;
 		doll.origin_z -= 35;
-		doll.frame = frameforname(self.modelindex, "Idle");
-    }
+		doll.frame = frameforname(doll.modelindex, "Idle");
+	}
 
 	doll.angles_y += 50 * frametime;
 	if (gender == "Female")

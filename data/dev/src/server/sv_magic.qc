@@ -90,7 +90,7 @@ void(float damage) Cast_Thorn =
 	damage = damage + (self.skill_offensivemagic * 0.1); // initial damage
 	traceline (source, source + v_forward * spell_length, MOVE_TRIGGERS, self);
 
-	if (trace_fraction == 1.0)
+	if (trace_fraction == 1)
 	{
 		entity snd = spawn();
 		setmodel(snd, string_null);

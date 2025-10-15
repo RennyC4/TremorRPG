@@ -62,7 +62,7 @@ void() set_ally =
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 
 	self.flags |= FL_FINDABLE_NONSOLID;
-	self.frame = 1;
+	self.frame = 1; // Animation will be done CSQC-side
 
 	//monster_ai_spawnrunback();
 	//self.think = monster_ai_think;

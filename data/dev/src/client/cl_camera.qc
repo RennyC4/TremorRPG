@@ -19,7 +19,7 @@ void() Camera_DeathCam =
     tracebox(cam_start, '-8 -8 -8', '8 8 8', cam_end, MOVE_NOMONSTERS, self);
 
 	vector cam_pos;
-	if (trace_fraction < 1.0) // hit wall
+	if (trace_fraction <= 1) // hit wall
 		cam_pos = trace_endpos;
 	else
 		cam_pos = cam_end;
@@ -47,7 +47,7 @@ void() Camera_IdleOrbit =
 	tracebox(plyr_pos, [-4, -4, -4], [4, 4, 4], cam_target, MOVE_NORMAL, world);
 
 	vector final_pos;
-    if (trace_fraction < 1) // hit wall
+    if (trace_fraction <= 1) // hit wall
         final_pos = trace_endpos + trace_plane_normal * 2;
 	else
 		final_pos = cam_target;
@@ -71,7 +71,9 @@ void() Camera_Third =
     vector campos = getproperty(VF_ORIGIN) - v_forward * thirdcam_dist + v_up * thirdcam_distz;
     tracebox(plyr_pos, '-16 -16 -16', '16 16 16', campos, MOVE_NOMONSTERS, self);
 
-	if (trace_fraction < 1.0) // hit wall
+	self.hitcontentsmaski = CONTENTBIT_BODY|CONTENTBIT_SOLID|CONTENTBIT_PLAYERCLIP|CONTENTBIT_SKY; // Do not go into clip brushes
+
+	if (trace_fraction <= 1) // hit wall
 		setproperty(VF_ORIGIN, trace_endpos);
 	else
 		setproperty(VF_ORIGIN, campos);

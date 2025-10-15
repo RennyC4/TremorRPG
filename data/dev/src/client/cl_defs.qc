@@ -2304,13 +2304,14 @@ vector tt_size;
 string tt_contents;
 
 // Player/Monster defs
+float modelindex_player_m, modelindex_player_f;
+
 .string gender;
 .string netname;
 .float climbing;
 .float health;
 .float loggedin;
 .float pvp;
-float modelindex_player_m, modelindex_player_f;
 .float last_update;
 .string main_hand; // string for main hand
 .string off_hand; // string for off hand
