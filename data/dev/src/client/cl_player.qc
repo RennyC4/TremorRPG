@@ -95,8 +95,8 @@ void() Skeleton_ObjectDraw =
 			//
 			//
 
-			vector org = gettaginfo(self, gettagindex(self, "mixamorig:RightHand"));
-			vector offset = '0 0 0';  // offset relative to the bone
+			org = gettaginfo(self, gettagindex(self, "mixamorig:RightHand"));
+			offset = '0 0 0';  // offset relative to the bone
 			if (gender == "Female")
 				offset = '0 10 0';
 
@@ -107,7 +107,7 @@ void() Skeleton_ObjectDraw =
 			self.weapon_vfx.origin = org;
 
 			// angles
-			vector ang = vectoangles(v_forward, v_up);
+			ang = vectoangles(v_forward, v_up);
 			self.weapon_vfx.angles = ang;
 		}
 	}
@@ -141,8 +141,8 @@ void() Skeleton_ObjectDraw =
 			//
 			//
 
-			vector org = gettaginfo(self, gettagindex(self, "mixamorig:LeftHand"));
-			vector offset = '0 0 0';  // offset relative to the bone
+			org = gettaginfo(self, gettagindex(self, "mixamorig:LeftHand"));
+			offset = '0 0 0';  // offset relative to the bone
 
 			// local offset into world space
 			org += v_forward * offset_x;
@@ -152,7 +152,7 @@ void() Skeleton_ObjectDraw =
 			self.offhand_vfx.origin = org;
 
 			// angles
-			vector ang = vectoangles(v_forward, v_up);
+			ang = vectoangles(v_forward, v_up);
 			self.offhand_vfx.angles = ang;
 		}
 	}
@@ -347,7 +347,7 @@ void() Player_Hud =
 			if (autocvar_minimap != "off" && autocvar_minimap != "")
 			{
 				if (substring(world.model, -3, 3) == "hmp") // mini-map only on over world
-					WorldMap_Draw([g_width - 112.5, 0], 112.5);
+					WorldMap_Draw([g_width - 112.5, 0], [112.5, 112.5]);
 			}
 			Compass_Draw();
 			Coords_Draw();

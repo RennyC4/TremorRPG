@@ -47,7 +47,7 @@ void() Draw_ToolTip =
 	{
 		string tt_line = argv(i);
 
-		float largest_x;
+		float largest_x; // leave uninitialised
 		float tt_fix_x;
 
 		tt_fix_x = stringwidth(tt_line, 1); // get length
@@ -78,12 +78,12 @@ void() Draw_CastingStat =
 	string cast_string = strcat("^6", disp_magicspell, (sprintf("^7: %.2f", remaining)));
 
 	// position
-	float str_width = stringwidth(cast_string, 1, 12);
+	float str_width = stringwidth(cast_string, 1, [12, 12]);
 	vector text_pos = [(g_width / 2) - (str_width / 2), g_height - 15];
 
 	// text effects
 	float wobble = sin(time * 3) * 0.5;
-	float pulse = sin(time * 2) * 0.1;
+	vector pulse = [sin(time * 2) * 0.1, sin(time * 2) * 0.1];
 	vector color_main = [0.8, 0.5 + 0.25 * sin(time), 0.8];
 	vector color_shadow = [0, 0, 0];
 
@@ -96,7 +96,7 @@ void() Draw_CastingStat =
 	{
 		if (random() < 0.05) // 5% chance per letter per frame
 		{
-			float offset_x = stringwidth(substring(cast_string,0,i), 1, 12) + crandom()*2;
+			float offset_x = stringwidth(substring(cast_string, 0, i), 1, [12, 12]) + crandom() * 2;
 			float offset_y = wobble - random()*4; // float above text
 			drawstring(text_pos + [offset_x, offset_y], "*", [8, 8], [1,1,1], 1, 1);
 		}
@@ -153,7 +153,7 @@ void(vector pos, vector canvas_size) WorldMap_Draw =
 
 	renderscene();
 
-	drawstring([g_width - 58, 48], ".", 12, '1 1 1', 1, 0);
+	drawstring([g_width - 58, 48], ".", [12, 12], '1 1 1', 1, 0);
 };
 
 void(float screenwidth, float screenheight) Draw_ZoneName =

@@ -82,7 +82,7 @@ void() Coords_Draw =
 	string txt = strcat("X: ", sx, " Y: ", sy);
 
 	vector scale = [10, 10];
-	float tw = stringwidth(txt, 1, 10);
+	float tw = stringwidth(txt, 1, [10,10]);
 	vector pos = [g_width - tw - 8, (compass_radius * 2) - 4];
 
 	// backdrop

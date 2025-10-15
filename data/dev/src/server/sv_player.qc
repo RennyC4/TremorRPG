@@ -2,7 +2,6 @@
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
-
 void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;self.melee_finished = time + 0.2;};
 void(entity targ, float type) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;

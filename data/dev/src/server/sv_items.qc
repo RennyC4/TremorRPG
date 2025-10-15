@@ -72,7 +72,7 @@ void(string itemname, float id) Player_EquipItem =
 			if (line = fgets(v)) // armor value
 				float armorvalue_e = stof(line);
 			if (line = fgets(v)) // item required player level
-				float required_level = stof(line);
+				required_level = stof(line);
 		}
 		else
 		{
@@ -107,7 +107,7 @@ void(string itemname, float id) Player_EquipItem =
 			if (line = fgets(v)) // armor value
 				float blockvalue_e = stof(line);
 			if (line = fgets(v)) // item required player level
-				float required_level = stof(line);
+				required_level = stof(line);
 		}
 		else
 		{

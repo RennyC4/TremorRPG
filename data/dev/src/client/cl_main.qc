@@ -4,6 +4,17 @@
 
 void() Hud_UpdateScores;
 void(vector virtmin, vector virtsize) Hud_Scoreboard;
+
+void() CSQC_Precache =
+{
+	precache_model("models/lantern.glb");
+	precache_model("models/sword0.glb");
+	precache_model("models/sword1.glb");
+	precache_model("models/dagger0.glb");
+	precache_model("models/shield0.glb");
+	precache_model("models/shield1.glb");
+};
+
 void() CSQC_Ent_Remove =
 {
 	// clean up CSQC ents
@@ -51,6 +62,8 @@ noref void() CSQC_WorldLoaded =
 
 	if (cvar("developer") > 0)
 		localcmd("sv_cheats 1\nsv_csqc_progname teredit.dat\nrestart\n");
+		
+	CSQC_Precache();
 };
 
 void(string rendererdescription) CSQC_RendererRestarted =
@@ -73,11 +86,9 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	framecount = framecount + 1;
 
 	clearscene(); // clear and update our global screen resolution vars
+	setproperty(VF_DRAWENGINESBAR, 0); // disable quake status bar
 
-	// disable quake status bar
-	setproperty(VF_DRAWENGINESBAR, 0);
-
-	if (!player_idle && health > 0)
+	if (!player_idle && health > 0 && !lock_on_active)
 		setproperty(VF_DRAWCROSSHAIR, 1);
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
@@ -86,8 +97,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);
-
-	CSQC_LockOn_Update();
 
 	if (health > 0)
 	{
@@ -134,6 +143,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		Camera_DeathCam();
 
 	renderscene(); // does what you think it does
+	CSQC_LockOn_Update();
 
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well
 	sui_begin(g_width, g_height);
@@ -223,7 +233,8 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 				return FALSE;
 			case IE_MOUSEDELTA:
 			{
-				if (player_lockview > time || health <= 0) // disable mouse movement
+				// disable mouse movement
+				if (player_lockview > time || health <= 0 || lock_on_active)
 					return TRUE;
 				else
 					return FALSE;
@@ -389,6 +400,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.speed = readbyte();
 		self.main_hand = readstring();
 		self.off_hand = readstring();
+		self.level = readbyte();
 	}
 };
 

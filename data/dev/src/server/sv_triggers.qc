@@ -90,10 +90,10 @@ SUB_UseTargets
 
 void(entity ent, entity activator) SUB_FireTargets;
 
-void(entity th) SUB_DelayThink =
+void() SUB_DelayThink =
 {
-	SUB_FireTargets(th.owner, th.enemy);
-	remove(th);
+	SUB_FireTargets(self.owner, self.enemy);
+	remove(self);
 };
 
 void(entity ent, entity activator) SUB_UseTargets =
@@ -135,7 +135,8 @@ void(entity ent, entity activator) SUB_FireTargets =
 	while (t)
 	{
 		if (t.use)
-			t.use(t, activator);
+			t.use();
+			//t.use(t, activator);
 		t = find(t, targetname, ent.target);
 	}
 };
@@ -207,7 +208,7 @@ trigger_once
 - Spawnflag 1 = use only (not touch)
 */
 
-void(entity self) trigger_once_touch =
+void() trigger_once_touch =
 {
     if (other.classname != "player")
         return;
@@ -216,7 +217,7 @@ void(entity self) trigger_once_touch =
     remove(self);
 };
 
-void(entity self) trigger_once_use =
+void() trigger_once_use =
 {
     SUB_UseTargets(self, activator);
     remove(self);

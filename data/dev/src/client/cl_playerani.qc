@@ -39,6 +39,9 @@ void() Player_Animate =
 		{
 			if (!self.velocity_x && !self.velocity_y) // idle
 			{
+				if (self.frame != frameforname(self.modelindex, "Idle"))
+					self.frame1time = 0; // reset timestamp
+
 				string gender = getstats(STAT_GENDER);
 				if (gender == "Female")
 					speed = 0.5;

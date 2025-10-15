@@ -25,6 +25,7 @@ float(entity ePVEnt, float flChanged) Monster_SendEntity =
 	WriteByte(MSG_ENTITY, self.speed);
 	WriteString(MSG_ENTITY, self.main_hand);
 	WriteString(MSG_ENTITY, self.off_hand);
+	WriteByte(MSG_ENTITY, self.level);
 
 	return TRUE;
 };

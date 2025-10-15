@@ -65,21 +65,23 @@ void() Camera_Third =
 		return;
 
 	vector plyr_pos = getproperty(VF_ORIGIN);
+	vector ang = getproperty(VF_ANGLES);
+	makevectors(ang);
 
-	camang = getproperty(VF_ANGLES);
-	makevectors(camang);
-
-    campos = getproperty(VF_ORIGIN) - v_forward * thirdcam_dist + v_up * thirdcam_distz;
-    plyr_pos = getproperty(VF_ORIGIN);
-
+    vector campos = getproperty(VF_ORIGIN) - v_forward * thirdcam_dist + v_up * thirdcam_distz;
     tracebox(plyr_pos, '-16 -16 -16', '16 16 16', campos, MOVE_NOMONSTERS, self);
 
-    setproperty(VF_ORIGIN, trace_endpos);
+	if (trace_fraction < 1.0) // hit wall
+		setproperty(VF_ORIGIN, trace_endpos);
+	else
+		setproperty(VF_ORIGIN, campos);
+
     setproperty(VF_AFOV, 90);
-	
+
+	// prevent player model intrusion
 	float dist = vlen(trace_endpos - plyr_pos);
 	if (dist < 24)
-		setviewprop(VF_VIEWENTITY, 1); // Stop drawing player
+		setviewprop(VF_VIEWENTITY, 1);
 	else
 		setviewprop(VF_VIEWENTITY, 0.0);
 };
