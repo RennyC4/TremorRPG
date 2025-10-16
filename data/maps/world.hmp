@@ -199,27 +199,6 @@ origin "-2096 8145 458"
 angles "0 0 0"
 }
 
-
-// NPC (Elderfen Weapon / Armor Merchant)
-{
-classname "set_npc"
-model "models/merchant_m.glb"
-origin "-1810 -1725 76"
-angles "0 0 0"
-netname "Keldran"
-gold "500"
-}
-
-// NPC (Magic Merchant)
-{
-classname "set_npc"
-model "models/wizard_f.glb"
-origin "-1449 -2455 76"
-angles "0 -121 0"
-netname "Sarzac"
-gold "0"
-}
-
 // monster (bandit lvl 1)
 {
 classname "set_monster"

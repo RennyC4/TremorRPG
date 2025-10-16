@@ -60,8 +60,8 @@ noref void() CSQC_WorldLoaded =
 	registercommand("toggle_camera", "3rd person camera toggle\n");
 	registercommand("+use", "Use what is in front of player\n");
 
-	if (cvar("developer") > 0)
-		localcmd("sv_cheats 1\nsv_csqc_progname teredit.dat\nrestart\n");
+//	if (cvar("developer") > 0)
+//		localcmd("sv_cheats 1\nsv_csqc_progname teredit.dat\nrestart\n");
 		
 	CSQC_Precache();
 };
@@ -74,8 +74,17 @@ void(string rendererdescription) CSQC_RendererRestarted =
 // CALLED EVERY CLIENT RENDER FRAME
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
-	if (cvar("developer") != 0)
+	// Setup developer 1
+	if (cvar("developer") > 0)
+	{
+		clearscene(); // clear and update our global screen resolution vars
+		setproperty(VF_DRAWENGINESBAR, 0);
+		addentities(MASK_VIEWMODEL | MASK_ENGINE);
+		//setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
+		//setproperty(VF_ANGLES, view_angles);
+		renderscene();
 		return;
+	}
 
 	vector virtsize = [width, height];
 	float pause = serverkeyfloat(SERVERKEY_PAUSESTATE);
@@ -93,7 +102,10 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
-	addentities(MASK_VIEWMODEL | MASK_ENGINE);
+	if (cvar("sv_cheats") == 1)
+		addentities(MASK_ENGINE); // Weird bug if I add viewmodel with sv_cheats 1 = crash
+	else
+		addentities(MASK_VIEWMODEL | MASK_ENGINE);
 
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);
@@ -170,13 +182,15 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 float(string strCommand) CSQC_ConsoleCommand =
 {
+	if (cvar("developer") > 0)
+		return;
+
 	tokenize(strCommand);
 
 	if (argv(0) == "target")
-	{
 		LockOn_Toggle = TRUE;
-		//CSQC_LockOn_Toggle();
-	}
+	if (argv(0) == "targetcycle")
+		LockOn_CycleToggle = TRUE;
 	if (argv(0) == "cast")
 		sendevent("DoAttack_Magic", "");
 	if (argv(0) == "show_character")
@@ -213,6 +227,9 @@ float(string strCommand) CSQC_ConsoleCommand =
 
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
+	if (cvar("developer") > 0)
+		return;
+
 	last_input_time = time;
 	player_idle = FALSE;
 

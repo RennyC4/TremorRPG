@@ -137,6 +137,8 @@ void() set_npc =
 
 	self.think = npc_ai_think;
 	self.nextthink = time + 0.1;
+
+	droptofloor();
 };
 
 void() bonfire_use =

@@ -2,12 +2,6 @@
 // Monster animation handler
 //
 
-const float AI_IDLE = 0;
-const float AI_CHASE = 1;
-const float AI_ATTACK = 2;
-const float AI_RUNBACK = 3;
-const float AI_PATROL = 4;
-
 void() Monster_Animate =
 {
 	float speed = 1; // default base speed

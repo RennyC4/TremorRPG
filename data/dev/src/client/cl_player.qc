@@ -467,10 +467,17 @@ void() Player_Think =
 	{
 		if (deathcam_dist != 45)
 			deathcam_dist = 45; // initial z start org for death camera
+
+		// Binding stuff working around
 		if (LockOn_Toggle)
 		{
 			CSQC_LockOn_Toggle();
 			LockOn_Toggle = FALSE;
+		}
+		if (LockOn_CycleToggle)
+		{
+			CSQC_LockOn_Cycle();
+			LockOn_CycleToggle = FALSE;
 		}
 	}
 };

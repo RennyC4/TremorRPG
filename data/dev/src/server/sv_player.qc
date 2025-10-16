@@ -1160,7 +1160,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 
 void() PutClientInServer =
 {
-	if (cvar("developer") != 0)
+	if (cvar("developer") > 0)
 		return;
 
 	player_chain_add(self);
@@ -1226,6 +1226,9 @@ void() ClientDisconnect =
 
 void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s = 
 {
+	if (cvar("developer") > 0)
+		return;
+
 	if (!LOGIN_NAME) // local user tampered with lastlogin
 	{
 		sprint(self, PRINT_HIGH, "Error: Last login is invalid\n");
@@ -1393,6 +1396,9 @@ void(entity targ, float type) CSEv_Player_SaveChar =
 
 void(string LOGIN_NAME) CSEv_ResumeCharacter_s = 
 {
+	if (cvar("developer") > 0)
+		return;
+
 	string line;
 	string add_ext = strcat(LOGIN_NAME, ".chr");
 

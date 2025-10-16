@@ -2306,6 +2306,13 @@ string tt_contents;
 // Player/Monster defs
 float modelindex_player_m, modelindex_player_f;
 
+// AI states
+const float AI_IDLE = 0;
+const float AI_CHASE = 1;
+const float AI_ATTACK = 2;
+const float AI_RUNBACK = 3;
+const float AI_PATROL = 4;
+
 .string gender;
 .string netname;
 .float climbing;
@@ -2320,6 +2327,7 @@ float modelindex_player_m, modelindex_player_f;
 .float ai_mode;
 .float speed;
 float LockOn_Toggle; // silly work-around
+float LockOn_CycleToggle; // same
 .string main_hand;
 .string off_hand;
 .float level;

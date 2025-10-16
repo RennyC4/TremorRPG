@@ -1,6 +1,10 @@
+const float lock_on_fov = 0.17;
+const float lock_on_dist = 2000;
+
 float lock_on_active;
 entity lock_on_target;
-const float lock_on_dist = 2000;
+
+float(vector a, vector b) vdot = {return a_x * b_x + a_y * b_y + a_z * b_z;};
 
 void(vector where) CSQC_LockOn_Plaques =
 {
@@ -55,15 +59,12 @@ void(vector where) CSQC_LockOn_Plaques =
 
 void() CSQC_LockOn_Update =
 {
-	vector player_pos = [0,0,0];
-
 	if (lock_on_active && lock_on_target && lock_on_target.health > 0)
 	{
-		player_pos = vPlayerOrigin;
 		vector lockon_pos = lock_on_target.origin;
 		vector player_ang = getproperty(VF_ANGLES);
 
-		vector dir = normalize(lockon_pos - player_pos);
+		vector dir = normalize(lockon_pos - vPlayerOrigin); // don't change vPlayerOrigin, otherwise things break
 		vector ang = vectoangles(dir);
 
 		float dt = frametime * 2;   // frame delta time
@@ -86,7 +87,7 @@ void() CSQC_LockOn_Update =
 	else
 	{
 		// auto unlock
-		if (lock_on_active && (!lock_on_target || lock_on_target.health <= 0 || vlen(lock_on_target.origin - player_pos) > lock_on_dist))
+		if (lock_on_active && (!lock_on_target || lock_on_target.health <= 0 || vlen(lock_on_target.origin - self.origin) > lock_on_dist) || lock_on_target.ai_mode == AI_RUNBACK)
 		{
 			lock_on_active = FALSE;
 			lock_on_target = world;
@@ -97,20 +98,141 @@ void() CSQC_LockOn_Update =
 void() CSQC_LockOn_Toggle =
 {
 	if (lock_on_active) // unlock
-	{		
+	{
 		lock_on_active = FALSE;
 		lock_on_target = world;
 		return;
 	}
 
-	// TODO: Add players as well
-	// TODO: Range + Fov etc
-	for (entity b = world;(b = find(b, classname, "monster"));)
+	entity best = world;
+	float best_dist = lock_on_dist;
+	vector player_ang = getproperty(VF_ANGLES);
+	makevectors(player_ang);
+
+	vector forward = v_forward;
+
+	// search for monsters
+	for (entity e = world; (e = find(e, classname, "monster")); )
 	{
-		if (vlen(b.origin - vPlayerOrigin) <= lock_on_dist)
+		// skip dead or invalid
+		if (!e || e.health <= 0 || e.ai_mode == AI_RUNBACK)
+			continue;
+
+		vector dir = e.origin - self.origin;
+		float dist = vlen(dir);
+		if (dist > lock_on_dist)
+			continue;
+
+		dir = normalize(dir);
+
+		float dot = vdot(forward, dir);
+		if (dot < lock_on_fov)
+			continue;
+
+		// closer target wins
+		if (dist < best_dist)
 		{
-			lock_on_target = b;
-			lock_on_active = TRUE;
+			best_dist = dist;
+			best = e;
 		}
 	}
+
+	// search for players
+	for (entity e = world; (e = find(e, classname, "player")); )
+	{
+		// skip dead or invalid
+		if (!e || e.health <= 0)
+			continue;
+
+		vector dir = e.origin - self.origin;
+		float dist = vlen(dir);
+		if (dist > lock_on_dist)
+			continue;
+
+		dir = normalize(dir);
+
+		float dot = vdot(forward, dir);
+		if (dot < lock_on_fov)
+			continue;
+
+		// closer target wins
+		if (dist < best_dist)
+		{
+			best_dist = dist;
+			best = e;
+		}
+	}
+
+	if (best)
+	{
+		lock_on_target = best;
+		lock_on_active = TRUE;
+	}
+	else
+	{
+		lock_on_target = world;
+		lock_on_active = FALSE;
+	}
+};
+
+void() CSQC_LockOn_Cycle =
+{
+	if (!lock_on_active)
+		return; // no lock to cycle through
+
+	entity best = world;
+	float best_dot = -1;
+
+	vector player_ang = getproperty(VF_ANGLES);
+	makevectors(player_ang);
+
+	vector forward = v_forward;
+	entity current = lock_on_target;
+
+	// search for monsters
+	for (entity e = world; (e = find(e, classname, "monster")); )
+	{
+		if (!e || e.health <= 0 || e == current || e.ai_mode == AI_RUNBACK)
+			continue;
+
+		vector dir = normalize(e.origin - self.origin);
+		float dot = vdot(forward, dir);
+
+		if (dot < lock_on_fov)
+			continue;
+
+		// prioritize the next one clockwise in screen space
+		// or just pick the next with higher dot (closer to forward)
+		if (dot > best_dot)
+		{
+			best_dot = dot;
+			best = e;
+		}
+	}
+
+	// search for players
+	for (entity e = world; (e = find(e, classname, "player")); )
+	{
+		if (!e || e.health <= 0 || e == current)
+			continue;
+
+		vector dir = normalize(e.origin - self.origin);
+		float dot = vdot(forward, dir);
+
+		if (dot < lock_on_fov)
+			continue;
+
+		// prioritize the next one clockwise in screen space
+		// or just pick the next with higher dot (closer to forward)
+		if (dot > best_dot)
+		{
+			best_dot = dot;
+			best = e;
+		}
+	}
+
+	if (best && best != world)
+		lock_on_target = best;
+	else
+		lock_on_target = current; // optional: reset if no valid targets left
 };
