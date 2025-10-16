@@ -225,6 +225,10 @@ void() CSQC_Input_Frame =
 	input_movevalues_x = bound(-350, input_movevalues_x, 350);
 	input_movevalues_y = bound(-350, input_movevalues_y, 350);
 	input_movevalues_z = bound(-350, input_movevalues_z, 350);
+	
+	// lock on pitch fix
+	if (input_angles_x != LockOn_PitchFix && lock_on_active)
+		input_angles_x = LockOn_PitchFix;
 };
 
 string nightskybox = "skyworld_star";
@@ -383,6 +387,7 @@ float(void) Player_PreDraw =
     if (self.entnum == player_localentnum)
 	{
 		Player_Animate();
+
 		self.movetype = MOVETYPE_WALK;
 
 		// prepare rollback
@@ -436,6 +441,7 @@ float(void) Player_PreDraw =
 		self.movetype = MOVETYPE_NONE;
 
 		self.renderflags = RF_EXTERNALMODEL; // set renderflag for mirrors!
+
 		Player_Think();
 	}
 	else // other players

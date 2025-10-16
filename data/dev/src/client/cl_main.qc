@@ -74,10 +74,9 @@ void(string rendererdescription) CSQC_RendererRestarted =
 // CALLED EVERY CLIENT RENDER FRAME
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
-	// Setup developer 1
-	if (cvar("developer") > 0)
+	if (cvar("developer") > 0) // setup developer mode
 	{
-		clearscene(); // clear and update our global screen resolution vars
+		clearscene();
 		setproperty(VF_DRAWENGINESBAR, 0);
 		addentities(MASK_ENGINE);
 		renderscene();
@@ -357,7 +356,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.solid = SOLID_TRIGGER;
 			self.predraw = Player_PreDraw;
 			self.drawmask = MASK_ENGINE;
-			self.view_ofs = '0 0 22';
+			self.view_ofs = '0 0 48';
 		}
 
 		self.origin_x = readcoord();
@@ -399,7 +398,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.solid = SOLID_SLIDEBOX;
 			self.predraw = Monster_PreDraw;
 			self.drawmask = MASK_ENGINE;
-			self.view_ofs = '0 0 22';
+			self.view_ofs = '0 0 48';
 		}
 
 		self.origin_x = readcoord();

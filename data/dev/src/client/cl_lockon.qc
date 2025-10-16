@@ -1,11 +1,21 @@
-const float lock_on_fov = 0.17;
+const float lock_on_fov = 0.86;
 const float lock_on_dist = 2000;
 
-float playerold_x;
 float lock_on_active;
 entity lock_on_target;
+float LockOn_PitchFix; // ugh...
 
 float(vector a, vector b) vdot = {return a_x * b_x + a_y * b_y + a_z * b_z;};
+
+float(entity targ) LockOn_Visible =
+{
+	vector start = self.origin + self.view_ofs;
+	vector end = targ.origin + targ.view_ofs; // add nudge?
+
+	traceline(start, end, TRUE, world);
+	if (trace_fraction == 1 || trace_ent == targ)
+		return TRUE; // clear line of sight return FALSE; 
+};
 
 void(vector where) CSQC_LockOn_Plaques =
 {
@@ -74,6 +84,7 @@ void() CSQC_LockOn_Update =
 
 		setproperty(VF_ANGLES, ang);
 		setproperty(VF_CL_VIEWANGLES, ang);
+		LockOn_PitchFix = ang_x; // ugh...
 	}
 	else // auto unlock
 	{
@@ -116,8 +127,9 @@ void() CSQC_LockOn_Toggle =
 		dir = normalize(dir);
 
 		float dot = vdot(forward, dir);
-		if (dot < lock_on_fov)
-			continue;
+
+		if (dot < lock_on_fov)	continue;
+		if (!LockOn_Visible(e)) continue;
 
 		// closer target wins
 		if (dist < best_dist)
@@ -142,8 +154,9 @@ void() CSQC_LockOn_Toggle =
 		dir = normalize(dir);
 
 		float dot = vdot(forward, dir);
-		if (dot < lock_on_fov)
-			continue;
+
+		if (dot < lock_on_fov)	continue;
+		if (!LockOn_Visible(e)) continue;
 
 		// closer target wins
 		if (dist < best_dist)
@@ -188,8 +201,8 @@ void() CSQC_LockOn_Cycle =
 		vector dir = normalize(e.origin - self.origin);
 		float dot = vdot(forward, dir);
 
-		if (dot < lock_on_fov)
-			continue;
+		if (dot < lock_on_fov)	continue;
+		if (!LockOn_Visible(e)) continue;
 
 		// prioritize the next one clockwise in screen space
 		// or just pick the next with higher dot (closer to forward)
@@ -209,8 +222,8 @@ void() CSQC_LockOn_Cycle =
 		vector dir = normalize(e.origin - self.origin);
 		float dot = vdot(forward, dir);
 
-		if (dot < lock_on_fov)
-			continue;
+		if (dot < lock_on_fov)	continue;
+		if (!LockOn_Visible(e)) continue;
 
 		// prioritize the next one clockwise in screen space
 		// or just pick the next with higher dot (closer to forward)
