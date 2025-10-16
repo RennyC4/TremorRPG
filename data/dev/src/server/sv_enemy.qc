@@ -69,6 +69,7 @@ void() set_monster =
 	self.classname = "monster";
 	self.radius_candamage = TRUE; // can be affected by radius damage
 	self.flags |= FL_MONSTER;
+	self.view_ofs = '0 0 22';
 	self.th_die = monster_death;
 
 	if (!self.sight_range)

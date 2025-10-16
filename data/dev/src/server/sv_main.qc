@@ -23,9 +23,6 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_PLAYER_X, EV_FLOAT, origin_x);
 	clientstat(STAT_PLAYER_Y, EV_FLOAT, origin_y);
 	clientstat(STAT_PLAYER_Z, EV_FLOAT, origin_z);
-	clientstat(STAT_PLAYER_ANGLE_X, EV_FLOAT, angles_x);
-	clientstat(STAT_PLAYER_ANGLE_Y, EV_FLOAT, angles_y);
-	clientstat(STAT_PLAYER_ANGLE_Z, EV_FLOAT, angles_z);
 	clientstat(STAT_MENU, EV_FLOAT, menu);
 	clientstat(STAT_ZONENAME, EV_STRING, zonename);
 	clientstat(STAT_ZONENAME_TIME, EV_FLOAT, zonename_finished);

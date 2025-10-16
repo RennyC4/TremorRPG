@@ -329,6 +329,7 @@ void() Player_Hud =
 		float zonedisplay_finished = getstatf(STAT_ZONENAME_TIME);
 		float health = getstatf(STAT_HEALTH);
 		float casting = getstatf(STAT_CASTING);
+		float atbonfire = getstatf(STAT_BONFIRE);
 
 		if (zonedisplay_finished > time)
 			Draw_ZoneName(g_width, g_height);
@@ -353,6 +354,19 @@ void() Player_Hud =
 			Coords_Draw();
 			if (casting > time)
 				Draw_CastingStat();
+		}
+
+		// bonfire SP reminder text
+		if (atbonfire)
+		{
+			string msg1 = "You possess skill points!";
+			float tw = (stringwidth(msg1, 0, [12,12]) / 2);
+			vector txtpos = [(g_width * 0.5) - tw, g_height - 25];
+			float fade = 0.5 + 0.5 * sin(time * 2);
+			vector colour = [fade, 0, 0];
+
+			drawstring (txtpos + [1,1], msg1, [12, 12], '0 0 0', 1, 0);
+			drawstring (txtpos, msg1, [12, 12], colour, 1, 0);
 		}
 
 		if (time - last_input_time > idle_threshold)

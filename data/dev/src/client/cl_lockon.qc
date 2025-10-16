@@ -1,6 +1,7 @@
 const float lock_on_fov = 0.17;
 const float lock_on_dist = 2000;
 
+float playerold_x;
 float lock_on_active;
 entity lock_on_target;
 
@@ -16,11 +17,18 @@ void(vector where) CSQC_LockOn_Plaques =
 	plaque_coord_x -= 16; // center it
 	plaque_coord_y -= 16;
 
-	// TODO, use players netname if they're not a monster
 	if (plaque_coord_z > 0)
 	{
-		drawstring(plaque_coord+[1,1], lock_on_target.displayname, [10, 10], [0, 0, 0], 1, 0); // shadow
-		drawstring(plaque_coord, lock_on_target.displayname, [10, 10], [1, 1, 1], 1, 0);
+		if (lock_on_target.classname == "player")
+		{
+			drawstring(plaque_coord+[1,1], lock_on_target.netname, [10, 10], [0, 0, 0], 1, 0); // shadow
+			drawstring(plaque_coord, lock_on_target.netname, [10, 10], [1, 1, 1], 1, 0);
+		}
+		else
+		{
+			drawstring(plaque_coord+[1,1], lock_on_target.displayname, [10, 10], [0, 0, 0], 1, 0); // shadow
+			drawstring(plaque_coord, lock_on_target.displayname, [10, 10], [1, 1, 1], 1, 0);
+		}
 	}
 
 	// draw bar + level
@@ -61,36 +69,18 @@ void() CSQC_LockOn_Update =
 {
 	if (lock_on_active && lock_on_target && lock_on_target.health > 0)
 	{
-		vector lockon_pos = lock_on_target.origin;
-		vector player_ang = getproperty(VF_ANGLES);
-
-		vector dir = normalize(lockon_pos - vPlayerOrigin); // don't change vPlayerOrigin, otherwise things break
+		vector dir = normalize(lock_on_target.origin - vPlayerOrigin); // don't change vPlayerOrigin, otherwise things break
 		vector ang = vectoangles(dir);
 
-		float dt = frametime * 2;   // frame delta time
-		float turn_speed = 360; // degrees per second
-
-		// Smoothly approach target yaw/pitch *broken / crap*
-		//player_ang[0] = ApproachAngle(player_ang[0], ang_x, turn_speed, dt);
-		//player_ang[1] = ApproachAngle(player_ang[1], ang_y, turn_speed, dt);
-
-		player_ang[0] = ang_x;
-		player_ang[1] = ang_y;
-
-		// apply
-		makevectors(player_ang);
-		setproperty(VF_ANGLES, player_ang);
-
-		sendevent("PlayerUpdateAngles_Lockon", "v", player_ang); // update angles on SSQC
-		CSQC_LockOn_Plaques(lock_on_target.origin);
+		setproperty(VF_ANGLES, ang);
+		setproperty(VF_CL_VIEWANGLES, ang);
 	}
-	else
+	else // auto unlock
 	{
-		// auto unlock
-		if (lock_on_active && (!lock_on_target || lock_on_target.health <= 0 || vlen(lock_on_target.origin - self.origin) > lock_on_dist) || lock_on_target.ai_mode == AI_RUNBACK)
+		if (lock_on_active && (!lock_on_target || lock_on_target.health <= 0 || vlen(lock_on_target.origin - vPlayerOrigin) > lock_on_dist || lock_on_target.ai_mode == AI_RUNBACK))
 		{
-			lock_on_active = FALSE;
 			lock_on_target = world;
+			lock_on_active = FALSE;
 		}
 	}
 };
@@ -115,7 +105,7 @@ void() CSQC_LockOn_Toggle =
 	for (entity e = world; (e = find(e, classname, "monster")); )
 	{
 		// skip dead or invalid
-		if (!e || e.health <= 0 || e.ai_mode == AI_RUNBACK)
+		if (!e || e.health <= 0 || e.ai_mode == AI_RUNBACK || e == self)
 			continue;
 
 		vector dir = e.origin - self.origin;
@@ -141,7 +131,7 @@ void() CSQC_LockOn_Toggle =
 	for (entity e = world; (e = find(e, classname, "player")); )
 	{
 		// skip dead or invalid
-		if (!e || e.health <= 0)
+		if (!e || e.health <= 0 || e.pvp != 1 || e == self)
 			continue;
 
 		vector dir = e.origin - self.origin;
@@ -192,7 +182,7 @@ void() CSQC_LockOn_Cycle =
 	// search for monsters
 	for (entity e = world; (e = find(e, classname, "monster")); )
 	{
-		if (!e || e.health <= 0 || e == current || e.ai_mode == AI_RUNBACK)
+		if (!e || e.health <= 0 || e == current || e.ai_mode == AI_RUNBACK || e == self)
 			continue;
 
 		vector dir = normalize(e.origin - self.origin);
@@ -213,7 +203,7 @@ void() CSQC_LockOn_Cycle =
 	// search for players
 	for (entity e = world; (e = find(e, classname, "player")); )
 	{
-		if (!e || e.health <= 0 || e == current)
+		if (!e || e.health <= 0 || e == current || e.pvp != 1 || e == self)
 			continue;
 
 		vector dir = normalize(e.origin - self.origin);

@@ -79,9 +79,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	{
 		clearscene(); // clear and update our global screen resolution vars
 		setproperty(VF_DRAWENGINESBAR, 0);
-		addentities(MASK_VIEWMODEL | MASK_ENGINE);
-		//setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
-		//setproperty(VF_ANGLES, view_angles);
+		addentities(MASK_ENGINE);
 		renderscene();
 		return;
 	}
@@ -89,6 +87,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	vector virtsize = [width, height];
 	float pause = serverkeyfloat(SERVERKEY_PAUSESTATE);
 	float health = getstatf(STAT_HEALTH);
+	float atbonfire = getstatf(STAT_BONFIRE);
 
 	g_width = width;
 	g_height = height;
@@ -97,14 +96,12 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	clearscene(); // clear and update our global screen resolution vars
 	setproperty(VF_DRAWENGINESBAR, 0); // disable quake status bar
 
-	if (!player_idle && health > 0 && !lock_on_active)
+	if (!player_idle && health > 0 && !lock_on_active && !atbonfire)
 		setproperty(VF_DRAWCROSSHAIR, 1);
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
-	if (cvar("sv_cheats") == 1)
-		addentities(MASK_ENGINE); // Weird bug if I add viewmodel with sv_cheats 1 = crash
-	else
+	if (cvar("sv_cheats") == 0) // entities are wrapped with csaddon with sv_cheats is 1
 		addentities(MASK_VIEWMODEL | MASK_ENGINE);
 
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
@@ -112,6 +109,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	if (health > 0)
 	{
+		CSQC_LockOn_Update();
+
 		if (player_idle)
 			Camera_IdleOrbit();
 		else if (camera_mode)
@@ -155,7 +154,9 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		Camera_DeathCam();
 
 	renderscene(); // does what you think it does
-	CSQC_LockOn_Update();
+
+	if (lock_on_active)
+		CSQC_LockOn_Plaques(lock_on_target.origin);
 
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well
 	sui_begin(g_width, g_height);
@@ -236,6 +237,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 	float player_menu = getstatf(STAT_MENU);
 	float player_lockview = getstatf(STAT_LOCKVIEW);
 	float health = getstatf(STAT_HEALTH);
+	float atbonfire = getstatf(STAT_BONFIRE);
 
 	if (player_menu > 1)
 		sui_input_event(evtype, scanx, chary, devid);
@@ -251,7 +253,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 			case IE_MOUSEDELTA:
 			{
 				// disable mouse movement
-				if (player_lockview > time || health <= 0 || lock_on_active)
+				if (player_lockview > time || health <= 0 || lock_on_active || atbonfire)
 					return TRUE;
 				else
 					return FALSE;
@@ -355,6 +357,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.solid = SOLID_TRIGGER;
 			self.predraw = Player_PreDraw;
 			self.drawmask = MASK_ENGINE;
+			self.view_ofs = '0 0 22';
 		}
 
 		self.origin_x = readcoord();
@@ -372,6 +375,8 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.netname = readstring();
 		self.climbing = readshort();
 		self.health = readshort();
+		self.max_health = readshort();
+		self.level = readbyte();
 
 		self.colormod_x = readcoord();
 		self.colormod_y = readcoord();
@@ -379,7 +384,6 @@ void(float flIsNew) CSQC_Ent_Update =
 
 		self.pvp = readbyte();
 		self.loggedin = readbyte();
-
 		self.main_hand = readstring();
 		self.off_hand = readstring();
 
@@ -395,6 +399,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.solid = SOLID_SLIDEBOX;
 			self.predraw = Monster_PreDraw;
 			self.drawmask = MASK_ENGINE;
+			self.view_ofs = '0 0 22';
 		}
 
 		self.origin_x = readcoord();

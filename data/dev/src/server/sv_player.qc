@@ -198,6 +198,8 @@ void() PlayerJump =
 
 	if (self.climbing)
 		return;
+	if (self.cast_finished > time)
+		return;
 	if (!(self.flags & FL_ONGROUND))
 		return;
 	if (!(self.flags & FL_JUMPRELEASED))
@@ -259,17 +261,6 @@ void() CSEv_PlayerCrouch =
 		self.view_ofs = [0, 0, 48];
 		self.alpha = 1;
 	}
-};
-
-void(vector player_ang) CSEv_PlayerUpdateAngles_Lockon_v =
-{
-	if (self.health <= 0)
-		return;
-	if (self.stagger_finished > time)
-		return;
-
-	self.angles = player_ang;
-	self.fixangle = TRUE;
 };
 
 void() SV_RunClientCommand =
@@ -714,7 +705,7 @@ void(float speed) Player_PushForward =
 
     makevectors([0, self.angles_y, 0]);
 
-	// Apply velocity in that direction
+	// apply velocity in that direction
 	self.velocity = v_forward * speed;
 	self.flags &= ~FL_ONGROUND;
 	self.flags &= ~FL_PARTIALGROUND;
@@ -739,7 +730,7 @@ void() PlayerPreThink =
 		{
 			if (!self.blocking)
 			{
-				if (self.melee_finished < time && self.cancast_finished < time)
+				if (self.melee_finished < time && self.cancast_finished < time && self.cast_finished < time)
 				{
 					float stamcalc = self.skill_endurance * 0.015; // calculation
 					if (self.stamina < self.attack_stamina) // Stamina drain on swing
@@ -826,8 +817,6 @@ void() PlayerPreThink =
 	if (self.menu == MENU_MAGIC)
 		SendMagicSpells(self); // send magic spells to CSQC
 
-//	LockOn_HandleInput();
-//	LockOn_Update();
 	CheckImpulses();
 };
 
@@ -1144,14 +1133,15 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteString(MSG_ENTITY, self.netname);
 	WriteShort(MSG_ENTITY, self.climbing); // Climbing - Animation
 	WriteShort(MSG_ENTITY, self.health); // Animation + additional checks
+	WriteShort(MSG_ENTITY, self.max_health);
+	WriteByte(MSG_ENTITY, self.level);
 
 	WriteCoord(MSG_ENTITY, self.colormod_x); //
 	WriteCoord(MSG_ENTITY, self.colormod_y); // colormod
 	WriteCoord(MSG_ENTITY, self.colormod_z); //
 
 	WriteByte(MSG_ENTITY, self.pvp);
-	WriteByte(MSG_ENTITY, self.loggedin); //
-
+	WriteByte(MSG_ENTITY, self.loggedin);
 	WriteString(MSG_ENTITY, self.main_hand);
 	WriteString(MSG_ENTITY, self.off_hand);
 
@@ -1653,7 +1643,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.attack_length = 64; // weapon length
 		self.main_hand = "Broken Sword";
 		self.off_hand = "Broken Buckler";
-		self.blockvalue = 1;
+		self.blockvalue = 4;
 		self.gold = 0;
 
 		// default armor

@@ -4,7 +4,7 @@
 
 void(entity targ, entity attacker, float damage, float silent) DoDamage;
 
-// Camera shake
+// camera shake
 void(entity e, float howmuch) DoCamera_Shake =
 {
 	if (e.classname != "player")
@@ -62,11 +62,13 @@ void() DoAttack_ShieldBash =
 {
 	if (self.melee_finished > time)
 		return;
+	if (self.cast_finished > time)
+		return;
 
 	if (self.flags & FL_ONGROUND)
 		self.velocity = [0, 0];
 
-	// Stamina drain on swing
+	// stamina drain on swing
 	if (self.classname == "player")
 	{
 		float stamcalc = 15 - (self.skill_endurance * 0.015); // calculation, same as regular sword swing
@@ -144,17 +146,17 @@ void() DoAttack_Melee =
 	float howmuch = 0.1;
 	if (!self.attack_type) // unarmed
 	{
-		damage = damage + (self.skill_unarmed * 0.055);
+		damage += (self.skill_unarmed * 0.055);
 		self.attack_speed = 3 - (self.skill_unarmed * 0.0145); // unarmed speed is tied to skill
 		if (self.attack_speed < 0.1)
 			self.attack_speed = 0.1; // cap
 	}
 	else if (self.attack_type == 1) // slash
-		damage = damage + (self.skill_slash * howmuch);
+		damage += (self.skill_slash * howmuch);
 	else if (self.attack_type == 2) // pierce
-		damage = damage + (self.skill_pierce * howmuch);
+		damage += (self.skill_pierce * howmuch);
 	else // bashing
-		damage = damage + (self.skill_bash * howmuch);
+		damage += (self.skill_bash * howmuch);
 
 	makevectors (self.angles);
 	vector source = self.origin + '0 0 16';
@@ -217,10 +219,7 @@ void() DoAttack_Melee =
 			{
 				if (trace_ent.stamina >= stamcalc_block)
 				{
-					damage = damage - trace_ent.blockvalue;
-					if (trace_ent.blockvalue > damage)
-						damage = 1;
-
+					damage -= trace_ent.blockvalue;
 					trace_ent.stamina -= stamcalc_block;
 					DoCamera_Shake(trace_ent, 8);
 				}
@@ -260,15 +259,12 @@ void() DoAttack_Melee =
 			if (jumpattack) // add jump attack damage
 				damage += (self.fall_maxspeed * 0.05);
 
-			// adds an additional half second on hit if someone is casting
+			// adds an additional time on hit if someone is casting
 			if (trace_ent.cast_finished > time)
-				trace_ent.cast_finished += 0.5;
+				trace_ent.cast_finished += 0.8;
 
 			// armor calculations
-			if (trace_ent.armorvalue > damage)
-				damage = 1;
-			else
-				damage = damage - trace_ent.armorvalue;
+			damage -= trace_ent.armorvalue;
 
 			// blood logic + effects
 			vector mid = trace_ent.origin;
@@ -329,50 +325,47 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 	if (damage <= 0)
 		damage = 1;
 
-	if (damage > 0)
+	targ.health = targ.health - damage;
+	string eventlog_print;
+
+	if (attacker.classname == "player")
 	{
-		targ.health = targ.health - damage;
-		string eventlog_print;
+		eventlog_print = (strcat("You hit for ^2", ftos(damage), " ^7damage\n"));
+		stuffcmd (attacker, sprintf("conecho event %s\n", eventlog_print));
+	}
+	if (targ.classname == "player" && !silent)
+	{
+		eventlog_print = (strcat("You've taken ^1", ftos(damage), " ^7damage\n"));
+		stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+	}
 
-		if (attacker.classname == "player")
+	// PVP
+	if (targ.classname == "player" && attacker.classname == "player")
+	{
+		if (targ.incombat_finished < time)
 		{
-			eventlog_print = (strcat("You hit for ^2", ftos(damage), " ^7damage\n"));
-			stuffcmd (attacker, sprintf("conecho event %s\n", eventlog_print));
-		}
-		if (targ.classname == "player" && !silent)
-		{
-			eventlog_print = (strcat("You've taken ^1", ftos(damage), " ^7damage\n"));
+			eventlog_print = (strcat("^1You engage in combat!\n"));
+			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 			stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+			targ.incombat_finished = attacker.incombat_finished = time + 30;
 		}
+	}
 
-		// PVP
-		if (targ.classname == "player" && attacker.classname == "player")
-		{
-			if (targ.incombat_finished < time)
-			{
-				eventlog_print = (strcat("^1You engage in combat!\n"));
-				stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
-				stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
-				targ.incombat_finished = attacker.incombat_finished = time + 30;
-			}
-		}
+	// Knock player out of drinking a potion
+	if (targ.potion_use_finished > time)
+	{
+		targ.healthpot_heal_rate = 0;
+		targ.healthpot_heal_remaining = 0;
+		targ.healthpot_finished = time;
 
-		// Knock player out of drinking a potion
-		if (targ.potion_use_finished > time)
-		{
-			targ.healthpot_heal_rate = 0;
-			targ.healthpot_heal_remaining = 0;
-			targ.healthpot_finished = time;
+		targ.manapot_heal_rate = 0;
+		targ.manapot_heal_remaining = 0;
+		targ.manapot_finished = time;
 
-			targ.manapot_heal_rate = 0;
-			targ.manapot_heal_remaining = 0;
-			targ.manapot_finished = time;
+		targ.potion_use_finished = time;
 
-			targ.potion_use_finished = time;
-
-			eventlog_print = (strcat("^1You drop your potion!\n"));
-			stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
-		}
+		eventlog_print = (strcat("^1You drop your potion!\n"));
+		stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
 	}
 
 	// Monster stuff

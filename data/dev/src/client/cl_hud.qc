@@ -8,7 +8,7 @@ void() Draw_NameTag =
 	{
 		if (vlen(b.origin - vPlayerOrigin) <= 1250)
 		{
-			if (b.entnum != player_localentnum && b.loggedin && b.modelindex != 0)
+			if (b.entnum != player_localentnum && b.loggedin && b.modelindex != 0 && b != lock_on_target)
 			{
 				makevectors(b.angles);
 				vector nametag_org = project(b.origin + v_up * 60 - v_right * 6);
@@ -30,7 +30,6 @@ void() Draw_NameTag =
 		}
 	}
 };
-
 
 void() Draw_ToolTip =
 {
@@ -197,7 +196,7 @@ void() Draw_InCombatorPVP =
 	float incombat = getstatf(STAT_INCOMBAT);
 	float pvp = getstatf(STAT_PVP);
 
-	vector pos = [135, (g_height - 42)];
+	vector pos = [2.5, (g_height - 182.5)];
 	vector size = [35, 35];
 
 	if (!pvp || pvp == 2)
@@ -285,6 +284,15 @@ void() Draw_Mana =
 	pos_x += 20;
 	drawstring (pos+[1,1], m2, '8 8 0', '0 0 0', 1, 0); // text shadow
 	drawstring (pos, m2, '8 8 0', '1 1 1', 1, 0);
+	
+	// Draw spell name on screen
+	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
+	if (disp_magicspell != "")
+	{
+		pos_x += 50;
+		drawstring (pos+[1,1], disp_magicspell, '8 8 0', '0 0 0', 1, 0); // text shadow
+		drawstring (pos, disp_magicspell, '8 8 0', '0 .75 .75', 1, 0);
+	}
 };
 
 void() Draw_Stamina =
