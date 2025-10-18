@@ -7,13 +7,14 @@
 .float attack_triggered; // ensures one attack event per animation
 
 // constants for clarity, these are strictly CSQC
-#define ANIM_IDLE   0
-#define ANIM_RUN    1
-#define ANIM_ATTACK 2
-#define ANIM_CLIMB  3
-#define ANIM_DEATH  4
-#define ANIM_JUMP	5
-#define ANIM_SIT	6
+#define ANIM_IDLE   	0
+#define ANIM_RUN    	1
+#define ANIM_ATTACK 	2
+#define ANIM_CLIMB  	3
+#define ANIM_DEATH  	4
+#define ANIM_JUMP		5
+#define ANIM_SIT		6
+#define ANIM_CASTING	7
 
 //
 // Special animations sent from SSQC
@@ -63,7 +64,7 @@ void() Player_Animate =
     float duration = frameduration(self.modelindex, self.frame);
 
     // -----------------------------
-    // Death Animation
+    // Death Animation - This always comes first
     // -----------------------------
     if (self.health <= 0)
     {
@@ -86,7 +87,6 @@ void() Player_Animate =
 	// -----------------------------
     // Bonfire Sit Animation
     // -----------------------------
-
 	if (self.bonfire)
 	{
         if (self.anim_state != ANIM_SIT)
@@ -94,6 +94,24 @@ void() Player_Animate =
             self.frame = frameforname(self.modelindex, "Sit");
             self.frame1time = 0;
             self.anim_state = ANIM_SIT;
+        }
+		speed *= frametime;
+
+		self.frame1time += speed;
+		self.frame2time = self.frame1time;
+		return;
+	}
+
+	// -----------------------------
+    // Spell Charging Animation
+    // -----------------------------
+	if (self.cast_finished > time)
+	{
+        if (self.anim_state != ANIM_CASTING)
+        {
+            self.frame = frameforname(self.modelindex, "Casting");
+            self.frame1time = 0;
+            self.anim_state = ANIM_CASTING;
         }
 		speed *= frametime;
 

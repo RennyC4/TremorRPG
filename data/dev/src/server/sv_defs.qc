@@ -1890,6 +1890,8 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 const float ANISTATE_NONE = 0;
 const float ANISTATE_ATTACK = 1;
 const float ANISTATE_SIT = 2;
+const float ANISTATE_CASTING = 3; // Spell charging
+const float ANISTATE_CASTAOE = 4; // AoE Casting animation
 
 //.float armorvalue; (this is already defined)
 

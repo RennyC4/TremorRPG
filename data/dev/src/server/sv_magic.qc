@@ -192,6 +192,7 @@ void() Player_CastMagic = // called from player postthink
 	// Charging sound
 	if (self.cast_finished > time)
 	{
+		self.anistate = ANISTATE_CASTING;
 		if (self.casting_loop < time)
 		{
 			pointparticles(PART_MAGIC_CASTING, self.origin);
@@ -205,6 +206,7 @@ void() Player_CastMagic = // called from player postthink
 	{
 		if (self.cast_finished_spell == "Light Heal")
 		{
+			self.anistate = ANISTATE_NONE; // Change to ANISTATE_CASTAOE, add delay for movement
 			Cast_LightHeal(spellpower);
 			self.mana -= 20;
 		}

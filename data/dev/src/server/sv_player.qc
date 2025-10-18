@@ -768,6 +768,7 @@ void() Anistate_Handler =
 		if (self.melee_finished < time)
 			self.anistate = ANISTATE_NONE;
 	}
+	//if magic casting is finished then set anistate none as well
 };
 
 // Ran before physics
@@ -1167,6 +1168,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteString(MSG_ENTITY, self.off_hand);
 	WriteByte(MSG_ENTITY, self.anistate);
 	WriteByte(MSG_ENTITY, self.bonfire);
+	WriteByte(MSG_ENTITY, self.cast_finished);
 
 	return TRUE;
 };
