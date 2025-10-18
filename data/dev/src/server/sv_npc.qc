@@ -164,6 +164,7 @@ void() bonfire_use =
 			self.user.crouch = TRUE;
 			self.user.movetype = MOVETYPE_NONE; // Stop user movement
 			self.user.velocity = '0 0 0';
+			self.user.anistate = ANISTATE_SIT;
 
 			string eventlog_print = "^5You rest at the bonfire ...\n";
 			stuffcmd (self.user, sprintf("conecho event %s\nwf\n", eventlog_print));

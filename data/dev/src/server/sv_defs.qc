@@ -1889,6 +1889,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float anistate;
 const float ANISTATE_NONE = 0;
 const float ANISTATE_ATTACK = 1;
+const float ANISTATE_SIT = 2;
 
 //.float armorvalue; (this is already defined)
 

@@ -478,6 +478,7 @@ void() Player_Use =
 
 		string eventlog_print = "^5You stand back up ...\n";
 		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+		self.anistate = ANISTATE_NONE;
 		self.bonfire = FALSE;
 		self.bonfire_finished = time + 1; // fixes input bleed
 		CSEv_Player_SaveChar(self, 0); // full save user character
@@ -1165,6 +1166,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteString(MSG_ENTITY, self.main_hand);
 	WriteString(MSG_ENTITY, self.off_hand);
 	WriteByte(MSG_ENTITY, self.anistate);
+	WriteByte(MSG_ENTITY, self.bonfire);
 
 	return TRUE;
 };

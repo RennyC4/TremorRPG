@@ -6,13 +6,14 @@
 .float anim_state;       // 0=idle, 1=run, 2=attack, 3=climb, 4=death, etc.
 .float attack_triggered; // ensures one attack event per animation
 
-// constants for clarity
+// constants for clarity, these are strictly CSQC
 #define ANIM_IDLE   0
 #define ANIM_RUN    1
 #define ANIM_ATTACK 2
 #define ANIM_CLIMB  3
 #define ANIM_DEATH  4
 #define ANIM_JUMP	5
+#define ANIM_SIT	6
 
 //
 // Special animations sent from SSQC
@@ -29,8 +30,17 @@ void() OtherPlayer_Anistate =
 		{
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Slash");
-			print ("Anistate CSQC");
 			self.anim_state = ANIM_ATTACK;
+		}
+	}
+
+	if (self.anistate == ANISTATE_SIT)
+	{
+		if (self.frame != frameforname(self.modelindex, "Sit"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Sit");
+			self.anim_state = ANIM_SIT;
 		}
 	}
 
@@ -72,7 +82,31 @@ void() Player_Animate =
 
         return; // skip rest when dead
     }
-    
+
+	// -----------------------------
+    // Bonfire Sit Animation
+    // -----------------------------
+
+	if (self.bonfire)
+	{
+        if (self.anim_state != ANIM_SIT)
+        {
+            self.frame = frameforname(self.modelindex, "Sit");
+            self.frame1time = 0;
+            self.anim_state = ANIM_SIT;
+        }
+		speed *= frametime;
+
+		if (self.frame1time >= duration - 0.1) // Hold final frame at end
+			self.frame1time = duration - 0.1;
+		else
+		{
+			self.frame1time += speed;
+			self.frame2time = self.frame1time;
+		}
+		return;
+	}
+
 	// -----------------------------
     // Jump Animation
     // -----------------------------
