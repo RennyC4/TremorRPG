@@ -20,7 +20,10 @@ void() Skeleton_ObjectDraw =
 	string gender = getstats(STAT_GENDER); // TODO send .gender from SSQC, this is shared with monsters that use player bones
 
 	if (!self.skeletonindex)
+	{
 		self.skeletonindex = skel_create(self.modelindex);
+		self.frame = frameforname(self.modelindex, "Idle");
+	}
 	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
 
 	// draw lantern
