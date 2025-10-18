@@ -14,6 +14,39 @@
 #define ANIM_DEATH  4
 #define ANIM_JUMP	5
 
+//
+// Special animations sent from SSQC
+//
+
+void() OtherPlayer_Anistate =
+{
+	float speed = 1;
+	float duration = frameduration(self.modelindex, self.frame);
+
+	if (self.anistate == ANISTATE_ATTACK)
+	{
+		if (self.frame != frameforname(self.modelindex, "Slash"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Slash");
+			print ("Anistate CSQC");
+			self.anim_state = ANIM_ATTACK;
+		}
+	}
+
+    speed *= frametime;
+
+    if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+        speed /= 2; // fix minimap slowdown
+
+    self.frame1time += speed;
+    self.frame2time = self.frame1time;
+};
+
+//
+// Local animations with some shared
+//
+
 void() Player_Animate =
 {
     float speed = 1;
@@ -48,8 +81,7 @@ void() Player_Animate =
 		if (self.anim_state != ANIM_JUMP && (self.velocity_z >= 200 || self.velocity_z <= -200))
 		{
 			self.frame = frameforname(self.modelindex, "Jump");
-			if (self.velocity_z <= -200)
-				self.frame1time = 0;
+			self.frame1time = 0;
 			self.anim_state = ANIM_JUMP;
 		}
 		speed *= frametime;

@@ -742,6 +742,7 @@ void() CSEv_User_StartAttack_ =
 					}
 					else
 					{
+						self.anistate = ANISTATE_ATTACK;
 						self.stamina -= (self.attack_stamina - stamcalc);
 						self.melee_finished = time + self.attack_speed;
 						self.lockview_finished = time + self.attack_speed;
@@ -752,6 +753,19 @@ void() CSEv_User_StartAttack_ =
 			else
 				DoAttack_ShieldBash();
 		}
+	}
+};
+
+//
+// Special animation states sent to CSQC
+//
+
+void() Anistate_Handler =
+{
+	if (self.anistate == ANISTATE_ATTACK)
+	{
+		if (self.melee_finished < time)
+			self.anistate = ANISTATE_NONE;
 	}
 };
 
@@ -837,6 +851,7 @@ void() PlayerPostThink =
 	WaterUpdate();
 	FootstepThink();
 	FallDamage_Update();
+	Anistate_Handler();
 
 	if (self.frags != self.level) // HACK: used to display level on the scoreboard
 		self.frags = self.level;
@@ -844,6 +859,7 @@ void() PlayerPostThink =
 	if (self.deadflag != DEAD_DEAD)
 	{
 		Player_PushForward(200);
+
 	    if (self.healthpot_heal_remaining > 0 && time > self.healthpot_finished) // health potion - apply ongoing healing
 		{
 			if (self.health >= self.max_health)
@@ -955,6 +971,8 @@ void() PlayerPostThink =
 		}
 		Player_CastMagic();
 	}
+	else
+		self.anistate = ANISTATE_NONE; // CSQC will do the death animation
 };
 
 void() ClientConnect =
@@ -1139,15 +1157,14 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteShort(MSG_ENTITY, self.health); // Animation + additional checks
 	WriteShort(MSG_ENTITY, self.max_health);
 	WriteByte(MSG_ENTITY, self.level);
-
 	WriteCoord(MSG_ENTITY, self.colormod_x); //
 	WriteCoord(MSG_ENTITY, self.colormod_y); // colormod
 	WriteCoord(MSG_ENTITY, self.colormod_z); //
-
 	WriteByte(MSG_ENTITY, self.pvp);
 	WriteByte(MSG_ENTITY, self.loggedin);
 	WriteString(MSG_ENTITY, self.main_hand);
 	WriteString(MSG_ENTITY, self.off_hand);
+	WriteByte(MSG_ENTITY, self.anistate);
 
 	return TRUE;
 };

@@ -1884,6 +1884,12 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float parry_cooldown_finished;
 .float cast_finished;
 .string cast_finished_spell;
+
+// Animation States: Particularly for other players
+.float anistate;
+const float ANISTATE_NONE = 0;
+const float ANISTATE_ATTACK = 1;
+
 //.float armorvalue; (this is already defined)
 
 // skill point stats

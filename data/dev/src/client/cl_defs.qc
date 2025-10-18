@@ -2330,3 +2330,8 @@ float LockOn_CycleToggle; // same
 .string off_hand;
 .float level;
 .vector view_ofs;
+
+// Animation States: Particularly for other players
+.float anistate;
+const float ANISTATE_NONE = 0;
+const float ANISTATE_ATTACK = 1;

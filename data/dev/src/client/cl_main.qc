@@ -376,15 +376,14 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.health = readshort();
 		self.max_health = readshort();
 		self.level = readbyte();
-
 		self.colormod_x = readcoord();
 		self.colormod_y = readcoord();
 		self.colormod_z = readcoord();
-
 		self.pvp = readbyte();
 		self.loggedin = readbyte();
 		self.main_hand = readstring();
 		self.off_hand = readstring();
+		self.anistate = readbyte();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);

@@ -3,6 +3,7 @@ void() Compass_Draw;
 void() Coords_Draw;
 void() Player_Animate;
 void() Draw_NameTag;
+void() OtherPlayer_Anistate;
 
 .entity lantern_vfx;
 .entity weapon_vfx;
@@ -449,7 +450,11 @@ float(void) Player_PreDraw =
 	}
 	else // other players
 	{
-		Player_Animate();
+		if (self.anistate)
+			OtherPlayer_Anistate();
+		else
+			Player_Animate();
+
 		Skeleton_ObjectDraw();
         addentity(self);
 	}
@@ -490,18 +495,6 @@ void() Player_Think =
 		else
 			self.attack_released = TRUE;
 	}
-
-/*
-		if (input_buttons & 2) // Jump
-		{
-			if (self.jump_released)
-				self.frame1time = 0; // start from beginning timestamp
-			self.jump_released = FALSE;
-		}
-		else
-			self.jump_released = TRUE;
-	}
-*/
 
 	if (self.health > 0)
 	{
