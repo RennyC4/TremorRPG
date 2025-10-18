@@ -97,13 +97,8 @@ void() Player_Animate =
         }
 		speed *= frametime;
 
-		if (self.frame1time >= duration - 0.1) // Hold final frame at end
-			self.frame1time = duration - 0.1;
-		else
-		{
-			self.frame1time += speed;
-			self.frame2time = self.frame1time;
-		}
+		self.frame1time += speed;
+		self.frame2time = self.frame1time;
 		return;
 	}
 
