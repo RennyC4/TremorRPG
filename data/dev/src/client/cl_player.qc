@@ -458,13 +458,10 @@ float(void) Player_PreDraw =
 };
 
 .float attack_released;
-.float attacking;
+.float anim_attacking;
 .float attack_finished;
 void() Player_Think =
 {
-	if (self.health < 1)
-		return;
-
 	float player_menu = getstatf(STAT_MENU);
 	float atbonfire = getstatf(STAT_BONFIRE);
 
@@ -483,7 +480,8 @@ void() Player_Think =
 				if (stamina >= attack_stamina && self.attack_finished < time) // stamina drain on swing
 				{
 					sendevent("User_StartAttack", "");
-					self.attacking = TRUE;
+					if (self.health > 0)
+						self.anim_attacking = TRUE;
 					self.attack_finished = time + attackspeed;
 				}
 			}
@@ -505,18 +503,21 @@ void() Player_Think =
 	}
 */
 
-	if (deathcam_dist != 45)
-		deathcam_dist = 45; // initial z start org for death camera
+	if (self.health > 0)
+	{
+		if (deathcam_dist != 45)
+			deathcam_dist = 45; // initial z start org for death camera
 
-	// Binding stuff working around
-	if (LockOn_Toggle)
-	{
-		CSQC_LockOn_Toggle();
-		LockOn_Toggle = FALSE;
-	}
-	if (LockOn_CycleToggle)
-	{
-		CSQC_LockOn_Cycle();
-		LockOn_CycleToggle = FALSE;
+		// Binding stuff working around
+		if (LockOn_Toggle)
+		{
+			CSQC_LockOn_Toggle();
+			LockOn_Toggle = FALSE;
+		}
+		if (LockOn_CycleToggle)
+		{
+			CSQC_LockOn_Cycle();
+			LockOn_CycleToggle = FALSE;
+		}
 	}
 };

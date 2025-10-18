@@ -12,6 +12,7 @@
 #define ANIM_ATTACK 2
 #define ANIM_CLIMB  3
 #define ANIM_DEATH  4
+#define ANIM_JUMP	5
 
 void() Player_Animate =
 {
@@ -38,6 +39,30 @@ void() Player_Animate =
 
         return; // skip rest when dead
     }
+    
+	// -----------------------------
+    // Jump Animation
+    // -----------------------------
+	if (!(self.flags & FL_ONGROUND))
+	{
+		if (self.anim_state != ANIM_JUMP && (self.velocity_z >= 200 || self.velocity_z <= -200))
+		{
+			self.frame = frameforname(self.modelindex, "Jump");
+			if (self.velocity_z <= -200)
+				self.frame1time = 0;
+			self.anim_state = ANIM_JUMP;
+		}
+		speed *= frametime;
+
+		if (self.frame1time >= duration - 0.1) // Hold final frame at end
+			self.frame1time = duration - 0.1;
+		else
+		{
+			self.frame1time += speed;
+			self.frame2time = self.frame1time;
+		}
+		return; // skip rest
+	}
 
     // -----------------------------
     // Reset death flag when alive again
@@ -48,7 +73,7 @@ void() Player_Animate =
     // -----------------------------
     // Attack Animation
     // -----------------------------
-    if (self.attacking)
+    if (self.anim_attacking)
     {
         if (self.anim_state != ANIM_ATTACK)
         {
@@ -75,7 +100,7 @@ void() Player_Animate =
         {
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Idle");
-            self.attacking = FALSE;
+            self.anim_attacking = FALSE;
             self.attack_triggered = FALSE;
             self.anim_state = ANIM_IDLE;
         }
