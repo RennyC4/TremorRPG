@@ -1,6 +1,6 @@
 # TremorRPG
 
-Open World RPG using FTEQuake
+Open World MMO RPG using FTEQuake
 
 Started from SUI:
 https://github.com/shpuld/sui-qc
