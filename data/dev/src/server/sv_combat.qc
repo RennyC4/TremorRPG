@@ -4,33 +4,6 @@
 
 void(entity targ, entity attacker, float damage, float silent) DoDamage;
 
-// camera shake
-void(entity e, float howmuch) DoCamera_Shake =
-{
-	if (e.classname != "player")
-		return;
-	if (e.camera_toggle) // disable in 3rd person mode
-		return;
-
-	if (random() < 0.5)
-	{
-		e.angles_x += howmuch;
-		if (random() < 0.5)
-			e.angles_y += howmuch;
-		else
-			e.angles_y -= howmuch;
-	}
-	else
-	{
-		e.angles_x += (howmuch * -1);
-		if (random() < 0.5)
-			e.angles_y += howmuch;
-		else
-			e.angles_y -= howmuch;
-	}
-	e.fixangle = TRUE;
-};
-
 // returns 1 if the entity is in front (in sight) of self, used for blocking
 float(entity enemy, entity defender) check_block =
 {
@@ -113,7 +86,6 @@ void() DoAttack_ShieldBash =
 			trace_ent.cast_finished_spell = "";
 			trace_ent.cast_finished = time;
 			//
-			DoCamera_Shake(trace_ent, 16);
 			sound (trace_ent, CHAN_BODY, "shield2.wav", 1, ATTN_NORM);
 		}
 		else // Parry
@@ -221,7 +193,6 @@ void() CSEv_User_DoAttack_Melee_ =
 				{
 					damage -= trace_ent.blockvalue;
 					trace_ent.stamina -= stamcalc_block;
-					DoCamera_Shake(trace_ent, 8);
 				}
 				else
 				{
@@ -232,7 +203,6 @@ void() CSEv_User_DoAttack_Melee_ =
 							eventlog_print = (strcat("^1You've been staggered!"));
 							stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 						}
-						DoCamera_Shake(trace_ent, 12);
 						damage = damage - ceil(trace_ent.blockvalue / 2); // save a tiny bit of damage still
 						trace_ent.stamina = 0;
 						trace_ent.blocking = FALSE;
@@ -274,7 +244,6 @@ void() CSEv_User_DoAttack_Melee_ =
 			
 			damage = ceil(damage); // round up final damage output
 			DoDamage(trace_ent, self, damage, FALSE);
-			DoCamera_Shake(trace_ent, 16);
 			sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
 		}
 	}
