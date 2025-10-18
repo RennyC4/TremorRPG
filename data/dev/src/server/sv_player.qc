@@ -711,7 +711,7 @@ void(float speed) Player_PushForward =
 	self.flags &= ~FL_PARTIALGROUND;
 };
 
-void() CSEv_User_DoAttack_ =
+void() CSEv_User_StartAttack_ =
 {
 	if (self.menu == MENU_OFF && !self.bonfire)
 	{
@@ -742,9 +742,10 @@ void() CSEv_User_DoAttack_ =
 					}
 					else
 					{
-						self.anim_count = 0;
-						player_slash(); // REMOVEME
 						self.stamina -= (self.attack_stamina - stamcalc);
+						self.melee_finished = time + self.attack_speed;
+						self.lockview_finished = time + self.attack_speed;
+						self.pushforward_finished = time + (self.attack_speed / 4);
 					}
 				}
 			}

@@ -16,7 +16,7 @@ const float AI_PATROL = 4;
 .float ai_move_dist;
 
 void() monster_ai_think;
-void() DoAttack_Melee;
+void() CSEv_User_DoAttack_Melee_;
 void() monster_respawn;
 
 // range values
@@ -38,7 +38,7 @@ void() monster_attack =
 	}
 
 	if (self.anim_count == 0.3)
-		DoAttack_Melee();
+		CSEv_User_DoAttack_Melee_();
 
 	self.anim_count += 0.1;
 

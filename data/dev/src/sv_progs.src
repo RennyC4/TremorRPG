@@ -12,7 +12,6 @@ server/sv_ally.qc
 server/sv_combat.qc
 server/sv_magic.qc
 server/sv_triggers.qc
-server/sv_animation.qc
 server/sv_player.qc
 server/sv_npc.qc
 math.qc

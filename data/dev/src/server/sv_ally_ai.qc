@@ -17,7 +17,7 @@ void() ally_attack =
 	}
 
 	if (self.anim_count == 0.3)
-		DoAttack_Melee();
+		CSEv_User_DoAttack_Melee_();
 
 	self.anim_count += 0.1;
 

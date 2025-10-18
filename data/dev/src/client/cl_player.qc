@@ -479,7 +479,7 @@ void() Player_Think =
 
 				if (stamina >= attack_stamina && self.attack_finished < time) // stamina drain on swing
 				{
-					sendevent("User_DoAttack", "");
+					sendevent("User_StartAttack", "");
 					self.attacking = TRUE;
 					self.attack_finished = time + attackspeed;
 				}
@@ -489,7 +489,7 @@ void() Player_Think =
 		else
 			self.attack_released = TRUE;
 	}
-	
+
 /*
 		if (input_buttons & 2) // Jump
 		{
