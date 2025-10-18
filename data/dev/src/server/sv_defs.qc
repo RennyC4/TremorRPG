@@ -1972,10 +1972,12 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 #define STAT_SPELLMIN 85
 #define STAT_SPELLMAX 86
 #define STAT_BONFIRE 87
-#define STAT_CASTING 88 // casting bar
-#define STAT_MINING 89
-#define STAT_FISHING 90
-#define STAT_WOODCUTTING 91
+#define STAT_CASTING 88
+#define STAT_ATTACKSTAM 89
+// Job skills
+#define STAT_MINING 90
+#define STAT_FISHING 91
+#define STAT_WOODCUTTING 92
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

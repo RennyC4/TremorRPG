@@ -711,10 +711,9 @@ void(float speed) Player_PushForward =
 	self.flags &= ~FL_PARTIALGROUND;
 };
 
-// Ran before physics
-void() PlayerPreThink =
-{	
-	if (self.button0 && self.menu == MENU_OFF && !self.bonfire)
+void() CSEv_User_DoAttack_ =
+{
+	if (self.menu == MENU_OFF && !self.bonfire)
 	{
 		if (self.deadflag == DEAD_DEAD)
 		{
@@ -733,7 +732,7 @@ void() PlayerPreThink =
 				if (self.melee_finished < time && self.cancast_finished < time && self.cast_finished < time)
 				{
 					float stamcalc = self.skill_endurance * 0.015; // calculation
-					if (self.stamina < self.attack_stamina) // Stamina drain on swing
+					if (self.stamina < self.attack_stamina) // stamina drain on swing
 					{
 						if (self.staminamessage_finished < time)
 						{
@@ -753,7 +752,11 @@ void() PlayerPreThink =
 				DoAttack_ShieldBash();
 		}
 	}
+};
 
+// Ran before physics
+void() PlayerPreThink =
+{
 	// Button1 we ignore
 	if (self.button2)
 	{

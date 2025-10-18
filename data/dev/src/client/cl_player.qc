@@ -454,28 +454,47 @@ float(void) Player_PreDraw =
     return PREDRAW_NEXT;
 };
 
+.float attack_released;
+.float attacking;
+.float attack_finished;
 void() Player_Think =
 {
-	float player_menu = getstatf(STAT_MENU);
+	if (self.health < 1)
+		return;
 
-/*
+	float player_menu = getstatf(STAT_MENU);
+	float atbonfire = getstatf(STAT_BONFIRE);
+
 	if (!player_menu)
 	{
-		// Get attack speed, tie it to animation speed
-		// Stamina check
-		if (input_buttons & 1) // Attack
+		if (input_buttons & 1) // attack button
 		{
-//			if (self.attack_released)
-//				self.frame1time = 0; // start from beginning timestamp
+			if (self.attack_released && !atbonfire)
+			{
+				float stamina = getstatf(STAT_STAMINA);
+				float skill_endurance = getstatf(STAT_SKILL_ENDURANCE);
+				float attack_stamina = getstatf(STAT_ATTACKSTAM);
+				float attackspeed = getstatf(STAT_ATTACKSPEED);
+				float stamcalc = skill_endurance * 0.015; // calculation
+
+				if (stamina >= attack_stamina && self.attack_finished < time) // stamina drain on swing
+				{
+					sendevent("User_DoAttack", "");
+					self.attacking = TRUE;
+					self.attack_finished = time + attackspeed;
+				}
+			}
 			self.attack_released = FALSE;
 		}
 		else
 			self.attack_released = TRUE;
-
+	}
+	
+/*
 		if (input_buttons & 2) // Jump
 		{
-//			if (self.jump_released)
-//				self.frame1time = 0; // start from beginning timestamp
+			if (self.jump_released)
+				self.frame1time = 0; // start from beginning timestamp
 			self.jump_released = FALSE;
 		}
 		else
@@ -483,21 +502,18 @@ void() Player_Think =
 	}
 */
 
-	if (self.health > 0)
-	{
-		if (deathcam_dist != 45)
-			deathcam_dist = 45; // initial z start org for death camera
+	if (deathcam_dist != 45)
+		deathcam_dist = 45; // initial z start org for death camera
 
-		// Binding stuff working around
-		if (LockOn_Toggle)
-		{
-			CSQC_LockOn_Toggle();
-			LockOn_Toggle = FALSE;
-		}
-		if (LockOn_CycleToggle)
-		{
-			CSQC_LockOn_Cycle();
-			LockOn_CycleToggle = FALSE;
-		}
+	// Binding stuff working around
+	if (LockOn_Toggle)
+	{
+		CSQC_LockOn_Toggle();
+		LockOn_Toggle = FALSE;
+	}
+	if (LockOn_CycleToggle)
+	{
+		CSQC_LockOn_Cycle();
+		LockOn_CycleToggle = FALSE;
 	}
 };

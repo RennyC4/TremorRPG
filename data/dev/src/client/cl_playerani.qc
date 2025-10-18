@@ -29,27 +29,49 @@ void() Player_Animate =
 	{
 		if (self.ani_death)
 			self.ani_death = FALSE;
-		if (self.climbing) // climbing
+		if (self.attacking)
 		{
-			float skill_climb = getstatf(STAT_SKILL_CLIMB);
-			speed += (skill_climb * 0.005);
-			self.frame = frameforname(self.modelindex, "Climb");
+			float attackspeed = getstatf(STAT_ATTACKSPEED); // attack speed affects speed of animation
+			if (attackspeed > 0)
+				speed /= attackspeed;
+
+			// TODO: attack animation tied to weapon type
+			if (self.frame != frameforname(self.modelindex, "Slash"))
+			{
+				self.frame1time = 0; // reset timestamp
+				self.frame = frameforname(self.modelindex, "Slash");
+			}
+
+			if (self.frame1time >= duration - 0.1)
+				self.attacking = FALSE;
+
+			//print (ftos(duration), "\n");
+			//print (ftos(speed), "\n");
 		}
 		else
 		{
-			if (!self.velocity_x && !self.velocity_y) // idle
+			if (self.climbing) // climbing
 			{
-				if (self.frame != frameforname(self.modelindex, "Idle"))
-					self.frame1time = 0; // reset timestamp
-
-				string gender = getstats(STAT_GENDER);
-				if (gender == "Female")
-					speed = 0.5;
-
-				self.frame = frameforname(self.modelindex, "Idle");
+				float skill_climb = getstatf(STAT_SKILL_CLIMB);
+				speed += (skill_climb * 0.005);
+				self.frame = frameforname(self.modelindex, "Climb");
 			}
-			else // moving
-				self.frame = frameforname(self.modelindex, "Run");
+			else
+			{
+				if (!self.velocity_x && !self.velocity_y) // idle
+				{
+					if (self.frame != frameforname(self.modelindex, "Idle"))
+						self.frame1time = 0; // reset timestamp
+
+					string gender = getstats(STAT_GENDER);
+					if (gender == "Female")
+						speed = 0.5;
+
+					self.frame = frameforname(self.modelindex, "Idle");
+				}
+				else // moving
+					self.frame = frameforname(self.modelindex, "Run");
+			}
 		}
 	}
 

@@ -70,12 +70,12 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_REAPERMARK, EV_FLOAT, reaper_marks);
 	clientstat(STAT_LOCKVIEW, EV_FLOAT, lockview_finished);
 	clientstat(STAT_SPELLEQUIPPED, EV_STRING, spell_equipped);
-	//clientstat(STAT_LOCKEDON, EV_FLOAT, lock_on);
 	clientstat(STAT_VENDOR, EV_FLOAT, npc_vendor);
 	clientstat(STAT_SPELLMIN, EV_FLOAT, spell_power_min);
 	clientstat(STAT_SPELLMAX, EV_FLOAT, spell_power_max);
 	clientstat(STAT_BONFIRE, EV_FLOAT, bonfire);
 	clientstat(STAT_CASTING, EV_FLOAT, cast_finished);
+	clientstat(STAT_ATTACKSTAM, EV_FLOAT, attack_stamina);
 	// Job Skills
 	clientstat(STAT_MINING, EV_FLOAT, skill_mining);
 	clientstat(STAT_FISHING, EV_FLOAT, skill_fishing);
