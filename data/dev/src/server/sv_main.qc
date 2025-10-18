@@ -2,6 +2,8 @@
 //	Main.qc - mostly functions that will be called from the engine and are expected to exist
 //
 
+float multilogin;
+
 #pragma target fte // TremorRPG FTE only
 #pragma warning disable F302 // disable potentially uninitialised variable
 #pragma warning disable Q201 // disable suggest parenthesis for assignment used as truth value
@@ -153,6 +155,10 @@ void() worldspawn =
 
 	SSQC_SendValuesToCSQC();
 	spawn_daynight();
+	
+	// additional cvar setup
+	registercvar("sv_multilogin", "0", "Allows a user to login with multiple accounts");
+	multilogin = cvar("sv_multilogin");
 };
 
 //
