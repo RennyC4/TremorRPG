@@ -206,7 +206,8 @@ void() Player_CastMagic = // called from player postthink
 	{
 		if (self.cast_finished_spell == "Light Heal")
 		{
-			self.anistate = ANISTATE_NONE; // Change to ANISTATE_CASTAOE, add delay for movement
+			self.spellani_finished = time + 1; // Delay movement so animation can play
+			self.anistate = ANISTATE_CASTAOE;
 			Cast_LightHeal(spellpower);
 			self.mana -= 20;
 		}
@@ -235,6 +236,8 @@ void() CSEv_DoAttack_Magic_ = // CSQC
 	{
 		if (self.mana >= 8)
 		{
+			self.spellani_finished = time + 0.5; // Delay movement so animation can play
+			self.anistate = ANISTATE_CASTTARGET;
 			Cast_Thorn(spellpower);
 			self.cancast_finished = time + 0.5;
 			self.mana -= 8;

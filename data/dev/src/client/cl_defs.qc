@@ -2338,5 +2338,6 @@ float LockOn_CycleToggle; // same
 const float ANISTATE_NONE = 0;
 const float ANISTATE_ATTACK = 1;
 const float ANISTATE_SIT = 2;
-const float ANISTATE_CASTING = 3;
-const float ANISTATE_CASTAOE = 4;
+const float ANISTATE_CASTING = 3; // Spell charging
+const float ANISTATE_CASTAOE = 4; // AoE casting animation
+const float ANISTATE_CASTTARGET = 5; // Target casting animation

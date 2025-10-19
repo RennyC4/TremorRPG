@@ -15,6 +15,8 @@
 #define ANIM_JUMP		5
 #define ANIM_SIT		6
 #define ANIM_CASTING	7
+#define ANIM_CASTAOE	8
+#define ANIM_CASTTARGET	9
 
 //
 // Special animations sent from SSQC
@@ -52,6 +54,26 @@ void() OtherPlayer_Anistate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Casting");
 			self.anim_state = ANIM_CASTING;
+		}
+	}
+
+	if (self.anistate == ANISTATE_CASTAOE)
+	{
+		if (self.frame != frameforname(self.modelindex, "CastArea"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "CastArea");
+			self.anim_state = ANIM_CASTAOE;
+		}
+	}
+
+	if (self.anistate == ANISTATE_CASTTARGET)
+	{
+		if (self.frame != frameforname(self.modelindex, "CastTarget"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "CastTarget");
+			self.anim_state = ANIM_CASTTARGET;
 		}
 	}
 
@@ -115,7 +137,7 @@ void() Player_Animate =
 	// -----------------------------
     // Spell Charging Animation
     // -----------------------------
-	if (self.cast_finished > time)
+	if (self.cast_finished > time - 0.5) // add a 0.5 of leeway
 	{
         if (self.anim_state != ANIM_CASTING)
         {
@@ -130,6 +152,47 @@ void() Player_Animate =
 		return;
 	}
 
+	// -----------------------------
+    // Spell Cast - Area of Effect
+    // -----------------------------
+	if (self.anistate == ANISTATE_CASTAOE)
+	{
+        if (self.anim_state != ANIM_CASTAOE)
+        {
+            self.frame = frameforname(self.modelindex, "CastArea");
+            self.frame1time = 0;
+            self.anim_state = ANIM_CASTAOE;
+        }
+		speed = 1.75;
+		speed *= frametime;
+
+        if (self.frame1time >= duration - 0.1) // Hold final frame at end
+            self.frame1time = duration - 0.1;
+        else
+            self.frame1time += speed;
+		return;
+	}
+
+	// -----------------------------
+    // Spell Cast - Target
+    // -----------------------------
+	if (self.anistate == ANISTATE_CASTTARGET)
+	{
+        if (self.anim_state != ANIM_CASTTARGET)
+        {
+            self.frame = frameforname(self.modelindex, "CastTarget");
+            self.frame1time = 0;
+            self.anim_state = ANIM_CASTTARGET;
+        }
+		speed = 1;
+		speed *= frametime;
+
+        if (self.frame1time >= duration - 0.1) // Hold final frame at end
+            self.frame1time = duration - 0.1;
+        else
+            self.frame1time += speed;
+		return;
+	}
 	// -----------------------------
     // Jump Animation
     // -----------------------------

@@ -768,7 +768,11 @@ void() Anistate_Handler =
 		if (self.melee_finished < time)
 			self.anistate = ANISTATE_NONE;
 	}
-	//if magic casting is finished then set anistate none as well
+	if (self.anistate == ANISTATE_CASTAOE || self.anistate == ANISTATE_CASTTARGET)
+	{
+		if (self.spellani_finished < time)
+			self.anistate = ANISTATE_NONE;
+	}
 };
 
 // Ran before physics
@@ -808,7 +812,7 @@ void() PlayerPreThink =
 	if (self.stagger_finished < time)
 	{
 		// attack / magic commitment / npc interaction menus
-		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.cast_finished > time)
+		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.cast_finished > time || self.spellani_finished > time)
 			self.maxspeed = 1;
 		else
 		{

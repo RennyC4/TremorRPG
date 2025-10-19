@@ -1884,6 +1884,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float parry_cooldown_finished;
 .float cast_finished;
 .string cast_finished_spell;
+.float spellani_finished;
 
 // Animation States: Particularly for other players
 .float anistate;
@@ -1891,7 +1892,8 @@ const float ANISTATE_NONE = 0;
 const float ANISTATE_ATTACK = 1;
 const float ANISTATE_SIT = 2;
 const float ANISTATE_CASTING = 3; // Spell charging
-const float ANISTATE_CASTAOE = 4; // AoE Casting animation
+const float ANISTATE_CASTAOE = 4; // AoE casting animation
+const float ANISTATE_CASTTARGET = 5; // Target casting animation
 
 //.float armorvalue; (this is already defined)
 
