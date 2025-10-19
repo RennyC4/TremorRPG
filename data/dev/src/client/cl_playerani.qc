@@ -45,6 +45,16 @@ void() OtherPlayer_Anistate =
 		}
 	}
 
+	if (self.anistate == ANISTATE_CASTING)
+	{
+		if (self.frame != frameforname(self.modelindex, "Casting"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Casting");
+			self.anim_state = ANIM_CASTING;
+		}
+	}
+
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
