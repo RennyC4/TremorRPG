@@ -206,8 +206,8 @@ void() Player_CastMagic = // called from player postthink
 	{
 		if (self.cast_finished_spell == "Light Heal")
 		{
-			self.spellani_finished = time + 1; // Delay movement so animation can play
-			self.anistate = ANISTATE_CASTAOE;
+			self.spellani_finished = time + 2; // Delay movement so animation can play
+			self.anistate = ANISTATE_CASTSELF;
 			Cast_LightHeal(spellpower);
 			self.mana -= 20;
 		}

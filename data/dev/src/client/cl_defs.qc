@@ -2341,3 +2341,4 @@ const float ANISTATE_SIT = 2;
 const float ANISTATE_CASTING = 3; // Spell charging
 const float ANISTATE_CASTAOE = 4; // AoE casting animation
 const float ANISTATE_CASTTARGET = 5; // Target casting animation
+const float ANISTATE_CASTSELF = 6; // Self casting animation

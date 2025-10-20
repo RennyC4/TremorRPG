@@ -768,7 +768,7 @@ void() Anistate_Handler =
 		if (self.melee_finished < time)
 			self.anistate = ANISTATE_NONE;
 	}
-	if (self.anistate == ANISTATE_CASTAOE || self.anistate == ANISTATE_CASTTARGET)
+	if (self.anistate == ANISTATE_CASTAOE || self.anistate == ANISTATE_CASTTARGET || self.anistate == ANISTATE_CASTSELF)
 	{
 		if (self.spellani_finished < time)
 			self.anistate = ANISTATE_NONE;
