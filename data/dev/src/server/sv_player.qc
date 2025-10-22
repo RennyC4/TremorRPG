@@ -817,6 +817,8 @@ void() PlayerPreThink =
 	// Player movement + speed checks
 	if (self.stagger_finished < time)
 	{
+		if (self.anistate == ANISTATE_STUNNED) // clear stun animation
+			self.anistate = ANISTATE_NONE;
 		// attack / magic commitment / npc interaction menus
 		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.cast_finished > time || self.spellani_finished > time)
 			self.maxspeed = 1;
@@ -832,6 +834,7 @@ void() PlayerPreThink =
 	}
 	else
 	{
+		self.anistate = ANISTATE_STUNNED;
 		self.maxspeed = 90; // staggered speed
 		self.fixangle = TRUE;
 	}

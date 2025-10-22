@@ -18,6 +18,7 @@
 #define ANIM_CASTAOE	8
 #define ANIM_CASTTARGET	9
 #define ANIM_CASTSELF	10
+#define ANIM_STUNNED	11
 
 //
 // Special animations sent from SSQC
@@ -89,6 +90,16 @@ void() OtherPlayer_Anistate =
 		}
 	}
 
+	if (self.anistate == ANISTATE_STUNNED)
+	{
+		if (self.frame != frameforname(self.modelindex, "Stunned"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Stunned");
+			self.anim_state = ANIM_STUNNED;
+		}
+	}
+
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
@@ -132,6 +143,24 @@ void() Player_Animate =
 		self.anim_state = ANIM_IDLE;
 		self.frame1time = 0;
 		self.frame = frameforname(self.modelindex, "Idle");
+	}
+
+	// -----------------------------
+    // Stunned / Dizzy Animation
+    // -----------------------------
+	if (self.anistate == ANISTATE_STUNNED)
+	{
+		if (self.frame != frameforname(self.modelindex, "Stunned"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Stunned");
+			self.anim_state = ANIM_STUNNED;
+		}
+		speed *= frametime;
+
+		self.frame1time += speed;
+		self.frame2time = self.frame1time;
+		return;
 	}
 
 	// -----------------------------

@@ -195,6 +195,14 @@ void() monster_ai_think =
 	//string l = ftos(self.ai_mode);
 	//print(l, "\n");
 
+	if (self.stagger_finished > time)
+	{
+		print ("Wtf\n");
+		self.anistate = ANISTATE_STUNNED;
+		self.nextthink = time + 0.1;
+		return;
+	}
+
 	// monster is walking normal its beat (no target)
 	if (self.ai_mode == AI_IDLE || self.ai_mode == AI_PATROL)
 	{
@@ -324,7 +332,7 @@ void() monster_ai_think =
 			else
 				TurnToTarget(self.turn_speed);
 		}
-
+	
 		if (self.ai_mode != AI_RUNBACK)
 			self.ai_mode = AI_CHASE;
 

@@ -33,6 +33,8 @@ void() Monster_Animate =
 		return;
 	}
 
+	if (self.anistate == ANISTATE_STUNNED)
+		self.frame = frameforname(self.modelindex, "Stunned");
 	if (self.anistate == ANISTATE_NONE)
 		self.frame = frameforname(self.modelindex, "Idle");
 	if (self.anistate == ANISTATE_RUN)

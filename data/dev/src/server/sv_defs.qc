@@ -1894,6 +1894,7 @@ const float ANISTATE_CASTTARGET = 5; // Target casting animation
 const float ANISTATE_CASTSELF = 6; // Self casting animation
 const float ANISTATE_DEATH = 7; // Death
 const float ANISTATE_RUN = 8; // Running animation
+const float ANISTATE_STUNNED = 9; // Stunned/Dizzy animation
 
 //.float armorvalue; (this is already defined)
 
