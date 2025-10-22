@@ -228,7 +228,7 @@ void() Player_Animate =
 	// -----------------------------
     // Jump Animation
     // -----------------------------
-	if (!(self.flags & FL_ONGROUND))
+	if (!(self.flags & FL_ONGROUND) && !self.climbing)
 	{
 		if (self.anim_state != ANIM_JUMP && (self.velocity_z >= 200 || self.velocity_z <= -200))
 		{

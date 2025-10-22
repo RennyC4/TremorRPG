@@ -773,6 +773,9 @@ void() Anistate_Handler =
 		if (self.spellani_finished < time)
 			self.anistate = ANISTATE_NONE;
 	}
+
+	if (self.flags & FL_ONGROUND)
+		self.climbing = FALSE;
 };
 
 // Ran before physics
