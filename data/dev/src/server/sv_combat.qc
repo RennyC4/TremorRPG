@@ -106,7 +106,7 @@ void() DoAttack_ShieldBash =
 
 // Main melee attack function
 .float staminamessage_finished;
-void() CSEv_User_DoAttack_Melee_ =
+void() CSEv_DoAttack_Melee_ =
 {
 	if (self.flags & FL_ONGROUND)
 		self.velocity = [0, 0];

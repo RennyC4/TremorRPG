@@ -2322,7 +2322,6 @@ const float AI_PATROL = 4;
 .string off_hand; // string for off hand
 .float max_health;
 .string displayname;
-.float ai_mode;
 .float speed;
 float LockOn_Toggle; // silly work-around
 float LockOn_CycleToggle; // same
@@ -2332,8 +2331,9 @@ float LockOn_CycleToggle; // same
 .vector view_ofs;
 .float bonfire;
 .float cast_finished;
+.float ai_mode;
 
-// Animation States: Particularly for other players
+// Animation States
 .float anistate;
 const float ANISTATE_NONE = 0;
 const float ANISTATE_ATTACK = 1;
@@ -2342,3 +2342,5 @@ const float ANISTATE_CASTING = 3; // Spell charging
 const float ANISTATE_CASTAOE = 4; // AoE casting animation
 const float ANISTATE_CASTTARGET = 5; // Target casting animation
 const float ANISTATE_CASTSELF = 6; // Self casting animation
+const float ANISTATE_DEATH = 7; // Death animation
+const float ANISTATE_RUN = 8; // Running animation

@@ -7,44 +7,39 @@ void() Monster_Animate =
 	float speed = 1; // default base speed
 	float duration = frameduration(self.modelindex, self.frame);
 
-	if (self.health <= 0) // death
+	if (self.anistate == ANISTATE_DEATH)
 	{
-		if (!self.ani_death)
-		{
+		if (self.frame != (self.frame = frameforname(self.modelindex, "Death")))
 			self.frame1time = 0; // reset timestamp
-			self.frame = frameforname(self.modelindex, "Death");
-			self.ani_death = TRUE;
-		}
-		else
-		{
-			if (self.frame1time >= duration - 0.1)
-				self.frame1time = self.frame1time; // hold
-			else
-				self.frame1time += frametime;
-		}
-	}
-	else // alive
-	{
-		if (self.ani_death)
-			self.ani_death = FALSE;
+		self.frame = frameforname(self.modelindex, "Death");
 
-		if (self.ai_mode == AI_IDLE)
-			self.frame = frameforname(self.modelindex, "Idle");
-		else // moving
-		{
-			if (self.ai_mode == AI_ATTACK)
-			{
-				if (self.frame != (self.frame = frameforname(self.modelindex, "Slash")))
-					self.frame1time = 0; // reset timestamp
-				self.frame = frameforname(self.modelindex, "Slash");
-				speed = 1.5;
-			}
-			else
-				self.frame = frameforname(self.modelindex, "Run");
-		}
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = self.frame1time; // hold
+		else
+			self.frame1time += frametime;
+		return;
 	}
+
+	if (self.anistate == ANISTATE_ATTACK)
+	{
+		if (self.frame != (self.frame = frameforname(self.modelindex, "Slash")))
+			self.frame1time = 0; // reset timestamp
+		self.frame = frameforname(self.modelindex, "Slash");
+
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = self.frame1time; // hold
+		else
+			self.frame1time += frametime;
+		return;
+	}
+
+	if (self.anistate == ANISTATE_NONE)
+		self.frame = frameforname(self.modelindex, "Idle");
+	if (self.anistate == ANISTATE_RUN)
+			self.frame = frameforname(self.modelindex, "Run");
 
 	speed = (speed * frametime);
+
 //	if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp") // mini-map only on over world, full mini-map affects player animation speed for some reason
 //		speed /= 2;
 
@@ -80,7 +75,7 @@ float(void) Monster_PreDraw =
             continue;
 
 		self.origin += v_forward * self.speed * input_timelength; // extra smoothing - slides monsters though
-		
+
         movetogoal(self.speed);
     }
 

@@ -1835,9 +1835,6 @@ const float MENU_MAGIC = 6; // user magic screen
 // mana potion
 .float potion_use_finished;
 
-// CSQC stuff, primarily for animations
-.float anim_count; // used for counting frames in an animation (REMOVEME)
-
 //
 .float fall_maxspeed;     // largest downward speed seen while airborne (positive value)
 .float last_landtime;     // optional cooldown to avoid double-hitting in same frame
@@ -1886,7 +1883,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .string cast_finished_spell;
 .float spellani_finished;
 
-// Animation States: Particularly for other players
+// Animation States
 .float anistate;
 const float ANISTATE_NONE = 0;
 const float ANISTATE_ATTACK = 1;
@@ -1895,6 +1892,8 @@ const float ANISTATE_CASTING = 3; // Spell charging
 const float ANISTATE_CASTAOE = 4; // AoE casting animation
 const float ANISTATE_CASTTARGET = 5; // Target casting animation
 const float ANISTATE_CASTSELF = 6; // Self casting animation
+const float ANISTATE_DEATH = 7; // Death
+const float ANISTATE_RUN = 8; // Running animation
 
 //.float armorvalue; (this is already defined)
 

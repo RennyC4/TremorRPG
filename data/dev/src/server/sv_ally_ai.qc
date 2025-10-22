@@ -5,42 +5,6 @@
 void() ally_ai_think;
 void() ally_respawn;
 
-void() ally_attack =
-{
-	//self.SendFlags = 1;
-	if (self.anim_count > 0.6)
-	{
-		self.anim_count = 0;
-		self.think = ally_ai_think;
-		self.nextthink = time + 0.1;
-		return;
-	}
-
-	if (self.anim_count == 0.3)
-		CSEv_User_DoAttack_Melee_();
-
-	self.anim_count += 0.1;
-
-	self.think = ally_attack;
-	self.nextthink = time + 0.1;
-};
-
-void() ally_death2 =
-{
-	if (self.anim_count > 0)
-	{
-		self.anim_count = 0;
-		self.think = ally_respawn;
-		self.nextthink = time + self.respawn_finished;
-		return;
-	}
-
-	self.anim_count += 0.1;
-
-	self.think = ally_death2;
-	self.nextthink = time + 0.1;
-};
-
 void() ally_death =
 {
 	self.SendFlags = 1;
@@ -51,9 +15,8 @@ void() ally_death =
 	self.takedamage = DAMAGE_NO;
 	self.radius_candamage = FALSE;
 
-	self.anim_count = 0;
-	self.think = ally_death2;
-	self.nextthink = time;
+	//self.think = ally_death2;
+	//self.nextthink = time;
 };
 
 void() ally_ai_melee =
@@ -64,8 +27,8 @@ void() ally_ai_melee =
 			sound (self, CHAN_VOICE, self.noise1, 1, ATTN_NORM);
 		if (self.enemy)
 			self.enemy.incombat_finished = time + 15;
-		self.anim_count = 0;
-		ally_attack();
+
+		// Done through CSQC when we get there
 		self.melee_finished = time + self.attack_speed;
 	}
 	else

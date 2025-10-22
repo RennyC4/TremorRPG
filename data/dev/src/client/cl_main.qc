@@ -106,10 +106,9 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);
 
+	CSQC_LockOn_Update();
 	if (health > 0)
 	{
-		CSQC_LockOn_Update();
-
 		if ((player_idle || atbonfire) && !lock_on_active)
 			Camera_IdleOrbit();
 		else if (camera_mode)
@@ -348,7 +347,10 @@ void() CSQC_Parse_Event =
 void(float flIsNew) CSQC_Ent_Update =
 {
 	float flEntType = readbyte();
-	
+
+	//
+	// Players
+	//
 	if (flEntType == ENT_PLAYER)
 	{
 		if (flIsNew == TRUE)
@@ -363,9 +365,17 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.origin_x = readcoord();
 		self.origin_y = readcoord();
 		self.origin_z = readcoord();
-		//self.angles_x = readcoord();
+
+		self.angles_x = readcoord();
 		self.angles_y = readcoord();
 		self.angles_z = readcoord();
+
+		/*
+		self.v_angle_x = readcoord();
+		self.v_angle_y = readcoord();
+		self.v_angle_z = readcoord();
+		*/
+
 		self.velocity_x = readshort();
 		self.velocity_y = readshort();
 		self.velocity_z = readshort();
@@ -392,6 +402,9 @@ void(float flIsNew) CSQC_Ent_Update =
 		setorigin(self, self.origin);
 	}
 
+	//
+	// Monsters
+	//
 	if (flEntType == ENT_MONSTER)
 	{
 		if (flIsNew == TRUE)
@@ -419,11 +432,12 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.health = readshort();
 		self.max_health = readshort();
 		self.displayname = readstring();
-		self.ai_mode = readbyte();
 		self.speed = readbyte();
 		self.main_hand = readstring();
 		self.off_hand = readstring();
 		self.level = readbyte();
+		self.anistate = readbyte();
+		self.ai_mode = readbyte();
 	}
 };
 

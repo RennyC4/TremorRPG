@@ -1155,9 +1155,17 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteCoord(MSG_ENTITY, self.origin_x); // Position X
 	WriteCoord(MSG_ENTITY, self.origin_y); // Position Y
 	WriteCoord(MSG_ENTITY, self.origin_z); // Position Z
-	//WriteCoord(MSG_ENTITY, self.angles_x); // Angle X
+
+	/*
+	WriteCoord(MSG_ENTITY, self.angles_x); // Angle X
 	WriteCoord(MSG_ENTITY, self.angles_y); // Angle Y
 	WriteCoord(MSG_ENTITY, self.angles_z); // Angle Z
+	*/
+
+	WriteCoord(MSG_ENTITY, self.v_angle_x); // View angle X
+	WriteCoord(MSG_ENTITY, self.v_angle_y); // View angle Y
+	WriteCoord(MSG_ENTITY, self.v_angle_z); // View angle Z
+
 	WriteShort(MSG_ENTITY, self.velocity_x); // Velocity X
 	WriteShort(MSG_ENTITY, self.velocity_y); // Velocity X
 	WriteShort(MSG_ENTITY, self.velocity_z); // Velocity X

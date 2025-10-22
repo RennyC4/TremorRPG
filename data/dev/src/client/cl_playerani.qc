@@ -127,6 +127,13 @@ void() Player_Animate =
 
         return; // skip rest when dead
     }
+	else if (self.anim_state == ANIM_DEATH)
+	{
+		self.anim_state = ANIM_IDLE;
+		self.frame1time = 0;
+		self.frame = frameforname(self.modelindex, "Idle");
+		print ("Yeah\n");
+	}
 
 	// -----------------------------
     // Bonfire Sit Animation
@@ -275,7 +282,7 @@ void() Player_Animate =
         // Trigger actual attack once per animation
         if (!self.attack_triggered && self.frame1time >= duration * 0.25)
         {
-            sendevent("User_DoAttack_Melee", "");
+            sendevent("DoAttack_Melee", "");
             self.attack_triggered = TRUE;
         }
 

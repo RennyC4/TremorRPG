@@ -14,9 +14,11 @@ const float AI_PATROL = 4;
 .float ai_backup_finished;
 .entity ai_runback_temp;
 .float ai_move_dist;
+.float ai_doattack;
+.float ai_attacktriggered;
 
 void() monster_ai_think;
-void() CSEv_User_DoAttack_Melee_;
+void() CSEv_DoAttack_Melee_;
 void() monster_respawn;
 
 // range values
@@ -25,42 +27,6 @@ float	RANGE_MELEE				= 1;
 float	RANGE_NEAR				= 2;
 float	RANGE_MID				= 3;
 float	RANGE_FAR				= 4;
-
-void() monster_attack =
-{
-	self.SendFlags = 1;
-	if (self.anim_count > 0.6)
-	{
-		self.anim_count = 0;
-		self.think = monster_ai_think;
-		self.nextthink = time + 0.1;
-		return;
-	}
-
-	if (self.anim_count == 0.3)
-		CSEv_User_DoAttack_Melee_();
-
-	self.anim_count += 0.1;
-
-	self.think = monster_attack;
-	self.nextthink = time + 0.1;
-};
-
-void() monster_death2 =
-{
-	if (self.anim_count > 0)
-	{
-		self.anim_count = 0;
-		self.think = monster_respawn;
-		self.nextthink = time + self.respawn_finished;
-		return;
-	}
-
-	self.anim_count += 0.1;
-
-	self.think = monster_death2;
-	self.nextthink = time + 0.1;
-};
 
 void() monster_death =
 {
@@ -71,10 +37,11 @@ void() monster_death =
 	self.deadflag = DEAD_DEAD;
 	self.takedamage = DAMAGE_NO;
 	self.radius_candamage = FALSE;
+	self.anistate = ANISTATE_DEATH;
 
-	self.anim_count = 0;
-	self.think = monster_death2;
-	self.nextthink = time;
+	self.think = monster_respawn;
+	self.nextthink = time + self.respawn_finished;
+
 };
 
 void(float speed) TurnToTarget =
@@ -169,15 +136,13 @@ void() monster_ai_melee =
 			sound (self, CHAN_VOICE, self.noise1, 1, ATTN_NORM);
 		if (self.enemy)
 			self.enemy.incombat_finished = time + 15;
-		self.anim_count = 0;
-		monster_attack();
+		self.anistate = ANISTATE_ATTACK;
+
+		self.ai_doattack = time + (self.attack_speed / 5); // launch attack
 		self.melee_finished = time + self.attack_speed;
 	}
-	else
-	{
-		self.think = monster_ai_think;
-		self.nextthink = time + 0.1;
-	}
+	self.think = monster_ai_think;
+	self.nextthink = time + 0.1;
 };
 
 void() monster_ai_move =
@@ -187,8 +152,11 @@ void() monster_ai_move =
 
 	if (self.enemy)
 	{
-		if (self.ai_backup_finished > time)
+		if (self.ai_backup_finished > time && self.melee_finished < time)
+		{
 			walkmove(self.angles_y, self.speed * -1); // keep monster slightly back from target
+			self.anistate = ANISTATE_RUN;
+		}
 
 		if (range(self.enemy) == RANGE_CLOSE)
 			self.ai_backup_finished = time + random_range(0.7, 2.5); // too close, back up a bit
@@ -227,10 +195,16 @@ void() monster_ai_think =
 	//string l = ftos(self.ai_mode);
 	//print(l, "\n");
 
+	// monster is walking normal its beat (no target)
 	if (self.ai_mode == AI_IDLE || self.ai_mode == AI_PATROL)
 	{
-		if (self.health != self.max_health) // monsters have full health in patrol mode
-			self.health = self.max_health;
+		if (!self.enemy)
+		{
+			if (self.health < self.max_health) // monsters regen health when they're idle patrolling
+				self.health ++;
+			else
+				self.health = self.max_health;
+		}
 
 		// randomly turn and move
 		if (self.ai_patrolidle < time)
@@ -238,11 +212,12 @@ void() monster_ai_think =
 			self.angles_x = 0;
 			self.idealangles_y = random()*360;
 			if (self.ai_move_dist > 1)
-				self.ai_patrolidle = time + 3 + random()*6;
+				self.ai_patrolidle = time + 2 + random()*5;
 			if (random() < 0.35)
-				self.ai_standstill = time + 1 + random()*8;
+				self.ai_standstill = time + 2 + random()*10;
 			TurnToTarget(self.turn_speed);
 			self.ai_mode = AI_IDLE;
+			self.anistate = ANISTATE_NONE;
 		}
 		else
 		{
@@ -251,6 +226,7 @@ void() monster_ai_think =
 				if (!walkmove(self.angles_y, self.speed / 4)) // failed, changed direction
 					self.idealangles_y = random() * 360;
 				self.ai_mode = AI_PATROL;
+				self.anistate = ANISTATE_RUN;
 			}
 		}
 
@@ -263,6 +239,7 @@ void() monster_ai_think =
 					sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
 				self.goalentity = self.enemy = targ;
 				self.ai_mode = AI_CHASE;
+				self.anistate = ANISTATE_RUN;
 				targ.incombat = TRUE; // flag player for combat
 				targ.incombat_finished = time + 15;
 				string eventlog_print = (strcat("^1You engage in combat!\n"));
@@ -290,6 +267,7 @@ void() monster_ai_think =
 
 			self.enemy = world;
 			self.ai_mode = AI_RUNBACK;
+			self.anistate = ANISTATE_RUN;
 		}
 	}
 	else // AI is jogging back close to spawn spot
@@ -328,6 +306,7 @@ void() monster_ai_think =
 			self.goalentity = world;
 			self.movetype = MOVETYPE_STEP;
 			self.ai_mode = AI_IDLE;
+			self.anistate = ANISTATE_NONE;
 
 			// remove ghost effect
 			self.alpha = 1;
@@ -335,6 +314,7 @@ void() monster_ai_think =
 		}
 	}
 
+	// monster got something
 	if (self.goalentity) 
 	{
 		if (self.stagger_finished < time)
@@ -350,19 +330,42 @@ void() monster_ai_think =
 
 		if (self.enemy.flags & FL_CLIENT && self.enemy.classname == "player" && self.enemy.health > 0)
 		{
-			if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
+			if (self.melee_finished < time && self.stagger_finished < time)
 			{
-				if (!self.enemy.incombat)
+				if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
 				{
-					self.enemy.incombat = TRUE; // turn on during an attack incase another monster somehow flags it off
-					self.enemy.incombat_finished = time + 15;
+					if (!self.enemy.incombat)
+					{
+						self.enemy.incombat = TRUE; // turn on during an attack incase another monster somehow flags it off
+						self.enemy.incombat_finished = time + 15;
+					}
+					self.ai_attacktriggered = FALSE;
+					self.ai_mode = AI_ATTACK;
+					self.anistate = ANISTATE_NONE;
+					self.think = monster_ai_melee;
 				}
-				self.ai_mode = AI_ATTACK;
-				self.think = monster_ai_melee;
-				self.nextthink = time + 0.1;
+				else
+				{
+					self.ai_mode = AI_CHASE;
+					self.anistate = ANISTATE_RUN;
+				}
 			}
-			else
-				self.ai_mode = AI_CHASE;
+			else if (self.stagger_finished < time)
+			{
+				if (self.ai_doattack < time && !self.ai_attacktriggered)
+				{
+					CSEv_DoAttack_Melee_(); // fire the actual attack
+					self.ai_attacktriggered = TRUE;
+				}
+				else
+				{
+					if (self.melee_finished < time)
+					{
+						self.anistate = ANISTATE_NONE;
+						self.ai_attacktriggered = FALSE;
+					}
+				}
+			}
 		}
 		monster_ai_move();
 	}
@@ -373,6 +376,7 @@ void() monster_ai_think =
 		self.oldenemy = self.enemy; // stash last killed or lost to bonfire
 		self.enemy = self.goalentity = world;
 		self.ai_mode = AI_IDLE;
+		self.anistate = ANISTATE_NONE;
 	}
 
 	// Debugging
