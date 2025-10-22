@@ -194,6 +194,9 @@ void() PlayerClimb =
 
 void() PlayerJump =
 {
+	if (self.bonfire)
+		return;
+
 	PlayerClimb();
 
 	if (self.climbing)
