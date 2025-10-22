@@ -204,7 +204,8 @@ float(string strCommand) CSQC_ConsoleCommand =
 	if (argv(0) == "toggle_camera") // send camera mode to SSQC for various reasons
 	{
 		float player_menu = getstatf(STAT_MENU);
-		if (!player_menu)
+		float atbonfire = getstatf(STAT_BONFIRE);
+		if (!player_menu && !atbonfire)
 		{
 			if (!camera_mode)
 			{

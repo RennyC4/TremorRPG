@@ -85,16 +85,20 @@ void() Skeleton_ObjectDraw =
 			// Models to draw
 			//
 			
-			// Swords
-			if (self.main_hand == "Broken Sword")
-				setmodel(self.weapon_vfx, "models/sword0.glb");
-			if (self.main_hand == "Short Sword")
-				setmodel(self.weapon_vfx, "models/sword1.glb");
+			if (!self.bonfire)
+			{
+				// Swords
+				if (self.main_hand == "Broken Sword")
+					setmodel(self.weapon_vfx, "models/sword0.glb");
+				if (self.main_hand == "Short Sword")
+					setmodel(self.weapon_vfx, "models/sword1.glb");
 
-			// Daggers
-			if (self.main_hand == "Rusty Dagger")
-				setmodel(self.weapon_vfx, "models/dagger0.glb");
-
+				// Daggers
+				if (self.main_hand == "Rusty Dagger")
+					setmodel(self.weapon_vfx, "models/dagger0.glb");
+			}
+			else
+				setmodel(self.weapon_vfx, __NULL__);
 			//
 			//
 			//
@@ -134,13 +138,17 @@ void() Skeleton_ObjectDraw =
 			//
 			// Models to draw
 			//
-			
-			// Shields
-			if (self.off_hand == "Broken Buckler")
-				setmodel(self.offhand_vfx, "models/shield0.glb");
-			if (self.off_hand == "Flimsy Buckler")
-				setmodel(self.offhand_vfx, "models/shield1.glb");
 
+			if (!self.bonfire)
+			{
+				// Shields
+				if (self.off_hand == "Broken Buckler")
+					setmodel(self.offhand_vfx, "models/shield0.glb");
+				if (self.off_hand == "Flimsy Buckler")
+					setmodel(self.offhand_vfx, "models/shield1.glb");
+			}
+			else
+				setmodel(self.offhand_vfx, __NULL__);
 			//
 			//
 			//
