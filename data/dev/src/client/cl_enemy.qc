@@ -38,7 +38,7 @@ void() Monster_Animate =
 	if (self.anistate == ANISTATE_NONE)
 		self.frame = frameforname(self.modelindex, "Idle");
 	if (self.anistate == ANISTATE_RUN)
-			self.frame = frameforname(self.modelindex, "Run");
+		self.frame = frameforname(self.modelindex, "Run");
 
 	speed = (speed * frametime);
 

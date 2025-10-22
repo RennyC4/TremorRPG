@@ -197,7 +197,6 @@ void() monster_ai_think =
 
 	if (self.stagger_finished > time)
 	{
-		print ("Wtf\n");
 		self.anistate = ANISTATE_STUNNED;
 		self.nextthink = time + 0.1;
 		return;
