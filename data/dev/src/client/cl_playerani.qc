@@ -132,7 +132,6 @@ void() Player_Animate =
 		self.anim_state = ANIM_IDLE;
 		self.frame1time = 0;
 		self.frame = frameforname(self.modelindex, "Idle");
-		print ("Yeah\n");
 	}
 
 	// -----------------------------
