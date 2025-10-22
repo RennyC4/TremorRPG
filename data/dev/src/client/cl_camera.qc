@@ -29,19 +29,29 @@ void() Camera_DeathCam =
 	setviewprop(VF_ANGLES, ang);
 };
 
-// idle camera
+// idle + bonfire camera
 void() Camera_IdleOrbit =
 {
     float health = getstatf(STAT_HEALTH);
+	float atbonfire = getstatf(STAT_BONFIRE);
+
     if (health <= 0)
         return;
 
     vector plyr_pos = getproperty(VF_ORIGIN);
-    vector ang = [0, cltime * 16, 0];
+	vector ang;
+	if (!atbonfire)
+		ang = [0, cltime * 16, 0];
+	else
+		ang = [16, cltime * 16, 0];
 
     makevectors(ang);
 
-    vector cam_offset = -v_forward * 64 - v_up * 16;
+	vector cam_offset;
+	if (!atbonfire)
+		cam_offset = -v_forward * 64 - v_up * 16;
+	else
+		cam_offset = -v_forward * 128 + v_up * 32;
     vector cam_target = plyr_pos + cam_offset;
 
 	tracebox(plyr_pos, [-4, -4, -4], [4, 4, 4], cam_target, MOVE_NORMAL, world);

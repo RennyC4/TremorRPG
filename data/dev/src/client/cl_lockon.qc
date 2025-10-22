@@ -3,7 +3,6 @@ const float lock_on_dist = 2000;
 
 float lock_on_active;
 entity lock_on_target;
-float LockOn_PitchFix; // ugh...
 
 float(vector a, vector b) vdot = {return a_x * b_x + a_y * b_y + a_z * b_z;};
 
@@ -77,18 +76,20 @@ void(vector where) CSQC_LockOn_Plaques =
 
 void() CSQC_LockOn_Update =
 {
+	float player_health = getstatf(STAT_HEALTH);
+	float atbonfire = getstatf(STAT_BONFIRE);
+
 	if (lock_on_active && lock_on_target && lock_on_target.health > 0)
 	{
 		vector dir = normalize(lock_on_target.origin - vPlayerOrigin); // don't change vPlayerOrigin, otherwise things break
 		vector ang = vectoangles(dir);
 
 		setproperty(VF_ANGLES, ang);
-		setproperty(VF_CL_VIEWANGLES, ang);
-		LockOn_PitchFix = ang_x; // ugh...
+		setproperty(VF_CL_VIEWANGLES_Y, ang_y);
 	}
 	else // auto unlock
 	{
-		if (lock_on_active && (!lock_on_target || lock_on_target.health <= 0 || vlen(lock_on_target.origin - vPlayerOrigin) > lock_on_dist || lock_on_target.ai_mode == AI_RUNBACK))
+		if (lock_on_active && (!lock_on_target || player_health <= 0 || atbonfire || lock_on_target.health <= 0 || vlen(lock_on_target.origin - vPlayerOrigin) > lock_on_dist || lock_on_target.ai_mode == AI_RUNBACK))
 		{
 			lock_on_target = world;
 			lock_on_active = FALSE;

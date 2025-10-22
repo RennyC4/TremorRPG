@@ -110,7 +110,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	{
 		CSQC_LockOn_Update();
 
-		if (player_idle)
+		if ((player_idle || atbonfire) && !lock_on_active)
 			Camera_IdleOrbit();
 		else if (camera_mode)
 		{
@@ -362,7 +362,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.origin_x = readcoord();
 		self.origin_y = readcoord();
 		self.origin_z = readcoord();
-		self.angles_x = readcoord();
+		//self.angles_x = readcoord();
 		self.angles_y = readcoord();
 		self.angles_z = readcoord();
 		self.velocity_x = readshort();
