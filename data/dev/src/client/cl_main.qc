@@ -246,9 +246,17 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 		switch(evtype)
 		{
 			case IE_KEYDOWN:
+			{
+				if (getkeybind(scanx) == "+button4")
+					button4 = TRUE;
 				return FALSE;
+			}
 			case IE_KEYUP:
+			{
+				if (getkeybind(scanx) == "+button4")
+					button4 = FALSE;
 				return FALSE;
+			}
 			case IE_MOUSEDELTA:
 			{
 				// disable mouse movement

@@ -489,7 +489,7 @@ void() Player_Think =
 				if (stamina >= attack_stamina && self.attack_finished < time) // stamina drain on swing
 				{
 					sendevent("User_StartAttack", "");
-					if (self.health > 0)
+					if (self.health > 0 && !button4) // don't do attack animation when holding block
 						self.anim_attacking = TRUE;
 					self.attack_finished = time + attackspeed;
 				}

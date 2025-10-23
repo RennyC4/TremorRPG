@@ -2198,6 +2198,7 @@ string autocvar_tremor_lighting;
 float deathcam_dist;
 float thirdcam_dist;
 float thirdcam_distz;
+float button4;
 
 float MENU;
 const float MENU_OFF = 0;
