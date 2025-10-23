@@ -21,6 +21,8 @@
 #define ANIM_STUNNED	11
 #define ANIM_STAB		12
 #define ANIM_PUNCH		13
+#define ANIM_BLOCKWALK	14
+#define ANIM_BLOCKIDLE	15
 
 //
 // Special animations sent from SSQC
@@ -402,25 +404,49 @@ void() Player_Animate =
         // Standing still → Idle
         if (!self.velocity_x && !self.velocity_y)
         {
-            if (self.anim_state != ANIM_IDLE)
-            {
-                self.frame1time = 0;
-                self.frame = frameforname(self.modelindex, "Idle");
-                self.anim_state = ANIM_IDLE;
-            }
+			if (button4 && self.off_hand != "Empty")
+			{
+				if (self.anim_state != ANIM_BLOCKIDLE)
+				{
+					self.frame = frameforname(self.modelindex, "BlockIdle");
+					self.frame1time = 0;
+					self.anim_state = ANIM_BLOCKIDLE;
+				}
+			}
+			else
+			{
+				if (self.anim_state != ANIM_IDLE)
+				{
+					self.frame1time = 0;
+					self.frame = frameforname(self.modelindex, "Idle");
+					self.anim_state = ANIM_IDLE;
 
-            string gender = getstats(STAT_GENDER);
-            if (gender == "Female")
-                speed = 0.5;
+					string gender = getstats(STAT_GENDER);
+					if (gender == "Female")
+						speed = 0.5;
+				}
+			}
         }
         else // Moving → Run
         {
-            if (self.anim_state != ANIM_RUN)
-            {
-                self.frame = frameforname(self.modelindex, "Run");
-                self.frame1time = 0;
-                self.anim_state = ANIM_RUN;
-            }
+			if (button4 && self.off_hand != "Empty")
+			{
+				if (self.anim_state != ANIM_BLOCKWALK)
+				{
+					self.frame = frameforname(self.modelindex, "BlockWalk");
+					self.frame1time = 0;
+					self.anim_state = ANIM_BLOCKWALK;
+				}
+			}
+			else
+			{
+				if (self.anim_state != ANIM_RUN)
+				{
+					self.frame = frameforname(self.modelindex, "Run");
+					self.frame1time = 0;
+					self.anim_state = ANIM_RUN;
+				}
+			}
         }
     }
 

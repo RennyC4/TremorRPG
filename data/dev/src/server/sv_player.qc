@@ -514,7 +514,7 @@ void() Player_ShieldBlock =
 	if (self.blockvalue <= 0)
 		return;
 
-	if (self.attack_speed < time && self.stagger_finished < time)
+	if (self.melee_finished < time && self.stagger_finished < time)
 	{
 		if (!self.blocking)
 		{
@@ -747,9 +747,11 @@ void() CSEv_User_StartAttack_ =
 							self.staminamessage_finished = time + 1;
 						}
 					}
-					else
+					else if (!self.button4) // button4 check, don't push player forward on shieldbash
 					{
-						if (self.attack_type == 1)
+						if (self.attack_type == 0)
+							self.anistate = ANISTATE_PUNCH;
+						else if (self.attack_type == 1)
 							self.anistate = ANISTATE_SLASH;
 						else if (self.attack_type == 2)
 							self.anistate = ANISTATE_STAB;
@@ -761,7 +763,7 @@ void() CSEv_User_StartAttack_ =
 					}
 				}
 			}
-			else
+			else if (self.blockvalue > 0)
 				DoAttack_ShieldBash();
 		}
 	}
