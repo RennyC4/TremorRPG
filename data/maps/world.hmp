@@ -212,21 +212,21 @@ exp "50"
 exp_min "25"
 gold "10"
 gold_min "3"
-attack_power_min "9"
-attack_power_max "14"
+attack_power_min "5"
+attack_power_max "10"
 respawn_finished "10"
 speed "25"
 noise "monsters/sight1.wav" // sight sound
 noise1 "monsters/attack1.wav" // attack sound
 noise2 "monsters/pain1.wav" // pain sound
 noise3 "monsters/death1.wav" // death sound
-attack_speed "2"
-attack_length "64"
+attack_speed "0.8"
+attack_length "55"
 turn_speed "30"
 canbackstab "1"
 gender "Male"
-main_hand "Broken Sword"
-attack_type "1"
+main_hand "Rusty Dagger"
+attack_type "2"
 }
 
 // monster (bandit lvl 1)

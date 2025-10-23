@@ -20,11 +20,37 @@ void() Monster_Animate =
 		return;
 	}
 
+	if (self.anistate == ANISTATE_PUNCH)
+	{
+		if (self.frame != (self.frame = frameforname(self.modelindex, "Punch")))
+			self.frame1time = 0; // reset timestamp
+		self.frame = frameforname(self.modelindex, "Punch");
+
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = self.frame1time; // hold
+		else
+			self.frame1time += frametime;
+		return;
+	}
+
 	if (self.anistate == ANISTATE_SLASH)
 	{
 		if (self.frame != (self.frame = frameforname(self.modelindex, "Slash")))
 			self.frame1time = 0; // reset timestamp
 		self.frame = frameforname(self.modelindex, "Slash");
+
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = self.frame1time; // hold
+		else
+			self.frame1time += frametime;
+		return;
+	}
+
+	if (self.anistate == ANISTATE_STAB)
+	{
+		if (self.frame != (self.frame = frameforname(self.modelindex, "Stab")))
+			self.frame1time = 0; // reset timestamp
+		self.frame = frameforname(self.modelindex, "Stab");
 
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
