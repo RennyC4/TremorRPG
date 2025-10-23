@@ -788,7 +788,13 @@ void() Anistate_Handler =
 		if (self.spellani_finished < time)
 			self.anistate = ANISTATE_NONE;
 	}
-
+	// Tied to potion_use_finished
+	if (self.anistate == ANISTATE_DRINK)
+	{
+		if (self.potion_use_finished < time)
+			self.anistate = ANISTATE_NONE;
+	}
+	
 	if (self.flags & FL_ONGROUND)
 		self.climbing = FALSE;
 };

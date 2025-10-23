@@ -153,6 +153,8 @@ void(float id, string itemname) Player_UseItem =
 		if (self.healthpot_finished < time)
 			self.healthpot_finished = time + 3; // delay before first tick (drink time)
 
+		self.anistate = ANISTATE_DRINK;
+
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
 		RemoveFromInventory(self, itemname, 1);		
@@ -186,6 +188,8 @@ void(float id, string itemname) Player_UseItem =
 		self.potion_use_finished = time + 3; // slow player movement
 		if (self.manapot_finished < time)
 			self.manapot_finished = time + 3; // delay before first tick (drink time)
+
+		self.anistate = ANISTATE_DRINK;
 
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));

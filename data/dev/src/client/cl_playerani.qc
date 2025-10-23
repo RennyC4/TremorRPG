@@ -27,6 +27,7 @@
 #define ANIM_CROUCHIDLE	17
 #define ANIM_BASH		18
 #define ANIM_PARRY		19
+#define ANIM_DRINK		20
 
 //
 // Special animations sent from SSQC
@@ -114,8 +115,8 @@ void() OtherPlayer_Anistate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "CastSelf");
 			self.anim_state = ANIM_CASTSELF;
-			speed = 1.5;
 		}
+		speed = 1.5;
 	}
 
 	if (self.anistate == ANISTATE_STUNNED)
@@ -126,6 +127,17 @@ void() OtherPlayer_Anistate =
 			self.frame = frameforname(self.modelindex, "Stunned");
 			self.anim_state = ANIM_STUNNED;
 		}
+	}
+
+	if (self.anistate == ANISTATE_DRINK)
+	{
+		if (self.frame != frameforname(self.modelindex, "Drink"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Drink");
+			self.anim_state = ANIM_STUNNED;
+		}
+		speed = 1.5;
 	}
 
     speed *= frametime;
@@ -171,6 +183,27 @@ void() Player_Animate =
 		self.anim_state = ANIM_IDLE;
 		self.frame1time = 0;
 		self.frame = frameforname(self.modelindex, "Idle");
+	}
+
+	// -----------------------------
+    // Drink Animation
+    // -----------------------------
+	if (self.anistate == ANISTATE_DRINK)
+	{
+		if (self.frame != frameforname(self.modelindex, "Drink"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Drink");
+			self.anim_state = ANIM_DRINK;
+		}
+		speed = 1.5;
+		speed *= frametime;
+
+        if (self.frame1time >= duration - 0.1) // Hold final frame at end
+            self.frame1time = duration - 0.1;
+        else
+            self.frame1time += speed;
+		return;
 	}
 
 	// -----------------------------
