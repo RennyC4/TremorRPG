@@ -53,6 +53,7 @@ void() WipeParms =
 	parm23 = 0;
 	parm24 = 0;
 	parm25 = 0;
+	parm26 = 0;
 };
 
 void() SetChangeParms =
@@ -91,6 +92,7 @@ void() SetChangeParms =
 	parm23 = self.skill_fishing;
 	parm24 = self.skill_woodcutting;
 	parm25 = self.lantern;
+	parm26 = self.camera_toggle;
 };
 
 void() SetCheckParms =
@@ -120,6 +122,7 @@ void() SetCheckParms =
 	self.skill_fishing = parm23;
 	self.skill_woodcutting = parm24;
 	self.lantern = parm25;
+	self.camera_toggle = parm26;
 };
 
 void() SetCheckStringParms = // read updated client string parms
@@ -1159,6 +1162,7 @@ void(float type) PlayerSpawn =
 float(entity ePVEnt, float flChanged) Player_SendEntity =
 {
 	WriteByte(MSG_ENTITY, ENT_PLAYER); // Unique identifier
+
 	WriteCoord(MSG_ENTITY, self.origin_x); // Position X
 	WriteCoord(MSG_ENTITY, self.origin_y); // Position Y
 	WriteCoord(MSG_ENTITY, self.origin_z); // Position Z
@@ -1170,6 +1174,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteShort(MSG_ENTITY, self.velocity_x); // Velocity X
 	WriteShort(MSG_ENTITY, self.velocity_y); // Velocity X
 	WriteShort(MSG_ENTITY, self.velocity_z); // Velocity X
+
 	WriteFloat(MSG_ENTITY, self.flags); // Flags, important for physics
 	WriteFloat(MSG_ENTITY, self.effects); // Effects
 	WriteShort(MSG_ENTITY, self.modelindex);
@@ -1217,6 +1222,8 @@ void() PutClientInServer =
 
 		SetCheckStringParms();
 
+		if (parm26)
+			stuffcmd (self, sprintf("toggle_camera\n")); // carry 3rd person camera state
 		return;
 	}
 	else // wipe string parms on first entrance
