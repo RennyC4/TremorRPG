@@ -385,7 +385,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.effects = readfloat();
 		self.modelindex = readshort();
 		self.netname = readstring();
-		self.climbing = readshort();
+		self.climbing = readbyte();
 		self.health = readshort();
 		self.max_health = readshort();
 		self.level = readbyte();
@@ -401,6 +401,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.cast_finished = readbyte();
 		self.attack_type = readbyte();
 		self.blocking = readbyte();
+		self.crouch = readbyte();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);

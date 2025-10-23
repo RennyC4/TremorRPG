@@ -23,6 +23,8 @@
 #define ANIM_PUNCH		13
 #define ANIM_BLOCKWALK	14
 #define ANIM_BLOCKIDLE	15
+#define ANIM_CROUCHWALK	16
+#define ANIM_CROUCHIDLE	17
 
 //
 // Special animations sent from SSQC
@@ -404,7 +406,16 @@ void() Player_Animate =
         // Standing still → Idle
         if (!self.velocity_x && !self.velocity_y)
         {
-			if (self.blocking && self.off_hand != "Empty")
+			if (self.crouch)
+			{
+				if (self.anim_state != ANIM_CROUCHIDLE)
+				{
+					self.frame = frameforname(self.modelindex, "CrouchIdle");
+					self.frame1time = 0;
+					self.anim_state = ANIM_CROUCHIDLE;
+				}
+			}
+			else if (self.blocking && self.off_hand != "Empty")
 			{
 				if (self.anim_state != ANIM_BLOCKIDLE)
 				{
@@ -429,7 +440,16 @@ void() Player_Animate =
         }
         else // Moving → Run
         {
-			if (self.blocking && self.off_hand != "Empty")
+			if (self.crouch)
+			{
+				if (self.anim_state != ANIM_CROUCHWALK)
+				{
+					self.frame = frameforname(self.modelindex, "CrouchWalk");
+					self.frame1time = 0;
+					self.anim_state = ANIM_CROUCHWALK;
+				}
+			}
+			else if (self.blocking && self.off_hand != "Empty")
 			{
 				if (self.anim_state != ANIM_BLOCKWALK)
 				{

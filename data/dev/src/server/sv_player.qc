@@ -258,14 +258,12 @@ void() CSEv_PlayerCrouch =
 		setsize(self, [-16, -16, 0], [16, 16, 28]);
 		self.view_ofs = [0, 0, 24];
 		self.crouch = TRUE;
-		self.alpha = 0.25;
 	}
 	else
 	{
 		self.crouch = FALSE;
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];
-		self.alpha = 1;
 	}
 };
 
@@ -981,11 +979,23 @@ void() PlayerPostThink =
 		// Alpha transparency handler for crouch/sneaking
 		if (self.crouch && !self.bonfire)
 		{
-			self.alpha = 1 - (self.skill_stealth * 0.004);
-			self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
-			if (self.alpha < 0.1)
-				self.alpha = 0.1;
-			self.effects |= EF_ADDITIVE;
+			if (self.skill_stealth >= 25) // 25 is when stealth mechanics actually kick in
+			{
+				if (!self.lantern)
+				{
+					self.alpha = 1 - (self.skill_stealth * 0.004);
+					self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
+					if (self.alpha < 0.1)
+						self.alpha = 0.1;
+					self.effects |= EF_ADDITIVE;
+				}
+				else
+				{
+					self.alpha = 1;
+					self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
+					self.effects &= ~EF_ADDITIVE;
+				}
+			}
 		}
 		else
 		{
@@ -1181,7 +1191,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteFloat(MSG_ENTITY, self.effects); // Effects
 	WriteShort(MSG_ENTITY, self.modelindex);
 	WriteString(MSG_ENTITY, self.netname);
-	WriteShort(MSG_ENTITY, self.climbing); // Climbing - Animation
+	WriteByte(MSG_ENTITY, self.climbing); // Climbing - Animation
 	WriteShort(MSG_ENTITY, self.health); // Animation + additional checks
 	WriteShort(MSG_ENTITY, self.max_health);
 	WriteByte(MSG_ENTITY, self.level);
@@ -1199,6 +1209,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteByte(MSG_ENTITY, self.cast_finished);
 	WriteByte(MSG_ENTITY, self.attack_type);
 	WriteByte(MSG_ENTITY, self.blocking);
+	WriteByte(MSG_ENTITY, self.crouch);
 
 	return TRUE;
 };

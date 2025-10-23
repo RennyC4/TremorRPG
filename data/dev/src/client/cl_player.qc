@@ -117,6 +117,15 @@ void() Skeleton_ObjectDraw =
 			// angles
 			ang = vectoangles(v_forward, v_up);
 			self.weapon_vfx.angles = ang;
+			
+			// Stealth causes objects to alpha
+			if (self.crouch)
+			{
+				self.weapon_vfx.effects = self.effects;
+				self.weapon_vfx.alpha = self.alpha;
+			}
+			else
+				self.weapon_vfx.effects = 0;
 		}
 	}
 	else if (self.weapon_vfx)
@@ -166,6 +175,15 @@ void() Skeleton_ObjectDraw =
 			// angles
 			ang = vectoangles(v_forward, v_up);
 			self.offhand_vfx.angles = ang;
+
+			// Stealth causes objects to alpha
+			if (self.crouch)
+			{
+				self.offhand_vfx.effects = self.effects;
+				self.offhand_vfx.alpha = self.alpha;
+			}
+			else
+				self.offhand_vfx.effects = 0;
 		}
 	}
 	else if (self.offhand_vfx)
