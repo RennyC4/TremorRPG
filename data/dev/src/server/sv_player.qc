@@ -746,7 +746,11 @@ void() CSEv_User_StartAttack_ =
 					}
 					else
 					{
-						self.anistate = ANISTATE_ATTACK;
+						if (self.attack_type == 1)
+							self.anistate = ANISTATE_SLASH;
+						else if (self.attack_type == 2)
+							self.anistate = ANISTATE_STAB;
+
 						self.stamina -= (self.attack_stamina - stamcalc);
 						self.melee_finished = time + self.attack_speed;
 						self.lockview_finished = time + self.attack_speed;
@@ -766,7 +770,7 @@ void() CSEv_User_StartAttack_ =
 
 void() Anistate_Handler =
 {
-	if (self.anistate == ANISTATE_ATTACK)
+	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB)
 	{
 		if (self.melee_finished < time)
 			self.anistate = ANISTATE_NONE;
@@ -1159,12 +1163,6 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteCoord(MSG_ENTITY, self.origin_y); // Position Y
 	WriteCoord(MSG_ENTITY, self.origin_z); // Position Z
 
-	/*
-	WriteCoord(MSG_ENTITY, self.angles_x); // Angle X
-	WriteCoord(MSG_ENTITY, self.angles_y); // Angle Y
-	WriteCoord(MSG_ENTITY, self.angles_z); // Angle Z
-	*/
-
 	WriteCoord(MSG_ENTITY, self.v_angle_x); // View angle X
 	WriteCoord(MSG_ENTITY, self.v_angle_y); // View angle Y
 	WriteCoord(MSG_ENTITY, self.v_angle_z); // View angle Z
@@ -1190,6 +1188,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteByte(MSG_ENTITY, self.anistate);
 	WriteByte(MSG_ENTITY, self.bonfire);
 	WriteByte(MSG_ENTITY, self.cast_finished);
+	WriteByte(MSG_ENTITY, self.attack_type);
 
 	return TRUE;
 };

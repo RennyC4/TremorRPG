@@ -136,7 +136,7 @@ void() monster_ai_melee =
 			sound (self, CHAN_VOICE, self.noise1, 1, ATTN_NORM);
 		if (self.enemy)
 			self.enemy.incombat_finished = time + 15;
-		self.anistate = ANISTATE_ATTACK;
+		self.anistate = ANISTATE_SLASH;
 
 		self.ai_doattack = time + (self.attack_speed / 5); // launch attack
 		self.melee_finished = time + self.attack_speed;

@@ -370,12 +370,6 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.angles_y = readcoord();
 		self.angles_z = readcoord();
 
-		/*
-		self.v_angle_x = readcoord();
-		self.v_angle_y = readcoord();
-		self.v_angle_z = readcoord();
-		*/
-
 		self.velocity_x = readshort();
 		self.velocity_y = readshort();
 		self.velocity_z = readshort();
@@ -397,6 +391,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.anistate = readbyte();
 		self.bonfire = readbyte();
 		self.cast_finished = readbyte();
+		self.attack_type = readbyte();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);

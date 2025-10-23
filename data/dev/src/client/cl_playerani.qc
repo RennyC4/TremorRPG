@@ -9,7 +9,7 @@
 // constants for clarity, these are strictly CSQC
 #define ANIM_IDLE   	0
 #define ANIM_RUN    	1
-#define ANIM_ATTACK 	2
+#define ANIM_SLASH  	2
 #define ANIM_CLIMB  	3
 #define ANIM_DEATH  	4
 #define ANIM_JUMP		5
@@ -19,6 +19,7 @@
 #define ANIM_CASTTARGET	9
 #define ANIM_CASTSELF	10
 #define ANIM_STUNNED	11
+#define ANIM_STAB		12
 
 //
 // Special animations sent from SSQC
@@ -29,13 +30,23 @@ void() OtherPlayer_Anistate =
 	float speed = 1;
 	float duration = frameduration(self.modelindex, self.frame);
 
-	if (self.anistate == ANISTATE_ATTACK)
+	if (self.anistate == ANISTATE_SLASH)
 	{
 		if (self.frame != frameforname(self.modelindex, "Slash"))
 		{
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Slash");
-			self.anim_state = ANIM_ATTACK;
+			self.anim_state = ANIM_SLASH;
+		}
+	}
+
+	if (self.anistate == ANISTATE_STAB)
+	{
+		if (self.frame != frameforname(self.modelindex, "Stab"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Stab");
+			self.anim_state = ANIM_SLASH;
 		}
 	}
 
@@ -294,12 +305,20 @@ void() Player_Animate =
     // -----------------------------
     if (self.anim_attacking)
     {
-        if (self.anim_state != ANIM_ATTACK)
+        if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB)
         {
-            self.frame = frameforname(self.modelindex, "Slash");
+			if (self.attack_type == 1)
+			{
+				self.frame = frameforname(self.modelindex, "Slash");
+				self.anim_state = ANIM_SLASH;
+			}
+			else if (self.attack_type == 2)
+			{
+				self.frame = frameforname(self.modelindex, "Stab");
+	            self.anim_state = ANIM_STAB;
+			}
             self.frame1time = 0;
             self.attack_triggered = FALSE;
-            self.anim_state = ANIM_ATTACK;
         }
 
         // Adjust speed by attack stat
@@ -308,11 +327,19 @@ void() Player_Animate =
             speed /= attackspeed;
 
         // Trigger actual attack once per animation
-        if (!self.attack_triggered && self.frame1time >= duration * 0.25)
-        {
-            sendevent("DoAttack_Melee", "");
-            self.attack_triggered = TRUE;
-        }
+		if (!self.attack_triggered)
+		{
+			if (self.attack_type == 1 && self.frame1time >= duration * 0.25) // Slash
+			{
+				sendevent("DoAttack_Melee", "");
+				self.attack_triggered = TRUE;
+			}
+			if (self.attack_type == 2 && self.frame1time >= duration * 0.05) // Stab
+			{
+				sendevent("DoAttack_Melee", "");
+				self.attack_triggered = TRUE;
+			}
+		}
 
         // End attack
         if (self.frame1time >= duration)

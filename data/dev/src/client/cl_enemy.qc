@@ -20,7 +20,7 @@ void() Monster_Animate =
 		return;
 	}
 
-	if (self.anistate == ANISTATE_ATTACK)
+	if (self.anistate == ANISTATE_SLASH)
 	{
 		if (self.frame != (self.frame = frameforname(self.modelindex, "Slash")))
 			self.frame1time = 0; // reset timestamp

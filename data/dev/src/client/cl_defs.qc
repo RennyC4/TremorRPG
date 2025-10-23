@@ -2332,11 +2332,12 @@ float LockOn_CycleToggle; // same
 .float bonfire;
 .float cast_finished;
 .float ai_mode;
+.float attack_type; // 0 unarmed, 1 slash, 2 pierce, 3 bash
 
 // Animation States
 .float anistate;
 const float ANISTATE_NONE = 0;
-const float ANISTATE_ATTACK = 1;
+const float ANISTATE_SLASH = 1;
 const float ANISTATE_SIT = 2;
 const float ANISTATE_CASTING = 3; // Spell charging
 const float ANISTATE_CASTAOE = 4; // AoE casting animation
@@ -2345,3 +2346,4 @@ const float ANISTATE_CASTSELF = 6; // Self casting animation
 const float ANISTATE_DEATH = 7; // Death animation
 const float ANISTATE_RUN = 8; // Running animation
 const float ANISTATE_STUNNED = 9; // Stunned/Dizzy animation
+const float ANISTATE_STAB = 10;
