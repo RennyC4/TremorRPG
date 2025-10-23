@@ -3,7 +3,7 @@
 //
 
 void(entity targ, entity attacker, float damage, float silent) DoDamage;
-void(entity attacker, vector org, float radius, float damage, float diminish, float silent, float selfhurt) DoRadiusDamage;
+void(entity attacker, vector org, float radius, float damage, float diminish, float silent) DoRadiusDamage;
 // returns 1 if the entity is in front (in sight) of self, used for blocking
 float(entity enemy, entity defender) check_block =
 {
@@ -93,15 +93,18 @@ void() DoAttack_ShieldBash =
 			float parry = TRUE;
 			string eventlog_print = (strcat("^2Successful parry!"));
 			stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+			trace_ent.anistate = ANISTATE_PARRY;
+			trace_ent.melee_finished = time + 0.5;
+
 			// apply effects
-			self.stagger_finished = time + 2;
-			self.lockview_finished = time + 2;
+			self.stagger_finished = time + 3.5;
+			self.lockview_finished = time + 3.5;
 			sound (self, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
 		}
 	}
 	sound (self, CHAN_WEAPON, "shield3.wav", 1, ATTN_NORM);
-	self.melee_finished = time + 1.5;
-	self.lockview_finished = time + 1.5;
+	self.melee_finished = time + 1;
+	self.lockview_finished = time + 1;
 };
 
 // Main melee attack function
@@ -130,7 +133,7 @@ void() CSEv_DoAttack_Melee_ =
 	else // bashing
 		damage += (self.skill_bash * howmuch);
 
-	if (self.flags & FL_CLIENT)
+	if (self.classname == "player")
 		makevectors (self.v_angle);
 	else
 		makevectors (self.angles);
@@ -230,9 +233,13 @@ void() CSEv_DoAttack_Melee_ =
 				sound (trace_ent, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
 				eventlog_print = (strcat("^2Successful parry!"));
 				stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
+
+				trace_ent.melee_finished = time + 0.75;
+				trace_ent.anistate = ANISTATE_PARRY;
+
 				// apply effects
-				self.lockview_finished = time + 3;
-				self.stagger_finished = time + 3;
+				self.stagger_finished = time + 3.5;
+				self.lockview_finished = time + 3.5;
 			}
 			sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
 		}
@@ -257,7 +264,7 @@ void() CSEv_DoAttack_Melee_ =
 			
 			damage = ceil(damage); // round up final damage output
 			if (self.attack_type == 1) // Slashing uses radius for cleave
-				DoRadiusDamage(self, self.origin + v_forward * 16, self.attack_length, damage, FALSE, FALSE, FALSE);
+				DoRadiusDamage(self, self.origin + v_forward * 32, self.attack_length * 2, damage, FALSE, FALSE);
 			else
 				DoDamage(trace_ent, self, damage, FALSE);
 
@@ -392,15 +399,12 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 	}
 };
 
-void(entity attacker, vector org, float radius, float damage, float diminish, float silent, float selfhurt) DoRadiusDamage =
+void(entity attacker, vector org, float radius, float damage, float diminish, float silent) DoRadiusDamage =
 {
 	for (entity targ = world; (targ = findfloat(targ, radius_candamage, TRUE));)
 	{
-		if (vlen(targ.origin - org) <= radius)
+		if (vlen(targ.origin - org) <= radius && targ != self)
 		{
-			if (!selfhurt && targ == self)
-				continue;
-
 			float dmg = damage;
 			if (diminish)
 			{

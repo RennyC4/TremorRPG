@@ -2351,3 +2351,5 @@ const float ANISTATE_RUN = 8; // Running animation
 const float ANISTATE_STUNNED = 9; // Stunned/Dizzy animation
 const float ANISTATE_STAB = 10;
 const float ANISTATE_PUNCH = 11;
+const float ANISTATE_BASH = 12;
+const float ANISTATE_PARRY = 13;

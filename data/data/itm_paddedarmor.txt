@@ -1,4 +1,4 @@
 100
 Padded Armor
-2
+4
 3

@@ -25,6 +25,8 @@
 #define ANIM_BLOCKIDLE	15
 #define ANIM_CROUCHWALK	16
 #define ANIM_CROUCHIDLE	17
+#define ANIM_BASH		18
+#define ANIM_PARRY		19
 
 //
 // Special animations sent from SSQC
@@ -169,6 +171,48 @@ void() Player_Animate =
 		self.anim_state = ANIM_IDLE;
 		self.frame1time = 0;
 		self.frame = frameforname(self.modelindex, "Idle");
+	}
+
+	// -----------------------------
+    // Parry Animation
+    // -----------------------------
+	if (self.anistate == ANISTATE_PARRY)
+	{
+		if (self.frame != frameforname(self.modelindex, "Parry"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Parry");
+			self.anim_state = ANIM_PARRY;
+		}
+		speed = 2;
+		speed *= frametime;
+
+        if (self.frame1time >= duration - 0.1) // Hold final frame at end
+            self.frame1time = duration - 0.1;
+        else
+            self.frame1time += speed;
+		return;
+	}
+
+	// -----------------------------
+    // (Shield) Bash Animation
+    // -----------------------------
+	if (self.anistate == ANISTATE_BASH)
+	{
+		if (self.frame != frameforname(self.modelindex, "Bash"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Bash");
+			self.anim_state = ANIM_BASH;
+		}
+		speed = 1.5;
+		speed *= frametime;
+
+        if (self.frame1time >= duration - 0.1) // Hold final frame at end
+            self.frame1time = duration - 0.1;
+        else
+            self.frame1time += speed;
+		return;
 	}
 
 	// -----------------------------

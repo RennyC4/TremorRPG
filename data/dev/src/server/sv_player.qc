@@ -762,7 +762,10 @@ void() CSEv_User_StartAttack_ =
 				}
 			}
 			else if (self.blockvalue > 0)
+			{
+				self.anistate = ANISTATE_BASH;
 				DoAttack_ShieldBash();
+			}
 		}
 	}
 };
@@ -773,11 +776,13 @@ void() CSEv_User_StartAttack_ =
 
 void() Anistate_Handler =
 {
-	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_PUNCH)
+	// Tied to melee_finished
+	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_PUNCH || self.anistate == ANISTATE_BASH || self.anistate == ANISTATE_PARRY)
 	{
 		if (self.melee_finished < time)
 			self.anistate = ANISTATE_NONE;
 	}
+	// Tied to spellani_finished
 	if (self.anistate == ANISTATE_CASTAOE || self.anistate == ANISTATE_CASTTARGET || self.anistate == ANISTATE_CASTSELF)
 	{
 		if (self.spellani_finished < time)
