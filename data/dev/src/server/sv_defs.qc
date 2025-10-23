@@ -1872,7 +1872,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float stamina;
 .string main_hand; // string for main hand
 .string off_hand; // string for off hand
-.float blocking; // Player can block with shield WIP
+.float blocking; // Player can block with shield
 .float blockvalue; // damage reduction when blocking
 .float stagger_finished; // when staggered, can't block for a bit (slower player speed on recovery)
 .string armorname;

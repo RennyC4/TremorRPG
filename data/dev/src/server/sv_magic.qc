@@ -80,7 +80,11 @@ void(float damage) Cast_Thorn =
 	float spell_length = 500;
 	float parry = FALSE;
 
-	makevectors (self.v_angle);
+	if (self.flags & FL_CLIENT)
+		makevectors (self.v_angle);
+	else
+		makevectors (self.angles);
+
 	sound (self, CHAN_WEAPON, "magic/thorn_cast.wav", 1, ATTN_NORM);
 
 	vector selfmid = self.origin;

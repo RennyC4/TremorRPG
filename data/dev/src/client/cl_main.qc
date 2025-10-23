@@ -400,6 +400,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.bonfire = readbyte();
 		self.cast_finished = readbyte();
 		self.attack_type = readbyte();
+		self.blocking = readbyte();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);

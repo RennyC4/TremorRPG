@@ -3,7 +3,7 @@
 //
 
 void(entity targ, entity attacker, float damage, float silent) DoDamage;
-
+void(entity attacker, vector org, float radius, float damage, float diminish, float silent, float selfhurt) DoRadiusDamage;
 // returns 1 if the entity is in front (in sight) of self, used for blocking
 float(entity enemy, entity defender) check_block =
 {
@@ -130,7 +130,11 @@ void() CSEv_DoAttack_Melee_ =
 	else // bashing
 		damage += (self.skill_bash * howmuch);
 
-	makevectors (self.angles);
+	if (self.flags & FL_CLIENT)
+		makevectors (self.v_angle);
+	else
+		makevectors (self.angles);
+
 	vector source = self.origin + '0 0 16';
 	traceline (source, source + v_forward * self.attack_length, MOVE_TRIGGERS, self);
 	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
@@ -159,6 +163,9 @@ void() CSEv_DoAttack_Melee_ =
 		if (check_backstab(trace_ent) && !jumpattack)
 		{
 			bs_damage = (self.skill_backstab * howmuch);
+			if (self.attack_type == 2) // add piercing bonus damage
+				bs_damage += ceil(self.skill_pierce * (howmuch / 1.5));
+
 			if (bs_damage < 1)
 				bs_damage = 1;
 			backstab = TRUE;
@@ -243,7 +250,13 @@ void() CSEv_DoAttack_Melee_ =
 			te_blood(mid, vel, 12);
 			
 			damage = ceil(damage); // round up final damage output
-			DoDamage(trace_ent, self, damage, FALSE);
+			if (self.attack_type == 1) // Slashing uses radius for cleave
+			{
+				DoRadiusDamage(self, self.origin + v_forward * 16, self.attack_length, damage, FALSE, FALSE, FALSE);
+				print ("Slashing attacking\n");
+			}
+			else
+				DoDamage(trace_ent, self, damage, FALSE);
 			sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
 		}
 	}
@@ -354,23 +367,26 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 	}
 };
 
-void(entity attacker, float radius, float damage, float setfire, float diminish, float silent) DoRadiusDamage =
+void(entity attacker, vector org, float radius, float damage, float diminish, float silent, float selfhurt) DoRadiusDamage =
 {
-	for (entity targ = world;(targ = findfloat(targ, radius_candamage, TRUE));)
+	for (entity targ = world; (targ = findfloat(targ, radius_candamage, TRUE));)
 	{
-		if (vlen(targ.origin - self.origin) <= radius)
+		if (vlen(targ.origin - org) <= radius)
 		{
+			if (!selfhurt && targ == self)
+				continue;
+
 			float dmg = damage;
 			if (diminish)
 			{
-				float distance_length = vlen(targ.origin - self.origin);
+				float distance_length = vlen(targ.origin - org);
 				float distance_factor = 1 - (distance_length / radius);
 				dmg = ceil(damage * distance_factor);
 			}
 			if (!silent)
 				DoDamage(targ, attacker, dmg, FALSE);
 			else
-				DoDamage(targ, attacker, dmg, TRUE);  // no event log update
+				DoDamage(targ, attacker, dmg, TRUE); // no event log update
 		}
 	}
 };

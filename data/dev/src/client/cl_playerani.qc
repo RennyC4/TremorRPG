@@ -404,7 +404,7 @@ void() Player_Animate =
         // Standing still → Idle
         if (!self.velocity_x && !self.velocity_y)
         {
-			if (button4 && self.off_hand != "Empty")
+			if (self.blocking && self.off_hand != "Empty")
 			{
 				if (self.anim_state != ANIM_BLOCKIDLE)
 				{
@@ -429,7 +429,7 @@ void() Player_Animate =
         }
         else // Moving → Run
         {
-			if (button4 && self.off_hand != "Empty")
+			if (self.blocking && self.off_hand != "Empty")
 			{
 				if (self.anim_state != ANIM_BLOCKWALK)
 				{

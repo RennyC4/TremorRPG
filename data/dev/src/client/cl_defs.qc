@@ -2334,6 +2334,7 @@ float LockOn_CycleToggle; // same
 .float cast_finished;
 .float ai_mode;
 .float attack_type; // 0 unarmed, 1 slash, 2 pierce, 3 bash
+.float blocking;
 
 // Animation States
 .float anistate;
