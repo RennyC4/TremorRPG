@@ -1338,22 +1338,30 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     if (!targ.loggedin)
         return;
 
-	string filename = strcat(targ.loginname, ".chr");
+    string filename = strcat(targ.loginname, ".chr");
 
-	// -read existing file (only if doing map transfer)
-	string old_origin[6];
-	float f, i;
+    // prepare to preserve some data (music, origin)
+    string old_music;
+    string old_origin[6];
+    float f, i;
 
     if (type == 1) // map transfer
     {
         f = fopen(filename, FILE_READ);
         if (f >= 0)
         {
-            // skip first 5 lines (guid, loginname, gender, music, zonename)
-            for (i = 0; i < 5; i++)
-                fgets(f);
+            // line 1: guid
+            fgets(f);
+            // line 2: loginname
+            fgets(f);
+            // line 3: gender
+            fgets(f);
+            // line 4: music
+            old_music = fgets(f);
+            // line 5: zonename
+            fgets(f);
 
-            // store the next 6 lines (old origin + angles)
+            // next 6 lines = origin + angles
             for (i = 0; i < 6; i++)
                 old_origin[i] = fgets(f);
 
@@ -1369,10 +1377,17 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     fputs(f, targ.guid, "\n");
     fputs(f, targ.loginname, "\n");
     fputs(f, targ.gender, "\n");
-    fputs(f, targ.music, "\n");
+
+    // don't update music if world model ends with "bsp"
+    if (substring(world.model, -3, 3) == "bsp" && old_music != __NULL__)
+        fputs(f, old_music, "\n");
+    else
+        fputs(f, targ.music, "\n");
+
     fputs(f, targ.zonename, "\n");
 
-    if (!type) // normal save: write fresh origin + angles
+    // write origin + angles
+    if (!type) // normal save
     {
         fputs(f, ftos(targ.origin_x), "\n");
         fputs(f, ftos(targ.origin_y), "\n");
@@ -1381,82 +1396,78 @@ void(entity targ, float type) CSEv_Player_SaveChar =
         fputs(f, ftos(targ.angles_y), "\n");
         fputs(f, ftos(targ.angles_z), "\n");
     }
-    else // map transfer: keep old values
+    else // map transfer
     {
         for (i = 0; i < 6; i++)
             fputs(f, old_origin[i], "\n");
     }
 
-	// continue writing rest of stats/skills/inventory etc
+    // --- rest of stats/skills/inventory ---
+    fputs(f, ftos(targ.health), "\n");
+    fputs(f, ftos(targ.max_health), "\n");
+    fputs(f, ftos(targ.mana), "\n");
+    fputs(f, ftos(targ.max_mana), "\n");
+    fputs(f, ftos(targ.level), "\n");
+    fputs(f, ftos(targ.skillpoints), "\n");
+    fputs(f, ftos(targ.exp), "\n");
+    fputs(f, ftos(targ.exp_next), "\n");
+    fputs(f, ftos(targ.gold), "\n");
+    fputs(f, ftos(targ.attack_power_min), "\n");
+    fputs(f, ftos(targ.attack_power_max), "\n");
+    fputs(f, ftos(targ.attack_speed), "\n");
+    fputs(f, ftos(targ.attack_type), "\n");
+    fputs(f, ftos(targ.attack_stamina), "\n");
+    fputs(f, ftos(targ.attack_length), "\n");
+    fputs(f, targ.main_hand, "\n");
+    fputs(f, targ.off_hand, "\n");
+    fputs(f, targ.armorname, "\n");
+    fputs(f, ftos(targ.armorvalue), "\n");
+    fputs(f, ftos(targ.pvp), "\n");
+    fputs(f, ftos(targ.pvpenable_count), "\n");
+    fputs(f, ftos(targ.pvp_autoflagged), "\n");
+    fputs(f, ftos(targ.blockvalue), "\n");
+    fputs(f, targ.spell_equipped, "\n");
+    fputs(f, ftos(targ.spell_power_min), "\n");
+    fputs(f, ftos(targ.spell_power_max), "\n");
 
-	fputs(f, ftos(targ.health), "\n");
-	fputs(f, ftos(targ.max_health), "\n");
-	fputs(f, ftos(targ.mana), "\n");
-	fputs(f, ftos(targ.max_mana), "\n");
-	fputs(f, ftos(targ.level), "\n");
-	fputs(f, ftos(targ.skillpoints), "\n");
-	fputs(f, ftos(targ.exp), "\n");
-	fputs(f, ftos(targ.exp_next), "\n");
-	fputs(f, ftos(targ.gold), "\n");
-	fputs(f, ftos(targ.attack_power_min), "\n");
-	fputs(f, ftos(targ.attack_power_max), "\n");
-	fputs(f, ftos(targ.attack_speed), "\n");
-	fputs(f, ftos(targ.attack_type), "\n");
-	fputs(f, ftos(targ.attack_stamina), "\n");
-	fputs(f, ftos(targ.attack_length), "\n");
-	fputs(f, targ.main_hand, "\n");
-	fputs(f, targ.off_hand, "\n");
-	fputs(f, targ.armorname, "\n");
-	fputs(f, ftos(targ.armorvalue), "\n");
-	fputs(f, ftos(targ.pvp), "\n");
-	fputs(f, ftos(targ.pvpenable_count), "\n");
-	fputs(f, ftos(targ.pvp_autoflagged), "\n");
-	fputs(f, ftos(targ.blockvalue), "\n");
-	fputs(f, targ.spell_equipped, "\n");
-	fputs(f, ftos(targ.spell_power_min), "\n");
-	fputs(f, ftos(targ.spell_power_max), "\n");
-	//
+    // skills
+    fputs(f, ftos(targ.skill_unarmed), "\n");
+    fputs(f, ftos(targ.skill_slash), "\n");
+    fputs(f, ftos(targ.skill_pierce), "\n");
+    fputs(f, ftos(targ.skill_bash), "\n");
+    fputs(f, ftos(targ.skill_stealth), "\n");
+    fputs(f, ftos(targ.skill_backstab), "\n");
+    fputs(f, ftos(targ.skill_offensivemagic), "\n");
+    fputs(f, ftos(targ.skill_defensivemagic), "\n");
+    fputs(f, ftos(targ.skill_neutralmagic), "\n");
+    fputs(f, ftos(targ.skill_endurance), "\n");
+    fputs(f, ftos(targ.skill_spellresist), "\n");
+    fputs(f, ftos(targ.skill_archery), "\n");
+    fputs(f, ftos(targ.skill_healthregen), "\n");
+    fputs(f, ftos(targ.skill_manaregen), "\n");
+    fputs(f, ftos(targ.skill_haggle), "\n");
+    fputs(f, ftos(targ.skill_climb), "\n");
+    fputs(f, ftos(targ.skill_swim), "\n");
+    fputs(f, ftos(targ.skill_acrobatic), "\n");
 
-	// skills
-	fputs(f, ftos(targ.skill_unarmed), "\n");
-	fputs(f, ftos(targ.skill_slash), "\n");
-	fputs(f, ftos(targ.skill_pierce), "\n");
-	fputs(f, ftos(targ.skill_bash), "\n");
-	fputs(f, ftos(targ.skill_stealth), "\n");
-	fputs(f, ftos(targ.skill_backstab), "\n");
-	fputs(f, ftos(targ.skill_offensivemagic), "\n");
-	fputs(f, ftos(targ.skill_defensivemagic), "\n");
-	fputs(f, ftos(targ.skill_neutralmagic), "\n");
-	fputs(f, ftos(targ.skill_endurance), "\n");
-	fputs(f, ftos(targ.skill_spellresist), "\n");
-	fputs(f, ftos(targ.skill_archery), "\n");
-	fputs(f, ftos(targ.skill_healthregen), "\n");
-	fputs(f, ftos(targ.skill_manaregen), "\n");
-	fputs(f, ftos(targ.skill_haggle), "\n");
-	fputs(f, ftos(targ.skill_climb), "\n");
-	fputs(f, ftos(targ.skill_swim), "\n");
-	fputs(f, ftos(targ.skill_acrobatic), "\n");
+    // jobs
+    fputs(f, ftos(targ.skill_mining), "\n");
+    fputs(f, ftos(targ.skill_fishing), "\n");
+    fputs(f, ftos(targ.skill_woodcutting), "\n");
 
-	//jobs
-	fputs(f, ftos(targ.skill_mining), "\n");
-	fputs(f, ftos(targ.skill_fishing), "\n");
-	fputs(f, ftos(targ.skill_woodcutting), "\n");
+    fputs(f, ftos(targ.inv_count), "\n");
+    fputs(f, ftos(targ.spell_count), "\n");
 
-	fputs(f, ftos(targ.inv_count), "\n"); // inventory count, used for reading back on character resume / hud setup
-	fputs(f, ftos(targ.spell_count), "\n"); // spell count, used for reading back on character resume / hud setup
+    // inventory
+    for (i = 0; i < targ.inv_count; i++)
+    {
+        fputs(f, targ.inventory[i], "\n");
+        fputs(f, ftos(targ.inventory_count[i]), "\n");
+    }
 
-	// inventory
-	for (i = 0; i < targ.inv_count; i++)
-	{
-		fputs(f, targ.inventory[i], "\n");
-		fputs(f, ftos(targ.inventory_count[i]), "\n");
-	}
-
-	// magic
-	for (i = 0; i < targ.spell_count; i++)
-	{
-		fputs(f, targ.spell[i], "\n");
-	}
+    // magic
+    for (i = 0; i < targ.spell_count; i++)
+        fputs(f, targ.spell[i], "\n");
 
     fclose(f);
 
