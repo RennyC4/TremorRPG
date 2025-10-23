@@ -96,6 +96,11 @@ void() Skeleton_ObjectDraw =
 				// Daggers
 				if (self.main_hand == "Rusty Dagger")
 					setmodel(self.weapon_vfx, "models/dagger0.glb");
+
+				// Clubs
+				if (self.main_hand == "Wood Club")
+					setmodel(self.weapon_vfx, "models/club0.glb");
+
 			}
 			else
 				setmodel(self.weapon_vfx, __NULL__);

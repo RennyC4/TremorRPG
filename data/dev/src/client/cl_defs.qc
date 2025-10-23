@@ -2354,3 +2354,4 @@ const float ANISTATE_PUNCH = 11;
 const float ANISTATE_BASH = 12;
 const float ANISTATE_PARRY = 13;
 const float ANISTATE_DRINK = 14;
+const float ANISTATE_SMASH = 15; // Actually used or Bashing attacks

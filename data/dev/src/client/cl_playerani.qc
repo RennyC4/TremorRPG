@@ -28,6 +28,7 @@
 #define ANIM_BASH		18
 #define ANIM_PARRY		19
 #define ANIM_DRINK		20
+#define ANIM_SMASH		21
 
 //
 // Special animations sent from SSQC
@@ -67,7 +68,16 @@ void() OtherPlayer_Anistate =
 			self.anim_state = ANIM_PUNCH;
 		}
 	}
-
+	
+	if (self.anistate == ANISTATE_SMASH)
+	{
+		if (self.frame != frameforname(self.modelindex, "Smash"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Smash");
+			self.anim_state = ANIM_SMASH;
+		}
+	}
 	if (self.anistate == ANISTATE_SIT)
 	{
 		if (self.frame != frameforname(self.modelindex, "Sit"))
@@ -398,7 +408,7 @@ void() Player_Animate =
     // -----------------------------
     if (self.anim_attacking)
     {
-        if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH)
+        if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH && self.anim_state != ANIM_SMASH)
         {
 			if (!self.attack_type)
 			{
@@ -414,6 +424,11 @@ void() Player_Animate =
 			{
 				self.frame = frameforname(self.modelindex, "Stab");
 	            self.anim_state = ANIM_STAB;
+			}
+			else
+			{
+				self.frame = frameforname(self.modelindex, "Smash");
+	            self.anim_state = ANIM_SMASH;
 			}
             self.frame1time = 0;
             self.attack_triggered = FALSE;
@@ -446,6 +461,11 @@ void() Player_Animate =
 			{
 				sendevent("DoAttack_Melee", "");
 				self.attack_triggered = TRUE;
+			}
+			else if (self.frame1time >= duration * 0.4) // Bash
+			{
+					sendevent("DoAttack_Melee", "");
+					self.attack_triggered = TRUE;
 			}
 		}
 

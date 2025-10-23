@@ -753,6 +753,8 @@ void() CSEv_User_StartAttack_ =
 							self.anistate = ANISTATE_SLASH;
 						else if (self.attack_type == 2)
 							self.anistate = ANISTATE_STAB;
+						else
+							self.anistate = ANISTATE_SMASH;
 
 						self.stamina -= (self.attack_stamina - stamcalc);
 						self.melee_finished = time + self.attack_speed;
@@ -777,7 +779,8 @@ void() CSEv_User_StartAttack_ =
 void() Anistate_Handler =
 {
 	// Tied to melee_finished
-	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_PUNCH || self.anistate == ANISTATE_BASH || self.anistate == ANISTATE_PARRY)
+	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_PUNCH || self.anistate == ANISTATE_BASH
+	|| self.anistate == ANISTATE_PARRY || self.anistate == ANISTATE_SMASH)
 	{
 		if (self.melee_finished < time)
 			self.anistate = ANISTATE_NONE;

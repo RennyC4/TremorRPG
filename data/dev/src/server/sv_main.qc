@@ -130,14 +130,15 @@ void() worldspawn =
 	precache_sound ("sword1.wav");
 	precache_sound ("punch1.wav");
 	precache_sound ("dagger1.wav");
+	precache_sound ("club1.wav");
 	precache_sound ("punchhit.wav");
 	precache_sound ("punchhit2.wav");
 	precache_sound ("swordhit.wav");
 	precache_sound ("swordhit2.wav");
 	precache_sound ("daggerhit.wav");
 	precache_sound ("daggerhit2.wav");
-	precache_sound ("punchhit.wav");
-	precache_sound ("punchhit2.wav");
+	precache_sound ("clubhit.wav");
+	precache_sound ("clubhit2.wav");
 	precache_sound ("backstab.wav");
 	precache_sound ("shield1.wav");
 	precache_sound ("shield2.wav");

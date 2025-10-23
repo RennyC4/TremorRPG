@@ -59,6 +59,19 @@ void() Monster_Animate =
 		return;
 	}
 
+	if (self.anistate == ANISTATE_SMASH)
+	{
+		if (self.frame != (self.frame = frameforname(self.modelindex, "Smash")))
+			self.frame1time = 0; // reset timestamp
+		self.frame = frameforname(self.modelindex, "Smash");
+
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = self.frame1time; // hold
+		else
+			self.frame1time += frametime;
+		return;
+	}
+
 	if (self.anistate == ANISTATE_STUNNED)
 		self.frame = frameforname(self.modelindex, "Stunned");
 	if (self.anistate == ANISTATE_NONE)

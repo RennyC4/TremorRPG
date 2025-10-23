@@ -1,0 +1,10 @@
+^2Wood Club^7
+
+^5Type:^7 Bashing
+^5Power:^7 4 - 7
+^5Speed:^7 1.5/sec
+^5Stamina Use:^7 30
+^5Length:^7 75
+
+^6Item Level:^7 1
+^6Required Level:^7 0

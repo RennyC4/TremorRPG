@@ -147,6 +147,8 @@ void() CSEv_DoAttack_Melee_ =
 		sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 	else if (self.attack_type == 2)
 		sound (self, CHAN_WEAPON, "dagger1.wav", 1, ATTN_NORM);
+	else
+		sound (self, CHAN_WEAPON, "club1.wav", 1, ATTN_NORM);
 
 	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
 	{
@@ -266,7 +268,28 @@ void() CSEv_DoAttack_Melee_ =
 			if (self.attack_type == 1) // Slashing uses radius for cleave
 				DoRadiusDamage(self, self.origin + v_forward * 32, self.attack_length * 1.75, damage, FALSE, FALSE);
 			else
+			{
 				DoDamage(trace_ent, self, damage, FALSE);
+				if (self.attack_type == 3 && random() <= 0.10) // Club bonus (10%)
+				{
+					vector dir = trace_ent.origin - self.origin; // Pushing
+					dir = normalize(dir);
+					trace_ent.velocity = '0 0 0';
+					trace_ent.flags &= ~FL_ONGROUND;
+					trace_ent.velocity_z += 125;
+					trace_ent.velocity = trace_ent.velocity + dir * 200;
+					//
+					if (trace_ent.stagger_finished < time)
+					{
+						trace_ent.stagger_finished = time + 1.5;
+						trace_ent.lockview_finished = time + 1.5;
+					}
+					// Knock target out of casting
+					trace_ent.cast_finished_spell = "";
+					trace_ent.cast_finished = time;
+					//
+				}
+			}
 
 			// Hit sounds
 			if (!self.attack_type)
@@ -289,6 +312,13 @@ void() CSEv_DoAttack_Melee_ =
 					sound (trace_ent, CHAN_AUTO, "daggerhit.wav", 1, ATTN_NORM);
 				else
 					sound (trace_ent, CHAN_AUTO, "daggerhit2.wav", 1, ATTN_NORM);
+			}
+			else
+			{
+				if (random() < 0.5)
+					sound (trace_ent, CHAN_AUTO, "clubhit.wav", 1, ATTN_NORM);
+				else
+					sound (trace_ent, CHAN_AUTO, "clubhit2.wav", 1, ATTN_NORM);
 			}
 		}
 	}

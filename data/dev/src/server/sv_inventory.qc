@@ -354,6 +354,8 @@ void(string itemname) CSEv_UseItem_s =
 		Player_EquipItem(itemname, 0);
 	else if (itemname == "Rusty Dagger")
 		Player_EquipItem(itemname, 0);
+	else if (itemname == "Wood Club")
+		Player_EquipItem(itemname, 0);
 
 	// Armor equippables
 	if (itemname == "Plain Clothes")
