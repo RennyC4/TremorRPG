@@ -226,6 +226,7 @@ turn_speed "30"
 canbackstab "1"
 gender "Male"
 main_hand "Broken Sword"
+attack_type "1"
 }
 
 // monster (bandit lvl 1)
@@ -255,6 +256,7 @@ turn_speed "30"
 canbackstab "1"
 gender "Male"
 main_hand "Broken Sword"
+attack_type "1"
 }
 
 // monster (bandit lvl 1)
@@ -284,6 +286,7 @@ turn_speed "30"
 canbackstab "1"
 gender "Male"
 main_hand "Broken Sword"
+attack_type "1"
 }
 
 // monster (bandit lvl 2)
@@ -314,6 +317,7 @@ canbackstab "1"
 gender "Male"
 ai_move_dist "500"
 main_hand "Broken Sword"
+attack_type "1"
 }
 
 // monster (bandit lvl 2)
@@ -344,6 +348,7 @@ canbackstab "1"
 gender "Male"
 ai_move_dist "1"
 main_hand "Broken Sword"
+attack_type "1"
 }
 
 // monster (bandit lvl 2)
@@ -374,6 +379,7 @@ canbackstab "1"
 gender "Male"
 ai_move_dist "1"
 main_hand "Broken Sword"
+attack_type "1"
 }
 
 // monster (bandit lvl 3)
@@ -404,6 +410,7 @@ canbackstab "1"
 gender "Male"
 ai_move_dist "1000"
 main_hand "Broken Sword"
+attack_type "1"
 }
 
 // monster (bandit lvl 3)
@@ -434,4 +441,5 @@ canbackstab "1"
 gender "Male"
 ai_move_dist "800"
 main_hand "Broken Sword"
+attack_type "1"
 }

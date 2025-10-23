@@ -137,7 +137,13 @@ void() CSEv_DoAttack_Melee_ =
 
 	vector source = self.origin + '0 0 16';
 	traceline (source, source + v_forward * self.attack_length, MOVE_TRIGGERS, self);
-	sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
+
+	if (!self.attack_type)
+		sound (self, CHAN_WEAPON, "punch1.wav", 1, ATTN_NORM);
+	else if (self.attack_type == 1)
+		sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
+	else if (self.attack_type == 2)
+		sound (self, CHAN_WEAPON, "dagger1.wav", 1, ATTN_NORM);
 
 	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
 	{
@@ -251,13 +257,32 @@ void() CSEv_DoAttack_Melee_ =
 			
 			damage = ceil(damage); // round up final damage output
 			if (self.attack_type == 1) // Slashing uses radius for cleave
-			{
 				DoRadiusDamage(self, self.origin + v_forward * 16, self.attack_length, damage, FALSE, FALSE, FALSE);
-				print ("Slashing attacking\n");
-			}
 			else
 				DoDamage(trace_ent, self, damage, FALSE);
-			sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
+
+			// Hit sounds
+			if (!self.attack_type)
+			{
+				if (random() < 0.5)
+					sound (trace_ent, CHAN_AUTO, "punchhit.wav", 1, ATTN_NORM);
+				else
+					sound (trace_ent, CHAN_AUTO, "punchhit2.wav", 1, ATTN_NORM);
+			}
+			else if (self.attack_type == 1)
+			{
+				if (random() < 0.5)
+					sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
+				else
+					sound (trace_ent, CHAN_AUTO, "swordhit2.wav", 1, ATTN_NORM);
+			}
+			else if (self.attack_type == 2)
+			{
+				if (random() < 0.5)
+					sound (trace_ent, CHAN_AUTO, "daggerhit.wav", 1, ATTN_NORM);
+				else
+					sound (trace_ent, CHAN_AUTO, "daggerhit2.wav", 1, ATTN_NORM);
+			}
 		}
 	}
 };
