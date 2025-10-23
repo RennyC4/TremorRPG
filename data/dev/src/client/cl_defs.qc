@@ -2347,3 +2347,4 @@ const float ANISTATE_DEATH = 7; // Death animation
 const float ANISTATE_RUN = 8; // Running animation
 const float ANISTATE_STUNNED = 9; // Stunned/Dizzy animation
 const float ANISTATE_STAB = 10;
+const float ANISTATE_PUNCH = 11;

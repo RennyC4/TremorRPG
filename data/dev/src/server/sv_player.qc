@@ -770,7 +770,7 @@ void() CSEv_User_StartAttack_ =
 
 void() Anistate_Handler =
 {
-	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB)
+	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_PUNCH)
 	{
 		if (self.melee_finished < time)
 			self.anistate = ANISTATE_NONE;

@@ -20,6 +20,7 @@
 #define ANIM_CASTSELF	10
 #define ANIM_STUNNED	11
 #define ANIM_STAB		12
+#define ANIM_PUNCH		13
 
 //
 // Special animations sent from SSQC
@@ -47,6 +48,16 @@ void() OtherPlayer_Anistate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Stab");
 			self.anim_state = ANIM_SLASH;
+		}
+	}
+
+	if (self.anistate == ANISTATE_PUNCH)
+	{
+		if (self.frame != frameforname(self.modelindex, "Punch"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Punch");
+			self.anim_state = ANIM_PUNCH;
 		}
 	}
 
@@ -305,9 +316,14 @@ void() Player_Animate =
     // -----------------------------
     if (self.anim_attacking)
     {
-        if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB)
+        if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH)
         {
-			if (self.attack_type == 1)
+			if (!self.attack_type)
+			{
+				self.frame = frameforname(self.modelindex, "Punch");
+				self.anim_state = ANIM_PUNCH;
+			}
+			else if (self.attack_type == 1)
 			{
 				self.frame = frameforname(self.modelindex, "Slash");
 				self.anim_state = ANIM_SLASH;
@@ -324,17 +340,27 @@ void() Player_Animate =
         // Adjust speed by attack stat
         float attackspeed = getstatf(STAT_ATTACKSPEED);
         if (attackspeed != 0)
-            speed /= attackspeed;
+		{
+			if (!self.attack_type) // punch speed
+				speed /= attackspeed * 0.5;
+			else
+				speed /= attackspeed * 0.75;
+		}
 
         // Trigger actual attack once per animation
 		if (!self.attack_triggered)
 		{
-			if (self.attack_type == 1 && self.frame1time >= duration * 0.25) // Slash
+			if (!self.attack_type && self.frame1time >= duration * 0.5) // Punch
 			{
 				sendevent("DoAttack_Melee", "");
 				self.attack_triggered = TRUE;
 			}
-			if (self.attack_type == 2 && self.frame1time >= duration * 0.05) // Stab
+			else if (self.attack_type == 1 && self.frame1time >= duration * 0.25) // Slash
+			{
+				sendevent("DoAttack_Melee", "");
+				self.attack_triggered = TRUE;
+			}
+			else if (self.attack_type == 2 && self.frame1time >= duration * 0.05) // Stab
 			{
 				sendevent("DoAttack_Melee", "");
 				self.attack_triggered = TRUE;
