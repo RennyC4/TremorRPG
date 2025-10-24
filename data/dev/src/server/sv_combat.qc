@@ -211,6 +211,15 @@ void() CSEv_DoAttack_Melee_ =
 				{
 					damage -= trace_ent.blockvalue;
 					trace_ent.stamina -= stamcalc_block;
+
+					vector dir = trace_ent.origin - self.origin; // Push back
+					dir = normalize(dir);
+					trace_ent.velocity = '0 0 0';
+					trace_ent.flags &= ~FL_ONGROUND;
+					//trace_ent.velocity_z += 50;
+					trace_ent.velocity = trace_ent.velocity + dir * 150;
+					trace_ent.melee_finished = time + 0.5;
+					trace_ent.anistate = ANISTATE_PARRY; // Use parry animation for now
 				}
 				else
 				{
@@ -228,6 +237,7 @@ void() CSEv_DoAttack_Melee_ =
 						trace_ent.stagger_finished = time + 3; // stagger, stamina is out
 					}
 				}
+				//
 			}
 			else // parry
 			{
@@ -243,7 +253,7 @@ void() CSEv_DoAttack_Melee_ =
 				self.stagger_finished = time + 3.5;
 				self.lockview_finished = time + 3.5;
 			}
-			sound (trace_ent, CHAN_BODY, "shield1.wav", 1, ATTN_NORM);
+			sound (trace_ent, CHAN_AUTO, "shield1.wav", 1, ATTN_NORM);
 		}
 
 		if (!parry)
