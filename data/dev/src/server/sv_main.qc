@@ -112,6 +112,8 @@ void() worldspawn =
 	PART_BONFIRE = particleeffectnum("bonfire");
 	PART_WTORCH1 = particleeffectnum("wtorch1");
 	PART_WTORCH2 = particleeffectnum("wtorch2");
+	PART_HEALTHPOTION = particleeffectnum("healthpotion");
+	PART_MANAPOTION = particleeffectnum("manapotion");
 
 	// Magic
 	PART_MAGIC_THORN1 = particleeffectnum("thornhit");

@@ -154,6 +154,7 @@ void(float id, string itemname) Player_UseItem =
 			self.healthpot_finished = time + 3; // delay before first tick (drink time)
 
 		self.anistate = ANISTATE_DRINK;
+		pointparticles(PART_HEALTHPOTION, self.origin);
 
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
@@ -190,6 +191,7 @@ void(float id, string itemname) Player_UseItem =
 			self.manapot_finished = time + 3; // delay before first tick (drink time)
 
 		self.anistate = ANISTATE_DRINK;
+		pointparticles(PART_MANAPOTION, self.origin);
 
 		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));

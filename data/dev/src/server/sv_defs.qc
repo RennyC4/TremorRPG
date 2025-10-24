@@ -2017,6 +2017,8 @@ var float PART_MAGIC_CASTING;
 var float PART_MAGIC_THORN1; // Hit target
 var float PART_MAGIC_THORN2; // Hit wall
 var float PART_MAGIC_LIGHTHEAL;
+var float PART_HEALTHPOTION;
+var float PART_MANAPOTION;
 
 // Inventory
 #define MAX_INVENTORY 32 // how many slots allowed
