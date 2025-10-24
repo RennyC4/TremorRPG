@@ -368,50 +368,6 @@ void() CSEv_PlayerShowMagic =
 	}
 };
 
-void() CSEv_User_UnequipMainhand_ =
-{
-	if (self.main_hand == "Unarmed")
-	{
-		sprint(self, PRINT_HIGH, "Main hand is unequipped already\n");
-		return;
-	}
-
-	AddToInventory(self, self.main_hand, 1); // add old item back to inventory
-
-	// equipped unarmed
-	self.attack_power_min = 1;
-	self.attack_power_max = 1;
-	
-	self.attack_speed = 3 - (self.skill_unarmed * 0.0145); // unarmed speed is tied to skill
-	if (self.attack_speed < 0.1)
-		self.attack_speed = 0.1; // cap
-
-	self.attack_stamina = 5;
-	self.attack_type = 0; // unarmed
-	self.attack_length = 32; // weapon length
-	self.main_hand = "Unarmed";
-
-	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
-	sprint(self, PRINT_HIGH, strcat("Main hand unequipped\n"));
-};
-
-void() CSEv_User_UnequipOffhand_ =
-{
-	if (self.off_hand == "Empty")
-	{
-		sprint(self, PRINT_HIGH, "Off hand is unequipped already\n");
-		return;
-	}
-
-	AddToInventory(self, self.off_hand, 1); // add old item back to inventory
-
-	self.off_hand = "Empty";
-	self.blockvalue = 0;
-	
-	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
-	sprint(self, PRINT_HIGH, strcat("Off hand unequipped\n"));
-};
-
 // called from CSQC button
 void() CSEv_PlayerShowBuySell = {stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav"));self.menu = MENU_BUYSELL;};
 void() CSEv_PlayerShowDialogue = {stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav"));self.menu = MENU_DIALOGUE;};
@@ -759,13 +715,24 @@ void() CSEv_User_StartAttack_ =
 							self.anistate = ANISTATE_STAB;
 						else if (self.attack_type == 3)
 							self.anistate = ANISTATE_SMASH;
+						else if (self.attack_type == 4)
+						{
+							string lname = string_tolower(self.off_hand); // case insensitivity
+							if (strstrofs(lname, "bow", 0) != -1) // check if this is an arrow-type item
+								self.anistate = ANISTATE_ARCHERY;
+							else
+								float nobow = TRUE;
+						}
 						else
-							self.anistate = ANISTATE_ARCHERY;
-						
-						self.stamina -= (self.attack_stamina - stamcalc);
-						self.melee_finished = time + self.attack_speed;
-						self.lockview_finished = time + self.attack_speed;
-						self.pushforward_finished = time + (self.attack_speed / 4);
+							print ("Error: Unknown attack_type in User_StartAttack\n");
+						if (!nobow)
+						{
+							self.stamina -= (self.attack_stamina - stamcalc);
+							self.melee_finished = time + self.attack_speed;
+							self.lockview_finished = time + self.attack_speed;
+							if (self.attack_type != 4) // !archery
+								self.pushforward_finished = time + (self.attack_speed / 4);
+						}
 					}
 				}
 			}
@@ -786,7 +753,7 @@ void() Anistate_Handler =
 {
 	// Tied to melee_finished
 	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_PUNCH || self.anistate == ANISTATE_BASH
-	|| self.anistate == ANISTATE_PARRY || self.anistate == ANISTATE_SMASH)
+	|| self.anistate == ANISTATE_PARRY || self.anistate == ANISTATE_SMASH || self.anistate == ANISTATE_ARCHERY)
 	{
 		if (self.melee_finished < time)
 			self.anistate = ANISTATE_NONE;

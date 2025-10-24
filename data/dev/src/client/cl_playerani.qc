@@ -79,6 +79,17 @@ void() OtherPlayer_Anistate =
 			self.anim_state = ANIM_SMASH;
 		}
 	}
+
+	if (self.anistate == ANISTATE_ARCHERY)
+	{
+		if (self.frame != frameforname(self.modelindex, "Archery"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Archery");
+			self.anim_state = ANIM_ARCHERY;
+		}
+	}
+	
 	if (self.anistate == ANISTATE_SIT)
 	{
 		if (self.frame != frameforname(self.modelindex, "Sit"))
@@ -194,6 +205,39 @@ void() Player_Animate =
 		self.anim_state = ANIM_IDLE;
 		self.frame1time = 0;
 		self.frame = frameforname(self.modelindex, "Idle");
+	}
+
+	// -----------------------------
+    // Archery Animation
+    // -----------------------------
+	if (self.anistate == ANISTATE_ARCHERY)
+	{
+		if (self.frame != frameforname(self.modelindex, "Archery"))
+		{
+			self.attack_triggered = FALSE;
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Archery");
+			self.anim_state = ANIM_ARCHERY;
+		}
+		speed = 1;
+
+        // Trigger actual attack once per animation
+		if (!self.attack_triggered)
+		{
+			if (self.frame1time >= duration * 0.5)
+			{
+				print ("Archery: Do Arrow Firing Routine NOW!\n");
+				//sendevent("DoAttack_Melee", ""); // Change to arrow firing
+				self.attack_triggered = TRUE;
+			}
+		}
+
+		speed *= frametime;
+        if (self.frame1time >= duration - 0.1) // Hold final frame at end
+            self.frame1time = duration - 0.1;
+        else
+            self.frame1time += speed;
+		return;
 	}
 
 	// -----------------------------
@@ -409,7 +453,7 @@ void() Player_Animate =
     // -----------------------------
     if (self.anim_attacking)
     {
-        if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH && self.anim_state != ANIM_SMASH)
+        if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH && self.anim_state != ANIM_SMASH && self.anim_state != ANIM_ARCHERY)
         {
 			if (!self.attack_type)
 			{
@@ -437,7 +481,7 @@ void() Player_Animate =
 
         // Adjust speed by attack stat
         float attackspeed = getstatf(STAT_ATTACKSPEED);
-        if (attackspeed != 0)
+        if (attackspeed != 0 && self.anim_state != ANIM_ARCHERY)
 		{
 			if (!self.attack_type) // punch speed
 				speed /= attackspeed * 0.5;
@@ -465,13 +509,13 @@ void() Player_Animate =
 			}
 			else if (self.frame1time >= duration * 0.4) // Bash
 			{
-					sendevent("DoAttack_Melee", "");
-					self.attack_triggered = TRUE;
+				sendevent("DoAttack_Melee", "");
+				self.attack_triggered = TRUE;
 			}
 		}
 
         // End attack
-        if (self.frame1time >= duration)
+        if (self.frame1time >= duration - 0.1)
         {
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Idle");

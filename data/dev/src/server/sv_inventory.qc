@@ -46,7 +46,7 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 	
 	float count = 1;
 	string lname = string_tolower(itemname); // case insensitivity
-	if (strstrofs(lname, "arrow", 0) != -1) // Check if this is an arrow-type item
+	if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
 		count = 10; // give a bundle
 
     float i;

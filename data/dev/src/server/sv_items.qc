@@ -41,8 +41,12 @@ void(string itemname, float id) Player_EquipItem =
 
 		if (self.level >= required_level)
 		{
+			string lname = string_tolower(itemname); // case insensitivity
+			string lname2 = string_tolower(self.main_hand); // case insensitivity
+
 			// Add weapon to inventory
-			AddToInventory(self, self.main_hand, 1);
+			if (!strstrofs(lname2, "arrow", 0) != -1) // check if this is an arrow-type item
+				AddToInventory(self, self.main_hand, 1);
 
 			// Equip new weapon
 			self.main_hand = main_hand_e;
@@ -50,11 +54,14 @@ void(string itemname, float id) Player_EquipItem =
 			self.attack_power_min = attack_power_min_e;
 			self.attack_power_max = attack_power_max_e;
 			self.attack_speed = attack_speed_e;
+			if (self.attack_type == 4) // attack speed doesn't apply to archery
+				self.attack_speed = 2;
 			self.attack_stamina = attack_stamina_e;
 			self.attack_length = attack_length_e;
 
 			// Remove new equipped from inventory
-			RemoveFromInventory(self, itemname, 1);
+			if (!strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+				RemoveFromInventory(self, itemname, 1);
 		}
 		else
 		{
@@ -214,4 +221,50 @@ void(float id, string itemname) Player_UseItem =
 	}
 	else
 		print("Player_UseItem: Item use ID not found\n");
+};
+
+void() CSEv_User_UnequipMainhand_ =
+{
+	if (self.main_hand == "Unarmed")
+	{
+		sprint(self, PRINT_HIGH, "Main hand is unequipped already\n");
+		return;
+	}
+
+	string lname = string_tolower(self.main_hand); // case insensitivity
+	if (!strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+		AddToInventory(self, self.main_hand, 1); // add old item back to inventory
+
+	// equipped unarmed
+	self.attack_power_min = 1;
+	self.attack_power_max = 1;
+	
+	self.attack_speed = 3 - (self.skill_unarmed * 0.0145); // unarmed speed is tied to skill
+	if (self.attack_speed < 0.1)
+		self.attack_speed = 0.1; // cap
+
+	self.attack_stamina = 5;
+	self.attack_type = 0; // unarmed
+	self.attack_length = 32; // weapon length
+	self.main_hand = "Unarmed";
+
+	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
+	sprint(self, PRINT_HIGH, strcat("Main hand unequipped\n"));
+};
+
+void() CSEv_User_UnequipOffhand_ =
+{
+	if (self.off_hand == "Empty")
+	{
+		sprint(self, PRINT_HIGH, "Off hand is unequipped already\n");
+		return;
+	}
+
+	AddToInventory(self, self.off_hand, 1); // add old item back to inventory
+
+	self.off_hand = "Empty";
+	self.blockvalue = 0;
+	
+	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
+	sprint(self, PRINT_HIGH, strcat("Off hand unequipped\n"));
 };

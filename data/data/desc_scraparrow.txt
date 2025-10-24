@@ -2,7 +2,6 @@
 
 ^5Type:^7 Projectile
 ^5Power:^7 5 - 9
-^5Speed:^7 1/sec
 ^5Stamina Use:^7 25
 
 ^6Item Level:^7 0

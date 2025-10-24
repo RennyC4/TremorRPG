@@ -562,7 +562,8 @@ void() User_CharacterScreen =
 	if (!disp_attacktype)			string displaystat2 = "Unarmed";
 	else if (disp_attacktype == 1)  displaystat2 = "Slash";
 	else if (disp_attacktype == 2)  displaystat2 = "Pierce";
-	else if (disp_attacktype == 4)  displaystat2 = "Bash";
+	else if (disp_attacktype == 3)  displaystat2 = "Bash";
+	else if (disp_attacktype == 4)  displaystat2 = "Projectile";
 	else displaystat2 = "Unknown";
 
 	displaystat = strcat("^1DPS: ^7" , dispfix_dps, " (^8", displaystat2, "^7)");
@@ -995,7 +996,8 @@ void() User_InventoryScreen =
 	if (!disp_attacktype)			string displaystat2 = "Unarmed";
 	else if (disp_attacktype == 1)  displaystat2 = "Slash";
 	else if (disp_attacktype == 2)  displaystat2 = "Pierce";
-	else if (disp_attacktype == 4)  displaystat2 = "Bash";
+	else if (disp_attacktype == 3)  displaystat2 = "Bash";
+	else if (disp_attacktype == 4)  displaystat2 = "Projectile";
 	else displaystat2 = "Unknown";
 
 	displaystat = strcat("^1DPS: ^7" , dispfix_dps, " (^8", displaystat2, "^7)");
@@ -1268,7 +1270,8 @@ void() User_MagicScreen =
 	if (!disp_attacktype)			string displaystat2 = "Unarmed";
 	else if (disp_attacktype == 1)  displaystat2 = "Slash";
 	else if (disp_attacktype == 2)  displaystat2 = "Pierce";
-	else if (disp_attacktype == 4)  displaystat2 = "Bash";
+	else if (disp_attacktype == 3)  displaystat2 = "Bash";
+	else if (disp_attacktype == 4)  displaystat2 = "Projectile";
 	else displaystat2 = "Unknown";
 
 	displaystat = strcat("^1DPS: ^7" , dispfix_dps, " (^8", displaystat2, "^7)");

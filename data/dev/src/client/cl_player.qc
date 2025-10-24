@@ -101,6 +101,10 @@ void() Skeleton_ObjectDraw =
 				if (self.main_hand == "Wood Club")
 					setmodel(self.weapon_vfx, "models/club0.glb");
 
+				// Arrows
+				string lname = string_tolower(self.main_hand); // case insensitivity
+				if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+					setmodel(self.weapon_vfx, __NULL__);
 			}
 			else
 				setmodel(self.weapon_vfx, __NULL__);
@@ -515,7 +519,10 @@ void() Player_Think =
 				{
 					sendevent("User_StartAttack", "");
 					if (self.health > 0 && !button4) // don't do attack animation when holding block
-						self.anim_attacking = TRUE;
+					{
+						if (self.attack_type != 4) // archery check
+							self.anim_attacking = TRUE;
+					}
 					self.attack_finished = time + attackspeed;
 				}
 			}
