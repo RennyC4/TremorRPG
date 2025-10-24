@@ -200,7 +200,7 @@ float(entity targ, string itemname, float count) AddToInventory =
 	return TRUE;
 };
 
-// Remove an item, mainly used for dropping items
+// Remove an item, mainly used for dropping items / arrows etc
 void(entity player, string itemname, float count) RemoveFromInventory =
 {
     float i;

@@ -4,6 +4,10 @@
 
 void(entity targ, entity attacker, float damage, float silent) DoDamage;
 void(entity attacker, vector org, float radius, float damage, float diminish, float silent) DoRadiusDamage;
+void(entity player, string itemname, float count) RemoveFromInventory;
+void() CSEv_User_UnequipMainhand_;
+float(entity player, string itemname) HasItem;
+
 // returns 1 if the entity is in front (in sight) of self, used for blocking
 float(entity enemy, entity defender) check_block =
 {
@@ -346,40 +350,24 @@ void() arrow_touch =
 {
 	float parry = FALSE;
 
-	if (other.solid == SOLID_BSP && self.velocity != '0 0 0')
-	{
-		self.movetype = MOVETYPE_FLY;
-		self.velocity = '0 0 0';
-		sound (self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
-		self.touch = info_null;
-		self.think = sub_remove;
-		self.nextthink = time + 3;
-	}
-
 	if (other != self.owner && other.takedamage && other.health > 0 && other.deadflag == DEAD_NO)
 	{
-		print ("Arrow hit a damage target\n");
+		float bow_power = ceil(random_range(self.owner.projectile_power_min, self.owner.projectile_power_max));
+		float arrow_power = ceil(random_range(self.owner.attack_power_min, self.owner.attack_power_max));
+		float damage = bow_power + arrow_power + (self.owner.skill_archery * 0.1);
 
-		// bow power + arrow power + skill damage
-		float bow_power = ceil(random_range(self.projectile_power_min, self.projectile_power_max));
-		float arrow_power = ceil(random_range(self.attack_power_min, self.attack_power_max));
-		float damage = ceil(bow_power + arrow_power);
-		damage += (self.skill_archery * 0.1);
-
-		if (self.classname == "player" && other.classname == "player") // PVP checks
+		if (self.owner.classname == "player" && other.classname == "player") // PVP checks
 		{
-			if (self.pvp != 1 || other.pvp != 1)
+			if (self.owner.pvp != 1 || other.pvp != 1)
 				return;
 			else
 			{
-				self.incombat = other.incombat = TRUE; // Turn off health regen, flag players for incombat
-				self.incombat_finished = other.incombat_finished = time + 30; // keep players locked in combat
+				self.owner.incombat = other.incombat = TRUE; // Turn off health regen, flag players for incombat
+				self.owner.incombat_finished = other.incombat_finished = time + 30; // keep players locked in combat
 			}
 		}
 
-		if (other.parry_finished < time)
-			parry = FALSE;
-		else
+		if (other.parry_finished >= time)
 			parry = TRUE;
 
 		if (!parry)
@@ -391,17 +379,19 @@ void() arrow_touch =
 				damage -= ceil(other.armorvalue);
 
 			// blocking calculations
-			if (check_block(self, other) && other.blocking)
+			if (check_block(self.owner, other) && other.blocking)
 				damage -= ceil(other.blockvalue);
 
 			damage = ceil(damage); // round up final damage output
-			DoDamage(other, self, damage, FALSE);
 
 			// blood logic + effects
 			vector mid = other.origin;
 			vector vel = [crandom(), crandom(), fabs(crandom())] * 100;
 			mid_z += (other.mins_z + other.maxs_z) * 0.5;
 			te_blood(mid, vel, 6);
+
+			DoDamage(other, self.owner, damage, FALSE);
+			sound (self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
 		}
 		else // parry
 		{
@@ -411,7 +401,19 @@ void() arrow_touch =
 		}
 
 		remove(self);
+		return;
 	}
+	
+	if (other.solid == SOLID_BSP && self.velocity != '0 0 0')
+	{
+		sound (self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
+		self.movetype = MOVETYPE_FLY;
+		self.velocity = '0 0 0';
+		self.touch = info_null;
+		self.think = sub_remove;
+		self.nextthink = time + 6;
+	}
+	
 };
 
 void() CSEv_DoAttack_Arrow_ =
@@ -419,8 +421,9 @@ void() CSEv_DoAttack_Arrow_ =
 	entity arrow = spawn();
 	arrow.owner = self;
 	arrow.movetype = MOVETYPE_TOSS;
-	arrow.solid = SOLID_TRIGGER;
-	arrow.hitcontentsmaski = CONTENTBIT_SOLID|0x00000002i|CONTENTBIT_BODY; // ignore clip
+	arrow.solid = SOLID_BBOX;
+
+	arrow.hitcontentsmaski = CONTENTBITS_POINTSOLID; // ignore clip brushes
 
 	if (self.classname == "player")
 		makevectors (self.v_angle);
@@ -436,10 +439,15 @@ void() CSEv_DoAttack_Arrow_ =
 	arrow.nextthink = time + 0.1;
 
 	setmodel (arrow, "models/arrow.glb");
-	setsize (arrow, '-4 -4 -4', '4 4 4');
-	setorigin (arrow, self.origin + v_up * 40);
-	
+	setsize (arrow, '0 0 0', '0 0 0');
+	setorigin (arrow, self.origin + v_forward * 8 + [0,0,16]);
 	sound (self, CHAN_WEAPON, "arrow1.wav", 1, ATTN_NORM);
+
+	RemoveFromInventory(self, self.main_hand, 1); // Remove an arrow ...
+	
+	// out of arrows, equip unarmed
+	if (!HasItem(self, self.main_hand))
+		CSEv_User_UnequipMainhand_();
 };
 
 void(entity targ) Player_CheckLevelUp;

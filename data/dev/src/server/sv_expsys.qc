@@ -19,7 +19,7 @@ void(entity targ) Player_CheckLevelUp =
 
 		targ.exp = targ.exp_oldnext = targ.exp_next; // cap exp on level up properly
 		targ.exp_next = 100 * (targ.level * targ.level * 1.15);
-		pointparticles(PART_LEVELUP, self.origin);
+		pointparticles(PART_LEVELUP, targ.origin);
     }
 };
 

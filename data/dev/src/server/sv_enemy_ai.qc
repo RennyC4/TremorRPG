@@ -171,6 +171,12 @@ void() monster_ai_move =
 		if (range(self.enemy) == RANGE_MELEE)
 			return; // don't move
 	}
+
+	if (self.flags & FL_ONGROUND) // allow monsters to slide off stuff, this is a hack
+	{
+		self.flags &= ~FL_ONGROUND;
+		self.velocity_z = 1;
+	}
 	movetogoal(self.speed);
 
 	self.velocity = '0 0 0';

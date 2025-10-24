@@ -10,148 +10,120 @@ void(string itemname, float id) Player_EquipItem =
 	string readfile = strcat("itm_", fix_itemname, ".txt");
 
 	float v = fopen(readfile, FILE_READ);
-
-	if (id == 0) // Main hand (weapons etc) equip
+	if (v < 0)
 	{
-		if (v >= 0)
-		{
-			if (line = fgets(v)) // skip price on equipping
-			if (line = fgets(v)) // weapon name
-				string main_hand_e = line;
-			if (line = fgets(v)) // attack type
-				float attack_type_e = stof(line);
-			if (line = fgets(v)) // attack power min
-				float attack_power_min_e = stof(line);
-			if (line = fgets(v)) // attack power max
-				float attack_power_max_e = stof(line);
-			if (line = fgets(v)) // attack power speed
-				float attack_speed_e = stof(line);
-			if (line = fgets(v)) // attack stamina
-				float attack_stamina_e = stof(line);
-			if (line = fgets(v)) // attack length
-				float attack_length_e = stof(line);
-			if (line = fgets(v)) // item required player level
-				float required_level = stof(line);
-		}
-		else
-		{
-			print ("Player_EquipItem: ", readfile, " not found\n");
-			return;
-		}
+		print("Player_EquipItem: ", readfile, " not found\n");
+		return;
+	}
 
-		if (self.level >= required_level)
-		{
-			string lname = string_tolower(itemname); // case insensitivity
-			string lname2 = string_tolower(self.main_hand); // case insensitivity
+	// --- MAIN HAND EQUIP ---
+	if (id == 0)
+	{
+		string main_hand_e = "";
+		float attack_type_e = 0;
+		float attack_power_min_e = 0;
+		float attack_power_max_e = 0;
+		float attack_speed_e = 1;
+		float attack_stamina_e = 0;
+		float attack_length_e = 0;
+		float required_level = 1;
 
-			// Add weapon to inventory
-			if (!strstrofs(lname2, "arrow", 0) != -1) // check if this is an arrow-type item
-				AddToInventory(self, self.main_hand, 1);
+		// sequential read
+		line = fgets(v); // skip price
+		line = fgets(v); if (line) main_hand_e = line;
+		line = fgets(v); if (line) attack_type_e = stof(line);
+		line = fgets(v); if (line) attack_power_min_e = stof(line);
+		line = fgets(v); if (line) attack_power_max_e = stof(line);
+		line = fgets(v); if (line) attack_speed_e = stof(line);
+		line = fgets(v); if (line) attack_stamina_e = stof(line);
+		line = fgets(v); if (line) attack_length_e = stof(line);
+		line = fgets(v); if (line) required_level = stof(line);
 
-			// Equip new weapon
-			self.main_hand = main_hand_e;
-			self.attack_type = attack_type_e;
-			self.attack_power_min = attack_power_min_e;
-			self.attack_power_max = attack_power_max_e;
-			self.attack_speed = attack_speed_e;
-			if (self.attack_type == 4) // attack speed doesn't apply to archery
-				self.attack_speed = 2;
-			self.attack_stamina = attack_stamina_e;
-			self.attack_length = attack_length_e;
-
-			// Remove new equipped from inventory
-			if (!strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
-				RemoveFromInventory(self, itemname, 1);
-		}
-		else
+		if (self.level < required_level)
 		{
 			sprint(self, PRINT_HIGH, "Level requirement has not been met\n");
-			return;
-		}
-	}
-	else if (id == 1) // Main armor to equip
-	{
-		if (v >= 0)
-		{
-			if (line = fgets(v)) // skip price on equipping
-			if (line = fgets(v)) // armor name
-				string armorname_e = line;
-			if (line = fgets(v)) // armor value
-				float armorvalue_e = stof(line);
-			if (line = fgets(v)) // item required player level
-				required_level = stof(line);
-		}
-		else
-		{
-			print ("Player_EquipItem: ", readfile, " not found\n");
+			fclose(v);
 			return;
 		}
 
-		if (self.level >= required_level)
-		{
-			// Add old armor to inventory
-			AddToInventory(self, self.armorname, 1);
+		string lname = string_tolower(itemname);
+		string lname2 = string_tolower(self.main_hand);
 
-			// Equip new armor
-			self.armorname = armorname_e;
-			self.armorvalue = armorvalue_e;
-			// Remove new equipped from inventory
+		// Return old weapon to inventory unless it’s an arrow
+		if (strstrofs(lname2, "arrow", 0) == -1)
+			AddToInventory(self, self.main_hand, 1);
+
+		// Equip new weapon
+		self.main_hand = main_hand_e;
+		self.attack_type = attack_type_e;
+		self.attack_power_min = attack_power_min_e;
+		self.attack_power_max = attack_power_max_e;
+		self.attack_speed = (attack_type_e == 4) ? 2 : attack_speed_e;
+		self.attack_stamina = attack_stamina_e;
+		self.attack_length = attack_length_e;
+
+		// Remove equipped from inventory if not an arrow
+		if (strstrofs(lname, "arrow", 0) == -1)
 			RemoveFromInventory(self, itemname, 1);
-		}
-		else
-		{
-			sprint(self, PRINT_HIGH, "Level requirement has not been met\n");
-			return;
-		}
 	}
-	else if (id == 2) // Off-hand to equip
+
+	// --- ARMOR EQUIP ---
+	else if (id == 1)
 	{
-		if (v >= 0)
-		{
-			if (line = fgets(v)) // skip price on equipping
-			if (line = fgets(v)) // off-hand name
-				string off_hand_e = line;
-			if (line = fgets(v)) // block value
-				float blockvalue_e = stof(line);
-			if (line = fgets(v)) // item required player level
-				required_level = stof(line);
+		string armorname_e = "";
+		float armorvalue_e = 0;
+		float required_level = 1;
 
-			// used for projectiles
-			if (line = fgets(v)) // item min damage (projectiles)
-				self.projectile_power_min = stof(line);
-			else
-				self.projectile_power_min = 0;
-			if (line = fgets(v)) // item max damage (projectiles)
-				self.projectile_power_max = stof(line);
-			else
-				self.projectile_power_max = 0;
-		}
-		else
-		{
-			print ("Player_EquipItem: ", readfile, " not found\n");
-			return;
-		}
+		line = fgets(v); // skip price
+		line = fgets(v); if (line) armorname_e = line;
+		line = fgets(v); if (line) armorvalue_e = stof(line);
+		line = fgets(v); if (line) required_level = stof(line);
 
-		if (self.level >= required_level)
-		{
-			// Add old armor to inventory
-			AddToInventory(self, self.off_hand, 1);
-
-			// Equip new armor
-			self.off_hand = off_hand_e;
-			self.blockvalue = blockvalue_e;
-
-			// Remove new equipped from inventory
-			RemoveFromInventory(self, itemname, 1);
-		}
-		else
+		if (self.level < required_level)
 		{
 			sprint(self, PRINT_HIGH, "Level requirement has not been met\n");
+			fclose(v);
 			return;
 		}
+
+		AddToInventory(self, self.armorname, 1);
+		self.armorname = armorname_e;
+		self.armorvalue = armorvalue_e;
+		RemoveFromInventory(self, itemname, 1);
 	}
 
-	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
+	// --- OFF-HAND EQUIP ---
+	else if (id == 2)
+	{
+		string off_hand_e = "";
+		float blockvalue_e = 0;
+		float required_level = 1;
+
+		line = fgets(v); // skip price
+		line = fgets(v); if (line) off_hand_e = line;
+		line = fgets(v); if (line) blockvalue_e = stof(line);
+		line = fgets(v); if (line) required_level = stof(line);
+
+		line = fgets(v); if (line) self.projectile_power_min = stof(line); else self.projectile_power_min = 0;
+		line = fgets(v); if (line) self.projectile_power_max = stof(line); else self.projectile_power_max = 0;
+
+		if (self.level < required_level)
+		{
+			sprint(self, PRINT_HIGH, "Level requirement has not been met\n");
+			fclose(v);
+			return;
+		}
+
+		AddToInventory(self, self.off_hand, 1);
+		self.off_hand = off_hand_e;
+		self.blockvalue = blockvalue_e;
+		RemoveFromInventory(self, itemname, 1);
+	}
+
+	fclose(v);
+
+	// --- Equip sound and message ---
+	stuffcmd(self, "play item/equip.wav\n");
 	sprint(self, PRINT_HIGH, strcat(itemname, " equipped\n"));
 };
 
@@ -214,7 +186,7 @@ void(float id, string itemname) Player_UseItem =
 		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
 		RemoveFromInventory(self, itemname, 1);		
 	}
-	else if (id == 3) // Magic spell to add to magic screen
+	else if (id == 3) // Add magic spell to magic screen
 	{
 		LearnSpell(itemname);
 		RemoveFromInventory(self, itemname, 1);
@@ -238,7 +210,9 @@ void() CSEv_User_UnequipMainhand_ =
 	// equipped unarmed
 	self.attack_power_min = 1;
 	self.attack_power_max = 1;
-	
+	self.projectile_power_min = 0;
+	self.projectile_power_max = 0;
+
 	self.attack_speed = 3 - (self.skill_unarmed * 0.0145); // unarmed speed is tied to skill
 	if (self.attack_speed < 0.1)
 		self.attack_speed = 0.1; // cap

@@ -298,6 +298,7 @@ void() PlayerPrintStats =
 		AddToInventory(self, "Health Potion", 1);
 		AddToInventory(self, "Mana Potion", 1);
 	}
+
 	sprint(self, PRINT_HIGH, "Proj_Min: ", ftos(self.projectile_power_min), "\n");
 	sprint(self, PRINT_HIGH, "Proj_Min: ", ftos(self.projectile_power_max), "\n");
 };

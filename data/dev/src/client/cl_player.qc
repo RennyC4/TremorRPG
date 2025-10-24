@@ -373,6 +373,7 @@ void() Player_Hud =
 		float health = getstatf(STAT_HEALTH);
 		float casting = getstatf(STAT_CASTING);
 		float atbonfire = getstatf(STAT_BONFIRE);
+		float skillpoints = getstatf(STAT_SKILLPOINTS);
 
 		if (zonedisplay_finished > time)
 			Draw_ZoneName(g_width, g_height);
@@ -400,7 +401,7 @@ void() Player_Hud =
 		}
 
 		// bonfire SP reminder text
-		if (atbonfire)
+		if (atbonfire && skillpoints > 0)
 		{
 			string msg1 = "You possess skill points!";
 			float tw = (stringwidth(msg1, 0, [12,12]) / 2);

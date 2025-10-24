@@ -2271,6 +2271,9 @@ const float MENU_MAGIC = 6; // user magic screen
 #define STAT_BONFIRE 87
 #define STAT_CASTING 88
 #define STAT_ATTACKSTAM 89
+#define STAT_PROJECTILE_MIN 90
+#define STAT_PROJECTILE_MAX 91
+
 // Job skills
 #define STAT_MINING 90
 #define STAT_FISHING 91
