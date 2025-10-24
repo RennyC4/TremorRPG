@@ -720,7 +720,7 @@ void() CSEv_User_StartAttack_ =
 {
 	if (self.menu == MENU_OFF && !self.bonfire)
 	{
-		if (self.deadflag == DEAD_DEAD)
+		if (self.deadflag == DEAD_DEAD || self.health <= 0)
 		{
 			if (self.respawn_finished < time)
 			{

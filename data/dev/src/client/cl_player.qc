@@ -440,9 +440,7 @@ float(void) Player_PreDraw =
 
 			runstandardplayerphysics(self);
 		}
-
-		// draw objects on bones (armor, lantern, swords, etc)
-		Skeleton_ObjectDraw();
+		Skeleton_ObjectDraw(); // draw objects on bones (armor, lantern, swords, etc)
 
 		vPlayerOriginOld = vPlayerOrigin; // smooth stair stepping, this has to be done manually!
 
@@ -522,6 +520,8 @@ void() Player_Think =
 		else
 			self.attack_released = TRUE;
 	}
+	else
+		self.attack_released = TRUE;
 
 	if (self.health > 0)
 	{

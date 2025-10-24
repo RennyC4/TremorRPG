@@ -79,7 +79,7 @@ void(float which) CSEv_User_AddSkillPoint_f =
 	}
 	else if (which == 3)
 	{
-		if (self.skill_unarmed < cap)
+		if (self.skill_bash < cap)
 		{
 			self.skill_bash += 1;
 			self.skillpoints -= 1;

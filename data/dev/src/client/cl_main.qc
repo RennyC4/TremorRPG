@@ -64,6 +64,7 @@ noref void() CSQC_WorldLoaded =
 //		localcmd("sv_cheats 1\nsv_csqc_progname teredit.dat\nrestart\n");
 		
 	CSQC_Precache();
+	last_input_time = time; // don't use idle cam on map change
 };
 
 void(string rendererdescription) CSQC_RendererRestarted =
