@@ -43,9 +43,14 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 	else
 		float gold_ok = TRUE;
 
-    // first see if item already exists, then add it
+	
 	float count = 1;
+	string lname = string_tolower(itemname); // case insensitivity
+	if (strstrofs(lname, "arrow", 0) != -1) // Check if this is an arrow-type item
+		count = 10; // give a bundle
+
     float i;
+    // first see if item already exists, then add it
     for (i = 0; i < self.inv_count; i++)
     {
         if (self.inventory[i] == itemname)
@@ -357,6 +362,10 @@ void(string itemname) CSEv_UseItem_s =
 	else if (itemname == "Wood Club")
 		Player_EquipItem(itemname, 0);
 
+	// Main hand equippables (projectiles)
+	if (itemname == "Scrap Arrow")
+		Player_EquipItem(itemname, 0);
+
 	// Armor equippables
 	if (itemname == "Plain Clothes")
 		Player_EquipItem(itemname, 1);
@@ -368,9 +377,8 @@ void(string itemname) CSEv_UseItem_s =
 		Player_EquipItem(itemname, 2);
 	else if (itemname == "Flimsy Buckler")
 		Player_EquipItem(itemname, 2);
-
-//	if (itemname != "Lantern")
-//		RemoveFromInventory(self, itemname, 1);
+	else if (itemname == "Short Bow")
+		Player_EquipItem(itemname, 2);
 };
 
 // called whenever we need to send player/client ONLY inventory data to CSQC

@@ -1,4 +1,4 @@
-7
+9
 Short Sword
 200
 Health Potion
@@ -11,5 +11,9 @@ Flimsy Buckler
 150
 Wood Club
 50
+Short Bow
+90
+Scrap Arrow
+10
 Lantern
 80

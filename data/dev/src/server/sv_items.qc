@@ -102,12 +102,22 @@ void(string itemname, float id) Player_EquipItem =
 		if (v >= 0)
 		{
 			if (line = fgets(v)) // skip price on equipping
-			if (line = fgets(v)) // armor name
+			if (line = fgets(v)) // off-hand name
 				string off_hand_e = line;
-			if (line = fgets(v)) // armor value
+			if (line = fgets(v)) // block value
 				float blockvalue_e = stof(line);
 			if (line = fgets(v)) // item required player level
 				required_level = stof(line);
+
+			// used for projectiles
+			if (line = fgets(v)) // item min damage (projectiles)
+				self.projectile_power_min = stof(line);
+			else
+				self.projectile_power_min = 0;
+			if (line = fgets(v)) // item max damage (projectiles)
+				self.projectile_power_max = stof(line);
+			else
+				self.projectile_power_max = 0;
 		}
 		else
 		{

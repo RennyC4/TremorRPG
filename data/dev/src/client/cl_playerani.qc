@@ -29,6 +29,7 @@
 #define ANIM_PARRY		19
 #define ANIM_DRINK		20
 #define ANIM_SMASH		21
+#define ANIM_ARCHERY	22
 
 //
 // Special animations sent from SSQC
@@ -425,7 +426,7 @@ void() Player_Animate =
 				self.frame = frameforname(self.modelindex, "Stab");
 	            self.anim_state = ANIM_STAB;
 			}
-			else
+			else if (self.attack_type == 3)
 			{
 				self.frame = frameforname(self.modelindex, "Smash");
 	            self.anim_state = ANIM_SMASH;

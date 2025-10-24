@@ -2333,7 +2333,7 @@ float LockOn_CycleToggle; // same
 .float bonfire;
 .float cast_finished;
 .float ai_mode;
-.float attack_type; // 0 unarmed, 1 slash, 2 pierce, 3 bash
+.float attack_type; // 0 unarmed, 1 slash, 2 pierce, 3 bash, 4 archery
 .float blocking;
 .float crouch;
 
@@ -2354,4 +2354,5 @@ const float ANISTATE_PUNCH = 11;
 const float ANISTATE_BASH = 12;
 const float ANISTATE_PARRY = 13;
 const float ANISTATE_DRINK = 14;
-const float ANISTATE_SMASH = 15; // Actually used or Bashing attacks
+const float ANISTATE_SMASH = 15; // Actually used for bashing attacks
+const float ANISTATE_ARCHERY = 16;

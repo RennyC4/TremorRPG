@@ -160,6 +160,10 @@ void() Skeleton_ObjectDraw =
 					setmodel(self.offhand_vfx, "models/shield0.glb");
 				if (self.off_hand == "Flimsy Buckler")
 					setmodel(self.offhand_vfx, "models/shield1.glb");
+
+				// Bows
+				if (self.off_hand == "Short Bow")
+					setmodel(self.offhand_vfx, "models/bow0.glb");
 			}
 			else
 				setmodel(self.offhand_vfx, __NULL__);

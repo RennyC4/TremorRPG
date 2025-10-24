@@ -59,9 +59,6 @@ noref void() CSQC_WorldLoaded =
 	registercommand("toggle_crouch", "Crouching & sneaking\n");
 	registercommand("toggle_camera", "3rd person camera toggle\n");
 	registercommand("+use", "Use what is in front of player\n");
-
-//	if (cvar("developer") > 0)
-//		localcmd("sv_cheats 1\nsv_csqc_progname teredit.dat\nrestart\n");
 		
 	CSQC_Precache();
 	last_input_time = time + 15; // don't use idle cam on map change
@@ -101,8 +98,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
-	if (cvar("sv_cheats") == 0) // entities are wrapped with csaddon with sv_cheats is 1
-		addentities(MASK_VIEWMODEL | MASK_ENGINE);
+	//if (cvar("sv_cheats") == 0) // entities are wrapped with csaddon with sv_cheats is 1
+	addentities(MASK_VIEWMODEL | MASK_ENGINE);
 
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);

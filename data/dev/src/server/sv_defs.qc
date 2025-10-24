@@ -1862,7 +1862,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float attack_power_min; // player + monster damage
 .float attack_power_max; // player + monster damage
 .float attack_speed; // player + monster attack speed
-.float attack_type; // 0 unarmed, 1 slash, 2 pierce, 3 bash
+.float attack_type; // 0 unarmed, 1 slash, 2 pierce, 3 bash, 4 archery
 .float attack_stamina; // player, how much stamina a weapon requires + drains
 .float attack_length; // player, monster, how far a weapon reaches (hidden stat)
 .float spell_power_min; // player + monster damage
@@ -1883,6 +1883,9 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .string cast_finished_spell;
 .float spellani_finished;
 
+.float projectile_power_min; // player + monster damage
+.float projectile_power_max; // player + monster damage
+
 // Animation States
 .float anistate;
 const float ANISTATE_NONE = 0;
@@ -1900,7 +1903,8 @@ const float ANISTATE_PUNCH = 11;
 const float ANISTATE_BASH = 12;
 const float ANISTATE_PARRY = 13;
 const float ANISTATE_DRINK = 14;
-const float ANISTATE_SMASH = 15; // Actually used or Bashing attacks
+const float ANISTATE_SMASH = 15; // Actually used for Bashing melee attacks
+const float ANISTATE_ARCHERY = 16;
 
 //.float armorvalue; (this is already defined)
 

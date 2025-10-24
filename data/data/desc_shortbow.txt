@@ -1,0 +1,10 @@
+^2Short Bow^7
+
+^5Type:^7 Projectile
+^5Power:^7 1 - 3
+^5Speed:^7 1/sec
+^5Stamina Use:^7 15
+^5Range:^7 Short
+
+^6Item Level:^7 1
+^6Required Level:^7 0

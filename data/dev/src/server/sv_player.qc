@@ -287,15 +287,19 @@ void() PlayerPrintStats =
 	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
 	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
 
-	if (cvar("sv_cheats") > 0) // Give cheat stats
+	if (cvar("sv_cheats") > 0) // give cheat stats
 	{
 		self.skillpoints = 99999;
 		self.gold = 99999;
-		//self.level = 9999;
+		self.level ++;
+		self.mana = self.max_mana;
+		self.health = self.max_health;
+
 		AddToInventory(self, "Health Potion", 1);
 		AddToInventory(self, "Mana Potion", 1);
-		self.mana = 0;
 	}
+	sprint(self, PRINT_HIGH, "Proj_Min: ", ftos(self.projectile_power_min), "\n");
+	sprint(self, PRINT_HIGH, "Proj_Min: ", ftos(self.projectile_power_max), "\n");
 };
 
 // called from CSQC ("show_character" console command)
@@ -753,9 +757,11 @@ void() CSEv_User_StartAttack_ =
 							self.anistate = ANISTATE_SLASH;
 						else if (self.attack_type == 2)
 							self.anistate = ANISTATE_STAB;
-						else
+						else if (self.attack_type == 3)
 							self.anistate = ANISTATE_SMASH;
-
+						else
+							self.anistate = ANISTATE_ARCHERY;
+						
 						self.stamina -= (self.attack_stamina - stamcalc);
 						self.melee_finished = time + self.attack_speed;
 						self.lockview_finished = time + self.attack_speed;
@@ -1432,6 +1438,8 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     fputs(f, targ.spell_equipped, "\n");
     fputs(f, ftos(targ.spell_power_min), "\n");
     fputs(f, ftos(targ.spell_power_max), "\n");
+    fputs(f, ftos(targ.projectile_power_min), "\n");
+    fputs(f, ftos(targ.projectile_power_max), "\n");
 
     // skills
     fputs(f, ftos(targ.skill_unarmed), "\n");
@@ -1606,7 +1614,10 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.spell_power_min = stof(line);
 		if (line = fgets(v))
 			self.spell_power_max = stof(line);
-
+		if (line = fgets(v))
+			self.projectile_power_min = stof(line);
+		if (line = fgets(v))
+			self.projectile_power_max = stof(line);
 		//
 
 		// skills

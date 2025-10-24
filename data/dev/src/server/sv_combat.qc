@@ -130,8 +130,10 @@ void() CSEv_DoAttack_Melee_ =
 		damage += (self.skill_slash * howmuch);
 	else if (self.attack_type == 2) // pierce
 		damage += (self.skill_pierce * howmuch);
-	else // bashing
+	else if (self.attack_type == 3) // bashing
 		damage += (self.skill_bash * howmuch);
+	else
+		damage += (self.skill_archery * howmuch);
 
 	if (self.classname == "player")
 		makevectors (self.v_angle);
@@ -147,7 +149,7 @@ void() CSEv_DoAttack_Melee_ =
 		sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
 	else if (self.attack_type == 2)
 		sound (self, CHAN_WEAPON, "dagger1.wav", 1, ATTN_NORM);
-	else
+	else if (self.attack_type == 3)
 		sound (self, CHAN_WEAPON, "club1.wav", 1, ATTN_NORM);
 
 	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
