@@ -336,6 +336,112 @@ void() CSEv_DoAttack_Melee_ =
 	}
 };
 
+void() arrow_think =
+{
+	self.angles = vectoangles(self.velocity);
+	self.nextthink = time + 0.1;
+};
+
+void() arrow_touch =
+{
+	float parry = FALSE;
+
+	if (other.solid == SOLID_BSP && self.velocity != '0 0 0')
+	{
+		self.movetype = MOVETYPE_FLY;
+		self.velocity = '0 0 0';
+		sound (self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
+		self.touch = info_null;
+		self.think = sub_remove;
+		self.nextthink = time + 3;
+	}
+
+	if (other != self.owner && other.takedamage && other.health > 0 && other.deadflag == DEAD_NO)
+	{
+		print ("Arrow hit a damage target\n");
+
+		// bow power + arrow power + skill damage
+		float bow_power = ceil(random_range(self.projectile_power_min, self.projectile_power_max));
+		float arrow_power = ceil(random_range(self.attack_power_min, self.attack_power_max));
+		float damage = ceil(bow_power + arrow_power);
+		damage += (self.skill_archery * 0.1);
+
+		if (self.classname == "player" && other.classname == "player") // PVP checks
+		{
+			if (self.pvp != 1 || other.pvp != 1)
+				return;
+			else
+			{
+				self.incombat = other.incombat = TRUE; // Turn off health regen, flag players for incombat
+				self.incombat_finished = other.incombat_finished = time + 30; // keep players locked in combat
+			}
+		}
+
+		if (other.parry_finished < time)
+			parry = FALSE;
+		else
+			parry = TRUE;
+
+		if (!parry)
+		{
+			// armor calculations
+			if (other.armorvalue > damage)
+				damage = 1;
+			else
+				damage -= ceil(other.armorvalue);
+
+			// blocking calculations
+			if (check_block(self, other) && other.blocking)
+				damage -= ceil(other.blockvalue);
+
+			damage = ceil(damage); // round up final damage output
+			DoDamage(other, self, damage, FALSE);
+
+			// blood logic + effects
+			vector mid = other.origin;
+			vector vel = [crandom(), crandom(), fabs(crandom())] * 100;
+			mid_z += (other.mins_z + other.maxs_z) * 0.5;
+			te_blood(mid, vel, 6);
+		}
+		else // parry
+		{
+			sound (other, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
+			string eventlog_print = (strcat("^2Successful parry!"));
+			stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
+		}
+
+		remove(self);
+	}
+};
+
+void() CSEv_DoAttack_Arrow_ =
+{
+	entity arrow = spawn();
+	arrow.owner = self;
+	arrow.movetype = MOVETYPE_TOSS;
+	arrow.solid = SOLID_TRIGGER;
+	arrow.hitcontentsmaski = CONTENTBIT_SOLID|0x00000002i|CONTENTBIT_BODY; // ignore clip
+
+	if (self.classname == "player")
+		makevectors (self.v_angle);
+	else
+		makevectors (self.angles);
+
+	arrow.velocity = aim(self, 1000);
+	arrow.velocity = arrow.velocity * 1000;
+	arrow.angles = vectoangles(arrow.velocity);
+
+	arrow.touch = arrow_touch;
+	arrow.think = arrow_think;
+	arrow.nextthink = time + 0.1;
+
+	setmodel (arrow, "models/arrow.glb");
+	setsize (arrow, '-4 -4 -4', '4 4 4');
+	setorigin (arrow, self.origin + v_up * 40);
+	
+	sound (self, CHAN_WEAPON, "arrow1.wav", 1, ATTN_NORM);
+};
+
 void(entity targ) Player_CheckLevelUp;
 void(entity targ, entity attacker) DoDeath = 
 {

@@ -87,7 +87,7 @@ void(float damage) Cast_Thorn =
 
 	sound (self, CHAN_WEAPON, "magic/thorn_cast.wav", 1, ATTN_NORM);
 
-	vector source = self.origin + self.view_ofs;
+	vector source = self.origin + v_up * 48;
 
 	damage = damage + (self.skill_offensivemagic * 0.1); // initial damage
 	traceline (source, source + v_forward * spell_length, MOVE_TRIGGERS, self);

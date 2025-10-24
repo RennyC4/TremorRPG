@@ -407,8 +407,14 @@ void() CheckImpulses =
 			PlayerPrintStats(); // Debugging
 		break;
 		case 2:
-			//Debug_DisplayNearbyPlayers();
+		{
+			pointparticles(PART_MANAPOTION, self.origin);
+		}
 		break;
+		case 3:
+		{
+			pointparticles(PART_HEALTHPOTION, self.origin);
+		}
 		default:
 			break;
 	}

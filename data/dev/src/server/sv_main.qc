@@ -126,9 +126,12 @@ void() worldspawn =
 	precache_model("models/player_m.glb");
 	precache_model("models/player_f.glb");
 	precache_model("models/chest.glb");
+	precache_model("models/arrow.glb");
 	precache_model("progs/targetdot.spr");
 
 	precache_sound ("levelup.wav");
+	precache_sound ("arrow1.wav");
+	precache_sound ("arrow2.wav");
 	precache_sound ("sword1.wav");
 	precache_sound ("punch1.wav");
 	precache_sound ("dagger1.wav");

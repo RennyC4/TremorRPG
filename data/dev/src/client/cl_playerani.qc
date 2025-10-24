@@ -226,8 +226,7 @@ void() Player_Animate =
 		{
 			if (self.frame1time >= duration * 0.5)
 			{
-				print ("Archery: Do Arrow Firing Routine NOW!\n");
-				//sendevent("DoAttack_Melee", ""); // Change to arrow firing
+				sendevent("DoAttack_Arrow", "");
 				self.attack_triggered = TRUE;
 			}
 		}
