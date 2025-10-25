@@ -26,6 +26,8 @@ void() CSQC_Ent_Remove =
 		remove(self.weapon_vfx);
 	if (self.offhand_vfx)
 		remove(self.offhand_vfx);
+	if (self.arrow_vfx)
+		remove(self.arrow_vfx);
 	//
 	remove(self);
 };

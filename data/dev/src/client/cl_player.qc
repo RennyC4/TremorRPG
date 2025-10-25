@@ -8,6 +8,7 @@ void() OtherPlayer_Anistate;
 .entity lantern_vfx;
 .entity weapon_vfx;
 .entity offhand_vfx;
+.entity arrow_vfx;
 
 //
 // Player skeleton attach objects
@@ -77,6 +78,7 @@ void() Skeleton_ObjectDraw =
 		if (!self.weapon_vfx)
 		{
 			self.weapon_vfx = spawn();
+			self.weapon_vfx.owner = self;
 			self.weapon_vfx.drawmask = MASK_VIEWMODEL;
 		}
 		else
@@ -104,14 +106,39 @@ void() Skeleton_ObjectDraw =
 					setmodel(self.weapon_vfx, "models/club0.glb");
 
 				// Arrows
-				/*
-				string lname = string_tolower(self.main_hand); // case insensitivity
-				if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
-					setmodel(self.weapon_vfx, __NULL__);
-				*/
-
 				if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
 					setmodel(self.weapon_vfx, "models/quiver.glb");
+				
+				// Show arrow in hand before firing
+				float duration = frameduration(self.modelindex, self.frame);
+				if (self.frame == frameforname(self.modelindex, "Archery") && self.frame1time <= duration * 0.5)
+				{
+					if (!self.arrow_vfx)
+					{
+						self.arrow_vfx = spawn();
+						self.arrow_vfx.owner = self;
+						self.arrow_vfx.drawmask = MASK_VIEWMODEL;
+					}
+					setmodel(self.arrow_vfx, "models/arrow2.glb");
+
+					vector arrow_org = gettaginfo(self, gettagindex(self, "mixamorig:RightHand"));
+					vector arrow_offset = '0 0 0';
+
+					// local offset into world space
+					arrow_org += v_forward * arrow_offset_x;
+					arrow_org += v_right   * arrow_offset_y;
+					arrow_org += v_up      * arrow_offset_z;
+					self.arrow_vfx.origin = arrow_org;
+
+					// angles
+					vector arrow_ang = vectoangles(v_forward, v_up);
+					self.arrow_vfx.angles = arrow_ang;
+				}
+				else if (self.arrow_vfx)
+				{
+					remove(self.arrow_vfx);
+					self.arrow_vfx = world;
+				}
 			}
 			else
 				setmodel(self.weapon_vfx, __NULL__);
@@ -159,6 +186,7 @@ void() Skeleton_ObjectDraw =
 		if (!self.offhand_vfx)
 		{
 			self.offhand_vfx = spawn();
+			self.offhand_vfx.owner = self;
 			self.offhand_vfx.drawmask = MASK_VIEWMODEL;
 		}
 		else
