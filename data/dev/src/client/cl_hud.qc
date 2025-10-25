@@ -222,8 +222,10 @@ void() Draw_Health =
 	// Bar
 	vector hbar_size = '100 8 0';
 	vector hbarpos = pos;
+	
+	drawfill(hbarpos + '1 1 0', hbar_size, '0.5 0 0', 0.35, 0); // background bar
+	
 	hbar_size_x = (h / hmax) * hbar_size_x; // keep bar updated
-
 	drawfill(hbarpos + '1 1 0', hbar_size, '0.5 0 0', 1, 0);
 
 	// text
@@ -261,8 +263,10 @@ void() Draw_Mana =
 	// Bar
 	vector mbar_size = '100 8 0';
 	vector mbarpos = pos;
-	mbar_size_x = (m / mmax) * mbar_size_x; // keep bar updated
 
+	drawfill(mbarpos + '1 1 0', mbar_size, '0 0 0.5', 0.35, 0); // background bar
+	
+	mbar_size_x = (m / mmax) * mbar_size_x; // keep bar updated
 	drawfill(mbarpos + '1 1 0', mbar_size, '0 0 0.5', 1, 0);
 
 	// text
@@ -309,8 +313,10 @@ void() Draw_Stamina =
 	// Bar
 	vector sbar_size = '100 8 0';
 	vector sbarpos = pos;
-	sbar_size_x = (s / smax) * sbar_size_x; // keep bar updated
 
+	drawfill(sbarpos + '1 1 0', sbar_size, '0 0.5 0', 0.35, 0); // background bar
+	
+	sbar_size_x = (s / smax) * sbar_size_x; // keep bar updated
 	drawfill(sbarpos + '1 1 0', sbar_size, '0 0.5 0', 1, 0);
 
 	// Text
