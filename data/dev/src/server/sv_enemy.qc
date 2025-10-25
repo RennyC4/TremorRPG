@@ -27,6 +27,7 @@ float(entity ePVEnt, float flChanged) Monster_SendEntity =
 	WriteByte(MSG_ENTITY, self.level);
 	WriteByte(MSG_ENTITY, self.anistate);
 	WriteByte(MSG_ENTITY, self.ai_mode);
+	WriteByte(MSG_ENTITY, self.attack_speed);
 
 	return TRUE;
 };

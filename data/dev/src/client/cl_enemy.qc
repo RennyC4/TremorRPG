@@ -20,6 +20,17 @@ void() Monster_Animate =
 		return;
 	}
 
+	// adjust speed by attack stat
+	if (self.attack_speed)
+	{
+		if (!self.attack_type) // punch speed
+			speed /= self.attack_speed * 0.5;
+		else
+			speed /= self.attack_speed * 0.75;
+	}
+
+	speed *= frametime;
+
 	if (self.anistate == ANISTATE_PUNCH)
 	{
 		if (self.frame != (self.frame = frameforname(self.modelindex, "Punch")))
@@ -29,7 +40,7 @@ void() Monster_Animate =
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
 		else
-			self.frame1time += frametime;
+			self.frame1time += speed;
 		return;
 	}
 
@@ -42,7 +53,7 @@ void() Monster_Animate =
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
 		else
-			self.frame1time += frametime;
+			self.frame1time += speed;
 		return;
 	}
 
@@ -55,7 +66,7 @@ void() Monster_Animate =
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
 		else
-			self.frame1time += frametime;
+			self.frame1time += speed;
 		return;
 	}
 
@@ -68,9 +79,11 @@ void() Monster_Animate =
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
 		else
-			self.frame1time += frametime;
+			self.frame1time += speed;
 		return;
 	}
+	
+	speed = 1; // reset speed after attacking animations
 
 	if (self.anistate == ANISTATE_STUNNED)
 		self.frame = frameforname(self.modelindex, "Stunned");
@@ -84,11 +97,8 @@ void() Monster_Animate =
 //	if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp") // mini-map only on over world, full mini-map affects player animation speed for some reason
 //		speed /= 2;
 
-	if (self.health > 0)
-	{
-		self.frame1time += speed;
-		self.frame2time += speed;
-	}
+	self.frame1time += speed;
+	self.frame2time += speed;
 	//print (ftos(frameduration(self.modelindex,self.frame)), "\n");
 };
 

@@ -146,7 +146,8 @@ void() monster_ai_melee =
 		else if (self.attack_type == 3)
 			self.anistate = ANISTATE_SMASH;
 
-		self.ai_doattack = time + (self.attack_speed / 5); // launch attack
+		self.ai_doattack = time + (self.attack_speed / 4); // launch attack
+			
 		self.melee_finished = time + self.attack_speed;
 	}
 	self.think = monster_ai_think;

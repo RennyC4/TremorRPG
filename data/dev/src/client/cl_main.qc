@@ -469,6 +469,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.level = readbyte();
 		self.anistate = readbyte();
 		self.ai_mode = readbyte();
+		self.attack_speed = readbyte();
 	}
 };
 

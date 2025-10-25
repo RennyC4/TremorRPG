@@ -2339,6 +2339,7 @@ float LockOn_CycleToggle; // same
 .float attack_type; // 0 unarmed, 1 slash, 2 pierce, 3 bash, 4 archery
 .float blocking;
 .float crouch;
+.float attack_speed;
 
 // Animation States
 .float anistate;
