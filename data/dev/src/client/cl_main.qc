@@ -236,46 +236,67 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 	float health = getstatf(STAT_HEALTH);
 	float atbonfire = getstatf(STAT_BONFIRE);
 
+	// Send input to UI if a menu is active
 	if (player_menu > 1)
 		sui_input_event(evtype, scanx, chary, devid);
 
+	// Normal gameplay input handling
 	if (player_menu != MENU_LOGIN)
 	{
-		switch(evtype)
+		switch (evtype)
 		{
 			case IE_KEYDOWN:
 			{
-				if (getkeybind(scanx) == "+button4")
+				string bind = getkeybind(scanx);
+
+				if (atbonfire) // Disable movement keys at bonfire
+				{
+					if (bind == "+forward" || bind == "+back" || bind == "+moveleft" || bind == "+moveright" || bind == "+jump")
+						return TRUE; // block movement
+				}
+
+				if (bind == "+button4")
 					button4 = TRUE;
+
 				return FALSE;
 			}
 			case IE_KEYUP:
 			{
-				if (getkeybind(scanx) == "+button4")
+				string bind = getkeybind(scanx);
+
+				if (atbonfire) // Disable movement keys at bonfire
+				{
+					if (bind == "+forward" || bind == "+back" || bind == "+moveleft" || bind == "+moveright" || bind == "+jump")
+						return TRUE; // block movement
+				}
+
+				if (bind == "+button4")
 					button4 = FALSE;
+
 				return FALSE;
 			}
 			case IE_MOUSEDELTA:
 			{
-				// disable mouse movement
+				// Disable mouse look under conditions
 				if (player_lockview > time || health <= 0 || lock_on_active || atbonfire)
 					return TRUE;
 				else
 					return FALSE;
 			}
-			case IE_MOUSEABS:
+			case IE_MOUSEABS: // Mouse Absolute (UI cursor)
+			{
 				cursor_pos_x = scanx;
 				cursor_pos_y = chary;
 				return FALSE;
+			}
 		}
 		return FALSE;
 	}
-	else // disable player inputs under certain conditions
+	else
 	{
-		sui_input_event(evtype, scanx, chary, devid); // Should only be activated when menus are on
+		sui_input_event(evtype, scanx, chary, devid); // Menu input only (login or special screens)
 		return TRUE;
 	}
-	
 	return FALSE;
 };
 
