@@ -107,7 +107,12 @@ void() Skeleton_ObjectDraw =
 
 				// Arrows
 				if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
-					setmodel(self.weapon_vfx, "models/quiver.glb");
+				{
+					if (!camera_mode && thirdcam_dist < 30) // don't show quiver in first-person
+						setmodel(self.weapon_vfx, __NULL__);
+					else
+						setmodel(self.weapon_vfx, "models/quiver.glb");
+				}
 				
 				// Show arrow in hand before firing
 				float duration = frameduration(self.modelindex, self.frame);
