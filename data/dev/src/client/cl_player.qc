@@ -84,7 +84,9 @@ void() Skeleton_ObjectDraw =
 			//
 			// Models to draw
 			//
-			
+
+			string lname = string_tolower(self.main_hand); // case insensitivity
+
 			if (!self.bonfire)
 			{
 				// Swords
@@ -102,9 +104,14 @@ void() Skeleton_ObjectDraw =
 					setmodel(self.weapon_vfx, "models/club0.glb");
 
 				// Arrows
+				/*
 				string lname = string_tolower(self.main_hand); // case insensitivity
 				if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
 					setmodel(self.weapon_vfx, __NULL__);
+				*/
+
+				if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+					setmodel(self.weapon_vfx, "models/quiver.glb");
 			}
 			else
 				setmodel(self.weapon_vfx, __NULL__);
@@ -112,7 +119,10 @@ void() Skeleton_ObjectDraw =
 			//
 			//
 
-			org = gettaginfo(self, gettagindex(self, "mixamorig:RightHand"));
+			if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+				org = gettaginfo(self, gettagindex(self, "mixamorig:Spine1"));			
+			else
+				org = gettaginfo(self, gettagindex(self, "mixamorig:RightHand"));
 			offset = '0 0 0';  // offset relative to the bone
 			if (gender == "Female")
 				offset = '0 10 0';
