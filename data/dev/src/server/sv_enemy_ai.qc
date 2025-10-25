@@ -18,8 +18,8 @@ const float AI_PATROL = 4;
 .float ai_attacktriggered;
 
 void() monster_ai_think;
-void() CSEv_DoAttack_Melee_;
 void() monster_respawn;
+void(vector ang) CSEv_DoAttack_Melee_v;
 
 // range values
 float	RANGE_CLOSE				= 0;
@@ -372,7 +372,7 @@ void() monster_ai_think =
 			{
 				if (self.ai_doattack < time && !self.ai_attacktriggered)
 				{
-					CSEv_DoAttack_Melee_(); // fire the actual attack
+					CSEv_DoAttack_Melee_v(self.angles); // fire the actual attack
 					self.ai_attacktriggered = TRUE;
 				}
 				else

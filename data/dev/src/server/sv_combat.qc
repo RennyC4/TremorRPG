@@ -113,7 +113,7 @@ void() DoAttack_ShieldBash =
 
 // Main melee attack function
 .float staminamessage_finished;
-void() CSEv_DoAttack_Melee_ =
+void(vector ang) CSEv_DoAttack_Melee_v =
 {
 	if (self.flags & FL_ONGROUND)
 		self.velocity = [0, 0];
@@ -139,8 +139,17 @@ void() CSEv_DoAttack_Melee_ =
 	else
 		damage += (self.skill_archery * howmuch);
 
-	if (self.classname == "player")
-		makevectors (self.v_angle);
+	if (self.flags & FL_CLIENT)
+	{
+		if (ang) // sent from CSQC when lock-on is active
+		{
+			makevectors (ang);
+			self.angles_x = ang_x;
+			self.fixangle = TRUE;
+		}
+		else
+			makevectors (self.v_angle);
+	}
 	else
 		makevectors (self.angles);
 
@@ -416,7 +425,7 @@ void() arrow_touch =
 	
 };
 
-void() CSEv_DoAttack_Arrow_ =
+void(vector ang) CSEv_DoAttack_Arrow_v =
 {
 	entity arrow = spawn();
 	arrow.owner = self;
@@ -425,8 +434,17 @@ void() CSEv_DoAttack_Arrow_ =
 
 	arrow.hitcontentsmaski = CONTENTBITS_POINTSOLID; // ignore clip brushes
 
-	if (self.classname == "player")
-		makevectors (self.v_angle);
+	if (self.flags & FL_CLIENT)
+	{
+		if (ang) // sent from CSQC when lock-on is active
+		{
+			makevectors (ang);
+			self.angles_x = ang_x;
+			self.fixangle = TRUE;
+		}
+		else
+			makevectors (self.v_angle);
+	}
 	else
 		makevectors (self.angles);
 

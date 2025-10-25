@@ -226,11 +226,14 @@ void() Player_Animate =
 		{
 			if (self.frame1time >= duration * 0.5)
 			{
-				sendevent("DoAttack_Arrow", "");
+				if (lock_on_active)
+					sendevent("DoAttack_Arrow", "v", lockon_angles);
+				else
+					sendevent("DoAttack_Arrow", "v", [0,0,0]); // send nothing when lock-on is off
 				self.attack_triggered = TRUE;
 			}
-		}
-
+		}			
+			
 		speed *= frametime;
         if (self.frame1time >= duration - 0.1) // Hold final frame at end
             self.frame1time = duration - 0.1;
@@ -493,22 +496,34 @@ void() Player_Animate =
 		{
 			if (!self.attack_type && self.frame1time >= duration * 0.5) // Punch
 			{
-				sendevent("DoAttack_Melee", "");
+				if (lock_on_active)
+					sendevent("DoAttack_Melee", "v", lockon_angles);
+				else
+					sendevent("DoAttack_Melee", "v", [0,0,0]); // send nothing when lock-on is off
 				self.attack_triggered = TRUE;
 			}
 			else if (self.attack_type == 1 && self.frame1time >= duration * 0.25) // Slash
 			{
-				sendevent("DoAttack_Melee", "");
+				if (lock_on_active)
+					sendevent("DoAttack_Melee", "v", lockon_angles);
+				else
+					sendevent("DoAttack_Melee", "v", [0,0,0]); // send nothing when lock-on is off
 				self.attack_triggered = TRUE;
 			}
 			else if (self.attack_type == 2 && self.frame1time >= duration * 0.05) // Stab
 			{
-				sendevent("DoAttack_Melee", "");
+				if (lock_on_active)
+					sendevent("DoAttack_Melee", "v", lockon_angles);
+				else
+					sendevent("DoAttack_Melee", "v", [0,0,0]); // send nothing when lock-on is off
 				self.attack_triggered = TRUE;
 			}
 			else if (self.frame1time >= duration * 0.4) // Bash
 			{
-				sendevent("DoAttack_Melee", "");
+				if (lock_on_active)
+					sendevent("DoAttack_Melee", "v", lockon_angles);
+				else
+					sendevent("DoAttack_Melee", "v", [0,0,0]); // send nothing when lock-on is off
 				self.attack_triggered = TRUE;
 			}
 		}
