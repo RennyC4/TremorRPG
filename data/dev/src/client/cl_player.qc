@@ -514,18 +514,35 @@ void() Player_Think =
 				float skill_endurance = getstatf(STAT_SKILL_ENDURANCE);
 				float attack_stamina = getstatf(STAT_ATTACKSTAM);
 				float attackspeed = getstatf(STAT_ATTACKSPEED);
-				float stamcalc = skill_endurance * 0.015; // calculation
+				float stamcalc = attack_stamina - (skill_endurance * 0.015 * attack_stamina);
 
-				if (stamina >= attack_stamina && self.attack_finished < time) // stamina drain on swing
+				float can_attack = FALSE; // --- stamina check with blocking exception ---
+
+				if (button4) // holding block
 				{
-					sendevent("User_StartAttack", "");
-					if (self.health > 0 && !button4) // don't do attack animation when holding block
-					{
-						if (self.attack_type != 4) // archery check
-							self.anim_attacking = TRUE;
-					}
-					self.attack_finished = time + attackspeed;
+					if (stamina >= 15)
+						can_attack = TRUE;
 				}
+				else if (stamina >= stamcalc)
+					can_attack = TRUE;
+
+				if (can_attack)
+				{
+					if (self.attack_finished < time)
+					{
+						sendevent("User_StartAttack", "");
+
+						if (self.health > 0 && !button4) // no attack animation if blocking
+						{
+							if (self.attack_type != 4) // skip archery anim
+								self.anim_attacking = TRUE;
+						}
+
+						self.attack_finished = time + attackspeed;
+					}
+				}
+				else
+					cprint("^b^1Out of stamina ...\n");
 			}
 			self.attack_released = FALSE;
 		}

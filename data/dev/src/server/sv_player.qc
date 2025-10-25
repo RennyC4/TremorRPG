@@ -704,15 +704,7 @@ void() CSEv_User_StartAttack_ =
 				if (self.melee_finished < time && self.cancast_finished < time && self.cast_finished < time)
 				{
 					float stamcalc = self.skill_endurance * 0.015; // calculation
-					if (self.stamina < self.attack_stamina) // stamina drain on swing
-					{
-						if (self.staminamessage_finished < time)
-						{
-							sprint(self, PRINT_HIGH, "^1Out of stamina ...\n");
-							self.staminamessage_finished = time + 1;
-						}
-					}
-					else if (!self.button4) // button4 check, don't push player forward on shieldbash
+					if (self.stamina >= self.attack_stamina && !self.button4) // button4 check, don't push player forward on shieldbash
 					{
 						if (self.attack_type == 0)
 							self.anistate = ANISTATE_PUNCH;
