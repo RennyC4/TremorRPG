@@ -191,7 +191,12 @@ float(string strCommand) CSQC_ConsoleCommand =
 	if (argv(0) == "targetcycle")
 		LockOn_CycleToggle = TRUE;
 	if (argv(0) == "cast")
-		sendevent("DoAttack_Magic", "");
+	{
+		if (lock_on_active)
+			sendevent("DoAttack_Magic", "v", lockon_angles);
+		else
+			sendevent("DoAttack_Magic", "v", [0,0,0]); // send nothing when lock-on is off
+	}
 	if (argv(0) == "show_character")
 		sendevent("PlayerShowStats", "");
 	if (argv(0) == "show_inventory")

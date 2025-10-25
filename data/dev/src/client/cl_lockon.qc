@@ -74,6 +74,7 @@ void(vector where) CSQC_LockOn_Plaques =
 		drawpic(target_coord, "progs/targetdot.spr_0", [64, 64], '1 1 1', 1, 0);
 };
 
+vector lockon_angles;
 void() CSQC_LockOn_Update =
 {
 	float player_health = getstatf(STAT_HEALTH);
@@ -86,18 +87,17 @@ void() CSQC_LockOn_Update =
 
 		setproperty(VF_ANGLES, ang);
 		setproperty(VF_CL_VIEWANGLES_Y, ang_y);
+
+		//setproperty(VF_CL_VIEWANGLES, ang);
+		lockon_angles = ang;
 	}
 
-//	else // auto unlock
-//	{
 	// auto unlock
 	if (lock_on_active && (!lock_on_target || player_health <= 0 || atbonfire || lock_on_target.health <= 0 || vlen(lock_on_target.origin - vPlayerOrigin) > lock_on_dist || lock_on_target.ai_mode == AI_RUNBACK))
 	{
 		lock_on_target = world;
 		lock_on_active = FALSE;
 	}
-
-//	}
 };
 
 void() CSQC_LockOn_Toggle =

@@ -75,19 +75,29 @@ void(string spellname) CSEv_EquipSpell_s =
 // Magic Spells
 //
 
-void(float damage) Cast_Thorn =
+void(float damage, vector ang) Cast_Thorn =
 {
 	float spell_length = 500;
 	float parry = FALSE;
 
 	if (self.flags & FL_CLIENT)
-		makevectors (self.v_angle);
+	{
+		if (ang) // sent from CSQC when lock-on is active
+		{
+			makevectors (ang);
+			self.angles_x = ang_x;
+			self.fixangle = TRUE;
+		}
+		else
+			makevectors (self.v_angle);
+	}
 	else
 		makevectors (self.angles);
+		
 
 	sound (self, CHAN_WEAPON, "magic/thorn_cast.wav", 1, ATTN_NORM);
 
-	vector source = self.origin + v_up * 48;
+	vector source = self.origin + v_up * 32;
 
 	damage = damage + (self.skill_offensivemagic * 0.1); // initial damage
 	traceline (source, source + v_forward * spell_length, MOVE_TRIGGERS, self);
@@ -218,7 +228,7 @@ void() Player_CastMagic = // called from player postthink
 };
 
 
-void() CSEv_DoAttack_Magic_ = // CSQC
+void(vector ang) CSEv_DoAttack_Magic_v = // CSQC
 {
 	if (self.deadflag == DEAD_DEAD || self.health <= 0)
 		return;
@@ -240,7 +250,7 @@ void() CSEv_DoAttack_Magic_ = // CSQC
 		{
 			self.spellani_finished = time + 0.5; // Delay movement so animation can play
 			self.anistate = ANISTATE_CASTTARGET;
-			Cast_Thorn(spellpower);
+			Cast_Thorn(spellpower, ang);
 			self.cancast_finished = time + 0.5;
 			self.mana -= 8;
 		}
