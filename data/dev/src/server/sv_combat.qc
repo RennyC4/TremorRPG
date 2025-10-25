@@ -430,8 +430,13 @@ void() CSEv_DoAttack_Arrow_ =
 	else
 		makevectors (self.angles);
 
-	arrow.velocity = aim(self, 1000);
-	arrow.velocity = arrow.velocity * 1000;
+	vector forward = v_forward;
+	vector up = v_up;
+
+	float lift_scale = 0.25; // tweak this value (0.1–0.25 is good range)
+	forward = normalize(forward + up * lift_scale); // apply lift based on looking up/down
+
+	arrow.velocity = forward * 1000; // speed
 	arrow.angles = vectoangles(arrow.velocity);
 
 	arrow.touch = arrow_touch;

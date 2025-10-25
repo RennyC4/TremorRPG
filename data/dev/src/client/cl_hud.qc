@@ -475,8 +475,8 @@ void() User_CharacterScreen =
 	float disp_mining = getstatf(STAT_MINING);
 	float disp_fishing = getstatf(STAT_FISHING);
 	float disp_woodcutting = getstatf(STAT_WOODCUTTING);
-	float disp_projectile_min = getstatf(STAT_PROJECTILE_MIN);
-	float disp_projectile_max = getstatf(STAT_PROJECTILE_MAX);
+	float disp_projmin = getstatf(STAT_PROJ_MIN);
+	float disp_projmax = getstatf(STAT_PROJ_MAX);
 	
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -559,7 +559,7 @@ void() User_CharacterScreen =
 		disp_dps = disp_dps + (disp_bash * 0.1);
 	else 						   // archery - calculated differently
 	{
-		disp_dps = (((disp_attackmin + disp_attackmax) * 0.5) + ((disp_projectile_min + disp_projectile_max) * 0.5)) / disp_attackspeed;
+		disp_dps = (((disp_attackmin + disp_attackmax) * 0.5) + ((disp_projmin + disp_projmax) * 0.5)) / disp_attackspeed;
 		disp_dps += (disp_archery * 0.1);
 	}
 
@@ -911,14 +911,14 @@ void() User_InventoryScreen =
 	float disp_slash = getstatf(STAT_SKILL_SLASH);
 	float disp_pierce = getstatf(STAT_SKILL_PIERCE);
 	float disp_bash = getstatf(STAT_SKILL_BASH);
+	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
 	float disp_reapermarks = getstatf(STAT_REAPERMARK);
 	float disp_blocking = getstatf(STAT_BLOCKVALUE);
 	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
 	float disp_spellmin = getstatf(STAT_SPELLMIN);
 	float disp_spellmax = getstatf(STAT_SPELLMAX);
-	float disp_projectile_min = getstatf(STAT_PROJECTILE_MIN);
-	float disp_projectile_max = getstatf(STAT_PROJECTILE_MAX);
-	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
+	float disp_projmin = getstatf(STAT_PROJ_MIN);
+	float disp_projmax = getstatf(STAT_PROJ_MAX);
 
 	vector pos = [25, 25];
 	vector size = [450, 325];
@@ -1001,7 +1001,7 @@ void() User_InventoryScreen =
 		disp_dps = disp_dps + (disp_bash * 0.1);
 	else 						   // archery - calculated differently
 	{
-		disp_dps = (((disp_attackmin + disp_attackmax) * 0.5) + ((disp_projectile_min + disp_projectile_max) * 0.5)) / disp_attackspeed;
+		disp_dps = (((disp_attackmin + disp_attackmax) * 0.5) + ((disp_projmin + disp_projmax) * 0.5)) / disp_attackspeed;
 		disp_dps += (disp_archery * 0.1);
 	}
 
@@ -1198,8 +1198,8 @@ void() User_MagicScreen =
 	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
 	float disp_spellmin = getstatf(STAT_SPELLMIN);
 	float disp_spellmax = getstatf(STAT_SPELLMAX);
-	float disp_projectile_min = getstatf(STAT_PROJECTILE_MIN);
-	float disp_projectile_max = getstatf(STAT_PROJECTILE_MAX);
+	float disp_projmin = getstatf(STAT_PROJ_MIN);
+	float disp_projmax = getstatf(STAT_PROJ_MAX);
 	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
 
 	vector pos = [25, 25];
@@ -1283,7 +1283,7 @@ void() User_MagicScreen =
 		disp_dps = disp_dps + (disp_bash * 0.1);
 	else 						   // archery - calculated differently
 	{
-		disp_dps = (((disp_attackmin + disp_attackmax) * 0.5) + ((disp_projectile_min + disp_projectile_max) * 0.5)) / disp_attackspeed;
+		disp_dps = (((disp_attackmin + disp_attackmax) * 0.5) + ((disp_projmin + disp_projmax) * 0.5)) / disp_attackspeed;
 		disp_dps += (disp_archery * 0.1);
 	}
 

@@ -1996,13 +1996,13 @@ const float ANISTATE_ARCHERY = 16;
 #define STAT_BONFIRE 87
 #define STAT_CASTING 88
 #define STAT_ATTACKSTAM 89
-#define STAT_PROJECTILE_MIN 90
-#define STAT_PROJECTILE_MAX 91
+#define STAT_PROJ_MIN 91
+#define STAT_PROJ_MAX 92
 
 // Job skills
-#define STAT_MINING 90
-#define STAT_FISHING 91
-#define STAT_WOODCUTTING 92
+#define STAT_MINING 93
+#define STAT_FISHING 94
+#define STAT_WOODCUTTING 95
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

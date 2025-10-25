@@ -197,33 +197,34 @@ void(float id, string itemname) Player_UseItem =
 
 void() CSEv_User_UnequipMainhand_ =
 {
-	if (self.main_hand == "Unarmed")
-	{
-		sprint(self, PRINT_HIGH, "Main hand is unequipped already\n");
-		return;
-	}
+    if (self.main_hand == "Unarmed")
+    {
+        sprint(self, PRINT_HIGH, "Main hand is already unequipped\n");
+        return;
+    }
 
-	string lname = string_tolower(self.main_hand); // case insensitivity
-	if (!strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
-		AddToInventory(self, self.main_hand, 1); // add old item back to inventory
+    string lname = string_tolower(self.main_hand); // case-insensitive check
 
-	// equipped unarmed
-	self.attack_power_min = 1;
-	self.attack_power_max = 1;
-	self.projectile_power_min = 0;
-	self.projectile_power_max = 0;
+    // strstrofs() returns -1 if not found, so we check for != -1 directly
+    if (strstrofs(lname, "arrow", 0) == -1)
+        AddToInventory(self, self.main_hand, 1); // Only re-add to inventory if it's NOT an arrow-type item
 
-	self.attack_speed = 3 - (self.skill_unarmed * 0.0145); // unarmed speed is tied to skill
-	if (self.attack_speed < 0.1)
-		self.attack_speed = 0.1; // cap
+    // Reset combat stats to unarmed
+    self.attack_power_min = 1;
+    self.attack_power_max = 1;
 
-	self.attack_stamina = 5;
-	self.attack_type = 0; // unarmed
-	self.attack_length = 32; // weapon length
-	self.main_hand = "Unarmed";
+    // Unarmed speed scales with skill
+    self.attack_speed = 3 - (self.skill_unarmed * 0.0145);
+    if (self.attack_speed < 0.1)
+        self.attack_speed = 0.1; // lower bound
 
-	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
-	sprint(self, PRINT_HIGH, strcat("Main hand unequipped\n"));
+    self.attack_stamina = 5;
+    self.attack_type = 0;   // unarmed
+    self.attack_length = 32;
+    self.main_hand = "Unarmed";
+
+    stuffcmd(self, sprintf("play %s\n", "item/equip.wav")); // play sound
+    sprint(self, PRINT_HIGH, "Main hand unequipped\n");
 };
 
 void() CSEv_User_UnequipOffhand_ =
@@ -238,7 +239,9 @@ void() CSEv_User_UnequipOffhand_ =
 
 	self.off_hand = "Empty";
 	self.blockvalue = 0;
-	
+	self.projectile_power_min = 0;
+	self.projectile_power_max = 0;
+
 	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
 	sprint(self, PRINT_HIGH, strcat("Off hand unequipped\n"));
 };

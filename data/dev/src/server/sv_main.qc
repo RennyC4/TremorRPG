@@ -78,8 +78,8 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_BONFIRE, EV_FLOAT, bonfire);
 	clientstat(STAT_CASTING, EV_FLOAT, cast_finished);
 	clientstat(STAT_ATTACKSTAM, EV_FLOAT, attack_stamina);
-	clientstat(STAT_PROJECTILE_MIN, EV_FLOAT, projectile_power_min);
-	clientstat(STAT_PROJECTILE_MAX, EV_FLOAT, projectile_power_max);
+	clientstat(STAT_PROJ_MIN, EV_FLOAT, projectile_power_min);
+	clientstat(STAT_PROJ_MAX, EV_FLOAT, projectile_power_max);
 
 	// Job Skills
 	clientstat(STAT_MINING, EV_FLOAT, skill_mining);
