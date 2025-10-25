@@ -97,6 +97,7 @@ void() CSQC_LockOn_Update =
 	{
 		lock_on_target = world;
 		lock_on_active = FALSE;
+		sendevent("PitchUpdate", "v", lockon_angles);
 	}
 };
 
@@ -106,6 +107,7 @@ void() CSQC_LockOn_Toggle =
 	{
 		lock_on_active = FALSE;
 		lock_on_target = world;
+		sendevent("PitchUpdate", "v", lockon_angles);
 		return;
 	}
 
@@ -174,6 +176,7 @@ void() CSQC_LockOn_Toggle =
 	{
 		lock_on_target = best;
 		lock_on_active = TRUE;
+		sendevent("PitchUpdate", "v", lockon_angles);
 	}
 	else
 	{
@@ -242,4 +245,5 @@ void() CSQC_LockOn_Cycle =
 		lock_on_target = best;
 	else
 		lock_on_target = current; // optional: reset if no valid targets left
+	sendevent("PitchUpdate", "v", lockon_angles);
 };

@@ -1,7 +1,7 @@
 ^2Scrap Arrow^7
 
 ^5Type:^7 Projectile
-^5Power:^7 5 - 9
+^5Power:^7 4 - 7
 ^5Stamina Use:^7 25
 
 ^6Item Level:^7 0

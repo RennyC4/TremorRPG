@@ -240,6 +240,17 @@ void(float toggle) CSEv_CameraToggle_f =
 		self.camera_toggle = TRUE;
 };
 
+// pitch update from CSQC
+void(vector ang) CSEv_PitchUpdate_v =
+{
+	if (!ang)
+		return;
+
+	makevectors (ang);
+	self.angles_x = ang_x;
+	self.fixangle = TRUE;
+};
+
 void() CSEv_PlayerCrouch =
 {
 	if (!self.loggedin)
