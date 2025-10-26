@@ -701,6 +701,7 @@ void(float speed) Player_PushForward =
 	self.flags &= ~FL_PARTIALGROUND;
 };
 
+// Main SSQC attack function
 void() CSEv_User_StartAttack_ =
 {
 	if (self.menu == MENU_OFF && !self.bonfire)
@@ -750,6 +751,10 @@ void() CSEv_User_StartAttack_ =
 						else
 							print("Error: Unknown attack_type in User_StartAttack\n");
 
+						// Airborne melee override
+						if (!(self.flags & FL_ONGROUND) && self.attack_type != 4)
+							self.anistate = ANISTATE_AIRMELEE;
+
 						if (!nobow)
 						{
 							self.stamina -= (self.attack_stamina - stamcalc);
@@ -771,7 +776,6 @@ void() CSEv_User_StartAttack_ =
 	}
 };
 
-
 //
 // Special animation states sent to CSQC
 //
@@ -780,10 +784,19 @@ void() Anistate_Handler =
 {
 	// Tied to melee_finished
 	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_PUNCH || self.anistate == ANISTATE_BASH
-	|| self.anistate == ANISTATE_PARRY || self.anistate == ANISTATE_SMASH || self.anistate == ANISTATE_ARCHERY || self.anistate == ANISTATE_BLOCK)
+	|| self.anistate == ANISTATE_PARRY || self.anistate == ANISTATE_SMASH || self.anistate == ANISTATE_ARCHERY || self.anistate == ANISTATE_BLOCK
+	|| self.anistate == ANISTATE_AIRMELEE)
 	{
-		if (self.melee_finished < time)
-			self.anistate = ANISTATE_NONE;
+		if (self.anistate == ANISTATE_AIRMELEE)
+		{
+			if (self.melee_finished < time && self.flags & FL_ONGROUND)
+				self.anistate = ANISTATE_NONE;
+		}
+		else
+		{
+			if (self.melee_finished < time)
+				self.anistate = ANISTATE_NONE;
+		}
 	}
 	// Tied to spellani_finished
 	if (self.anistate == ANISTATE_CASTAOE || self.anistate == ANISTATE_CASTTARGET || self.anistate == ANISTATE_CASTSELF)
@@ -898,138 +911,142 @@ void() PlayerPostThink =
 	FallDamage_Update();
 	Anistate_Handler();
 
+	if (self.deadflag == DEAD_DEAD)
+	{
+		self.anistate = ANISTATE_NONE; // CSQC handles death animation
+		return;
+	}
+
 	if (self.frags != self.level) // HACK: used to display level on the scoreboard
 		self.frags = self.level;
+	
+	Player_PushForward(200);
 
-	if (self.deadflag != DEAD_DEAD)
+	if (self.healthpot_heal_remaining > 0 && time > self.healthpot_finished) // health potion - apply ongoing healing
 	{
-		Player_PushForward(200);
+		if (self.health >= self.max_health)
+			self.healthpot_heal_remaining = 0;
 
-	    if (self.healthpot_heal_remaining > 0 && time > self.healthpot_finished) // health potion - apply ongoing healing
+		self.health = min(self.max_health, self.health + self.healthpot_heal_rate);
+		self.healthpot_heal_remaining -= self.healthpot_heal_rate;
+		self.healthpot_finished = time + 0.1; // how fast to tick
+	}
+
+	if (self.manapot_heal_remaining > 0 && time > self.manapot_finished) // mana potion - apply ongoing increase
+	{
+		if (self.mana >= self.max_mana)
+			self.manapot_heal_remaining = 0;
+
+		self.mana = min(self.max_mana, self.mana + self.manapot_heal_rate);
+		self.manapot_heal_remaining -= self.manapot_heal_rate;
+		self.manapot_finished = time + 0.1; // how fast to tick
+	}
+
+	if (!self.incombat)
+	{
+		// Non-combat health regeneration
+		if (self.healthregen_finished < time)
 		{
-			if (self.health >= self.max_health)
-				self.healthpot_heal_remaining = 0;
-
-			self.health = min(self.max_health, self.health + self.healthpot_heal_rate);
-			self.healthpot_heal_remaining -= self.healthpot_heal_rate;
-			self.healthpot_finished = time + 0.1; // how fast to tick
-		}
-
-	    if (self.manapot_heal_remaining > 0 && time > self.manapot_finished) // mana potion - apply ongoing increase
-		{
-			if (self.mana >= self.max_mana)
-				self.manapot_heal_remaining = 0;
-
-			self.mana = min(self.max_mana, self.mana + self.manapot_heal_rate);
-			self.manapot_heal_remaining -= self.manapot_heal_rate;
-			self.manapot_finished = time + 0.1; // how fast to tick
-		}
-
-		if (!self.incombat)
-		{
-			// Non-combat health regeneration
-			if (self.healthregen_finished < time)
-			{
-				calc = 60 - (self.skill_healthregen * 0.25);
-				if (self.health < self.max_health)
-					self.health += 1;
-				else
-					self.health = self.max_health;
-				self.healthregen_finished = time + calc;
-			}
-			// Non-combat mana regeneration
-			if (self.manaregen_finished < time)
-			{
-				calc = 60 - (self.skill_manaregen * 0.25);
-				if (self.mana < self.max_mana)
-					self.mana += 1;
-				else
-					self.mana = self.max_mana;
-				self.manaregen_finished = time + calc;
-			}
-		}
-		// Stamina regeneration
-		if (self.staminaregen_finished < time)
-		{
-			if (!self.blocking)
-				calc = 0.2 - (self.skill_endurance * 0.0005);
+			calc = 60 - (self.skill_healthregen * 0.25);
+			if (self.health < self.max_health)
+				self.health += 1;
 			else
-				calc = 0.4 - (self.skill_endurance * 0.0005);
-
-			if (self.climbing || self.waterlevel > 1)
-				calc = -1;
-
-			//string calc_disp = ftos(calc);
-			//print (calc_disp, "\n");
-			if (calc != -1)
-			{
-				if (self.stamina < 99)
-					self.stamina += 1;
-				else
-					self.stamina = 100;
-			}
-			self.staminaregen_finished = time + calc;
+				self.health = self.max_health;
+			self.healthregen_finished = time + calc;
 		}
-		// PVP
-		if (self.pvp == 2)
+		// Non-combat mana regeneration
+		if (self.manaregen_finished < time)
 		{
-			if (self.pvpenable_count >= 900) // 15 minutes
-			{
-				if (self.pvp_autoflagged == FALSE)
-				{
-					self.pvp = 1;
-					self.pvp_autoflagged = TRUE;
-					string eventlog_print = "^1You've been auto flagged for PVP!\n";
-					stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
-				}
-			}
-			else // count
-			{
-				if (self.pvpenable_finished < time)
-				{
-					self.pvpenable_count += 1;
-					self.pvpenable_finished = time + 1;
-				}
-			}
+			calc = 60 - (self.skill_manaregen * 0.25);
+			if (self.mana < self.max_mana)
+				self.mana += 1;
+			else
+				self.mana = self.max_mana;
+			self.manaregen_finished = time + calc;
 		}
-		if (self.incombat_finished < time && self.incombat)
-		{
-			self.incombat = FALSE;
-			eventlog_print = (strcat("^2You've left combat\n"));
-			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
-		}
-
-		// Alpha transparency handler for crouch/sneaking
-		if (self.crouch && !self.bonfire)
-		{
-			if (self.skill_stealth >= 25) // 25 is when stealth mechanics actually kick in
-			{
-				if (!self.lantern)
-				{
-					self.alpha = 1 - (self.skill_stealth * 0.004);
-					self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
-					if (self.alpha < 0.1)
-						self.alpha = 0.1;
-					self.effects |= EF_ADDITIVE;
-				}
-				else
-				{
-					self.alpha = 1;
-					self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
-					self.effects &= ~EF_ADDITIVE;
-				}
-			}
-		}
+	}
+	// Stamina regeneration
+	if (self.staminaregen_finished < time)
+	{
+		if (!self.blocking)
+			calc = 0.2 - (self.skill_endurance * 0.0005);
 		else
+			calc = 0.4 - (self.skill_endurance * 0.0005);
+
+		if (self.climbing || self.waterlevel > 1)
+			calc = -1;
+
+		//string calc_disp = ftos(calc);
+		//print (calc_disp, "\n");
+		if (calc != -1)
 		{
-			self.alpha = 1;
-			self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
-			self.effects &= ~EF_ADDITIVE;
+			if (self.stamina < 99)
+				self.stamina += 1;
+			else
+				self.stamina = 100;
 		}
-		Player_CastMagic();
+		self.staminaregen_finished = time + calc;
+	}
+	// PVP
+	if (self.pvp == 2)
+	{
+		if (self.pvpenable_count >= 900) // 15 minutes
+		{
+			if (self.pvp_autoflagged == FALSE)
+			{
+				self.pvp = 1;
+				self.pvp_autoflagged = TRUE;
+				string eventlog_print = "^1You've been auto flagged for PVP!\n";
+				stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+			}
+		}
+		else // count
+		{
+			if (self.pvpenable_finished < time)
+			{
+				self.pvpenable_count += 1;
+				self.pvpenable_finished = time + 1;
+			}
+		}
+	}
+	if (self.incombat_finished < time && self.incombat)
+	{
+		self.incombat = FALSE;
+		eventlog_print = (strcat("^2You've left combat\n"));
+		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+	}
+
+	// Alpha transparency handler for crouch/sneaking
+	if (self.crouch && !self.bonfire)
+	{
+		if (self.skill_stealth >= 25) // 25 is when stealth mechanics actually kick in
+		{
+			if (!self.lantern)
+			{
+				self.alpha = 1 - (self.skill_stealth * 0.004);
+				self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
+				if (self.alpha < 0.1)
+					self.alpha = 0.1;
+				self.effects |= EF_ADDITIVE;
+			}
+			else
+			{
+				self.alpha = 1;
+				self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
+				self.effects &= ~EF_ADDITIVE;
+			}
+		}
 	}
 	else
-		self.anistate = ANISTATE_NONE; // CSQC will do the death animation
+	{
+		self.alpha = 1;
+		self.colormod_x = self.colormod_y = self.colormod_z = self.alpha;
+		self.effects &= ~EF_ADDITIVE;
+	}
+
+	if (self.flags & FL_ONGROUND && self.inair_swing_sfx)
+		self.inair_swing_sfx = FALSE;
+	Player_CastMagic();
 };
 
 void() ClientConnect =

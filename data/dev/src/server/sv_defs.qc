@@ -1885,6 +1885,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float next_stun_allowed;
 .float projectile_power_min; // player + monster damage
 .float projectile_power_max; // player + monster damage
+.float jumpattack_hit_finished; // prevent jump attack spam
 
 // Animation States
 .float anistate;
@@ -1906,6 +1907,7 @@ const float ANISTATE_DRINK = 14;
 const float ANISTATE_SMASH = 15; // Actually used for Bashing melee attacks
 const float ANISTATE_ARCHERY = 16;
 const float ANISTATE_BLOCK = 17;
+const float ANISTATE_AIRMELEE = 18;
 
 //.float armorvalue; (this is already defined)
 

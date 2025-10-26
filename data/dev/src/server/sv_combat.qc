@@ -113,6 +113,7 @@ void() DoAttack_ShieldBash =
 
 // Main melee attack function
 .float staminamessage_finished;
+.float inair_swing_sfx;
 void(vector ang) CSEv_DoAttack_Melee_v =
 {
 	if (self.flags & FL_ONGROUND)
@@ -156,16 +157,22 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 	vector source = self.origin + '0 0 16';
 	traceline (source, source + v_forward * self.attack_length, MOVE_TRIGGERS, self);
 
-	if (!self.attack_type)
-		sound (self, CHAN_WEAPON, "punch1.wav", 1, ATTN_NORM);
-	else if (self.attack_type == 1)
-		sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
-	else if (self.attack_type == 2)
-		sound (self, CHAN_WEAPON, "dagger1.wav", 1, ATTN_NORM);
-	else if (self.attack_type == 3)
-		sound (self, CHAN_WEAPON, "club1.wav", 1, ATTN_NORM);
+	if (!self.inair_swing_sfx)
+	{
+		if (!self.attack_type)
+			sound (self, CHAN_WEAPON, "punch1.wav", 1, ATTN_NORM);
+		else if (self.attack_type == 1)
+			sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
+		else if (self.attack_type == 2)
+			sound (self, CHAN_WEAPON, "dagger1.wav", 1, ATTN_NORM);
+		else if (self.attack_type == 3)
+			sound (self, CHAN_WEAPON, "club1.wav", 1, ATTN_NORM);
+	}
 
-	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
+	if (!(self.flags & FL_ONGROUND))
+		self.inair_swing_sfx = TRUE;
+
+	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO && trace_ent.jumpattack_hit_finished < time)
 	{
 		if (self.classname == "player" && trace_ent.classname == "player") // PVP checks
 		{
@@ -274,7 +281,10 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 		if (!parry)
 		{
 			if (jumpattack) // add jump attack damage
+			{
 				damage += (self.fall_maxspeed * 0.05);
+				trace_ent.jumpattack_hit_finished = time + 2;
+			}
 
 			// adds an additional time on hit if someone is casting
 			if (trace_ent.cast_finished > time)

@@ -31,6 +31,7 @@
 #define ANIM_SMASH		21
 #define ANIM_ARCHERY	22
 #define ANIM_BLOCK		23
+#define ANIM_AIRMELEE	24
 
 //
 // Special animations sent from SSQC
@@ -162,7 +163,16 @@ void() OtherPlayer_Anistate =
 		}
 		speed = 1.5;
 	}
-
+	
+	if (self.anistate == ANISTATE_AIRMELEE)
+	{
+		if (self.frame != frameforname(self.modelindex, "AirMelee"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "AirMelee");
+			self.anim_state = ANIM_AIRMELEE;
+		}
+	}
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
@@ -206,6 +216,50 @@ void() Player_Animate =
 		self.anim_state = ANIM_IDLE;
 		self.frame1time = 0;
 		self.frame = frameforname(self.modelindex, "Idle");
+	}
+
+	// -----------------------------
+	// Air Melee Animation
+	// -----------------------------
+	if (self.anistate == ANISTATE_AIRMELEE)
+	{
+		self.anim_attacking = FALSE; // prevent extra on-ground swing animation
+
+		if (self.frame != frameforname(self.modelindex, "AirMelee"))
+		{
+			self.attack_triggered = FALSE;
+			self.next_attack_time = 0.15;
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "AirMelee");
+			self.anim_state = ANIM_AIRMELEE;
+		}
+
+		speed = 1;
+		speed *= frametime;
+		
+		float frame_interval = 10 / 30; // 0.33s (30fps)
+
+		if (self.frame1time >= self.next_attack_time)
+		{
+			if (self.frame1time < 0.75)
+			{
+				if (lock_on_active)
+					sendevent("DoAttack_Melee", "v", lockon_angles);
+				else
+					sendevent("DoAttack_Melee", "v", [0,0,0]);
+
+				//print(sprintf("Air melee triggered at %.2f sec\n", self.frame1time));
+				self.next_attack_time += frame_interval; // schedule next attack
+			}
+		}
+
+		// Hold final frame at end
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = duration - 0.1;
+		else
+			self.frame1time += speed;
+
+		return;
 	}
 
 	// -----------------------------
@@ -477,7 +531,7 @@ void() Player_Animate =
     // -----------------------------
     if (self.anim_attacking)
     {
-        if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH && self.anim_state != ANIM_SMASH && self.anim_state != ANIM_ARCHERY)
+        if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH && self.anim_state != ANIM_SMASH)// && self.anim_state != ANIM_ARCHERY)
         {
 			if (!self.attack_type)
 			{

@@ -581,7 +581,7 @@ void() Player_Think =
 
 						if (self.health > 0 && !button4) // no attack animation if blocking
 						{
-							if (self.attack_type != 4) // skip archery anim
+							if (self.attack_type != 4 || (!(self.flags & FL_ONGROUND))) // skip archery anim & air melee
 								self.anim_attacking = TRUE;
 						}
 
