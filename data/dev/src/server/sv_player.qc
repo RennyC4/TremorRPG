@@ -715,8 +715,11 @@ void() CSEv_User_StartAttack_ =
 				if (self.melee_finished < time && self.cancast_finished < time && self.cast_finished < time)
 				{
 					float stamcalc = self.skill_endurance * 0.015; // calculation
+
 					if (self.stamina >= self.attack_stamina && !self.button4) // button4 check, don't push player forward on shieldbash
 					{
+						float nobow = FALSE;
+
 						if (self.attack_type == 0)
 							self.anistate = ANISTATE_PUNCH;
 						else if (self.attack_type == 1)
@@ -728,19 +731,25 @@ void() CSEv_User_StartAttack_ =
 						else if (self.attack_type == 4)
 						{
 							string lname = string_tolower(self.off_hand); // case insensitivity
-							if (strstrofs(lname, "bow", 0) != -1) // check if this is an arrow-type item
+							if (strstrofs(lname, "bow", 0) != -1)
+							{
+								if (!(self.flags & FL_ONGROUND)) // prevent archery in air
+									return;
 								self.anistate = ANISTATE_ARCHERY;
+							}
 							else
-								float nobow = TRUE;
+								nobow = TRUE;
 						}
 						else
-							print ("Error: Unknown attack_type in User_StartAttack\n");
+							print("Error: Unknown attack_type in User_StartAttack\n");
+
 						if (!nobow)
 						{
 							self.stamina -= (self.attack_stamina - stamcalc);
 							self.melee_finished = time + self.attack_speed;
 							self.lockview_finished = time + self.attack_speed;
-							if (self.attack_type != 4) // !archery
+
+							if (self.attack_type != 4) // not archery
 								self.pushforward_finished = time + (self.attack_speed / 4);
 						}
 					}
@@ -754,6 +763,7 @@ void() CSEv_User_StartAttack_ =
 		}
 	}
 };
+
 
 //
 // Special animation states sent to CSQC
