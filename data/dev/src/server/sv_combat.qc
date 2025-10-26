@@ -280,11 +280,8 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 
 		if (!parry)
 		{
-			if (jumpattack) // add jump attack damage
-			{
-				damage += (self.fall_maxspeed * 0.05);
+			if (jumpattack)
 				trace_ent.jumpattack_hit_finished = time + 2;
-			}
 
 			// adds an additional time on hit if someone is casting
 			if (trace_ent.cast_finished > time)
