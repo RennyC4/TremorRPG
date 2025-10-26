@@ -572,18 +572,19 @@ void() Player_Think =
 				else if (stamina >= (attack_stamina - stamcalc))
 					can_attack = TRUE;
 
+				if (self.attack_type == 4 && (!(self.flags & FL_ONGROUND))) // bow air check
+					can_attack = FALSE;
+
 				if (can_attack)
 				{
 					if (self.attack_finished < time)
 					{
 						sendevent("User_StartAttack", "");
-						print ("Called User_StartAttack\n");
 						if (self.health > 0 && !button4) // no attack animation if blocking
 						{
-							if (self.attack_type != 4 || (!(self.flags & FL_ONGROUND))) // skip archery anim & air melee
+							if (self.attack_type != 4)
 								self.anim_attacking = TRUE;
 						}
-
 						self.attack_finished = time + attackspeed;
 					}
 				}

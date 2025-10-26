@@ -418,22 +418,6 @@ void() CheckImpulses =
 		case 1:
 			PlayerPrintStats(); // Debugging
 		break;
-		case 2:
-		{
-			pointparticles(PART_MANAPOTION, self.origin);
-		}
-		break;
-		case 3:
-		{
-			pointparticles(PART_HEALTHPOTION, self.origin);
-		}
-		break;
-		case 4:
-		{
-			makevectors(self.angles);
-			pointparticles(PART_BLOCK, self.origin + v_forward * 32 + v_up * 32);
-		}
-		break;
 		default:
 			break;
 	}
@@ -739,22 +723,19 @@ void() CSEv_User_StartAttack_ =
 						else if (self.attack_type == 4)
 						{
 							string lname = string_tolower(self.off_hand); // case insensitivity
-							if (strstrofs(lname, "bow", 0) != -1)
-							{
-								if (!(self.flags & FL_ONGROUND)) // prevent archery in air
-									return;
+							if (strstrofs(lname, "bow", 0) != -1 && self.flags & FL_ONGROUND) // prevent archery in air
 								self.anistate = ANISTATE_ARCHERY;
-							}
 							else
 								nobow = TRUE;
 						}
 						else
 							print("Error: Unknown attack_type in User_StartAttack\n");
 
-						// Airborne melee override
-						if (!(self.flags & FL_ONGROUND) && self.attack_type != 4)
-							self.anistate = ANISTATE_AIRMELEE;
-
+						// Airborne melee override, bow check as well
+						if (self.attack_type != 4)
+							if (!(self.flags & FL_ONGROUND))
+								self.anistate = ANISTATE_AIRMELEE;
+						
 						if (!nobow)
 						{
 							self.stamina -= (self.attack_stamina - stamcalc);
@@ -860,7 +841,7 @@ void() PlayerPreThink =
 
 		// attack / magic commitment / npc interaction menus
 		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL ||
-			self.cast_finished > time || self.spellani_finished > time)
+			self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time)
 			self.maxspeed = 1;
 		else
 		{
@@ -868,7 +849,7 @@ void() PlayerPreThink =
 				self.maxspeed = 225;
 			if (self.maxspeed != 135 && self.blocking)
 				self.maxspeed = 135;
-			if ((self.crouch || self.potion_use_finished > time) && self.maxspeed != 100)
+			if ((self.crouch) && self.maxspeed != 100)
 				self.maxspeed = 100;
 		}
 	}

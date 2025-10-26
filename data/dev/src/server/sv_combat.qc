@@ -241,7 +241,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 					trace_ent.velocity = trace_ent.velocity + dir * 150;
 					trace_ent.melee_finished = time + 0.5;
 					trace_ent.anistate = ANISTATE_BLOCK;
-					pointparticles(PART_BLOCK, self.origin + v_forward * 32, [0, 0, 0]);
+					pointparticles(PART_BLOCK, trace_ent.origin + v_forward * 32 + v_up * trace_ent.view_ofs_z);
 				}
 				else
 				{

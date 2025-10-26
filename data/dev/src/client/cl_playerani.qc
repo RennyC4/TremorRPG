@@ -267,34 +267,39 @@ void() Player_Animate =
     // -----------------------------
 	if (self.anistate == ANISTATE_ARCHERY)
 	{
-		if (self.frame != frameforname(self.modelindex, "Archery"))
+		if (self.flags & FL_ONGROUND)
 		{
-			self.attack_triggered = FALSE;
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Archery");
-			self.anim_state = ANIM_ARCHERY;
-		}
-		speed = 1;
-
-        // Trigger actual attack once per animation
-		if (!self.attack_triggered)
-		{
-			if (self.frame1time >= duration * 0.5)
+			if (self.frame != frameforname(self.modelindex, "Archery"))
 			{
-				if (lock_on_active)
-					sendevent("DoAttack_Arrow", "v", lockon_angles);
-				else
-					sendevent("DoAttack_Arrow", "v", [0,0,0]); // send nothing when lock-on is off
-				self.attack_triggered = TRUE;
+				self.attack_triggered = FALSE;
+				self.frame1time = 0;
+				self.frame = frameforname(self.modelindex, "Archery");
+				self.anim_state = ANIM_ARCHERY;
 			}
-		}			
-			
-		speed *= frametime;
-        if (self.frame1time >= duration - 0.1) // Hold final frame at end
-            self.frame1time = duration - 0.1;
-        else
-            self.frame1time += speed;
-		return;
+			speed = 1;
+
+			// Trigger actual attack once per animation
+			if (!self.attack_triggered)
+			{
+				if (self.frame1time >= duration * 0.5)
+				{
+					if (lock_on_active)
+						sendevent("DoAttack_Arrow", "v", lockon_angles);
+					else
+						sendevent("DoAttack_Arrow", "v", [0,0,0]); // send nothing when lock-on is off
+					self.attack_triggered = TRUE;
+				}
+			}			
+				
+			speed *= frametime;
+			if (self.frame1time >= duration - 0.1) // Hold final frame at end
+				self.frame1time = duration - 0.1;
+			else
+				self.frame1time += speed;
+			return;
+		}
+		else
+			self.anistate = ANISTATE_NONE;
 	}
 
 	// -----------------------------
