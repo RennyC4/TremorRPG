@@ -828,13 +828,19 @@ void() PlayerPreThink =
 	else
 		self.blocking = FALSE;
 
-	// Player movement + speed checks
+	// player movement + speed checks
 	if (self.stagger_finished < time)
 	{
-		if (self.anistate == ANISTATE_STUNNED) // clear stun animation
+		if (self.anistate == ANISTATE_STUNNED) // Reset stun state once stagger time is over
 			self.anistate = ANISTATE_NONE;
+
+		// === STUN COOLDOWN HANDLING ===
+		if (self.next_stun_allowed && self.next_stun_allowed < time)
+			self.next_stun_allowed = 0; // cooldown expired
+
 		// attack / magic commitment / npc interaction menus
-		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.cast_finished > time || self.spellani_finished > time)
+		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL ||
+			self.cast_finished > time || self.spellani_finished > time)
 			self.maxspeed = 1;
 		else
 		{
@@ -848,11 +854,14 @@ void() PlayerPreThink =
 	}
 	else
 	{
-		self.anistate = ANISTATE_STUNNED;
-		self.maxspeed = 90; // staggered speed
-		self.fixangle = TRUE;
+		// Only apply stun if not on cooldown
+		if (!self.next_stun_allowed || self.next_stun_allowed < time)
+		{
+			self.anistate = ANISTATE_STUNNED;
+			self.maxspeed = 1; // staggered speed
+			self.next_stun_allowed = time + 2; // 2 seconds cooldown before next stun
+		}
 	}
-
 	if (self.loggedin) // enforce name
 	{
 		if (self.loginname != self.netname)

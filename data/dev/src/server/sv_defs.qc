@@ -1882,7 +1882,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float cast_finished;
 .string cast_finished_spell;
 .float spellani_finished;
-
+.float next_stun_allowed;
 .float projectile_power_min; // player + monster damage
 .float projectile_power_max; // player + monster damage
 
