@@ -724,7 +724,7 @@ void() CSEv_User_StartAttack_ =
 				{
 					float stamcalc = self.skill_endurance * 0.015; // calculation
 
-					if (self.stamina >= self.attack_stamina && !self.button4) // button4 check, don't push player forward on shieldbash
+					if (self.stamina >= (self.attack_stamina - stamcalc) && !self.button4) // button4 check, don't push player forward on shieldbash
 					{
 						float nobow = FALSE;
 

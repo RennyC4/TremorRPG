@@ -261,6 +261,15 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 					if (bind == "+forward" || bind == "+back" || bind == "+moveleft" || bind == "+moveright" || bind == "+jump")
 						return TRUE; // block movement
 				}
+				
+				if (bind == "+moveleft")
+					button_left = TRUE;
+				if (bind == "+moveright")
+					button_right = TRUE;
+				if (bind == "+forward")
+					button_up = TRUE;
+				if (bind == "+back")
+					button_down = TRUE;
 
 				if (bind == "+button4")
 					button4 = TRUE;
@@ -276,6 +285,15 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 					if (bind == "+forward" || bind == "+back" || bind == "+moveleft" || bind == "+moveright" || bind == "+jump")
 						return TRUE; // block movement
 				}
+
+				if (bind == "+moveleft")
+					button_left = FALSE;
+				if (bind == "+moveright")
+					button_right = FALSE;
+				if (bind == "+forward")
+					button_up = FALSE;
+				if (bind == "+back")
+					button_down = FALSE;
 
 				if (bind == "+button4")
 					button4 = FALSE;

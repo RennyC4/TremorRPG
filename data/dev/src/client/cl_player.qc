@@ -561,16 +561,15 @@ void() Player_Think =
 				float skill_endurance = getstatf(STAT_SKILL_ENDURANCE);
 				float attack_stamina = getstatf(STAT_ATTACKSTAM);
 				float attackspeed = getstatf(STAT_ATTACKSPEED);
-				float stamcalc = attack_stamina - (skill_endurance * 0.015 * attack_stamina);
-
-				float can_attack = FALSE; // --- stamina check with blocking exception ---
+				float stamcalc = skill_endurance * 0.015; // calculation
+				float can_attack = FALSE; // stamina check with blocking exception
 
 				if (button4) // holding block
 				{
 					if (stamina >= 15)
 						can_attack = TRUE;
 				}
-				else if (stamina >= stamcalc)
+				else if (stamina >= (attack_stamina - stamcalc))
 					can_attack = TRUE;
 
 				if (can_attack)
@@ -578,7 +577,7 @@ void() Player_Think =
 					if (self.attack_finished < time)
 					{
 						sendevent("User_StartAttack", "");
-
+						print ("Called User_StartAttack\n");
 						if (self.health > 0 && !button4) // no attack animation if blocking
 						{
 							if (self.attack_type != 4 || (!(self.flags & FL_ONGROUND))) // skip archery anim & air melee
@@ -596,24 +595,30 @@ void() Player_Think =
 		else
 			self.attack_released = TRUE;
 	}
-	else
-		self.attack_released = TRUE;
 
-	if (self.health > 0)
+	/*
+	if (button_left && input_buttons & 2)
+		print ("Dodge Left\n");
+	if (button_right && input_buttons & 2)
+		print ("Dodge Right\n");
+	if (button_down && input_buttons & 2)
+		print ("Dodge Backwards\n");
+	*/
+
+	if (deathcam_dist != 45)
+		deathcam_dist = 45; // initial z start org for death camera
+
+	if (self.health <= 0)
+		return;
+
+	if (LockOn_Toggle) // binding stuff work around
 	{
-		if (deathcam_dist != 45)
-			deathcam_dist = 45; // initial z start org for death camera
-
-		// Binding stuff working around
-		if (LockOn_Toggle)
-		{
-			CSQC_LockOn_Toggle();
-			LockOn_Toggle = FALSE;
-		}
-		if (LockOn_CycleToggle)
-		{
-			CSQC_LockOn_Cycle();
-			LockOn_CycleToggle = FALSE;
-		}
+		CSQC_LockOn_Toggle();
+		LockOn_Toggle = FALSE;
+	}
+	if (LockOn_CycleToggle)
+	{
+		CSQC_LockOn_Cycle();
+		LockOn_CycleToggle = FALSE;
 	}
 };
