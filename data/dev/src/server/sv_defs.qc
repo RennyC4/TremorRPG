@@ -1905,6 +1905,7 @@ const float ANISTATE_PARRY = 13;
 const float ANISTATE_DRINK = 14;
 const float ANISTATE_SMASH = 15; // Actually used for Bashing melee attacks
 const float ANISTATE_ARCHERY = 16;
+const float ANISTATE_BLOCK = 17;
 
 //.float armorvalue; (this is already defined)
 
@@ -2026,6 +2027,7 @@ var float PART_MAGIC_THORN2; // Hit wall
 var float PART_MAGIC_LIGHTHEAL;
 var float PART_HEALTHPOTION;
 var float PART_MANAPOTION;
+var float PART_BLOCK;
 
 // Inventory
 #define MAX_INVENTORY 32 // how many slots allowed

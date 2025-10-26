@@ -92,7 +92,7 @@ void() DoAttack_ShieldBash =
 			//
 			sound (trace_ent, CHAN_BODY, "shield2.wav", 1, ATTN_NORM);
 		}
-		else // Parry
+		else // parry
 		{
 			float parry = TRUE;
 			string eventlog_print = (strcat("^2Successful parry!"));
@@ -231,10 +231,10 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 					dir = normalize(dir);
 					trace_ent.velocity = '0 0 0';
 					trace_ent.flags &= ~FL_ONGROUND;
-					//trace_ent.velocity_z += 50;
 					trace_ent.velocity = trace_ent.velocity + dir * 150;
 					trace_ent.melee_finished = time + 0.5;
-					trace_ent.anistate = ANISTATE_PARRY; // Use parry animation for now
+					trace_ent.anistate = ANISTATE_BLOCK;
+					pointparticles(PART_BLOCK, self.origin + v_forward * 32, [0, 0, 0]);
 				}
 				else
 				{

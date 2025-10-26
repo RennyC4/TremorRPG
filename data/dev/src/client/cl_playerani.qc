@@ -30,6 +30,7 @@
 #define ANIM_DRINK		20
 #define ANIM_SMASH		21
 #define ANIM_ARCHERY	22
+#define ANIM_BLOCK		23
 
 //
 // Special animations sent from SSQC
@@ -274,7 +275,28 @@ void() Player_Animate =
 			self.frame = frameforname(self.modelindex, "Parry");
 			self.anim_state = ANIM_PARRY;
 		}
-		speed = 2;
+		speed = 1.25;
+		speed *= frametime;
+
+        if (self.frame1time >= duration - 0.1) // Hold final frame at end
+            self.frame1time = duration - 0.1;
+        else
+            self.frame1time += speed;
+		return;
+	}
+	
+	// -----------------------------
+    // Block Animation
+    // -----------------------------
+	if (self.anistate == ANISTATE_BLOCK)
+	{
+		if (self.frame != frameforname(self.modelindex, "Block"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Block");
+			self.anim_state = ANIM_BLOCK;
+		}
+		speed = 1;
 		speed *= frametime;
 
         if (self.frame1time >= duration - 0.1) // Hold final frame at end

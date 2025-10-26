@@ -2360,3 +2360,4 @@ const float ANISTATE_PARRY = 13;
 const float ANISTATE_DRINK = 14;
 const float ANISTATE_SMASH = 15; // Actually used for bashing attacks
 const float ANISTATE_ARCHERY = 16;
+const float ANISTATE_BLOCK = 17;

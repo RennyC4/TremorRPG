@@ -427,6 +427,13 @@ void() CheckImpulses =
 		{
 			pointparticles(PART_HEALTHPOTION, self.origin);
 		}
+		break;
+		case 4:
+		{
+			makevectors(self.angles);
+			pointparticles(PART_BLOCK, self.origin + v_forward * 32 + v_up * 32);
+		}
+		break;
 		default:
 			break;
 	}
@@ -773,7 +780,7 @@ void() Anistate_Handler =
 {
 	// Tied to melee_finished
 	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_PUNCH || self.anistate == ANISTATE_BASH
-	|| self.anistate == ANISTATE_PARRY || self.anistate == ANISTATE_SMASH || self.anistate == ANISTATE_ARCHERY)
+	|| self.anistate == ANISTATE_PARRY || self.anistate == ANISTATE_SMASH || self.anistate == ANISTATE_ARCHERY || self.anistate == ANISTATE_BLOCK)
 	{
 		if (self.melee_finished < time)
 			self.anistate = ANISTATE_NONE;
