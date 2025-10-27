@@ -4,6 +4,7 @@ void() Coords_Draw;
 void() Player_Animate;
 void() Draw_NameTag;
 void() OtherPlayer_Anistate;
+void() Skeleton_Animate;
 
 .entity lantern_vfx;
 .entity weapon_vfx;
@@ -27,6 +28,10 @@ void() Skeleton_ObjectDraw =
 		self.frame = frameforname(self.modelindex, "Idle");
 	}
 	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
+	Skeleton_Animate();
+
+	//makevectors([0, time*360, 0]);
+	//skel_premul_bone(self.skeletonindex, skel_find_bone(self.skeletonindex, "mixamorig:Hips"), '0 0 0', v_forward, v_right, v_up);
 
 	// draw lantern
 	if (self.effects == EF_BRIGHTLIGHT)
@@ -627,4 +632,7 @@ void() Player_Think =
 		if (button_down)
 			sendevent("PlayerDodge", "f", 3);
 	}
+
+	if (self.dodgedir > 0)
+		player_dodging = TRUE;
 };

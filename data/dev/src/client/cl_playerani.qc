@@ -194,6 +194,24 @@ void() OtherPlayer_Anistate =
     self.frame2time = self.frame1time;
 };
 
+void() Skeleton_Animate =
+{
+	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
+
+	// Rotate the actual player model for dodge rolls
+	if (self.dodgedir > 0)
+	{
+		if (self.dodgedir == 1)
+			makevectors([0, -90, 0]);
+		else if (self.dodgedir == 2)
+			makevectors([0, 90, 0]);
+		else
+			makevectors([0, -180, 0]);
+		
+		skel_premul_bone(self.skeletonindex, skel_find_bone(self.skeletonindex, "mixamorig:Hips"), '0 0 0', v_forward, v_right, v_up);
+	}
+};
+
 //
 // Local animations with some shared
 //
@@ -325,16 +343,18 @@ void() Player_Animate =
 			self.frame = frameforname(self.modelindex, "Dodge");
 			self.anim_state = ANIM_DODGE;
 		}
+
+
 		speed = 1.5;
 		speed *= frametime;
 
-        if (self.frame1time >= duration - 0.1) // Hold final frame at end
-            self.frame1time = duration - 0.1;
-        else
-            self.frame1time += speed;
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = duration - 0.1;
+		else
+			self.frame1time += speed;
 		return;
 	}
-
+	
 	// -----------------------------
     // Drink Animation
     // -----------------------------

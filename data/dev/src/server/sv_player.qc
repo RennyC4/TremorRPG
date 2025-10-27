@@ -227,7 +227,7 @@ void() PlayerJump =
 		if (stamcalc > 49)
 			stamcalc = 49;
 		self.stamina -= (50 - stamcalc);
-		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
+		sound (self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
 		
 		// remove crouch
 		self.crouch = FALSE;
@@ -273,7 +273,7 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];
 
-		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
+		sound (self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
 	}
 };
 
@@ -1318,6 +1318,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteByte(MSG_ENTITY, self.attack_type);
 	WriteByte(MSG_ENTITY, self.blocking);
 	WriteByte(MSG_ENTITY, self.crouch);
+	WriteByte(MSG_ENTITY, self.dodgedir);
 
 	return TRUE;
 };

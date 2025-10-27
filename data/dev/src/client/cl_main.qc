@@ -100,9 +100,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
-	//if (cvar("sv_cheats") == 0) // entities are wrapped with csaddon with sv_cheats is 1
 	addentities(MASK_VIEWMODEL | MASK_ENGINE);
-
 	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 	setproperty(VF_ANGLES, view_angles);
 
@@ -446,6 +444,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.attack_type = readbyte();
 		self.blocking = readbyte();
 		self.crouch = readbyte();
+		self.dodgedir = readbyte();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);
