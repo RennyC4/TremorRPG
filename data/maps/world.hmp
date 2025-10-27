@@ -378,8 +378,10 @@ turn_speed "30"
 canbackstab "1"
 gender "Male"
 ai_move_dist "1"
-main_hand "Broken Sword"
-attack_type "1"
+main_hand "Scrap Arrow"
+off_hand "Short Bow"
+attack_type "4"
+sight_range "2000"
 }
 
 // monster (bandit lvl 3)

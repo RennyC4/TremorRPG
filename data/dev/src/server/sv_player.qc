@@ -14,6 +14,9 @@ void(float elapsedtime) SV_PausedTic = {};
 void() info_player_start = {};
 void(string LOGIN_NAME) CSEv_ResumeCharacter_s;
 
+#define player_dimension_hit 1
+#define player_dimension_solid 2
+
 //
 // Parms - for map transfers
 //
@@ -1102,7 +1105,11 @@ void(float type) PlayerSpawn =
 		self.menu = MENU_OFF;
 		self.loggedin = TRUE;
 		self.radius_candamage = TRUE;
-		self.solid = SOLID_TRIGGER;
+		self.solid = SOLID_SLIDEBOX;
+
+		self.dimension_hit = player_dimension_hit;
+		self.dimension_solid = player_dimension_solid;
+
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.crouch = FALSE;
 		self.alpha = 1;
@@ -1132,7 +1139,11 @@ void(float type) PlayerSpawn =
 		self.view_ofs = [0, 0, 48];
 		self.menu = MENU_OFF;
 		self.radius_candamage = TRUE;
-		self.solid = SOLID_TRIGGER;
+		self.solid = SOLID_SLIDEBOX;
+
+		self.dimension_hit = player_dimension_hit;
+		self.dimension_solid = player_dimension_solid;
+
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.crouch = FALSE;
 		self.alpha = 1;
@@ -1173,7 +1184,11 @@ void(float type) PlayerSpawn =
 		self.view_ofs = [0, 0, 48];
 		self.deadflag = DEAD_NO;
 		self.radius_candamage = TRUE;
-		self.solid = SOLID_TRIGGER;
+		self.solid = SOLID_SLIDEBOX;
+
+		self.dimension_hit = player_dimension_hit;
+		self.dimension_solid = player_dimension_solid;
+		
 		self.flags |= FL_FINDABLE_NONSOLID;
 		self.stamina = 100;
 		self.pvp_autoflagged = FALSE;

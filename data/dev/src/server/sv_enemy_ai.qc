@@ -20,6 +20,7 @@ const float AI_PATROL = 4;
 void() monster_ai_think;
 void() monster_respawn;
 void(vector ang) CSEv_DoAttack_Melee_v;
+void(vector ang) CSEv_DoAttack_Arrow_v;
 
 // range values
 float	RANGE_CLOSE				= 0;
@@ -31,6 +32,7 @@ float	RANGE_FAR				= 4;
 void() monster_death =
 {
 	self.SendFlags = 1;
+	//self.angles_x = 0;
 	self.goalentity = self.enemy = world; // reset targets
 	self.velocity = '0 0 0'; // slide fix
 	self.solid = SOLID_NOT;
@@ -78,6 +80,26 @@ void(float speed) TurnToTarget =
         self.angles_y = anglemod(self.angles_y - turn_speed);
     else
         self.angles_y = anglemod(self.angles_y + diff); // snap final tiny difference
+};
+
+void() PitchToTarget =
+{
+	if (!self.enemy)
+		return;
+
+	vector dir_to_enemy = normalize(self.enemy.origin - self.origin);
+	vector forward = v_forward;
+
+	float dot = dotproduct(forward, dir_to_enemy);
+
+	// Define FOV cone — e.g., 90° vision cone = 45° to each side
+	float fov_cos = cos(45);
+
+	if (dot >= fov_cos)
+	{
+		vector view = vectoangles(self.enemy.origin - self.origin);
+		self.angles_x = view_x;
+	}
 };
 
 // returns 1 if the entity is in front (in sight) of self, used for stealth
@@ -128,7 +150,7 @@ float (entity targ) visible =
 	 	return FALSE;
 };
 
-void() monster_ai_melee =
+void() monster_ai_attack =
 {
 	if (self.melee_finished < time && self.stagger_finished < time)
 	{
@@ -145,9 +167,17 @@ void() monster_ai_melee =
 			self.anistate = ANISTATE_STAB;
 		else if (self.attack_type == 3)
 			self.anistate = ANISTATE_SMASH;
+		else if (self.attack_type == 4)
+		{
+			// TODO: Look at player
+			self.anistate = ANISTATE_ARCHERY;
 
-		self.ai_doattack = time + (self.attack_speed / 4); // launch attack
-			
+		}
+
+		if (self.attack_type == 4)
+			self.ai_doattack = time + (self.attack_speed / 2); // launch attack (bow)
+		else
+			self.ai_doattack = time + (self.attack_speed / 4); // launch attack
 		self.melee_finished = time + self.attack_speed;
 	}
 	self.think = monster_ai_think;
@@ -157,6 +187,8 @@ void() monster_ai_melee =
 void() monster_ai_move =
 {
 	if (self.stagger_finished > time)
+		return;
+	if (self.melee_finished > time)
 		return;
 
 	if (self.enemy)
@@ -177,7 +209,7 @@ void() monster_ai_move =
 	if (self.flags & FL_ONGROUND) // allow monsters to slide off stuff, this is a hack
 		self.flags &= ~FL_ONGROUND;
 
-	//self.velocity = '0 0 0';
+	self.velocity = '0 0 0';
 	if (self.ai_mode == AI_RUNBACK) // monster is running back to origin
 	{
 		self.flags -= (self.flags & FL_ONGROUND);
@@ -228,7 +260,7 @@ void() monster_ai_think =
 		// randomly turn and move
 		if (self.ai_patrolidle < time)
 		{
-			self.angles_x = 0;
+			//self.angles_x = 0;
 			self.idealangles_y = random()*360;
 			if (self.ai_move_dist > 1)
 				self.ai_patrolidle = time + 2 + random()*5;
@@ -351,34 +383,63 @@ void() monster_ai_think =
 		{
 			if (self.melee_finished < time && self.stagger_finished < time)
 			{
-				if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
+				// Ranged attack (bow)
+				if (self.attack_type == 4)
 				{
-					if (!self.enemy.incombat)
+					if (range(self.enemy) > RANGE_MELEE && visible(self.enemy))
 					{
-						self.enemy.incombat = TRUE; // turn on during an attack incase another monster somehow flags it off
-						self.enemy.incombat_finished = time + 15;
+						if (!self.enemy.incombat)
+						{
+							self.enemy.incombat = TRUE;
+							self.enemy.incombat_finished = time + 15;
+						}
+						self.ai_attacktriggered = FALSE;
+						self.ai_mode = AI_ATTACK;
+						self.anistate = ANISTATE_NONE;
+						self.think = monster_ai_attack;
 					}
-					self.ai_attacktriggered = FALSE;
-					self.ai_mode = AI_ATTACK;
-					self.anistate = ANISTATE_NONE;
-					self.think = monster_ai_melee;
+					else
+					{
+						self.ai_mode = AI_CHASE;
+						self.anistate = ANISTATE_RUN;
+					}
 				}
+				// Melee attack
 				else
 				{
-					self.ai_mode = AI_CHASE;
-					self.anistate = ANISTATE_RUN;
+					if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
+					{
+						if (!self.enemy.incombat)
+						{
+							self.enemy.incombat = TRUE;
+							self.enemy.incombat_finished = time + 15;
+						}
+						self.ai_attacktriggered = FALSE;
+						self.ai_mode = AI_ATTACK;
+						self.anistate = ANISTATE_NONE;
+						self.think = monster_ai_attack;
+					}
+					else
+					{
+						self.ai_mode = AI_CHASE;
+						self.anistate = ANISTATE_RUN;
+					}
 				}
 			}
-			else if (self.stagger_finished < time)
+			else
 			{
-				if (self.ai_doattack < time && !self.ai_attacktriggered)
+				if (self.stagger_finished < time)
 				{
-					CSEv_DoAttack_Melee_v(self.angles); // fire the actual attack
-					self.ai_attacktriggered = TRUE;
-				}
-				else
-				{
-					if (self.melee_finished < time)
+					if (self.ai_doattack < time && !self.ai_attacktriggered)
+					{
+						if (self.attack_type == 4)
+							CSEv_DoAttack_Arrow_v(self.angles);
+						else
+							CSEv_DoAttack_Melee_v(self.angles);
+
+						self.ai_attacktriggered = TRUE;
+					}
+					else if (self.melee_finished < time)
 					{
 						self.anistate = ANISTATE_NONE;
 						self.ai_attacktriggered = FALSE;
@@ -386,12 +447,14 @@ void() monster_ai_think =
 				}
 			}
 		}
+		PitchToTarget();
 		monster_ai_move();
 	}
 
 	// enemy dead / used a bonfire
-	if (self.enemy && self.enemy.health <= 0 || self.enemy.bonfire == TRUE)
+	if (self.enemy && (self.enemy.health <= 0 || self.enemy.bonfire == TRUE))
 	{
+		//self.angles_x = 0;
 		self.oldenemy = self.enemy; // stash last killed or lost to bonfire
 		self.enemy = self.goalentity = world;
 		self.ai_mode = AI_IDLE;

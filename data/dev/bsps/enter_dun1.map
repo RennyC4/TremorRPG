@@ -622,6 +622,7 @@
 "zonename" "Wilderness"
 "music" "sound/music/track02.ogg"
 "pvp" "2"
+"music2" "sound/music/track06.ogg"
 // brush 0
 {
 ( -256 256 416 ) ( -256 -208 416 ) ( -256 -208 0 ) trigger [ 0 -1 0 48 ] [ 0 0 -1 -32 ] 0 1 1

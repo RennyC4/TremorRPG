@@ -108,10 +108,13 @@ void() Skeleton_ObjectDraw =
 				// Arrows
 				if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
 				{
-					if (!camera_mode && thirdcam_dist < 30)
-						self.weapon_vfx.renderflags |= RF_EXTERNALMODEL; // don't show quiver in first-person
-					else
-						self.weapon_vfx.renderflags &= ~RF_EXTERNALMODEL;
+					if (self.entnum == player_localentnum)
+					{
+						if (!camera_mode && thirdcam_dist < 30)
+							self.weapon_vfx.renderflags |= RF_EXTERNALMODEL; // don't show quiver in first-person
+						else
+							self.weapon_vfx.renderflags &= ~RF_EXTERNALMODEL;
+					}
 
 					setmodel(self.weapon_vfx, "models/quiver.glb");
 				}

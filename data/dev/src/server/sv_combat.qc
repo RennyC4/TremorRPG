@@ -372,64 +372,111 @@ void() arrow_touch =
 		float arrow_power = ceil(random_range(self.owner.attack_power_min, self.owner.attack_power_max));
 		float damage = bow_power + arrow_power + (self.owner.skill_archery * 0.1);
 
-		if (self.owner.classname == "player" && other.classname == "player") // PVP checks
+		// --- PVP Check ---
+		if (self.owner.classname == "player" && other.classname == "player")
 		{
 			if (self.owner.pvp != 1 || other.pvp != 1)
 				return;
-			else
-			{
-				self.owner.incombat = other.incombat = TRUE; // Turn off health regen, flag players for incombat
-				self.owner.incombat_finished = other.incombat_finished = time + 30; // keep players locked in combat
-			}
+
+			self.owner.incombat = other.incombat = TRUE;
+			self.owner.incombat_finished = other.incombat_finished = time + 30;
 		}
 
-		if (other.parry_finished >= time)
+		// --- Parry Detection ---
+		if (other.parry_finished > time)
 			parry = TRUE;
 
+		// --- Blocking ---
+		if (check_block(self, other) && other.blocking)
+		{
+			float stamcalc_block = 20 - (other.skill_endurance * 0.015);
+
+			// --- Regular Block ---
+			if (other.parry_finished < time)
+			{
+				if (other.stamina >= stamcalc_block)
+				{
+					damage -= other.blockvalue;
+					other.stamina -= stamcalc_block;
+
+					vector dir = normalize(other.origin - self.origin);
+					other.velocity = '0 0 0';
+					other.flags &= ~FL_ONGROUND;
+					other.velocity = dir * 150;
+
+					other.melee_finished = time + 0.5;
+					other.anistate = ANISTATE_BLOCK;
+					pointparticles(PART_BLOCK, other.origin + v_forward * 32 + v_up * other.view_ofs_z);
+				}
+				else
+				{
+					// --- Stagger on Stamina Depletion ---
+					if (other.stagger_finished < time)
+					{
+						if (other.classname == "player")
+						{
+							string eventlog_print = "^1You've been staggered!";
+							stuffcmd(other, sprintf("conecho event %s\n", eventlog_print));
+						}
+
+						damage -= ceil(other.blockvalue / 2); // partial block
+						other.stamina = 0;
+						other.blocking = FALSE;
+						other.lockview_finished = time + 3;
+						other.stagger_finished = time + 3;
+					}
+				}
+			}
+			else // --- Parry ---
+			{
+				parry = TRUE;
+				sound(other, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
+
+				string eventlog_print = "^2Successful parry!";
+				stuffcmd(other, sprintf("conecho event %s\n", eventlog_print));
+
+				other.melee_finished = time + 0.75;
+				other.anistate = ANISTATE_PARRY;
+			}
+
+			sound(other, CHAN_AUTO, "shield1.wav", 1, ATTN_NORM);
+		}
+
+		// --- Damage Application ---
 		if (!parry)
 		{
-			// armor calculations
-			if (other.armorvalue > damage)
-				damage = 1;
-			else
-				damage -= ceil(other.armorvalue);
+			damage -= ceil(other.armorvalue);
 
-			// blocking calculations
-			if (check_block(self.owner, other) && other.blocking)
+			// If still blocking and block was not handled, apply minor block reduction
+			if (check_block(self, other) && other.blocking)
 				damage -= ceil(other.blockvalue);
 
-			damage = ceil(damage); // round up final damage output
+			damage = ceil(max(damage, 1)); // never deal 0 damage
 
-			// blood logic + effects
+			// Blood effect
 			vector mid = other.origin;
 			vector vel = [crandom(), crandom(), fabs(crandom())] * 100;
 			mid_z += (other.mins_z + other.maxs_z) * 0.5;
 			te_blood(mid, vel, 6);
 
 			DoDamage(other, self.owner, damage, FALSE);
-			sound (self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
-		}
-		else // parry
-		{
-			sound (other, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
-			string eventlog_print = (strcat("^2Successful parry!"));
-			stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
+			sound(self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
 		}
 
 		remove(self);
 		return;
 	}
 	
+	// --- Stick to wall ---
 	if (other.solid == SOLID_BSP && self.velocity != '0 0 0')
 	{
-		sound (self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
+		sound(self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
 		self.movetype = MOVETYPE_FLY;
 		self.velocity = '0 0 0';
 		self.touch = info_null;
 		self.think = sub_remove;
 		self.nextthink = time + 6;
 	}
-	
 };
 
 void(vector ang) CSEv_DoAttack_Arrow_v =
@@ -438,47 +485,78 @@ void(vector ang) CSEv_DoAttack_Arrow_v =
 	arrow.owner = self;
 	arrow.movetype = MOVETYPE_TOSS;
 	arrow.solid = SOLID_BBOX;
-
-	arrow.hitcontentsmaski = CONTENTBITS_POINTSOLID; // ignore clip brushes
+	arrow.hitcontentsmaski = CONTENTBITS_POINTSOLID;
 
 	if (self.flags & FL_CLIENT)
 	{
-		if (ang) // sent from CSQC when lock-on is active
+		if (ang)
 		{
-			makevectors (ang);
+			makevectors(ang);
 			self.angles_x = ang_x;
 			self.fixangle = TRUE;
 		}
 		else
-			makevectors (self.v_angle);
+			makevectors(self.v_angle);
+
+		// Add lift for smoother, longer flight arcs
+		float lift_scale = 0.25; // tweak 0.1–0.25
+		vector forward = v_forward;
+		vector up = v_up;
+
+		forward = normalize(forward + up * lift_scale);
+		arrow.velocity = forward * 1000;
+		arrow.angles = vectoangles(arrow.velocity);
 	}
-	else
-		makevectors (self.angles);
+	else // monster
+	{
+		if (self.enemy)
+		{
+			vector src = self.origin + '0 0 32';
+			vector dst = self.enemy.origin + self.enemy.view_ofs;
+			vector toTarget = dst - src;
+			float dist = vlen(toTarget);
 
-	vector forward = v_forward;
-	vector up = v_up;
+			vector target_vel = self.enemy.velocity;
+			float proj_speed = 1000;
+			float t_lead = dist / proj_speed;
+			vector predicted = dst + target_vel * t_lead;
 
-	float lift_scale = 0.25; // tweak this value (0.1–0.25 is good range)
-	forward = normalize(forward + up * lift_scale); // apply lift based on looking up/down
+			vector dir = normalize(predicted - src);
+			dir_z += dist * 0.0004; // gravity compensation
+			dir = normalize(dir);
 
-	arrow.velocity = forward * 1000; // speed
-	arrow.angles = vectoangles(arrow.velocity);
+			makevectors(vectoangles(dir));
+		}
+		else
+			makevectors(self.angles);
+
+		vector forward = v_forward;
+		arrow.velocity = forward * 1000;
+		arrow.angles = vectoangles(arrow.velocity);
+	}
+
+	setmodel(arrow, "models/arrow.glb");
+	setsize(arrow, '0 0 0', '0 0 0');
+	setorigin(arrow, self.origin + v_forward * 8 + '0 0 16');
 
 	arrow.touch = arrow_touch;
 	arrow.think = arrow_think;
 	arrow.nextthink = time + 0.1;
 
-	setmodel (arrow, "models/arrow.glb");
-	setsize (arrow, '0 0 0', '0 0 0');
-	setorigin (arrow, self.origin + v_forward * 8 + [0,0,16]);
-	sound (self, CHAN_WEAPON, "arrow1.wav", 1, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "arrow1.wav", 1, ATTN_NORM);
 
-	RemoveFromInventory(self, self.main_hand, 1); // Remove an arrow ...
-	
-	// out of arrows, equip unarmed
+	// Monsters don't need to check inventory
+	if (self.flags & FL_MONSTER)
+		return;
+
+	// Remove one arrow from inventory
+	RemoveFromInventory(self, self.main_hand, 1);
+
+	// Player: unequip when out of arrows
 	if (!HasItem(self, self.main_hand))
 		CSEv_User_UnequipMainhand_();
 };
+
 
 void(entity targ) Player_CheckLevelUp;
 void(entity targ, entity attacker) DoDeath = 

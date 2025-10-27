@@ -82,7 +82,20 @@ void() Monster_Animate =
 			self.frame1time += speed;
 		return;
 	}
-	
+
+	if (self.anistate == ANISTATE_ARCHERY)
+	{
+		if (self.frame != (self.frame = frameforname(self.modelindex, "Archery")))
+			self.frame1time = 0; // reset timestamp
+		self.frame = frameforname(self.modelindex, "Archery");
+
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = self.frame1time; // hold
+		else
+			self.frame1time += speed;
+		return;
+	}
+
 	speed = 1; // reset speed after attacking animations
 
 	if (self.anistate == ANISTATE_STUNNED)
