@@ -7,32 +7,35 @@
 .float attack_triggered; // ensures one attack event per animation
 
 // constants for clarity, these are strictly CSQC
-#define ANIM_IDLE   	0
-#define ANIM_RUN    	1
-#define ANIM_SLASH  	2
-#define ANIM_CLIMB  	3
-#define ANIM_DEATH  	4
-#define ANIM_JUMP		5
-#define ANIM_SIT		6
-#define ANIM_CASTING	7
-#define ANIM_CASTAOE	8
-#define ANIM_CASTTARGET	9
-#define ANIM_CASTSELF	10
-#define ANIM_STUNNED	11
-#define ANIM_STAB		12
-#define ANIM_PUNCH		13
-#define ANIM_BLOCKWALK	14
-#define ANIM_BLOCKIDLE	15
-#define ANIM_CROUCHWALK	16
-#define ANIM_CROUCHIDLE	17
-#define ANIM_BASH		18
-#define ANIM_PARRY		19
-#define ANIM_DRINK		20
-#define ANIM_SMASH		21
-#define ANIM_ARCHERY	22
-#define ANIM_BLOCK		23
-#define ANIM_AIRMELEE	24
-#define ANIM_DODGE		25
+#define ANIM_IDLE   		0
+#define ANIM_RUN    		1
+#define ANIM_SLASH  		2
+#define ANIM_CLIMB  		3
+#define ANIM_DEATH  		4
+#define ANIM_JUMP			5
+#define ANIM_SIT			6
+#define ANIM_CASTING		7
+#define ANIM_CASTAOE		8
+#define ANIM_CASTTARGET		9
+#define ANIM_CASTSELF		10
+#define ANIM_STUNNED		11
+#define ANIM_STAB			12
+#define ANIM_PUNCH			13
+#define ANIM_BLOCKWALK		14
+#define ANIM_BLOCKIDLE		15
+#define ANIM_CROUCHWALK		16
+#define ANIM_CROUCHIDLE		17
+#define ANIM_BASH			18
+#define ANIM_PARRY			19
+#define ANIM_DRINK			20
+#define ANIM_SMASH			21
+#define ANIM_ARCHERY		22
+#define ANIM_BLOCK			23
+#define ANIM_AIRMELEE		24
+#define ANIM_DODGE			25
+#define ANIM_STRAFELEFT 	26
+#define ANIM_STRAFERIGHT 	28
+#define ANIM_BACKPEDAL		29
 
 //
 // Special animations sent from SSQC
@@ -689,14 +692,17 @@ void() Player_Animate =
         speed += (skill_climb * 0.005);
     }
 
-    // -----------------------------
-    // Idle / Run Animations
-    // -----------------------------
-    else
-    {
-        // Standing still → Idle
-        if (!self.velocity_x && !self.velocity_y)
-        {
+	// -----------------------------
+	// Idle / Run / Strafe Animations
+	// -----------------------------
+	else
+	{
+		vector vel = self.velocity;
+		float velspeed = vlen(vel);
+
+		// Standing still → Idle
+		if (velspeed < 5) // Small threshold to ignore jitter
+		{
 			if (self.crouch)
 			{
 				if (self.anim_state != ANIM_CROUCHIDLE)
@@ -728,9 +734,19 @@ void() Player_Animate =
 						speed = 0.5;
 				}
 			}
-        }
-        else // Moving → Run
-        {
+		}
+		else // Moving → Run or Strafe
+		{
+			// Convert velocity into local space (relative to facing)
+			vector fwd, right, up;
+			makevectors(self.angles);
+			fwd = v_forward;
+			right = v_right;
+
+			float forwarddot = dotproduct(normalize(vel), fwd);
+			float rightdot   = dotproduct(normalize(vel), right);
+
+			// Determine movement type
 			if (self.crouch)
 			{
 				if (self.anim_state != ANIM_CROUCHWALK)
@@ -751,15 +767,49 @@ void() Player_Animate =
 			}
 			else
 			{
-				if (self.anim_state != ANIM_RUN)
+				// Strafe left/right if horizontal motion dominates
+				if (rightdot > 0.5)
 				{
-					self.frame = frameforname(self.modelindex, "Run");
-					self.frame1time = 0;
-					self.anim_state = ANIM_RUN;
+					if (self.anim_state != ANIM_STRAFERIGHT)
+					{
+						self.frame = frameforname(self.modelindex, "StrafeRight");
+						self.frame1time = 0;
+						self.anim_state = ANIM_STRAFERIGHT;
+					}
+				}
+				else if (rightdot < -0.5)
+				{
+					if (self.anim_state != ANIM_STRAFELEFT)
+					{
+						self.frame = frameforname(self.modelindex, "StrafeLeft");
+						self.frame1time = 0;
+						self.anim_state = ANIM_STRAFELEFT;
+					}
+				}
+				else // Mostly forward/backward
+				{
+					if (forwarddot > 0)
+					{
+						if (self.anim_state != ANIM_RUN)
+						{
+							self.frame = frameforname(self.modelindex, "Run");
+							self.frame1time = 0;
+							self.anim_state = ANIM_RUN;
+						}
+					}
+					else if (forwarddot < 0)
+					{
+						if (self.anim_state != ANIM_BACKPEDAL)
+						{
+							self.frame = frameforname(self.modelindex, "Backpedal");
+							self.frame1time = 0;
+							self.anim_state = ANIM_BACKPEDAL;
+						}
+					}
 				}
 			}
-        }
-    }
+		}
+	}
 
     // -----------------------------
     // Speed modifiers
