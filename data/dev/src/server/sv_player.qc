@@ -228,6 +228,11 @@ void() PlayerJump =
 			stamcalc = 49;
 		self.stamina -= (50 - stamcalc);
 		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
+		
+		// Remove crouch
+		self.crouch = FALSE;
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
+		self.view_ofs = [0, 0, 48];
 	}
 };
 
@@ -1204,6 +1209,7 @@ void(float type) PlayerSpawn =
 		self.velocity = '0 0 0';
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
+		CSEv_Player_SaveChar(self, 0); // full save on creation
 	}
 };
 
