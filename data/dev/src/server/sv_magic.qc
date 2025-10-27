@@ -164,6 +164,7 @@ void(float damage, vector ang) Cast_Thorn =
 			sound (trace_ent, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
 			sound (trace_ent, CHAN_AUTO, "magic/thorn_misc.wav", 1, ATTN_STATIC);
 			pointparticles(PART_MAGIC_THORN2, trace_endpos);
+			pointparticles(PART_PARRY, trace_ent.origin + v_forward * 32 + v_up * trace_ent.view_ofs_z);
 			string eventlog_print = (strcat("^2Successful parry!"));
 			stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
 		}

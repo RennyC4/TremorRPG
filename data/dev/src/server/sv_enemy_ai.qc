@@ -43,7 +43,6 @@ void() monster_death =
 
 	self.think = monster_respawn;
 	self.nextthink = time + self.respawn_finished;
-
 };
 
 void(float speed) TurnToTarget =
@@ -352,6 +351,16 @@ void() monster_ai_think =
 		}
 		else
 		{
+			tracebox(self.saveorigin, self.mins, self.maxs, self.saveorigin, MOVE_NORMAL, self);
+
+			// blocked
+			if (trace_startsolid || trace_fraction < 1)
+			{
+				self.nextthink = time + 1;
+				self.think = monster_ai_think; // try again
+				return;
+			}
+
 			setorigin(self, self.saveorigin);
 			self.enemy = world;
 			self.goalentity = world;

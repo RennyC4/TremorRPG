@@ -563,6 +563,11 @@ void() Player_Think =
 	{
 		if (input_buttons & 1) // attack button
 		{
+			if (self.health <= 0)
+			{
+				sendevent("User_StartAttack", "");
+				return;
+			}
 			if (self.attack_released && !atbonfire)
 			{
 				float stamina = getstatf(STAT_STAMINA);
@@ -579,7 +584,8 @@ void() Player_Think =
 				}
 				else if (stamina >= (attack_stamina - stamcalc))
 					can_attack = TRUE;
-
+				if (self.anistate == ANISTATE_DODGE) // May be safter to check ANISTATE
+					can_attack = FALSE;
 				if (self.attack_type == 4 && (!(self.flags & FL_ONGROUND))) // bow air check
 					can_attack = FALSE;
 
@@ -597,7 +603,10 @@ void() Player_Think =
 					}
 				}
 				else
-					cprint("^b^1Out of stamina ...\n");
+				{
+					if (!(stamina >= (attack_stamina - stamcalc)))
+						cprint("^b^1Out of stamina ...\n");
+				}
 			}
 			self.attack_released = FALSE;
 		}
@@ -605,11 +614,11 @@ void() Player_Think =
 			self.attack_released = TRUE;
 	}
 
-	if (deathcam_dist != 45)
-		deathcam_dist = 45; // initial z start org for death camera
-
 	if (self.health <= 0)
 		return;
+
+	if (deathcam_dist != 45)
+		deathcam_dist = 45; // initial z start org for death camera
 
 	if (LockOn_Toggle) // binding stuff work around
 	{
@@ -632,7 +641,4 @@ void() Player_Think =
 		if (button_down)
 			sendevent("PlayerDodge", "f", 3);
 	}
-
-	if (self.dodgedir > 0)
-		player_dodging = TRUE;
 };

@@ -2034,6 +2034,7 @@ var float PART_MAGIC_LIGHTHEAL;
 var float PART_HEALTHPOTION;
 var float PART_MANAPOTION;
 var float PART_BLOCK;
+var float PART_PARRY;
 
 // Inventory
 #define MAX_INVENTORY 32 // how many slots allowed

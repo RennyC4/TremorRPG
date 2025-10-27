@@ -100,6 +100,8 @@ void() DoAttack_ShieldBash =
 			trace_ent.anistate = ANISTATE_PARRY;
 			trace_ent.melee_finished = time + 0.5;
 
+			pointparticles(PART_PARRY, trace_ent.origin + v_forward * 32 + v_up * trace_ent.view_ofs_z);
+
 			// apply effects
 			self.stagger_finished = time + 3.5;
 			self.lockview_finished = time + 3.5;
@@ -270,6 +272,8 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 
 				trace_ent.melee_finished = time + 0.75;
 				trace_ent.anistate = ANISTATE_PARRY;
+
+				pointparticles(PART_PARRY, trace_ent.origin + v_forward * 32 + v_up * trace_ent.view_ofs_z);
 
 				// apply effects
 				self.stagger_finished = time + 3.5;

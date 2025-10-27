@@ -128,7 +128,7 @@ void() set_npc =
 	//self.th_die = npc_death;
 	//self.exp = 0;
 
-	self.saveorigin = self.origin + v_up * 1; // stash initial spawn spot
+	self.saveorigin = self.origin + v_up * 5; // stash initial spawn spot
 
 	setmodel(self, self.model);
 	setsize(self, [-16, -16, 0], [16, 16, 56]);

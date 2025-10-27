@@ -2348,7 +2348,6 @@ float LockOn_CycleToggle; // same
 .float attack_speed;
 .float next_attack_time;
 .float dodgedir;
-float player_dodging;
 
 // Animation States
 .float anistate;

@@ -34,15 +34,25 @@ float(entity ePVEnt, float flChanged) Monster_SendEntity =
 
 void() monster_respawn =
 {
+	tracebox(self.saveorigin, self.mins, self.maxs, self.saveorigin, MOVE_NORMAL, self);
+
+	// Blocked, wait a second
+	if (trace_startsolid || trace_fraction < 1)
+	{
+		self.nextthink = time + 1;
+		self.think = monster_respawn;
+		return;
+	}
+
+	// Safe to respawn now
+	setorigin(self, self.saveorigin);
+
 	self.solid = SOLID_SLIDEBOX;
 	self.deadflag = DEAD_NO;
 	self.takedamage = DAMAGE_AIM;
-	self.alpha = 1; // removeme when we have animations + proper model
 	self.health = self.max_health;
 	self.radius_candamage = TRUE;
-	self.ai_mode = AI_IDLE; // return to idling
-
-	setorigin (self, self.saveorigin); // respawn at initial spawn spot
+	self.ai_mode = AI_IDLE;
 
 	self.think = monster_ai_think;
 	self.nextthink = time + 0.1;
@@ -85,7 +95,7 @@ void() set_monster =
 	if (!self.attack_length)
 		self.attack_length = 64;
 
-	self.saveorigin = self.origin + v_up * 1; // stash initial spawn spot
+	self.saveorigin = self.origin + v_up * 5; // stash initial spawn spot
 
 	setmodel(self, self.model);
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
