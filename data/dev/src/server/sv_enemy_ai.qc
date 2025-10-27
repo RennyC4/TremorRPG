@@ -32,7 +32,7 @@ float	RANGE_FAR				= 4;
 void() monster_death =
 {
 	self.SendFlags = 1;
-	//self.angles_x = 0;
+	self.angles_x = 0;
 	self.goalentity = self.enemy = world; // reset targets
 	self.velocity = '0 0 0'; // slide fix
 	self.solid = SOLID_NOT;
@@ -260,7 +260,7 @@ void() monster_ai_think =
 		// randomly turn and move
 		if (self.ai_patrolidle < time)
 		{
-			//self.angles_x = 0;
+			self.angles_x = 0;
 			self.idealangles_y = random()*360;
 			if (self.ai_move_dist > 1)
 				self.ai_patrolidle = time + 2 + random()*5;
@@ -446,15 +446,15 @@ void() monster_ai_think =
 					}
 				}
 			}
+			PitchToTarget();
 		}
-		PitchToTarget();
 		monster_ai_move();
 	}
 
 	// enemy dead / used a bonfire
 	if (self.enemy && (self.enemy.health <= 0 || self.enemy.bonfire == TRUE))
 	{
-		//self.angles_x = 0;
+		self.angles_x = 0;
 		self.oldenemy = self.enemy; // stash last killed or lost to bonfire
 		self.enemy = self.goalentity = world;
 		self.ai_mode = AI_IDLE;

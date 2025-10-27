@@ -32,6 +32,7 @@
 #define ANIM_ARCHERY	22
 #define ANIM_BLOCK		23
 #define ANIM_AIRMELEE	24
+#define ANIM_DODGE		25
 
 //
 // Special animations sent from SSQC
@@ -173,6 +174,17 @@ void() OtherPlayer_Anistate =
 			self.anim_state = ANIM_AIRMELEE;
 		}
 	}
+	
+	if (self.anistate == ANISTATE_DODGE)
+	{
+		if (self.frame != frameforname(self.modelindex, "Dodge"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Dodge");
+			self.anim_state = ANIM_DODGE;
+			speed = 1.5;
+		}
+	}
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
@@ -300,6 +312,27 @@ void() Player_Animate =
 		}
 		else
 			self.anistate = ANISTATE_NONE;
+	}
+
+	// -----------------------------
+    // Dodge Animation
+    // -----------------------------
+	if (self.anistate == ANISTATE_DODGE)
+	{
+		if (self.frame != frameforname(self.modelindex, "Dodge"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Dodge");
+			self.anim_state = ANIM_DODGE;
+		}
+		speed = 1.5;
+		speed *= frametime;
+
+        if (self.frame1time >= duration - 0.1) // Hold final frame at end
+            self.frame1time = duration - 0.1;
+        else
+            self.frame1time += speed;
+		return;
 	}
 
 	// -----------------------------

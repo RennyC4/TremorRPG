@@ -229,10 +229,51 @@ void() PlayerJump =
 		self.stamina -= (50 - stamcalc);
 		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
 		
-		// Remove crouch
+		// remove crouch
 		self.crouch = FALSE;
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];
+	}
+};
+
+void(float whichdir) CSEv_PlayerDodge_f =
+{
+	if (self.bonfire)
+		return;
+	if (self.cast_finished > time)
+		return;
+	if (self.dodge_finished > time)
+		return;
+	if (self.melee_finished > time)
+		return;
+	if (!(self.flags & FL_ONGROUND))
+		return;
+	if (!(self.flags & FL_JUMPRELEASED))
+		return;
+	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC)
+		return;
+
+	if (self.stamina >= 20)
+	{
+		self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
+		self.button2 = 0;
+		self.stamina -= 20;
+
+		self.dodgedir = whichdir;
+		//print (ftos(self.dodgedir), "\n");
+
+		self.godmode_finished = time + 0.3;
+		self.dodge_finished = time + 0.8;
+		self.velocitypush_finished = self.dodge_finished;
+		self.lockview_finished = self.dodge_finished;
+		self.anistate = ANISTATE_DODGE;
+
+		// remove crouch
+		self.crouch = FALSE;
+		setsize(self, [-16, -16, 0], [16, 16, 56]);
+		self.view_ofs = [0, 0, 48];
+
+		sound (self, CHAN_BODY, "jump.wav", 1, ATTN_NORM);
 	}
 };
 
@@ -676,9 +717,9 @@ void() FootstepThink =
     }
 };
 
-void(float speed) Player_PushForward =
+void(float speed) Player_VelocityPush =
 {
-    if (self.pushforward_finished < time)
+    if (self.velocitypush_finished < time)
         return;
     if (!(self.flags & FL_ONGROUND))
         return;
@@ -687,8 +728,15 @@ void(float speed) Player_PushForward =
 
     makevectors([0, self.angles_y, 0]);
 
-	// apply velocity in that direction
-	self.velocity = v_forward * speed;
+	if (!self.dodgedir)
+		self.velocity = v_forward * speed;
+	else if (self.dodgedir == 1)
+		self.velocity = -v_right * speed;
+	else if (self.dodgedir == 2)
+		self.velocity = v_right * speed;
+	else
+		self.velocity = -v_forward * speed;
+
 	self.flags &= ~FL_ONGROUND;
 	self.flags &= ~FL_PARTIALGROUND;
 };
@@ -696,6 +744,9 @@ void(float speed) Player_PushForward =
 // Main SSQC attack function
 void() CSEv_User_StartAttack_ =
 {
+	if (self.dodge_finished > time)
+		return;
+
 	if (self.menu == MENU_OFF && !self.bonfire)
 	{
 		if (self.deadflag == DEAD_DEAD || self.health <= 0)
@@ -751,7 +802,7 @@ void() CSEv_User_StartAttack_ =
 							self.lockview_finished = time + self.attack_speed;
 
 							if (self.attack_type != 4) // not archery
-								self.pushforward_finished = time + (self.attack_speed / 4);
+								self.velocitypush_finished = time + (self.attack_speed / 4);
 						}
 					}
 				}
@@ -799,7 +850,17 @@ void() Anistate_Handler =
 		if (self.potion_use_finished < time)
 			self.anistate = ANISTATE_NONE;
 	}
-	
+	// Tied to dodge_finished
+	if (self.anistate == ANISTATE_DODGE)
+	{
+		if (self.dodge_finished < time)
+		{
+			self.anistate = ANISTATE_NONE;
+			self.dodgedir = 0;
+			self.velocity_x = self.velocity_y = 0; // remove velocity from roll
+		}
+	}
+
 	if (self.flags & FL_ONGROUND)
 		self.climbing = FALSE;
 };
@@ -847,9 +908,10 @@ void() PlayerPreThink =
 		if (self.next_stun_allowed && self.next_stun_allowed < time)
 			self.next_stun_allowed = 0; // cooldown expired
 
-		// attack / magic commitment / npc interaction menus
+		// attack / dodge / magic commitment / npc interaction menus
 		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL ||
-			self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time)
+			self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time
+			|| self.dodge_finished > time)
 			self.maxspeed = 1;
 		else
 		{
@@ -908,9 +970,13 @@ void() PlayerPostThink =
 
 	if (self.frags != self.level) // HACK: used to display level on the scoreboard
 		self.frags = self.level;
-	
-	Player_PushForward(200);
 
+	//
+	// velocity push on player: melee/dodges
+	//
+	Player_VelocityPush(200, 0);
+	//
+	
 	if (self.healthpot_heal_remaining > 0 && time > self.healthpot_finished) // health potion - apply ongoing healing
 	{
 		if (self.health >= self.max_health)
@@ -928,7 +994,7 @@ void() PlayerPostThink =
 
 		self.mana = min(self.max_mana, self.mana + self.manapot_heal_rate);
 		self.manapot_heal_remaining -= self.manapot_heal_rate;
-		self.manapot_finished = time + 0.1; // how fast to tick
+		self.manapot_finished = time + 0.1; // how fast to tick`
 	}
 
 	if (!self.incombat)

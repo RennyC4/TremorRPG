@@ -600,15 +600,6 @@ void() Player_Think =
 			self.attack_released = TRUE;
 	}
 
-	/*
-	if (button_left && input_buttons & 2)
-		print ("Dodge Left\n");
-	if (button_right && input_buttons & 2)
-		print ("Dodge Right\n");
-	if (button_down && input_buttons & 2)
-		print ("Dodge Backwards\n");
-	*/
-
 	if (deathcam_dist != 45)
 		deathcam_dist = 45; // initial z start org for death camera
 
@@ -624,5 +615,16 @@ void() Player_Think =
 	{
 		CSQC_LockOn_Cycle();
 		LockOn_CycleToggle = FALSE;
+	}
+	
+	// dodge inputs
+	if (input_buttons & 2)
+	{
+		if (button_left)
+			sendevent("PlayerDodge", "f", 1);
+		if (button_right)
+			sendevent("PlayerDodge", "f", 2);
+		if (button_down)
+			sendevent("PlayerDodge", "f", 3);
 	}
 };

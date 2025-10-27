@@ -58,7 +58,7 @@ void() DoAttack_ShieldBash =
 	vector source = self.origin + '0 0 16';
 	traceline (source, source + v_forward * 48, MOVE_TRIGGERS, self);
 
-	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
+	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO && trace_ent.godmode_finished < time)
 	{
 		// PVP
 		if (self.classname == "player" && trace_ent.classname == "player")
@@ -172,7 +172,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 	if (!(self.flags & FL_ONGROUND))
 		self.inair_swing_sfx = TRUE;
 
-	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO && trace_ent.jumpattack_hit_finished < time)
+	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO && trace_ent.jumpattack_hit_finished < time && trace_ent.godmode_finished < time)
 	{
 		if (self.classname == "player" && trace_ent.classname == "player") // PVP checks
 		{
@@ -366,7 +366,7 @@ void() arrow_touch =
 {
 	float parry = FALSE;
 
-	if (other != self.owner && other.takedamage && other.health > 0 && other.deadflag == DEAD_NO)
+	if (other != self.owner && other.takedamage && other.health > 0 && other.deadflag == DEAD_NO && other.godmode_finished < time)
 	{
 		float bow_power = ceil(random_range(self.owner.projectile_power_min, self.owner.projectile_power_max));
 		float arrow_power = ceil(random_range(self.owner.attack_power_min, self.owner.attack_power_max));
@@ -599,6 +599,8 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 		return;
 	if (targ.flags & FL_MONSTER && attacker.flags & FL_MONSTER) // prevent monster in-fighting
 		return;
+	if (targ.godmode_finished > time)
+		return;
 
 	if (damage <= 0)
 		damage = 1;
@@ -667,7 +669,7 @@ void(entity attacker, vector org, float radius, float damage, float diminish, fl
 {
 	for (entity targ = world; (targ = findfloat(targ, radius_candamage, TRUE));)
 	{
-		if (vlen(targ.origin - org) <= radius && targ != self)
+		if (vlen(targ.origin - org) <= radius && targ != self && targ.godmode_finished < time)
 		{
 			float dmg = damage;
 			if (diminish)
