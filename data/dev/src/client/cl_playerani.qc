@@ -38,7 +38,7 @@
 #define ANIM_BACKPEDAL		29
 #define ANIM_STEPDODGE		30
 #define ANIM_STEPCOUNTER	31
-
+#define ANIM_IMPACT			32
 
 //
 // Special animations sent from SSQC
@@ -157,6 +157,16 @@ void() OtherPlayer_Anistate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Stunned");
 			self.anim_state = ANIM_STUNNED;
+		}
+	}
+
+	if (self.anistate == ANISTATE_IMPACT)
+	{
+		if (self.frame != frameforname(self.modelindex, "Impact"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Impact");
+			self.anim_state = ANIM_IMPACT;
 		}
 	}
 
@@ -558,6 +568,28 @@ void() Player_Animate =
 			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
 		speed *= frametime;
+
+		self.frame1time += speed;
+		self.frame2time = self.frame1time;
+		return;
+	}
+
+	// -----------------------------
+    // Impact
+    // -----------------------------
+	if (self.anistate == ANISTATE_IMPACT)
+	{
+		if (self.frame != frameforname(self.modelindex, "Impact"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Impact");
+			self.anim_state = ANIM_IMPACT;
+			self.anim_attacking = FALSE; // turn off attack animation flag
+		}
+		speed *= frametime;
+
+        if (self.frame1time >= duration - 0.1) // Switch frame at the end
+            self.frame1time = duration - 0.1;
 
 		self.frame1time += speed;
 		self.frame2time = self.frame1time;

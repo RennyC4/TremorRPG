@@ -100,6 +100,26 @@ void() Monster_Animate =
 
 	if (self.anistate == ANISTATE_STUNNED)
 		self.frame = frameforname(self.modelindex, "Stunned");
+	
+	if (self.anistate == ANISTATE_IMPACT)
+	{
+		if (self.frame != frameforname(self.modelindex, "Impact"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Impact");
+		}
+		speed *= frametime;
+
+        if (self.frame1time >= duration - 0.1) // Switch frame at the end
+            self.frame1time = duration - 0.1;
+
+		self.frame1time += speed;
+		self.frame2time = self.frame1time;
+		print ("Monster doing it's thang\n");
+		return;
+	}
+	
+	
 	if (self.anistate == ANISTATE_NONE)
 		self.frame = frameforname(self.modelindex, "Idle");
 	if (self.anistate == ANISTATE_RUN)

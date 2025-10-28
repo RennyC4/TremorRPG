@@ -2374,3 +2374,4 @@ const float ANISTATE_AIRMELEE = 18;
 const float ANISTATE_DODGE = 19;
 const float ANISTATE_STEPDODGE = 20;
 const float ANISTATE_STEPCOUNTER = 21;
+const float ANISTATE_IMPACT = 22;

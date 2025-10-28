@@ -949,7 +949,7 @@ void() PlayerPreThink =
 	// player movement + speed checks
 	if (self.stagger_finished < time)
 	{
-		if (self.anistate == ANISTATE_STUNNED) // Reset stun state once stagger time is over
+		if (self.anistate == ANISTATE_STUNNED || self.anistate == ANISTATE_IMPACT) // Reset stun state once stagger time is over
 			self.anistate = ANISTATE_NONE;
 
 		// === STUN COOLDOWN HANDLING ===

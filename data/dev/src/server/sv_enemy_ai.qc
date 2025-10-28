@@ -229,6 +229,7 @@ void() monster_ai_spawnrunback =
 };
 
 // main monster ai execution function
+.float impact_frame;
 void() monster_ai_think =
 {
 	self.SendFlags = 1;
@@ -240,10 +241,15 @@ void() monster_ai_think =
 
 	if (self.stagger_finished > time)
 	{
-		self.anistate = ANISTATE_STUNNED;
+		if (self.impact_frame > time)
+			self.anistate = ANISTATE_IMPACT;
+		else
+			self.anistate = ANISTATE_STUNNED;
+
 		self.nextthink = time + 0.1;
 		return;
 	}
+	self.impact_frame = time + 1.15; // impact frame timing
 
 	// monster is walking normal its beat (no target)
 	if (self.ai_mode == AI_IDLE || self.ai_mode == AI_PATROL)

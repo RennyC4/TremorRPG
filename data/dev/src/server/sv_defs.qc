@@ -1875,7 +1875,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .string off_hand; // string for off hand
 .float blocking; // Player can block with shield
 .float blockvalue; // damage reduction when blocking
-.float stagger_finished; // when staggered, can't block for a bit (slower player speed on recovery)
+.float stagger_finished; // stagger
 .string armorname;
 .float reaper_marks; // for PVP kills
 .float parry_finished;
@@ -1915,6 +1915,7 @@ const float ANISTATE_AIRMELEE = 18;
 const float ANISTATE_DODGE = 19;
 const float ANISTATE_STEPDODGE = 20;
 const float ANISTATE_STEPCOUNTER = 21;
+const float ANISTATE_IMPACT = 22;
 
 //.float armorvalue; (this is already defined)
 

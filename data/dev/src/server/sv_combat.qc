@@ -612,7 +612,9 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 	if (damage <= 0)
 		damage = 1;
 
-	targ.health = targ.health - damage;
+	if (!(targ.flags & FL_GODMODE))
+		targ.health = targ.health - damage;
+
 	string eventlog_print;
 
 	if (attacker.classname == "player")
