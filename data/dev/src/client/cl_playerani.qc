@@ -208,8 +208,16 @@ void() Skeleton_Animate =
 			makevectors([0, -90, 0]);
 		else if (self.dodgedir == 2)
 			makevectors([0, 90, 0]);
-		else
+		else if (self.dodgedir == 3)
 			makevectors([0, -180, 0]);
+		else if (self.dodgedir == 4)
+			makevectors([0, -135, 0]);
+		else if (self.dodgedir == 5)
+			makevectors([0, -45, 0]);
+		else if (self.dodgedir == 6)
+			makevectors([0, 135, 0]);
+		else
+			makevectors([0, 45, 0]);
 		
 		skel_premul_bone(self.skeletonindex, skel_find_bone(self.skeletonindex, "mixamorig:Hips"), '0 0 0', v_forward, v_right, v_up);
 	}
@@ -234,6 +242,7 @@ void() Player_Animate =
             self.frame = frameforname(self.modelindex, "Death");
             self.frame1time = 0;
             self.anim_state = ANIM_DEATH;
+			self.anim_attacking = FALSE; // turn off attack animation flag
         }
 
         // Hold final frame at end
@@ -248,6 +257,7 @@ void() Player_Animate =
 	{
 		self.anim_state = ANIM_IDLE;
 		self.frame1time = 0;
+		self.anim_attacking = FALSE; // turn off attack animation flag
 		self.frame = frameforname(self.modelindex, "Idle");
 	}
 
@@ -345,8 +355,8 @@ void() Player_Animate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Dodge");
 			self.anim_state = ANIM_DODGE;
+			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
-
 
 		speed = 1.5;
 		speed *= frametime;
@@ -368,6 +378,7 @@ void() Player_Animate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Drink");
 			self.anim_state = ANIM_DRINK;
+			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
 		speed = 1.5;
 		speed *= frametime;
@@ -389,6 +400,7 @@ void() Player_Animate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Parry");
 			self.anim_state = ANIM_PARRY;
+			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
 		speed = 1.25;
 		speed *= frametime;
@@ -410,6 +422,7 @@ void() Player_Animate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Block");
 			self.anim_state = ANIM_BLOCK;
+			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
 		speed = 1;
 		speed *= frametime;
@@ -431,6 +444,7 @@ void() Player_Animate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Bash");
 			self.anim_state = ANIM_BASH;
+			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
 		speed = 1.5;
 		speed *= frametime;
@@ -452,6 +466,7 @@ void() Player_Animate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Stunned");
 			self.anim_state = ANIM_STUNNED;
+			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
 		speed *= frametime;
 
@@ -470,6 +485,7 @@ void() Player_Animate =
             self.frame = frameforname(self.modelindex, "Sit");
             self.frame1time = 0;
             self.anim_state = ANIM_SIT;
+			self.anim_attacking = FALSE; // turn off attack animation flag
         }
 		speed *= frametime;
 
@@ -489,6 +505,7 @@ void() Player_Animate =
             self.frame = frameforname(self.modelindex, "Casting");
             self.frame1time = 0;
             self.anim_state = ANIM_CASTING;
+			self.anim_attacking = FALSE; // turn off attack animation flag
         }
 		speed *= frametime;
 
@@ -507,6 +524,7 @@ void() Player_Animate =
             self.frame = frameforname(self.modelindex, "CastArea");
             self.frame1time = 0;
             self.anim_state = ANIM_CASTAOE;
+			self.anim_attacking = FALSE; // turn off attack animation flag
         }
 		speed *= frametime;
 
@@ -527,6 +545,7 @@ void() Player_Animate =
             self.frame = frameforname(self.modelindex, "CastTarget");
             self.frame1time = 0;
             self.anim_state = ANIM_CASTTARGET;
+			self.anim_attacking = FALSE; // turn off attack animation flag
         }
 		speed *= frametime;
 
@@ -547,6 +566,7 @@ void() Player_Animate =
             self.frame = frameforname(self.modelindex, "CastSelf");
             self.frame1time = 0;
             self.anim_state = ANIM_CASTSELF;
+			self.anim_attacking = FALSE; // turn off attack animation flag
         }
 		speed = 1.5;
 		speed *= frametime;
@@ -568,7 +588,9 @@ void() Player_Animate =
 			self.frame = frameforname(self.modelindex, "Jump");
 			self.frame1time = 0;
 			self.anim_state = ANIM_JUMP;
+			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
+		speed = 1.25;
 		speed *= frametime;
 
 		if (self.frame1time >= duration - 0.1) // Hold final frame at end
@@ -686,6 +708,7 @@ void() Player_Animate =
             self.frame1time = 0;
             self.frame = frameforname(self.modelindex, "Climb");
             self.anim_state = ANIM_CLIMB;
+			self.anim_attacking = FALSE; // turn off attack animation flag
         }
 
         float skill_climb = getstatf(STAT_SKILL_CLIMB);

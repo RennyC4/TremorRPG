@@ -207,6 +207,8 @@ void() PlayerJump =
 
 	if (self.climbing)
 		return;
+	if (self.melee_finished > time)
+		return;
 	if (self.cast_finished > time)
 		return;
 	if (!(self.flags & FL_ONGROUND))
@@ -260,7 +262,7 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		self.stamina -= 20;
 
 		self.dodgedir = whichdir;
-		//print (ftos(self.dodgedir), "\n");
+		print (ftos(self.dodgedir), "\n");
 
 		self.godmode_finished = time + 0.3;
 		self.dodge_finished = time + 0.8;
@@ -734,8 +736,16 @@ void(float speed) Player_VelocityPush =
 		self.velocity = -v_right * speed;
 	else if (self.dodgedir == 2)
 		self.velocity = v_right * speed;
-	else
+	else if (self.dodgedir == 3)
 		self.velocity = -v_forward * speed;
+	else if (self.dodgedir == 4)
+		self.velocity = normalize((-v_right) + (-v_forward)) * speed;
+	else if (self.dodgedir == 5)
+		self.velocity = normalize((-v_right) + (v_forward)) * speed;
+	else if (self.dodgedir == 6)
+		self.velocity = normalize((v_right) + (-v_forward)) * speed;
+	else
+		self.velocity = normalize((v_right) + (v_forward)) * speed;
 
 	self.flags &= ~FL_ONGROUND;
 	self.flags &= ~FL_PARTIALGROUND;

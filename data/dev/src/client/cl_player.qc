@@ -634,11 +634,35 @@ void() Player_Think =
 	// dodge inputs
 	if (input_buttons & 2)
 	{
+		// lets do multi-angle rolls fist
+		if (button_left && button_down)
+		{
+			sendevent("PlayerDodge", "f", 4);
+			return;
+		}
+		if (button_left && button_up)
+		{
+			sendevent("PlayerDodge", "f", 5);
+			return;
+		}
+		if (button_right && button_down)
+		{
+			sendevent("PlayerDodge", "f", 6);
+			return;
+		}
+		if (button_right && button_up)
+		{
+			sendevent("PlayerDodge", "f", 7);
+			return;
+		}
+
+		// finish with direct angle roll checks
 		if (button_left)
 			sendevent("PlayerDodge", "f", 1);
 		if (button_right)
 			sendevent("PlayerDodge", "f", 2);
 		if (button_down)
 			sendevent("PlayerDodge", "f", 3);
+
 	}
 };
