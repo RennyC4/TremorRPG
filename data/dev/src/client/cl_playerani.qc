@@ -224,6 +224,18 @@ void() OtherPlayer_Anistate =
 		}
 	}
 
+	if (self.anistate == ANISTATE_BASH)
+	{
+		if (self.frame != frameforname(self.modelindex, "Bash"))
+		{
+			self.anim_attacking = FALSE; // turn off attack animation flag
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Bash");
+			self.anim_state = ANIM_BASH;
+			speed = 1.5;
+		}
+	}
+
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")

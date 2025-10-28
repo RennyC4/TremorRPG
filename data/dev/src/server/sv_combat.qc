@@ -83,6 +83,7 @@ void() DoAttack_ShieldBash =
 			//
 			if (trace_ent.stagger_finished < time)
 			{
+				trace_ent.anistate = ANISTATE_IMPACT;
 				trace_ent.stagger_finished = time + 1.5;
 				trace_ent.lockview_finished = time + 1.5;
 			}
@@ -103,6 +104,7 @@ void() DoAttack_ShieldBash =
 			pointparticles(PART_PARRY, trace_ent.origin + v_forward * 32 + v_up * trace_ent.view_ofs_z);
 
 			// apply effects
+			self.anistate = ANISTATE_IMPACT;
 			self.stagger_finished = time + 3.5;
 			self.lockview_finished = time + 3.5;
 			sound (self, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);

@@ -115,7 +115,6 @@ void() Monster_Animate =
 
 		self.frame1time += speed;
 		self.frame2time = self.frame1time;
-		print ("Monster doing it's thang\n");
 		return;
 	}
 	
