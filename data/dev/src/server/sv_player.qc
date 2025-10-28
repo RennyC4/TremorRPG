@@ -1018,6 +1018,11 @@ void() PlayerPostThink =
 
 	if (self.frags != self.level) // HACK: used to display level on the scoreboard
 		self.frags = self.level;
+	
+	if (self.pvp == 1)
+		self.dimension_hit = player_dimension_hit + 1;
+	else
+		self.dimension_hit = player_dimension_hit;
 
 	//
 	// velocity push on player: melee/dodges
