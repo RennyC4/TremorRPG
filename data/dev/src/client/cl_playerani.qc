@@ -280,11 +280,11 @@ void() Player_Animate =
 		speed = 1;
 		speed *= frametime;
 		
-		float frame_interval = 10 / 30; // 0.33s (30fps)
+		float frame_interval = 10 / 60; // 0.16s (60fps)
 
 		if (self.frame1time >= self.next_attack_time)
 		{
-			if (self.frame1time < 0.75)
+			if (!(self.flags & FL_ONGROUND))
 			{
 				if (lock_on_active)
 					sendevent("DoAttack_Melee", "v", lockon_angles);

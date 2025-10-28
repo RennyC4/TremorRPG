@@ -187,7 +187,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 			}
 		}
 
-		if (self.fall_maxspeed >= 100)
+		if (!(self.flags & FL_ONGROUND) && self.inair_count >= 15)
 			float jumpattack = TRUE;
 		else
 			jumpattack = FALSE;
@@ -285,7 +285,10 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 		if (!parry)
 		{
 			if (jumpattack)
+			{
+				damage += damage * 1.25; // damage multiplier
 				trace_ent.jumpattack_hit_finished = time + 2;
+			}
 
 			// adds an additional time on hit if someone is casting
 			if (trace_ent.cast_finished > time)

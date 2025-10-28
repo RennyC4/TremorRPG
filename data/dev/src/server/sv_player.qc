@@ -262,7 +262,7 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		self.stamina -= 20;
 
 		self.dodgedir = whichdir;
-		print (ftos(self.dodgedir), "\n");
+		//print (ftos(self.dodgedir), "\n");
 
 		self.godmode_finished = time + 0.3;
 		self.dodge_finished = time + 0.8;

@@ -208,9 +208,9 @@ void() monster_ai_move =
 	if (self.flags & FL_ONGROUND) // allow monsters to slide off stuff, this is a hack
 		self.flags &= ~FL_ONGROUND;
 
-	self.velocity = '0 0 0';
 	if (self.ai_mode == AI_RUNBACK) // monster is running back to origin
 	{
+		self.velocity = '0 0 0';
 		self.flags -= (self.flags & FL_ONGROUND);
 		vector forward = v_forward * 150;
 		self.velocity = forward;
