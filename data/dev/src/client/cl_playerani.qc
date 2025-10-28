@@ -374,7 +374,7 @@ void() Player_Animate =
 		
 		if (!self.attack_triggered)
 		{
-			if (self.frame1time >= duration * 0.5)
+			if (self.frame1time >= duration * 0.4)
 			{
 				if (lock_on_active)
 					sendevent("DoAttack_Melee", "v", lockon_angles);
