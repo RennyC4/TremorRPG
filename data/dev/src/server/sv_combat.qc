@@ -286,7 +286,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 		{
 			if (jumpattack)
 			{
-				damage += damage * 1.25; // damage multiplier
+				damage += damage * 1.20; // damage multiplier
 				trace_ent.jumpattack_hit_finished = time + 2;
 			}
 

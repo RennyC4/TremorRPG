@@ -584,7 +584,7 @@ void() Player_Think =
 				}
 				else if (stamina >= (attack_stamina - stamcalc))
 					can_attack = TRUE;
-				if (self.anistate == ANISTATE_DODGE) // May be safter to check ANISTATE
+				if (self.anistate == ANISTATE_DODGE || self.anistate == ANISTATE_STEPDODGE)
 					can_attack = FALSE;
 				if (self.attack_type == 4 && (!(self.flags & FL_ONGROUND))) // bow air check
 					can_attack = FALSE;
@@ -596,7 +596,7 @@ void() Player_Think =
 						sendevent("User_StartAttack", "");
 						if (self.health > 0 && !button4) // no attack animation if blocking
 						{
-							if (self.attack_type != 4)
+							if (self.attack_type != 4 && self.stepdodge_counter < time)
 								self.anim_attacking = TRUE;
 						}
 						self.attack_finished = time + attackspeed;
@@ -634,6 +634,13 @@ void() Player_Think =
 	// dodge inputs
 	if (input_buttons & 2)
 	{
+		// step dodge
+		if (!button_left && !button_right && !button_down && !button_up)
+		{
+			sendevent("PlayerDodge", "f", 8);
+			return;
+		}
+
 		// lets do multi-angle rolls fist
 		if (button_left && button_down)
 		{

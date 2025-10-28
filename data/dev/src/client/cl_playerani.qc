@@ -36,6 +36,9 @@
 #define ANIM_STRAFELEFT 	26
 #define ANIM_STRAFERIGHT 	28
 #define ANIM_BACKPEDAL		29
+#define ANIM_STEPDODGE		30
+#define ANIM_STEPCOUNTER	31
+
 
 //
 // Special animations sent from SSQC
@@ -188,6 +191,29 @@ void() OtherPlayer_Anistate =
 			speed = 1.5;
 		}
 	}
+
+	if (self.anistate == ANISTATE_STEPDODGE)
+	{
+		if (self.frame != frameforname(self.modelindex, "StepDodge"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "StepDodge");
+			self.anim_state = ANIM_STEPDODGE;
+			speed = 1.5;
+		}
+	}
+
+	if (self.anistate == ANISTATE_STEPCOUNTER)
+	{
+		if (self.frame != frameforname(self.modelindex, "StepCounter"))
+		{
+			self.anim_attacking = FALSE; // turn off attack animation flag
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "StepCounter");
+			self.anim_state = ANIM_STEPCOUNTER;
+		}
+	}
+
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
@@ -216,8 +242,10 @@ void() Skeleton_Animate =
 			makevectors([0, -45, 0]);
 		else if (self.dodgedir == 6)
 			makevectors([0, 135, 0]);
-		else
+		else if (self.dodgedir == 7)
 			makevectors([0, 45, 0]);
+		else
+			makevectors([0, 0, 0]); // step dodge
 		
 		skel_premul_bone(self.skeletonindex, skel_find_bone(self.skeletonindex, "mixamorig:Hips"), '0 0 0', v_forward, v_right, v_up);
 	}
@@ -306,6 +334,45 @@ void() Player_Animate =
 	}
 
 	// -----------------------------
+	// Step Counter Attack Animation
+	// -----------------------------
+	if (self.anistate == ANISTATE_STEPCOUNTER)
+	{
+		self.anim_attacking = FALSE; // turn off attack animation flag
+		if (self.frame != frameforname(self.modelindex, "StepCounter"))
+		{
+			self.attack_triggered = FALSE;
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "StepCounter");
+			self.anim_state = ANIM_STEPCOUNTER;
+		}
+
+		speed = 1;
+		speed *= frametime;
+		
+		if (!self.attack_triggered)
+		{
+			if (self.frame1time >= duration * 0.5)
+			{
+				if (lock_on_active)
+					sendevent("DoAttack_Melee", "v", lockon_angles);
+				else
+					sendevent("DoAttack_Melee", "v", [0,0,0]);
+				self.attack_triggered = TRUE;
+			}
+
+		}
+
+		// Hold final frame at end
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = duration - 0.1;
+		else
+			self.frame1time += speed;
+
+		return;
+	}
+
+	// -----------------------------
     // Archery Animation
     // -----------------------------
 	if (self.anistate == ANISTATE_ARCHERY)
@@ -368,6 +435,28 @@ void() Player_Animate =
 		return;
 	}
 	
+	// -----------------------------
+    // Step Dodge Animation
+    // -----------------------------
+	if (self.anistate == ANISTATE_STEPDODGE)
+	{
+		if (self.frame != frameforname(self.modelindex, "StepDodge"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "StepDodge");
+			self.anim_state = ANIM_STEPDODGE;
+			self.anim_attacking = FALSE; // turn off attack animation flag
+		}
+		speed = 1.5;
+		speed *= frametime;
+
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = duration - 0.1;
+		else
+			self.frame1time += speed;
+		return;
+	}
+
 	// -----------------------------
     // Drink Animation
     // -----------------------------
@@ -614,8 +703,8 @@ void() Player_Animate =
     // -----------------------------
     if (self.anim_attacking)
     {
-        if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH && self.anim_state != ANIM_SMASH)// && self.anim_state != ANIM_ARCHERY)
-        {
+		if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH && self.anim_state != ANIM_SMASH)// && self.anim_state != ANIM_ARCHERY)
+		{
 			if (!self.attack_type)
 			{
 				self.frame = frameforname(self.modelindex, "Punch");
@@ -629,20 +718,20 @@ void() Player_Animate =
 			else if (self.attack_type == 2)
 			{
 				self.frame = frameforname(self.modelindex, "Stab");
-	            self.anim_state = ANIM_STAB;
+				self.anim_state = ANIM_STAB;
 			}
 			else if (self.attack_type == 3)
 			{
 				self.frame = frameforname(self.modelindex, "Smash");
-	            self.anim_state = ANIM_SMASH;
+				self.anim_state = ANIM_SMASH;
 			}
-            self.frame1time = 0;
-            self.attack_triggered = FALSE;
-        }
+			self.frame1time = 0;
+			self.attack_triggered = FALSE;
+		}
 
-        // Adjust speed by attack stat
-        float attackspeed = getstatf(STAT_ATTACKSPEED);
-        if (attackspeed != 0 && self.anim_state != ANIM_ARCHERY)
+		// Adjust speed by attack stat
+		float attackspeed = getstatf(STAT_ATTACKSPEED);
+		if (attackspeed != 0 && self.anim_state != ANIM_ARCHERY)
 		{
 			if (!self.attack_type) // punch speed
 				speed /= attackspeed * 0.5;

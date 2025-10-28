@@ -1889,6 +1889,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float jumpattack_hit_finished; // prevent jump attack spam
 .float dodge_finished;
 .float godmode_finished;
+.float stepdodge_counter;
 
 // Animation States
 .float anistate;
@@ -1912,6 +1913,8 @@ const float ANISTATE_ARCHERY = 16;
 const float ANISTATE_BLOCK = 17;
 const float ANISTATE_AIRMELEE = 18;
 const float ANISTATE_DODGE = 19;
+const float ANISTATE_STEPDODGE = 20;
+const float ANISTATE_STEPCOUNTER = 21;
 
 //.float armorvalue; (this is already defined)
 

@@ -2348,6 +2348,7 @@ float LockOn_CycleToggle; // same
 .float attack_speed;
 .float next_attack_time;
 .float dodgedir;
+.float stepdodge_counter;
 
 // Animation States
 .float anistate;
@@ -2371,3 +2372,5 @@ const float ANISTATE_ARCHERY = 16;
 const float ANISTATE_BLOCK = 17;
 const float ANISTATE_AIRMELEE = 18;
 const float ANISTATE_DODGE = 19;
+const float ANISTATE_STEPDODGE = 20;
+const float ANISTATE_STEPCOUNTER = 21;

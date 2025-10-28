@@ -445,6 +445,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.blocking = readbyte();
 		self.crouch = readbyte();
 		self.dodgedir = readbyte();
+		self.stepdodge_counter = readbyte();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);
