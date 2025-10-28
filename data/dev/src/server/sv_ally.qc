@@ -14,8 +14,8 @@ void() ally_respawn =
 
 	setorigin (self, self.saveorigin); // respawn at initial spawn spot
 
-	//self.think = ally_ai_think;
-	//self.nextthink = time + 0.1;
+	self.think = ally_ai_think;
+	self.nextthink = time + 0.1;
 };
 
 void() set_ally =
@@ -23,7 +23,6 @@ void() set_ally =
 	if (self.model)
 		precache_model(self.model); // model
 
-	/*
 	if (self.noise)
 		precache_sound(self.noise); // sight sound
 	if (self.noise1)
@@ -32,7 +31,6 @@ void() set_ally =
 		precache_sound(self.noise2); // pain sound
 	if (self.noise3)
 		precache_sound(self.noise3); // death sound
-	*/
 
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_STEP;
@@ -45,7 +43,7 @@ void() set_ally =
 	self.radius_candamage = TRUE; // can be affected by radius damage
 
 	//self.flags |= FL_MONSTER;
-	//self.th_die = ally_death;
+	self.th_die = ally_death;
 
 	if (!self.sight_range)
 		self.sight_range = 500;
@@ -64,8 +62,10 @@ void() set_ally =
 	self.flags |= FL_FINDABLE_NONSOLID;
 	self.frame = 1; // Animation will be done CSQC-side
 
-	//monster_ai_spawnrunback();
-	//self.think = monster_ai_think;
-	//self.nextthink = time + 0.1 + random()*1; // stagger start think
+	ally_ai_spawnrunback();
+
+	self.think = ally_ai_think;
+	self.nextthink = time + 0.1 + random()*1; // stagger start think
+
 	//self.SendEntity = Monster_SendEntity;
 };

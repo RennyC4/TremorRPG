@@ -90,7 +90,7 @@ void() npc_ai_think =
 {
 	for (entity b = world; (b = find(b, classname, "player"));) // search for customer nearby
 	{
-		if (vlen(b.origin - self.origin) < self.sight_range)
+		if (vlen(b.origin - self.origin) < self.sight_range && visible(b))
 			self.goalentity = b;
 		else
 			self.goalentity = world;
