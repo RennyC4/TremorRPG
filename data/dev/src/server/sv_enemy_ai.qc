@@ -329,42 +329,60 @@ void() monster_ai_think =
 	}
 	else // AI is jogging back close to spawn spot
 	{
-		if (b > 50)
+		vector target = self.ai_runback_temp.origin;
+		float dist = vlen(self.origin - target);
+
+		if (dist > 50)
 		{
 			float base_speed = 50; // min speed
-			float scale = 2; // speed vs dist
+			float scale = 2;       // speed vs distance
 
-			float dz = self.ai_runback_temp.origin_z - self.origin_z;
-			if (dz != 0) 
-			{
-				float speed = base_speed + fabs(dz) * scale; // speed vs dist
-				float step = frametime * speed;
+			// move horizontally toward spawn
+			vector flat_target = [target_x, target_y, self.origin_z];
+			vector dir = normalize(flat_target - self.origin);
+			self.velocity = dir * (base_speed + dist * 0.5);
 
-				if (fabs(dz) < step)
-					self.origin_z = self.ai_runback_temp.origin_z; // snap when close
+			// smooth vertical alignment
+			float dz = target_z - self.origin_z;
+			float step = frametime * (base_speed + fabs(dz) * scale);
+			if (fabs(dz) > 1)
+				self.origin_z += step * (dz > 0 ? 1 : -1);
+
+			// terrain hugging
+			vector start = self.origin + '0 0 16';   // start slightly above
+			vector end   = self.origin - '0 0 128';  // trace down a bit
+			tracebox(start, self.mins, self.maxs, end, MOVE_NORMAL, self);
+
+			if (trace_fraction < 1)
+			{ // snap to floor, but not instantly
+				float ground_z = trace_endpos_z;
+				float diff = ground_z - self.origin_z;
+				if (fabs(diff) > 2)
+					self.origin_z += diff * 0.25; // smooth correction
 				else
-					self.origin_z += step * (dz > 0 ? 1 : -1);
+					self.origin_z = ground_z; // snap if very close
 			}
 
-			// ghost effect when moving back
+			setorigin(self, self.origin);
+
+			// cosmetics & logic
 			self.alpha = 0.25;
 			self.effects |= EF_ADDITIVE;
 
 			self.enemy = world;
 			self.goalentity = self.ai_runback_temp;
-			self.movetype = MOVETYPE_NOCLIP; // cheating but eh
+			self.movetype = MOVETYPE_NOCLIP;
+
 			if (self.health != self.max_health)
-				self.health = self.max_health; // restore health on trip back
+				self.health = self.max_health;
 		}
-		else
+		else // reached spawn
 		{
 			tracebox(self.saveorigin, self.mins, self.maxs, self.saveorigin, MOVE_NORMAL, self);
-
-			// blocked
 			if (trace_startsolid || trace_fraction < 1)
 			{
 				self.nextthink = time + 1;
-				self.think = monster_ai_think; // try again
+				self.think = monster_ai_think;
 				return;
 			}
 
@@ -375,9 +393,9 @@ void() monster_ai_think =
 			self.ai_mode = AI_IDLE;
 			self.anistate = ANISTATE_NONE;
 
-			// remove ghost effect
 			self.alpha = 1;
 			self.effects &= ~EF_ADDITIVE;
+			self.velocity = '0 0 0';
 		}
 	}
 
