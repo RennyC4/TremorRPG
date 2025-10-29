@@ -467,18 +467,25 @@ void() CSEv_User_TogglePVP_ =
 		sprint(self, PRINT_HIGH, "PVP: ^8Unavailable\n");
 		return;
 	}
-	else if (self.pvp == 1)
+
+	// Disable PVP
+	if (self.pvp == 1)
 	{
 		self.pvp = 2;
 		sprint(self, PRINT_HIGH, "PVP: ^2Disabled\n");
 		return;
+	}
 
-	}
-	else
+	tracebox(self.origin, self.mins, self.maxs, self.origin, MOVE_NORMAL, self);
+
+	if (trace_startsolid)
 	{
-		self.pvp = 1;
-		sprint(self, PRINT_HIGH, "PVP: ^1Enabled\n");
+		sprint(self, PRINT_HIGH, "PVP: ^3Can't enable — too close to another player!\n");
+		return;
 	}
+
+	self.pvp = 1;
+	sprint(self, PRINT_HIGH, "PVP: ^1Enabled\n");
 };
 
 void() CheckImpulses =
