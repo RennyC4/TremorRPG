@@ -713,7 +713,7 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
         if (!targ.takedamage || targ.health <= 0 || targ.deadflag != DEAD_NO)
             continue;
 		if (targ.jumpattack_hit_finished > time)
-			return;
+			continue;
 
         // Prevent duplicate hits per swing
         if (targ.last_hit_attacker == attacker && targ.last_hit_attackid == attacker.attack_id)
