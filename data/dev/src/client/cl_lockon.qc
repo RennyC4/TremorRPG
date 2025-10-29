@@ -13,6 +13,20 @@ vector lockon_angles;
 // Utility
 float(vector a, vector b) vdot = { return a_x * b_x + a_y * b_y + a_z * b_z; };
 
+float LerpYaw(float current, float target, float smoothness, float dt)
+{
+    float delta = target - current;
+
+    // normalize delta to -180..180
+    while (delta > 180)  delta -= 360;
+    while (delta < -180) delta += 360;
+
+    // soft frame-rate independent alpha
+    float alpha = smoothness * dt / (1 + smoothness * dt);
+
+    return current + delta * alpha;
+}
+
 // ============================
 // VISIBILITY CHECK
 // ============================
@@ -84,71 +98,32 @@ void() CSQC_LockOn_Update =
     float player_health = getstatf(STAT_HEALTH);
     float atbonfire = getstatf(STAT_BONFIRE);
 
-    // Smooth follow target
     if (lock_on_active && lock_on_target && lock_on_target.health > 0)
     {
-        if (!lockon_focus)
-        {
-            lockon_focus = spawn();
-            lockon_focus.origin = lock_on_target.origin + lock_on_target.view_ofs;
-        }
+        vector dir = normalize(lock_on_target.origin - vPlayerOrigin);
+        vector target_ang = vectoangles(dir);
 
-        // Adjust smoothing speed by distance (optional)
-        float dist = vlen(lock_on_target.origin - vPlayerOrigin);
-        float smooth = lockon_smoothness;
-        if (dist < 800)
-            smooth = 12;
-        else if (dist > 1500)
-            smooth = 6;
+        // smooth yaw (Y axis) with wrap-around & soft frame-rate adjustment
+        lockon_angles_y = LerpYaw(lockon_angles_y, target_ang_y, lockon_smoothness, frametime);
 
-        // Smooth position toward target
-        vector target_pos = lock_on_target.origin + lock_on_target.view_ofs;
-        vector diff = target_pos - lockon_focus.origin;
-        lockon_focus.origin += diff * frametime * smooth;
+        // optional: pitch/roll instantaneous
+        lockon_angles_x = target_ang_x;
+        lockon_angles_z = target_ang_z;
 
-        // ---------------------------
-        // SMOOTH HORIZONTAL ROTATION ONLY
-        // ---------------------------
-        vector dir = lockon_focus.origin - vPlayerOrigin;
+        vector new_angles = [lockon_angles_x, lockon_angles_y, lockon_angles_z];
 
-        // Compute yaw only
-        float yaw_target = vectoyaw([dir_x, dir_y, 0]);
-
-        // Normalize delta to avoid wrap-around jitter
-        float delta_y = yaw_target - lockon_angles_y;
-        if (delta_y > 180) delta_y -= 360;
-        else if (delta_y < -180) delta_y += 360;
-
-        // Smooth interpolation for yaw
-        lockon_angles_y += delta_y * frametime * (smooth * 0.75);
-
-        // Apply yaw; leave pitch (X) alone
-		setproperty(VF_ANGLES, lockon_angles);
-		setproperty(VF_CL_VIEWANGLES_Y, lockon_angles_y);
+        setproperty(VF_ANGLES, new_angles);
+        setproperty(VF_CL_VIEWANGLES_Y, lockon_angles_y);
     }
 
-    // Auto-unlock or cleanup
-    if (lock_on_active && (!lock_on_target
-        || player_health <= 0
-        || atbonfire
-        || lock_on_target.health <= 0
-        || vlen(lock_on_target.origin - vPlayerOrigin) > LOCK_ON_DIST
-        || lock_on_target.ai_mode == AI_RUNBACK))
+    // auto unlock
+    if (lock_on_active && (!lock_on_target || player_health <= 0 || atbonfire || lock_on_target.health <= 0 || vlen(lock_on_target.origin - vPlayerOrigin) > LOCK_ON_DIST || lock_on_target.ai_mode == AI_RUNBACK))
     {
         lock_on_target = world;
         lock_on_active = FALSE;
-
-        if (lockon_focus)
-        {
-            remove(lockon_focus);
-            lockon_focus = world;
-        }
-
-        // Keep current pitch as-is; update yaw
         sendevent("PitchUpdate", "v", lockon_angles);
     }
 };
-
 
 // ============================
 // LOCK-ON TOGGLE
