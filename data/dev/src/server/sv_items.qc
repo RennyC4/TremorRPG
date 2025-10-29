@@ -131,9 +131,7 @@ void(float id, string itemname) Player_UseItem =
 {
 	if (id == 0) // health potion
 	{
-		self.crouch = FALSE; // remove crouching if enabled
-		setsize(self, [-16, -16, 0], [16, 16, 56]);
-		self.view_ofs = [0, 0, 48];
+		Player_RemoveCrouch(); // remove crouch
 		self.alpha = 1;
 
 		self.healthpot_heal_rate = self.max_health * 0.01; // heal 1% of max health
@@ -168,9 +166,7 @@ void(float id, string itemname) Player_UseItem =
 	}
 	else if (id == 2) // mana potion
 	{
-		self.crouch = FALSE; // remove crouching if enabled
-		setsize(self, [-16, -16, 0], [16, 16, 56]);
-		self.view_ofs = [0, 0, 48];
+		Player_RemoveCrouch(); // remove crouch
 		self.alpha = 1;
 
 		self.manapot_heal_rate = self.max_mana * 0.01; // heal 1% of max mana

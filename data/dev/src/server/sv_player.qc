@@ -198,6 +198,22 @@ void() PlayerClimb =
 	}
 };
 
+void() Player_RemoveCrouch =
+{
+	vector from = self.origin;
+	vector mins = [-16, -16, 0];
+	vector maxs = [16, 16, 56]; // standing bbox
+
+	tracebox(from, mins, maxs, from, MOVE_NOMONSTERS, self);
+
+	if (trace_fraction) // trace is clear
+	{
+		self.crouch = FALSE;
+		self.view_ofs = [0, 0, 48];
+		setsize (self, mins, maxs);
+	}
+};
+
 void() PlayerJump =
 {
 	if (self.bonfire)
@@ -224,6 +240,8 @@ void() PlayerJump =
 	float jumpcalc = self.skill_acrobatic * 1.1; // skill calculation
 	if (self.stamina > (50 - stamcalc))
 	{
+		Player_RemoveCrouch(); // remove crouch
+
 		self.velocity_z += (270 + jumpcalc);
 		self.weaponframe = 0;
 		self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
@@ -233,10 +251,6 @@ void() PlayerJump =
 		self.stamina -= (50 - stamcalc);
 		sound (self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
 		
-		// remove crouch
-		self.crouch = FALSE;
-		setsize(self, [-16, -16, 0], [16, 16, 56]);
-		self.view_ofs = [0, 0, 48];
 	}
 };
 
@@ -284,10 +298,7 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		self.velocitypush_finished = self.dodge_finished;
 		self.lockview_finished = self.dodge_finished;
 
-		// remove crouch
-		self.crouch = FALSE;
-		setsize(self, [-16, -16, 0], [16, 16, 56]);
-		self.view_ofs = [0, 0, 48];
+		Player_RemoveCrouch(); // remove crouch
 	}
 };
 
@@ -327,18 +338,14 @@ void() CSEv_PlayerCrouch =
 	if (self.bonfire)
 		return;
 
-	if (!self.crouch)
+	if (!self.crouch) // --- Entering crouch ---
 	{
 		setsize(self, [-16, -16, 0], [16, 16, 28]);
 		self.view_ofs = [0, 0, 24];
 		self.crouch = TRUE;
 	}
 	else
-	{
-		self.crouch = FALSE;
-		setsize(self, [-16, -16, 0], [16, 16, 56]);
-		self.view_ofs = [0, 0, 48];
-	}
+		Player_RemoveCrouch();
 };
 
 void() SV_RunClientCommand =
@@ -507,9 +514,7 @@ void() Player_Use =
 {
 	if (self.bonfire && self.bonfire_finished < time)
 	{
-		self.crouch = FALSE;
-		setsize(self, [-16, -16, 0], [16, 16, 56]);
-		self.view_ofs = [0, 0, 48];
+		Player_RemoveCrouch(); // remove crouch
 		self.movetype = MOVETYPE_WALK; // start movement
 
 		string eventlog_print = "^5You stand back up ...\n";
@@ -832,10 +837,7 @@ void() CSEv_User_StartAttack_ =
 							self.anistate = ANISTATE_STEPCOUNTER;
 					}
 
-					// reset crouch
-					self.crouch = FALSE;
-					setsize(self, [-16, -16, 0], [16, 16, 56]);
-					self.view_ofs = [0, 0, 48];
+					Player_RemoveCrouch(); // remove crouch
 
 					if (!nobow)
 					{
