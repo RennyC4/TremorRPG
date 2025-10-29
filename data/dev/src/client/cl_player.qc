@@ -281,6 +281,9 @@ void() Skeleton_ObjectDraw =
 		}
 		else
 		{
+			org = gettaginfo(self, gettagindex(self, "mixamorig:Spine2"));
+			offset = '0 0 0';  // offset relative to the bone
+
 			//
 			// Models to draw
 			//
@@ -289,14 +292,18 @@ void() Skeleton_ObjectDraw =
 			{
 				// Shields
 				if (self.armorname == "Padded Armor")
+				{
 					setmodel(self.armor_vfx, "models/armor0.glb");
+					if (gender == "Female")
+					{
+						self.armor_vfx.scale = 0.88;
+						offset = '0 3 3';  // offset relative to the bone
+					}
+				}
 			}
 			else
 				setmodel(self.armor_vfx, __NULL__);
 		}
-
-		org = gettaginfo(self, gettagindex(self, "mixamorig:Spine2"));
-		offset = '0 0 0';  // offset relative to the bone
 
 		// local offset into world space
 		org += v_forward * offset_x;
