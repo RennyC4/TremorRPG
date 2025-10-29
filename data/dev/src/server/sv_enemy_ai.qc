@@ -86,6 +86,8 @@ void() PitchToTarget =
 	if (!self.enemy)
 		return;
 
+	makevectors(self.angles);
+
 	vector dir_to_enemy = normalize(self.enemy.origin - self.origin);
 	vector forward = v_forward;
 
@@ -125,17 +127,24 @@ float(entity enemy, entity peaking) infront_stealth =
 // returns the range categorization of an entity reletive to self
 float(entity targ) range =
 {
-	float r = vlen(self.origin - targ.origin);
+    float r = vlen(self.origin - targ.origin);
 
-	if (r <= 40)
-		return RANGE_CLOSE;
-	else if (r > 40 && r <= 75)
-		return RANGE_MELEE;
-	else if (r > 75 && r <= 85)
-		return RANGE_NEAR;
-	else if (r > 85 && r < 200)
-		return RANGE_MID;
-	return RANGE_FAR;
+    // Use the monster's attack reach directly
+    float melee_len = self.attack_length;
+
+    // Fallback for monsters that don't define attack_length
+    if (!melee_len || melee_len <= 0)
+        melee_len = 64;
+
+    if (r <= 40)
+        return RANGE_CLOSE;
+    else if (r > 40 && r <= melee_len)
+        return RANGE_MELEE;
+    else if (r > melee_len && r <= melee_len + 20)
+        return RANGE_NEAR;
+    else if (r > melee_len + 20 && r < 200)
+        return RANGE_MID;
+    return RANGE_FAR;
 };
 
 // this visible function returns TRUE even if sight line crossed contents (above and below water)
@@ -204,18 +213,20 @@ void() monster_ai_move =
 			return; // don't move
 	}
 
-	movetogoal(self.speed);
+	if (self.goalentity)
+		movetogoal(self.speed);
 
 	if (self.flags & FL_ONGROUND) // allow monsters to slide off stuff, this is considered a hack
 		self.flags &= ~FL_ONGROUND;
 
+	/*
 	if (self.ai_mode == AI_RUNBACK) // monster is running back to origin
 	{
 		self.velocity = '0 0 0';
-		self.flags -= (self.flags & FL_ONGROUND);
+		self.flags &= ~FL_ONGROUND;
 		vector forward = v_forward * 150;
 		self.velocity = forward;
-	}
+	}*/
 };
 
 void() monster_ai_spawnrunback =
@@ -441,7 +452,9 @@ void() monster_ai_think =
 				// Melee attack
 				else
 				{
-					if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
+					//if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
+					float dist = vlen(self.enemy.origin - self.origin);
+					if (dist <= self.attack_length)
 					{
 						if (!self.enemy.incombat)
 						{
@@ -455,6 +468,11 @@ void() monster_ai_think =
 					}
 					else
 					{
+						if (!self.enemy.incombat)
+						{
+							self.enemy.incombat = TRUE;
+							self.enemy.incombat_finished = time + 15;
+						}
 						self.ai_mode = AI_CHASE;
 						self.anistate = ANISTATE_RUN;
 					}
