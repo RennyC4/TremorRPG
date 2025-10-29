@@ -10,6 +10,7 @@ void() Skeleton_Animate;
 .entity weapon_vfx;
 .entity offhand_vfx;
 .entity arrow_vfx;
+.entity armor_vfx;
 
 //
 // Player skeleton attach objects
@@ -77,7 +78,10 @@ void() Skeleton_ObjectDraw =
 		self.lantern_vfx = world;
 	}
 
+	//
 	// draw weapon
+	//
+
 	if (self.main_hand != "" && self.main_hand != "Unarmed")
 	{
 		if (!self.weapon_vfx)
@@ -197,7 +201,10 @@ void() Skeleton_ObjectDraw =
 		self.weapon_vfx = world;
 	}
 
+	//
 	// draw offhand
+	//
+
 	if (self.off_hand != "" && self.off_hand != "Empty")
 	{
 		if (!self.offhand_vfx)
@@ -258,6 +265,85 @@ void() Skeleton_ObjectDraw =
 	{
 		remove(self.offhand_vfx);
 		self.offhand_vfx = world;
+	}
+
+	//
+	// Draw or update armor
+	//
+
+	if (self.armorname != "" && self.armorname != "Plain Clothes")
+	{
+		if (!self.armor_vfx)
+		{
+			self.armor_vfx = spawn();
+			self.armor_vfx.owner = self;
+			self.armor_vfx.drawmask = MASK_VIEWMODEL;
+		}
+
+		string desired_model = __NULL__;
+		vector desired_offset = [0, 0, 0];
+		float desired_scale = 1;
+		float desired_fatness = 0;
+
+		if (self.armorname == "Padded Armor")
+		{
+			desired_offset = [0, 0, 0]; // local-space offset
+			desired_scale = 1;
+			desired_model = "models/armor0.glb";
+		}
+
+		if (self.armor_vfx.model != desired_model)
+		{
+			setmodel(self.armor_vfx, desired_model);
+
+			if (self.armor_vfx.skeletonindex)
+				skel_delete(self.armor_vfx.skeletonindex);
+
+			if (desired_model != __NULL__)
+				self.armor_vfx.skeletonindex = skel_create(self.armor_vfx.modelindex);
+		}
+
+		if (self.armor_vfx.skeletonindex && self.skeletonindex)
+			skel_copybones(self.armor_vfx.skeletonindex, self.skeletonindex, 0, 0);
+
+		// local → world transform
+		makevectors(self.angles);
+		vector world_offset = 
+		v_forward * desired_offset_x +
+		v_right   * desired_offset_y +
+		v_up      * desired_offset_z;
+
+		// Apply offset and rotation
+		self.armor_vfx.scale = desired_scale;
+		self.armor_vfx.fatness = desired_fatness;
+		self.armor_vfx.angles = self.angles;
+		setorigin(self.armor_vfx, self.origin + world_offset);
+
+		// prevent player model intrusion
+		if (self.entnum == player_localentnum)
+		{
+			if (!camera_mode && thirdcam_dist < 30)
+				self.armor_vfx.renderflags |= RF_EXTERNALMODEL; // don't show armor in first-person
+			else
+				self.armor_vfx.renderflags &= ~RF_EXTERNALMODEL;
+		}
+		
+		// Handle transparency / crouch
+		if (self.crouch)
+		{
+			self.armor_vfx.effects = self.effects;
+			self.armor_vfx.alpha = self.alpha;
+		}
+		else
+			self.armor_vfx.effects = 0;
+	}
+	else if (self.armor_vfx)
+	{
+		if (self.armor_vfx.skeletonindex)
+			skel_delete(self.armor_vfx.skeletonindex);
+
+		remove(self.armor_vfx);
+		self.armor_vfx = world;
 	}
 };
 

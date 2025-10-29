@@ -2349,6 +2349,7 @@ float LockOn_CycleToggle; // same
 .float next_attack_time;
 .float dodgedir;
 .float stepdodge_counter;
+.string armorname;
 
 // Animation States
 .float anistate;

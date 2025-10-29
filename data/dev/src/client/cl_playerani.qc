@@ -268,7 +268,7 @@ void() Skeleton_Animate =
 			makevectors([0, 45, 0]);
 		else
 			makevectors([0, 0, 0]); // step dodge
-		
+
 		skel_premul_bone(self.skeletonindex, skel_find_bone(self.skeletonindex, "mixamorig:Hips"), '0 0 0', v_forward, v_right, v_up);
 	}
 };

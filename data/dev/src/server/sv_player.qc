@@ -1376,6 +1376,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteByte(MSG_ENTITY, self.crouch);
 	WriteByte(MSG_ENTITY, self.dodgedir);
 	WriteByte(MSG_ENTITY, self.stepdodge_counter);
+	WriteString(MSG_ENTITY, self.armorname);
 	
 	return TRUE;
 };

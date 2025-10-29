@@ -446,6 +446,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.crouch = readbyte();
 		self.dodgedir = readbyte();
 		self.stepdodge_counter = readbyte();
+		self.armorname = readstring();
 
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		setorigin(self, self.origin);
