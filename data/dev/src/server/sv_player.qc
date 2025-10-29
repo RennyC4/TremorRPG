@@ -845,7 +845,8 @@ void() CSEv_User_StartAttack_ =
 							self.anistate = ANISTATE_STEPCOUNTER;
 					}
 
-					Player_RemoveCrouch(); // remove crouch
+					// Disabled as it interferes with stealth attacks
+					//Player_RemoveCrouch();
 
 					if (!nobow)
 					{
