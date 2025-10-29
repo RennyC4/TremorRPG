@@ -1,5 +1,5 @@
 // ============================
-// CONFIG
+// Lock On
 // ============================
 const float LOCK_ON_FOV  = 0.86;
 const float LOCK_ON_DIST = 2000;
@@ -93,35 +93,74 @@ void(vector where) CSQC_LockOn_Plaques =
 		drawpic(target_coord, "progs/targetdot.spr_0", [64,64], '1 1 1', 1, 0);
 };
 
+// =======================================
+// LOCKON FOCUS FOLLOW ENTITY
+// =======================================
+void() CSQC_LockOn_Focus_Update =
+{
+	if (!lock_on_active || !lock_on_target || lock_on_target.health <= 0)
+		return;
+
+	if (!lockon_focus)
+		lockon_focus = spawn();
+
+	vector desired_pos = lock_on_target.origin + lock_on_target.view_ofs;
+	vector current_pos = lockon_focus.origin;
+
+	// smooth positional lerp for focus
+	float dt = frametime;
+	float focus_speed = 10; // adjust for snappiness
+	vector new_pos = current_pos + (desired_pos - current_pos) * min(1, focus_speed * dt);
+
+	lockon_focus.origin = new_pos;
+};
+
 void() CSQC_LockOn_Update =
 {
     float player_health = getstatf(STAT_HEALTH);
     float atbonfire = getstatf(STAT_BONFIRE);
 
+    // --- Update smooth follow position ---
+    CSQC_LockOn_Focus_Update();
+
     if (lock_on_active && lock_on_target && lock_on_target.health > 0)
     {
-        vector dir = normalize(lock_on_target.origin - vPlayerOrigin);
-        vector target_ang = vectoangles(dir);
+		if (lockon_focus) // use smoothed focus entity, not target directly
+            vector dir = normalize(lockon_focus.origin - vPlayerOrigin);
+        else
+            dir = normalize(lock_on_target.origin - vPlayerOrigin);
 
-        // smooth yaw (Y axis) with wrap-around & soft frame-rate adjustment
+		vector dir2 = normalize(lock_on_target.origin - vPlayerOrigin);
+
+        vector target_ang = vectoangles(dir);
+		vector target_angx = vectoangles(dir2);
+
+        // only yaw is smoothed
         lockon_angles_y = LerpYaw(lockon_angles_y, target_ang_y, lockon_smoothness, frametime);
 
-        // optional: pitch/roll instantaneous
-        lockon_angles_x = target_ang_x;
+        // keep pitch/roll instantaneous
+		lockon_angles_x = target_angx_x;
         lockon_angles_z = target_ang_z;
 
-        vector new_angles = [lockon_angles_x, lockon_angles_y, lockon_angles_z];
+        vector new_angles = [target_angx_x, lockon_angles_y, 0];
 
         setproperty(VF_ANGLES, new_angles);
         setproperty(VF_CL_VIEWANGLES_Y, lockon_angles_y);
     }
 
-    // auto unlock
-    if (lock_on_active && (!lock_on_target || player_health <= 0 || atbonfire || lock_on_target.health <= 0 || vlen(lock_on_target.origin - vPlayerOrigin) > LOCK_ON_DIST || lock_on_target.ai_mode == AI_RUNBACK))
+    // --- Auto unlock check (unchanged) ---
+    if (lock_on_active && (!lock_on_target || player_health <= 0 || atbonfire ||
+        lock_on_target.health <= 0 || vlen(lock_on_target.origin - vPlayerOrigin) > LOCK_ON_DIST ||
+        lock_on_target.ai_mode == AI_RUNBACK))
     {
+        sendevent("PitchUpdate", "v", lockon_angles);
         lock_on_target = world;
         lock_on_active = FALSE;
-        sendevent("PitchUpdate", "v", lockon_angles);
+        if (lockon_focus) 
+		{
+			remove(lockon_focus);
+			lockon_focus = world;
+		}
     }
 };
 

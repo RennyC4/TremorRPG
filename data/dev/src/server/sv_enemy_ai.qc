@@ -211,7 +211,7 @@ void() monster_ai_move =
 
 	if (self.ai_mode == AI_RUNBACK) // monster is running back to origin
 	{
-		//self.velocity = '0 0 0';
+		self.velocity = '0 0 0';
 		self.flags -= (self.flags & FL_ONGROUND);
 		vector forward = v_forward * 150;
 		self.velocity = forward;

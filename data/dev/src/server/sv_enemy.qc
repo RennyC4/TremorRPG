@@ -95,6 +95,7 @@ void() set_monster =
 	if (!self.attack_length)
 		self.attack_length = 64;
 
+	makevectors(self.angles);
 	self.saveorigin = self.origin + v_up * 5; // stash initial spawn spot
 
 	setmodel(self, self.model);
