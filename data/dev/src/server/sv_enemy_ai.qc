@@ -205,12 +205,13 @@ void() monster_ai_move =
 	}
 
 	movetogoal(self.speed);
-	if (self.flags & FL_ONGROUND) // allow monsters to slide off stuff, this is a hack
+
+	if (self.flags & FL_ONGROUND) // allow monsters to slide off stuff, this is considered a hack
 		self.flags &= ~FL_ONGROUND;
 
 	if (self.ai_mode == AI_RUNBACK) // monster is running back to origin
 	{
-		self.velocity = '0 0 0';
+		//self.velocity = '0 0 0';
 		self.flags -= (self.flags & FL_ONGROUND);
 		vector forward = v_forward * 150;
 		self.velocity = forward;
@@ -471,9 +472,13 @@ void() monster_ai_think =
 	{
 		self.angles_x = 0;
 		self.oldenemy = self.enemy; // stash last killed or lost to bonfire
-		self.enemy = self.goalentity = world;
-		self.ai_mode = AI_IDLE;
-		self.anistate = ANISTATE_NONE;
+		self.goalentity = self.ai_runback_temp;
+		if (!self.goalentity)
+			print ("error in monster ai\n");
+
+		self.enemy = world;
+		self.ai_mode = AI_RUNBACK;
+		self.anistate = ANISTATE_RUN;
 	}
 
 	// Debugging

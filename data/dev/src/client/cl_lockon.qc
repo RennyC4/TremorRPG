@@ -7,7 +7,7 @@ const float LOCK_ON_DIST = 2000;
 float lock_on_active;
 entity lock_on_target;
 entity lockon_focus; // smoothed tracking entity
-float lockon_smoothness = 8; // higher = faster snapping
+float lockon_smoothness = 5; // higher = faster snapping
 vector lockon_angles;
 
 // Utility

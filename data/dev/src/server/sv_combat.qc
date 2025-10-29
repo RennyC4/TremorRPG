@@ -11,13 +11,14 @@ float(entity player, string itemname) HasItem;
 // returns 1 if the entity is in front (in sight) of self, used for blocking
 float(entity enemy, entity defender) check_block =
 {
-	makevectors (defender.angles);
-	vector vec = normalize (enemy.origin - defender.origin);
-	float dot = vec * v_forward;
+    makevectors (defender.angles);
+    vector vec = normalize (enemy.origin - defender.origin);
+	vec_x = vec_z = 0;
+    float dot = vec * v_forward;
 
-	if (dot > 0.7)
-		return TRUE;
-	return FALSE;
+    if (dot > 0.7)
+        return TRUE;
+    return FALSE;
 };
 
 // return 1 if monster or player are behind each other using findfloat
@@ -307,7 +308,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 			
 			damage = ceil(damage); // round up final damage output
 			if (self.attack_type == 1) // Slashing uses radius for cleave
-				DoRadiusDamage(self, self.origin + v_forward * 48, self.attack_length * 1.40, damage, FALSE, FALSE);
+				DoRadiusDamage(self, self.origin + v_forward * 42, self.attack_length * 1.4, damage, FALSE, FALSE);
 			else
 			{
 				DoDamage(trace_ent, self, damage, FALSE);
@@ -374,6 +375,7 @@ void() arrow_think =
 void() arrow_touch =
 {
 	float parry = FALSE;
+	makevectors(self.angles);
 
 	if (other != self.owner && other.takedamage && other.health > 0 && other.deadflag == DEAD_NO && other.godmode_finished < time)
 	{
@@ -396,10 +398,12 @@ void() arrow_touch =
 			parry = TRUE;
 
 		// --- Blocking ---
-		if (check_block(self, other) && other.blocking)
+		self.angles_x = self.angles_z = 0; // delete angles before check_block is ran
+		if (check_block(self.owner, other) && other.blocking)
 		{
 			float stamcalc_block = 20 - (other.skill_endurance * 0.015);
 
+			makevectors(other.angles);
 			// --- Regular Block ---
 			if (other.parry_finished < time)
 			{
@@ -443,7 +447,8 @@ void() arrow_touch =
 
 				string eventlog_print = "^2Successful parry!";
 				stuffcmd(other, sprintf("conecho event %s\n", eventlog_print));
-
+				
+				pointparticles(PART_PARRY, other.origin + v_forward * 32 + v_up * other.view_ofs_z);
 				other.melee_finished = time + 0.75;
 				other.anistate = ANISTATE_PARRY;
 			}
@@ -457,7 +462,7 @@ void() arrow_touch =
 			damage -= ceil(other.armorvalue);
 
 			// If still blocking and block was not handled, apply minor block reduction
-			if (check_block(self, other) && other.blocking)
+			if (check_block(self.owner, other) && other.blocking)
 				damage -= ceil(other.blockvalue);
 
 			damage = ceil(max(damage, 1)); // never deal 0 damage
@@ -494,6 +499,7 @@ void(vector ang) CSEv_DoAttack_Arrow_v =
 	arrow.owner = self;
 	arrow.movetype = MOVETYPE_TOSS;
 	arrow.solid = SOLID_BBOX;
+	arrow.classname = "projectile";
 	arrow.hitcontentsmaski = CONTENTBITS_POINTSOLID;
 
 	if (self.flags & FL_CLIENT)

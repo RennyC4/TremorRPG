@@ -304,21 +304,16 @@ void() Skeleton_ObjectDraw =
 			// Models to draw
 			//
 
-			if (!self.bonfire)
+			// Chest armor
+			if (self.armorname == "Padded Armor")
 			{
-				// Shields
-				if (self.armorname == "Padded Armor")
+				setmodel(self.armor_vfx, "models/armor0.glb");
+				if (gender == "Female")
 				{
-					setmodel(self.armor_vfx, "models/armor0.glb");
-					if (gender == "Female")
-					{
-						self.armor_vfx.scale = 0.88;
-						offset = '0 3 3';  // offset relative to the bone
-					}
+					self.armor_vfx.scale = 0.88;
+					offset = '0 3 3';  // offset relative to the bone
 				}
 			}
-			else
-				setmodel(self.armor_vfx, __NULL__);
 		}
 
 		// local offset into world space
