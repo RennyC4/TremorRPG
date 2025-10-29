@@ -8,6 +8,11 @@ void(entity player, string itemname, float count) RemoveFromInventory;
 void() CSEv_User_UnequipMainhand_;
 float(entity player, string itemname) HasItem;
 
+.entity last_hit_attacker;
+.float last_hit_time;
+.float attack_id;
+.float last_hit_attackid;
+
 float(entity enemy, entity defender) check_block =
 {
     vector vec = enemy.origin - defender.origin;
@@ -125,6 +130,14 @@ void() DoAttack_ShieldBash =
 .float inair_swing_sfx;
 void(vector ang) CSEv_DoAttack_Melee_v =
 {
+    // -------------------------------
+    // Increment attack_id safely
+    // -------------------------------
+    if (!self.attack_id)
+        self.attack_id = 1;
+    else
+        self.attack_id = (self.attack_id + 1) % 100000; // wrap after 100k
+
     if (self.flags & FL_ONGROUND)
         self.velocity = [0, 0];
 
@@ -152,7 +165,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
     // Aim direction
     if (self.flags & FL_CLIENT)
     {
-        if (ang) // sent from CSQC when lock-on is active
+        if (ang) // lock-on active
         {
             makevectors(ang);
             self.angles_x = ang_x;
@@ -182,26 +195,22 @@ void(vector ang) CSEv_DoAttack_Melee_v =
     if (!(self.flags & FL_ONGROUND))
         self.inair_swing_sfx = TRUE;
 
-    entity targ = trace_ent;
-
-    // ========================================
-    // RADIUS DAMAGE OVERRIDE (Slash cleave)
-    // ========================================
+    // ===========================
+    // RADIUS DAMAGE FOR SLASH
+    // ===========================
     if (self.attack_type == 1)
     {
-        // Even if traceline missed, allow AoE slash
+        // Radius cleave attack handles jump, parry, FX, and attack_id internally
         DoRadiusDamage(self, self.origin + v_forward * 42, self.attack_length * 1.4, damage, TRUE, FALSE);
+        return; // skip the rest of the function
+    }
 
-        // Continue only if a valid trace target exists
-        if (!targ || !targ.takedamage || targ.health <= 0 || targ.deadflag != DEAD_NO)
-            return;
-    }
-    else
-    {
-        // Normal single-target validation
-        if (!targ || !targ.takedamage || targ.health <= 0 || targ.deadflag != DEAD_NO)
-            return;
-    }
+    // ===========================
+    // DIRECT HIT LOGIC (non-slash)
+    // ===========================
+    entity targ = trace_ent;
+    if (!targ || !targ.takedamage || targ.health <= 0 || targ.deadflag != DEAD_NO)
+        return;
 
     // Prevent repeat hits from jump attacks
     if (targ.jumpattack_hit_finished > time || targ.godmode_finished > time)
@@ -299,12 +308,12 @@ void(vector ang) CSEv_DoAttack_Melee_v =
         sound(targ, CHAN_AUTO, "shield1.wav", 1, ATTN_NORM);
     }
 
-    // -------------------------------
-    // Final damage application
-    // -------------------------------
     if (parry)
         return;
 
+    // -------------------------------
+    // Final damage application
+    // -------------------------------
     if (jumpattack)
     {
         damage += damage * 1.20;
@@ -320,38 +329,23 @@ void(vector ang) CSEv_DoAttack_Melee_v =
     if (damage < 1)
         damage = 1;
 
-	// ========== APPLY DAMAGE ==========
-	if (self.attack_type == 1)
-	{
-		// cleave (radius)
-		DoRadiusDamage(self, self.origin + v_forward * 42, self.attack_length * 1.4, damage, TRUE, FALSE);
-	}
-	else
-	{
-		// direct hit
-		if (!(targ.flags & FL_MONSTER && self.flags & FL_MONSTER) && targ.godmode_finished < time)
-		{
-			DoDamage(targ, self, damage, FALSE);
+    // Apply damage
+    DoDamage(targ, self, damage, FALSE);
 
-			// --- FX only after damage applied ---
-			vector mid = targ.origin;
-			vector vel = [crandom(), crandom(), fabs(crandom())] * 100;
-			mid_z += (targ.mins_z + targ.maxs_z) * 0.5;
-			te_blood(mid, vel, 12);
+    // FX and hit sounds
+    vector mid = targ.origin;
+    vector vel = [crandom(), crandom(), fabs(crandom())] * 100;
+    mid_z += (targ.mins_z + targ.maxs_z) * 0.5;
+    te_blood(mid, vel, 12);
 
-			// hit sounds
-			if (!self.attack_type)
-				sound(targ, CHAN_AUTO, random() < 0.5 ? "punchhit.wav" : "punchhit2.wav", 1, ATTN_NORM);
-			else if (self.attack_type == 1)
-				sound(targ, CHAN_AUTO, random() < 0.5 ? "swordhit.wav" : "swordhit2.wav", 1, ATTN_NORM);
-			else if (self.attack_type == 2)
-				sound(targ, CHAN_AUTO, random() < 0.5 ? "daggerhit.wav" : "daggerhit2.wav", 1, ATTN_NORM);
-			else
-				sound(targ, CHAN_AUTO, random() < 0.5 ? "clubhit.wav" : "clubhit2.wav", 1, ATTN_NORM);
-		}
-	}
+    if (!self.attack_type)
+        sound(targ, CHAN_AUTO, random() < 0.5 ? "punchhit.wav" : "punchhit2.wav", 1, ATTN_NORM);
+    else if (self.attack_type == 2)
+        sound(targ, CHAN_AUTO, random() < 0.5 ? "daggerhit.wav" : "daggerhit2.wav", 1, ATTN_NORM);
+    else
+        sound(targ, CHAN_AUTO, random() < 0.5 ? "clubhit.wav" : "clubhit2.wav", 1, ATTN_NORM);
 
-    // Bonus effects: Club knockback
+    // Bonus effects: Club knockback and stagger
     if (self.attack_type == 3 && random() <= 0.10)
     {
         vector dir = normalize(targ.origin - self.origin);
@@ -690,50 +684,61 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 // =======================================
 // RADIUS ATTACK FUNCTION
 // =======================================
-.entity last_hit_attacker;
-.float last_hit_time;
 float(entity attacker, vector org, float radius, float damage, float diminish, float silent) DoRadiusDamage =
 {
     float did_damage = FALSE;
-	float jumpattack = FALSE; // Determine jump attack    
-    
+
+    // Determine jump attack
+    float jumpattack = FALSE;
     if (!(attacker.flags & FL_ONGROUND) && attacker.inair_count >= 15)
         jumpattack = TRUE;
+
+    // Ensure attack ID exists
+    if (!attacker.attack_id)
+        attacker.attack_id = 1;
 
     for (entity targ = world; (targ = findfloat(targ, radius_candamage, TRUE));)
     {
         if (targ == attacker)
             continue;
-        if (targ == self)
-            continue;
+		if (targ == self)
+			continue;
         if (vlen(targ.origin - org) > radius)
             continue;
         if (targ.godmode_finished > time)
             continue;
         if (!targ.takedamage || targ.health <= 0 || targ.deadflag != DEAD_NO)
             continue;
+		if (targ.jumpattack_hit_finished > time)
+			return;
 
-        // -------------------------------
-        // Jump attack timer check
-        // -------------------------------
+        // Prevent duplicate hits per swing
+        if (targ.last_hit_attacker == attacker && targ.last_hit_attackid == attacker.attack_id)
+            continue;
+
+        targ.last_hit_attacker = attacker;
+        targ.last_hit_attackid = attacker.attack_id;
+
+        // Jump attack per-target timer
         if (jumpattack && targ.jumpattack_hit_finished > time)
-            continue; // skip if already hit by jump attack
+            continue;
 
+        // Damage calculation
         float dmg = damage;
         if (diminish)
         {
             float distance_length = vlen(targ.origin - org);
-            float distance_factor = 1 - (distance_length / radius);
+            float distance_factor = 1 - pow(distance_length / radius, 1.5); // gentler falloff
             dmg = damage * distance_factor;
+            if (dmg < damage * 0.3) // minimum 30% damage
+                dmg = damage * 0.3;
         }
 
-        // -------------------------------
         // Apply jump attack bonus
-        // -------------------------------
         if (jumpattack)
         {
             dmg += dmg * 1.20;
-            targ.jumpattack_hit_finished = time + 2; // prevent multiple jump hits
+            targ.jumpattack_hit_finished = time + 2;
         }
 
         // -------------------------------
@@ -791,10 +796,9 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
         // Final damage application
         // -------------------------------
         dmg -= targ.armorvalue;
+		dmg = (ceil(dmg)); // round
         if (dmg < 1)
             dmg = 1;
-
-		dmg = ceil(dmg); // round up
 
         DoDamage(targ, attacker, dmg, silent);
         did_damage = TRUE;
