@@ -3,17 +3,19 @@
 //
 
 void(entity targ, entity attacker, float damage, float silent) DoDamage;
-void(entity attacker, vector org, float radius, float damage, float diminish, float silent) DoRadiusDamage;
+float(entity attacker, vector org, float radius, float damage, float diminish, float silent) DoRadiusDamage;
 void(entity player, string itemname, float count) RemoveFromInventory;
 void() CSEv_User_UnequipMainhand_;
 float(entity player, string itemname) HasItem;
 
-// returns 1 if the entity is in front (in sight) of self, used for blocking
 float(entity enemy, entity defender) check_block =
 {
-    makevectors (defender.angles);
-    vector vec = normalize (enemy.origin - defender.origin);
-	vec_x = vec_z = 0;
+    vector vec = enemy.origin - defender.origin;
+    vec_z = 0; // flatten to XY plane (ignore Z / vertical)
+    vec = normalize(vec);
+
+    // calculate defender's forward direction using yaw only
+    makevectors([0, defender.angles_y, 0]); // only yaw
     float dot = vec * v_forward;
 
     if (dot > 0.7)
@@ -116,255 +118,258 @@ void() DoAttack_ShieldBash =
 	self.lockview_finished = time + 1;
 };
 
-// Main melee attack function
+// =======================================
+// MAIN MELEE ATTACK FUNCTION
+// =======================================
 .float staminamessage_finished;
 .float inair_swing_sfx;
 void(vector ang) CSEv_DoAttack_Melee_v =
 {
-	if (self.flags & FL_ONGROUND)
-		self.velocity = [0, 0];
-	
-	// calculate damage by weapon
-	float damage = ceil(random_range(self.attack_power_min, self.attack_power_max));
+    if (self.flags & FL_ONGROUND)
+        self.velocity = [0, 0];
 
-	// add skill damage
-	float howmuch = 0.1;
-	if (!self.attack_type) // unarmed
+    // calculate base damage
+    float damage = ceil(random_range(self.attack_power_min, self.attack_power_max));
+
+    // add skill scaling
+    float howmuch = 0.1;
+    if (!self.attack_type) // unarmed
+    {
+        damage += (self.skill_unarmed * 0.055);
+        self.attack_speed = 3 - (self.skill_unarmed * 0.0145);
+        if (self.attack_speed < 0.1)
+            self.attack_speed = 0.1;
+    }
+    else if (self.attack_type == 1) // slash
+        damage += (self.skill_slash * howmuch);
+    else if (self.attack_type == 2) // pierce
+        damage += (self.skill_pierce * howmuch);
+    else if (self.attack_type == 3) // bashing
+        damage += (self.skill_bash * howmuch);
+    else
+        damage += (self.skill_archery * howmuch);
+
+    // Aim direction
+    if (self.flags & FL_CLIENT)
+    {
+        if (ang) // sent from CSQC when lock-on is active
+        {
+            makevectors(ang);
+            self.angles_x = ang_x;
+            self.fixangle = TRUE;
+        }
+        else
+            makevectors(self.v_angle);
+    }
+    else
+        makevectors(self.angles);
+
+    vector source = self.origin + '0 0 16';
+    traceline(source, source + v_forward * self.attack_length, MOVE_TRIGGERS, self);
+
+    // Play swing SFX (only once per air-swing)
+    if (!self.inair_swing_sfx)
+    {
+        if (!self.attack_type)
+            sound(self, CHAN_WEAPON, "punch1.wav", 1, ATTN_NORM);
+        else if (self.attack_type == 1)
+            sound(self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
+        else if (self.attack_type == 2)
+            sound(self, CHAN_WEAPON, "dagger1.wav", 1, ATTN_NORM);
+        else if (self.attack_type == 3)
+            sound(self, CHAN_WEAPON, "club1.wav", 1, ATTN_NORM);
+    }
+    if (!(self.flags & FL_ONGROUND))
+        self.inair_swing_sfx = TRUE;
+
+    entity targ = trace_ent;
+
+    // ========================================
+    // RADIUS DAMAGE OVERRIDE (Slash cleave)
+    // ========================================
+    if (self.attack_type == 1)
+    {
+        // Even if traceline missed, allow AoE slash
+        DoRadiusDamage(self, self.origin + v_forward * 42, self.attack_length * 1.4, damage, TRUE, FALSE);
+
+        // Continue only if a valid trace target exists
+        if (!targ || !targ.takedamage || targ.health <= 0 || targ.deadflag != DEAD_NO)
+            return;
+    }
+    else
+    {
+        // Normal single-target validation
+        if (!targ || !targ.takedamage || targ.health <= 0 || targ.deadflag != DEAD_NO)
+            return;
+    }
+
+    // Prevent repeat hits from jump attacks
+    if (targ.jumpattack_hit_finished > time || targ.godmode_finished > time)
+        return;
+
+    // -------------------------------
+    // PVP checks
+    // -------------------------------
+    if (self.classname == "player" && targ.classname == "player")
+    {
+        if (self.pvp != 1 || targ.pvp != 1)
+            return;
+
+        self.incombat = targ.incombat = TRUE;
+        self.incombat_finished = targ.incombat_finished = time + 30;
+    }
+
+    // -------------------------------
+    // Jump attack logic
+    // -------------------------------
+    float jumpattack = FALSE;
+    if (!(self.flags & FL_ONGROUND) && self.inair_count >= 15)
+        jumpattack = TRUE;
+
+    // -------------------------------
+    // Backstab check
+    // -------------------------------
+    float backstab = FALSE;
+    float bs_damage = 0;
+    if (check_backstab(targ) && !jumpattack)
+    {
+        bs_damage = (self.skill_backstab * howmuch);
+        if (self.attack_type == 2)
+            bs_damage += ceil(self.skill_pierce * (howmuch / 1.5));
+        if (bs_damage < 1)
+            bs_damage = 1;
+        backstab = TRUE;
+        sound(targ, CHAN_AUTO, "backstab.wav", 1, ATTN_NORM);
+
+        if (self.classname == "player")
+            stuffcmd(self, sprintf("conecho event ^1Backstab! +%g damage !!\n", bs_damage));
+
+        if (targ.classname == "player" && targ.stagger_finished < time)
+        {
+            stuffcmd(targ, "conecho event ^1You've been staggered!\n");
+            targ.lockview_finished = targ.stagger_finished = time + 3;
+        }
+    }
+
+    // -------------------------------
+    // Block / Parry logic
+    // -------------------------------
+    float parry = FALSE;
+    if (check_block(self, targ) && targ.blocking && !backstab)
+    {
+        float stamcalc_block = 20 - (self.skill_endurance * 0.015);
+
+        if (targ.parry_finished < time)
+        {
+            if (targ.stamina >= stamcalc_block)
+            {
+                damage -= targ.blockvalue;
+                targ.stamina -= stamcalc_block;
+
+                vector dir = normalize(targ.origin - self.origin);
+                targ.velocity = dir * 150;
+                targ.flags &= ~FL_ONGROUND;
+                targ.melee_finished = time + 0.5;
+                targ.anistate = ANISTATE_BLOCK;
+                pointparticles(PART_BLOCK, targ.origin + v_forward * 32 + v_up * targ.view_ofs_z);
+            }
+            else if (targ.stagger_finished < time)
+            {
+                stuffcmd(targ, "conecho event ^1You've been staggered!\n");
+                damage -= ceil(targ.blockvalue / 2);
+                targ.stamina = 0;
+                targ.blocking = FALSE;
+                targ.lockview_finished = targ.stagger_finished = time + 3;
+            }
+        }
+        else // parry
+        {
+            parry = TRUE;
+            sound(targ, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
+            stuffcmd(targ, "conecho event ^2Successful parry!\n");
+
+            targ.melee_finished = time + 0.75;
+            targ.anistate = ANISTATE_PARRY;
+
+            pointparticles(PART_PARRY, targ.origin + v_forward * 32 + v_up * targ.view_ofs_z);
+
+            // apply stagger to attacker
+            self.stagger_finished = self.lockview_finished = time + 3.5;
+        }
+        sound(targ, CHAN_AUTO, "shield1.wav", 1, ATTN_NORM);
+    }
+
+    // -------------------------------
+    // Final damage application
+    // -------------------------------
+    if (parry)
+        return;
+
+    if (jumpattack)
+    {
+        damage += damage * 1.20;
+        targ.jumpattack_hit_finished = time + 2;
+    }
+
+    if (targ.cast_finished > time)
+        targ.cast_finished += 0.8;
+
+    damage -= targ.armorvalue;
+    damage += bs_damage;
+    damage = ceil(damage);
+    if (damage < 1)
+        damage = 1;
+
+	// ========== APPLY DAMAGE ==========
+	if (self.attack_type == 1)
 	{
-		damage += (self.skill_unarmed * 0.055);
-		self.attack_speed = 3 - (self.skill_unarmed * 0.0145); // unarmed speed is tied to skill
-		if (self.attack_speed < 0.1)
-			self.attack_speed = 0.1; // cap
+		// cleave (radius)
+		DoRadiusDamage(self, self.origin + v_forward * 42, self.attack_length * 1.4, damage, TRUE, FALSE);
 	}
-	else if (self.attack_type == 1) // slash
-		damage += (self.skill_slash * howmuch);
-	else if (self.attack_type == 2) // pierce
-		damage += (self.skill_pierce * howmuch);
-	else if (self.attack_type == 3) // bashing
-		damage += (self.skill_bash * howmuch);
 	else
-		damage += (self.skill_archery * howmuch);
-
-	if (self.flags & FL_CLIENT)
 	{
-		if (ang) // sent from CSQC when lock-on is active
+		// direct hit
+		if (!(targ.flags & FL_MONSTER && self.flags & FL_MONSTER) && targ.godmode_finished < time)
 		{
-			makevectors (ang);
-			self.angles_x = ang_x;
-			self.fixangle = TRUE;
-		}
-		else
-			makevectors (self.v_angle);
-	}
-	else
-		makevectors (self.angles);
+			DoDamage(targ, self, damage, FALSE);
 
-	vector source = self.origin + '0 0 16';
-	traceline (source, source + v_forward * self.attack_length, MOVE_TRIGGERS, self);
-
-	if (!self.inair_swing_sfx)
-	{
-		if (!self.attack_type)
-			sound (self, CHAN_WEAPON, "punch1.wav", 1, ATTN_NORM);
-		else if (self.attack_type == 1)
-			sound (self, CHAN_WEAPON, "sword1.wav", 1, ATTN_NORM);
-		else if (self.attack_type == 2)
-			sound (self, CHAN_WEAPON, "dagger1.wav", 1, ATTN_NORM);
-		else if (self.attack_type == 3)
-			sound (self, CHAN_WEAPON, "club1.wav", 1, ATTN_NORM);
-	}
-
-	if (!(self.flags & FL_ONGROUND))
-		self.inair_swing_sfx = TRUE;
-
-	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO && trace_ent.jumpattack_hit_finished < time && trace_ent.godmode_finished < time)
-	{
-		if (self.classname == "player" && trace_ent.classname == "player") // PVP checks
-		{
-			if (self.pvp != 1 || trace_ent.pvp != 1)
-				return;
-			else
-			{
-				self.incombat = trace_ent.incombat = TRUE; // Turn off health regen, flag players for incombat
-				self.incombat_finished = trace_ent.incombat_finished = time + 30; // keep players locked in combat
-			}
-		}
-
-		if (!(self.flags & FL_ONGROUND) && self.inair_count >= 15)
-			float jumpattack = TRUE;
-		else
-			jumpattack = FALSE;
-
-		// check & add backstab skill damage
-		float bs_damage = 0;
-		float backstab = FALSE;
-		if (check_backstab(trace_ent) && !jumpattack)
-		{
-			bs_damage = (self.skill_backstab * howmuch);
-			if (self.attack_type == 2) // add piercing bonus damage
-				bs_damage += ceil(self.skill_pierce * (howmuch / 1.5));
-
-			if (bs_damage < 1)
-				bs_damage = 1;
-			backstab = TRUE;
-			sound (trace_ent, CHAN_AUTO, "backstab.wav", 1, ATTN_NORM);	
-
-			if (self.classname == "player")
-			{
-				string eventlog_print = (strcat("^1Backstab! +", ftos(bs_damage), " damage !!\n"));
-				stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
-			}
-			if (trace_ent.classname == "player")
-			{
-				if (trace_ent.stagger_finished < time)
-				{
-					eventlog_print = (strcat("^1You've been staggered!"));
-					stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
-					trace_ent.lockview_finished = time + 3;
-					trace_ent.stagger_finished = time + 3; // stagger, stamina is out
-				}
-			}
-		}
-
-		// blocking
-		float parry = FALSE;
-		if (check_block(self, trace_ent) && trace_ent.blocking && !backstab)
-		{
-			float stamcalc_block = 20 - (self.skill_endurance * 0.015); // calculation
-
-			if (trace_ent.parry_finished < time)
-			{
-				if (trace_ent.stamina >= stamcalc_block)
-				{
-					damage -= trace_ent.blockvalue;
-					trace_ent.stamina -= stamcalc_block;
-
-					vector dir = trace_ent.origin - self.origin; // Push back
-					dir = normalize(dir);
-					trace_ent.velocity = '0 0 0';
-					trace_ent.flags &= ~FL_ONGROUND;
-					trace_ent.velocity = trace_ent.velocity + dir * 150;
-					trace_ent.melee_finished = time + 0.5;
-					trace_ent.anistate = ANISTATE_BLOCK;
-					pointparticles(PART_BLOCK, trace_ent.origin + v_forward * 32 + v_up * trace_ent.view_ofs_z);
-				}
-				else
-				{
-					if (trace_ent.stagger_finished < time)
-					{
-						if (trace_ent.classname == "player")
-						{
-							eventlog_print = (strcat("^1You've been staggered!"));
-							stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
-						}
-						damage = damage - ceil(trace_ent.blockvalue / 2); // save a tiny bit of damage still
-						trace_ent.stamina = 0;
-						trace_ent.blocking = FALSE;
-						trace_ent.lockview_finished = time + 3;
-						trace_ent.stagger_finished = time + 3; // stagger, stamina is out
-					}
-				}
-				//
-			}
-			else // parry
-			{
-				parry = TRUE;
-				sound (trace_ent, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
-				eventlog_print = (strcat("^2Successful parry!"));
-				stuffcmd (trace_ent, sprintf("conecho event %s\n", eventlog_print));
-
-				trace_ent.melee_finished = time + 0.75;
-				trace_ent.anistate = ANISTATE_PARRY;
-
-				pointparticles(PART_PARRY, trace_ent.origin + v_forward * 32 + v_up * trace_ent.view_ofs_z);
-
-				// apply effects
-				self.stagger_finished = time + 3.5;
-				self.lockview_finished = time + 3.5;
-			}
-			sound (trace_ent, CHAN_AUTO, "shield1.wav", 1, ATTN_NORM);
-		}
-
-		if (!parry)
-		{
-			if (jumpattack)
-			{
-				damage += damage * 1.20; // damage multiplier
-				trace_ent.jumpattack_hit_finished = time + 2;
-			}
-
-			// adds an additional time on hit if someone is casting
-			if (trace_ent.cast_finished > time)
-				trace_ent.cast_finished += 0.8;
-
-			// armor calculations
-			damage -= trace_ent.armorvalue;
-
-			// blood logic + effects
-			vector mid = trace_ent.origin;
+			// --- FX only after damage applied ---
+			vector mid = targ.origin;
 			vector vel = [crandom(), crandom(), fabs(crandom())] * 100;
-			mid_z += (trace_ent.mins_z + trace_ent.maxs_z) * 0.5;
+			mid_z += (targ.mins_z + targ.maxs_z) * 0.5;
 			te_blood(mid, vel, 12);
-			
-			damage = ceil(damage); // round up final damage output
-			if (self.attack_type == 1) // Slashing uses radius for cleave
-				DoRadiusDamage(self, self.origin + v_forward * 42, self.attack_length * 1.4, damage, FALSE, FALSE);
-			else
-			{
-				DoDamage(trace_ent, self, damage, FALSE);
-				if (self.attack_type == 3 && random() <= 0.10) // Club bonus (10%)
-				{
-					vector dir = trace_ent.origin - self.origin; // Pushing
-					dir = normalize(dir);
-					trace_ent.velocity = '0 0 0';
-					trace_ent.flags &= ~FL_ONGROUND;
-					trace_ent.velocity_z += 125;
-					trace_ent.velocity = trace_ent.velocity + dir * 200;
-					//
-					if (trace_ent.stagger_finished < time)
-					{
-						trace_ent.stagger_finished = time + 1.5;
-						trace_ent.lockview_finished = time + 1.5;
-					}
-					// Knock target out of casting
-					trace_ent.cast_finished_spell = "";
-					trace_ent.cast_finished = time;
-					//
-				}
-			}
 
-			// Hit sounds
+			// hit sounds
 			if (!self.attack_type)
-			{
-				if (random() < 0.5)
-					sound (trace_ent, CHAN_AUTO, "punchhit.wav", 1, ATTN_NORM);
-				else
-					sound (trace_ent, CHAN_AUTO, "punchhit2.wav", 1, ATTN_NORM);
-			}
+				sound(targ, CHAN_AUTO, random() < 0.5 ? "punchhit.wav" : "punchhit2.wav", 1, ATTN_NORM);
 			else if (self.attack_type == 1)
-			{
-				if (random() < 0.5)
-					sound (trace_ent, CHAN_AUTO, "swordhit.wav", 1, ATTN_NORM);
-				else
-					sound (trace_ent, CHAN_AUTO, "swordhit2.wav", 1, ATTN_NORM);
-			}
+				sound(targ, CHAN_AUTO, random() < 0.5 ? "swordhit.wav" : "swordhit2.wav", 1, ATTN_NORM);
 			else if (self.attack_type == 2)
-			{
-				if (random() < 0.5)
-					sound (trace_ent, CHAN_AUTO, "daggerhit.wav", 1, ATTN_NORM);
-				else
-					sound (trace_ent, CHAN_AUTO, "daggerhit2.wav", 1, ATTN_NORM);
-			}
+				sound(targ, CHAN_AUTO, random() < 0.5 ? "daggerhit.wav" : "daggerhit2.wav", 1, ATTN_NORM);
 			else
-			{
-				if (random() < 0.5)
-					sound (trace_ent, CHAN_AUTO, "clubhit.wav", 1, ATTN_NORM);
-				else
-					sound (trace_ent, CHAN_AUTO, "clubhit2.wav", 1, ATTN_NORM);
-			}
+				sound(targ, CHAN_AUTO, random() < 0.5 ? "clubhit.wav" : "clubhit2.wav", 1, ATTN_NORM);
 		}
 	}
+
+    // Bonus effects: Club knockback
+    if (self.attack_type == 3 && random() <= 0.10)
+    {
+        vector dir = normalize(targ.origin - self.origin);
+        targ.flags &= ~FL_ONGROUND;
+        targ.velocity = dir * 200;
+        targ.velocity_z += 125;
+
+        if (targ.stagger_finished < time)
+            targ.lockview_finished = targ.stagger_finished = time + 1.5;
+
+        targ.cast_finished_spell = "";
+        targ.cast_finished = time;
+    }
 };
+
+// =======================================
+// ARROWS
+// =======================================
 
 void() arrow_think =
 {
@@ -603,7 +608,9 @@ void(entity targ, entity attacker) DoDeath =
 		print(self.classname, "'s th_die routine is missing\n");
 };
 
-// Main damage function
+// =======================================
+// MAIN DAMAGE FUNCTION
+// =======================================
 void(entity targ, entity attacker, float damage, float silent) DoDamage =
 {
 	if (!targ)
@@ -612,7 +619,7 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 		return;
 	if (targ.flags & FL_MONSTER && targ.ai_mode == AI_RUNBACK)
 		return;
-	if (targ.flags & FL_MONSTER && attacker.flags & FL_MONSTER) // prevent monster in-fighting
+	if (targ.flags & FL_MONSTER && attacker.flags & FL_MONSTER)
 		return;
 	if (targ.godmode_finished > time)
 		return;
@@ -621,60 +628,58 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 		damage = 1;
 
 	if (!(targ.flags & FL_GODMODE))
-		targ.health = targ.health - damage;
+		targ.health -= damage;
 
 	string eventlog_print;
 
+	// attacker feedback
 	if (attacker.classname == "player")
 	{
-		eventlog_print = (strcat("You hit for ^2", ftos(damage), " ^7damage\n"));
-		stuffcmd (attacker, sprintf("conecho event %s\n", eventlog_print));
-	}
-	if (targ.classname == "player" && !silent)
-	{
-		eventlog_print = (strcat("You've taken ^1", ftos(damage), " ^7damage\n"));
-		stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+		eventlog_print = strcat("You hit for ^2", ftos(damage), " ^7damage\n");
+		stuffcmd(attacker, sprintf("conecho event %s\n", eventlog_print));
 	}
 
-	// PVP
+	// victim feedback
+	if (targ.classname == "player" && !silent)
+	{
+		eventlog_print = strcat("You've taken ^1", ftos(damage), " ^7damage\n");
+		stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
+	}
+
+	// PVP engage
 	if (targ.classname == "player" && attacker.classname == "player")
 	{
 		if (targ.incombat_finished < time)
 		{
-			eventlog_print = (strcat("^1You engage in combat!\n"));
-			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
-			stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+			eventlog_print = "^1You engage in combat!\n";
+			stuffcmd(attacker, sprintf("conecho event %s\n", eventlog_print));
+			stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
 			targ.incombat_finished = attacker.incombat_finished = time + 30;
 		}
 	}
 
-	// Knock player out of drinking a potion
+	// cancel potions
 	if (targ.potion_use_finished > time)
 	{
-		targ.healthpot_heal_rate = 0;
-		targ.healthpot_heal_remaining = 0;
+		targ.healthpot_heal_rate = targ.healthpot_heal_remaining = 0;
 		targ.healthpot_finished = time;
-
-		targ.manapot_heal_rate = 0;
-		targ.manapot_heal_remaining = 0;
+		targ.manapot_heal_rate = targ.manapot_heal_remaining = 0;
 		targ.manapot_finished = time;
-
 		targ.potion_use_finished = time;
 
-		eventlog_print = (strcat("^1You drop your potion!\n"));
-		stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+		stuffcmd(targ, "conecho event ^1You drop your potion!\n");
 	}
 
-	// Monster stuff
+	// monsters
 	if (targ.flags & FL_MONSTER)
 	{
-		if (targ.noise2) // pain sound
-			sound (trace_ent, CHAN_VOICE, targ.noise2, 1, ATTN_NORM);
+		if (targ.noise2)
+			sound(targ, CHAN_VOICE, targ.noise2, 1, ATTN_NORM);
 
-		// TODO: Aggo stuff?
-		targ.goalentity = targ.enemy = attacker; // go after last attacker
+		targ.goalentity = targ.enemy = attacker;
 	}
 
+	// death
 	if (targ.health <= 0)
 	{
 		targ.deadflag = TRUE;
@@ -682,23 +687,135 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 	}
 };
 
-void(entity attacker, vector org, float radius, float damage, float diminish, float silent) DoRadiusDamage =
+// =======================================
+// RADIUS ATTACK FUNCTION
+// =======================================
+.entity last_hit_attacker;
+.float last_hit_time;
+float(entity attacker, vector org, float radius, float damage, float diminish, float silent) DoRadiusDamage =
 {
-	for (entity targ = world; (targ = findfloat(targ, radius_candamage, TRUE));)
-	{
-		if (vlen(targ.origin - org) <= radius && targ != self && targ.godmode_finished < time)
-		{
-			float dmg = damage;
-			if (diminish)
-			{
-				float distance_length = vlen(targ.origin - org);
-				float distance_factor = 1 - (distance_length / radius);
-				dmg = ceil(damage * distance_factor);
-			}
-			if (!silent)
-				DoDamage(targ, attacker, dmg, FALSE);
-			else
-				DoDamage(targ, attacker, dmg, TRUE); // no event log update
-		}
-	}
+    float did_damage = FALSE;
+	float jumpattack = FALSE; // Determine jump attack    
+    
+    if (!(attacker.flags & FL_ONGROUND) && attacker.inair_count >= 15)
+        jumpattack = TRUE;
+
+    for (entity targ = world; (targ = findfloat(targ, radius_candamage, TRUE));)
+    {
+        if (targ == attacker)
+            continue;
+        if (targ == self)
+            continue;
+        if (vlen(targ.origin - org) > radius)
+            continue;
+        if (targ.godmode_finished > time)
+            continue;
+        if (!targ.takedamage || targ.health <= 0 || targ.deadflag != DEAD_NO)
+            continue;
+
+        // -------------------------------
+        // Jump attack timer check
+        // -------------------------------
+        if (jumpattack && targ.jumpattack_hit_finished > time)
+            continue; // skip if already hit by jump attack
+
+        float dmg = damage;
+        if (diminish)
+        {
+            float distance_length = vlen(targ.origin - org);
+            float distance_factor = 1 - (distance_length / radius);
+            dmg = damage * distance_factor;
+        }
+
+        // -------------------------------
+        // Apply jump attack bonus
+        // -------------------------------
+        if (jumpattack)
+        {
+            dmg += dmg * 1.20;
+            targ.jumpattack_hit_finished = time + 2; // prevent multiple jump hits
+        }
+
+        // -------------------------------
+        // Block / Parry logic
+        // -------------------------------
+        float parry = FALSE;
+
+        if (check_block(attacker, targ) && targ.blocking)
+        {
+            float stamcalc_block = 20 - (attacker.skill_endurance * 0.015);
+
+            if (targ.parry_finished < time)
+            {
+                if (targ.stamina >= stamcalc_block)
+                {
+                    dmg -= targ.blockvalue;
+                    targ.stamina -= stamcalc_block;
+
+                    vector dir = normalize(targ.origin - attacker.origin);
+                    targ.velocity = dir * 150;
+                    targ.flags &= ~FL_ONGROUND;
+                    targ.melee_finished = time + 0.5;
+                    targ.anistate = ANISTATE_BLOCK;
+                    pointparticles(PART_BLOCK, targ.origin + v_forward * 32 + v_up * targ.view_ofs_z);
+                }
+                else if (targ.stagger_finished < time)
+                {
+                    stuffcmd(targ, "conecho event ^1You've been staggered!\n");
+                    dmg -= ceil(targ.blockvalue / 2);
+                    targ.stamina = 0;
+                    targ.blocking = FALSE;
+                    targ.lockview_finished = targ.stagger_finished = time + 3;
+                }
+            }
+            else // parry
+            {
+                parry = TRUE;
+                sound(targ, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
+                stuffcmd(targ, "conecho event ^2Successful parry!\n");
+
+                targ.melee_finished = time + 0.75;
+                targ.anistate = ANISTATE_PARRY;
+
+                pointparticles(PART_PARRY, targ.origin + v_forward * 32 + v_up * targ.view_ofs_z);
+
+                attacker.stagger_finished = attacker.lockview_finished = time + 3.5;
+            }
+            sound(targ, CHAN_AUTO, "shield1.wav", 1, ATTN_NORM);
+        }
+
+        if (parry)
+            continue;
+
+        // -------------------------------
+        // Final damage application
+        // -------------------------------
+        dmg -= targ.armorvalue;
+        if (dmg < 1)
+            dmg = 1;
+
+		dmg = ceil(dmg); // round up
+
+        DoDamage(targ, attacker, dmg, silent);
+        did_damage = TRUE;
+
+        // -------------------------------
+        // Visual & Audio feedback
+        // -------------------------------
+        vector mid = targ.origin;
+        vector vel = [crandom(), crandom(), fabs(crandom())] * 100;
+        mid_z += (targ.mins_z + targ.maxs_z) * 0.5;
+        te_blood(mid, vel, 12);
+
+        if (!attacker.attack_type)
+            sound(targ, CHAN_AUTO, random() < 0.5 ? "punchhit.wav" : "punchhit2.wav", 1, ATTN_NORM);
+        else if (attacker.attack_type == 1)
+            sound(targ, CHAN_AUTO, random() < 0.5 ? "swordhit.wav" : "swordhit2.wav", 1, ATTN_NORM);
+        else if (attacker.attack_type == 2)
+            sound(targ, CHAN_AUTO, random() < 0.5 ? "daggerhit.wav" : "daggerhit2.wav", 1, ATTN_NORM);
+        else
+            sound(targ, CHAN_AUTO, random() < 0.5 ? "clubhit.wav" : "clubhit2.wav", 1, ATTN_NORM);
+    }
+
+    return did_damage;
 };
