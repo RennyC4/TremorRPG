@@ -26,6 +26,12 @@ void(entity targ) Player_CheckLevelUp =
 void(entity targ, float expmin, float expmax) GiveExperience =
 {
 	float amount = ceil(random_range(expmin, expmax));
+
+	exp_multiplier = cvar("sv_expmultiplier");
+	if (cvar("sv_expmultiplier") > 0) // server admin can adjust gold given
+		amount *= exp_multiplier;
+
+	amount = ceil(amount);
 	targ.exp += amount; // give exp
 
 	string eventlog_print = (strcat("^2", ftos(amount), "^7 exp received!\n"));
@@ -37,6 +43,12 @@ void(entity targ, float expmin, float expmax) GiveExperience =
 void(entity targ, float goldmin, float goldmax) GiveGold =
 {
 	float amount = ceil(random_range(goldmin, goldmax));
+
+	gold_multiplier = cvar("sv_goldmultiplier");
+	if (cvar("sv_goldmultiplier") > 0) // server admin can adjust gold given
+		amount *= gold_multiplier;
+
+	amount = ceil(amount);
 	targ.gold += amount; // give gold
 
 	string eventlog_print = (strcat("^3", ftos(amount), "^7 gold received!\n"));

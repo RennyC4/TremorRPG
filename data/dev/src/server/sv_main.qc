@@ -3,6 +3,8 @@
 //
 
 float multilogin;
+float exp_multiplier;
+float gold_multiplier;
 
 #pragma target fte // TremorRPG FTE only
 #pragma warning disable F302 // disable potentially uninitialised variable
@@ -178,7 +180,12 @@ void() worldspawn =
 	
 	// additional cvar setup
 	registercvar("sv_multilogin", "0", "Allows a user to login with multiple accounts");
+	registercvar("sv_expdmultiplier", "0", "Experience multiplier");
+	registercvar("sv_goldmultiplier", "0", "Gold multiplier");
+
 	multilogin = cvar("sv_multilogin");
+	exp_multiplier = cvar("sv_expdmultiplier");
+	gold_multiplier = cvar("sv_goldmultiplier");
 };
 
 //
