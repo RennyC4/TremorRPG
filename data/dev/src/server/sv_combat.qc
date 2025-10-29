@@ -232,7 +232,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
     // Jump attack logic
     // -------------------------------
     float jumpattack = FALSE;
-    if (!(self.flags & FL_ONGROUND) && self.inair_count >= 15)
+    if (!(self.flags & FL_ONGROUND) && self.inair_count >= 20)
         jumpattack = TRUE;
 
     // -------------------------------
@@ -346,7 +346,10 @@ void(vector ang) CSEv_DoAttack_Melee_v =
         sound(targ, CHAN_AUTO, random() < 0.5 ? "clubhit.wav" : "clubhit2.wav", 1, ATTN_NORM);
 
     // Bonus effects: Club knockback and stagger
-    if (self.attack_type == 3 && random() <= 0.10)
+	float club_stagger = 0.10;
+	if (jumpattack)	club_stagger = 0.20;
+
+    if (self.attack_type == 3 && random() <= club_stagger)
     {
         vector dir = normalize(targ.origin - self.origin);
         targ.flags &= ~FL_ONGROUND;
