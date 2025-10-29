@@ -2168,7 +2168,7 @@ accessor filestream : float
 #define ENT_MONSTER 2
 //
 
-string sparm1, sparm2, sparm3, sparm4;
+string sparm1, sparm2, sparm3, sparm4, sparm5;
 
 float framecount;
 float pauseframe;

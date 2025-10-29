@@ -391,18 +391,22 @@ void() sParms_Read =
 			sparm3 = line;
 		if (line = fgets(v))
 			sparm4 = line;
+		if (line = fgets(v))
+			sparm5 = line;
 		fclose(v);
 	}
-	sendevent("SSQC_ReadsParms", "ssss", sparm1, sparm2, sparm3, sparm4); // send sParms to SSQC
+	sendevent("SSQC_ReadsParms", "sssss", sparm1, sparm2, sparm3, sparm4, sparm5); // send sParms to SSQC
 };
 
+// write/update sparm file
 void() sParms_Write =
 {
 	sparm1 = getstats(STAT_MAINHAND);
 	sparm2 = getstats(STAT_OFFHAND);
 	sparm3 = getstats(STAT_ARMORNAME);
 	sparm4 = getstats(STAT_SPELLEQUIPPED);
-
+	sparm5 = getstats(STAT_ARMORNAME);
+	
 	float v = fopen("sparms", FILE_WRITE); // write sParm file
 	if (v)
 	{
@@ -411,13 +415,15 @@ void() sParms_Write =
 		fputs(v, sparm2, "\n");
 		fputs(v, sparm3, "\n");
 		fputs(v, sparm4, "\n");
+		fputs(v, sparm5, "\n");
 		fclose(v);
 	}
 };
 
+// open and wipe sParm file
 void() sParms_Wipe =
 {
-	float v = fopen("sparms", FILE_WRITE); // write and wipe sParm file
+	float v = fopen("sparms", FILE_WRITE);
 	if (v)
 	{
 		fputs(v, "");

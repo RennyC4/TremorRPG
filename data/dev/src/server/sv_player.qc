@@ -21,12 +21,13 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s;
 // Parms - for map transfers
 //
 
-void(string reads1, string reads2, string reads3, string reads4) CSEv_SSQC_ReadsParms_ssss =
+void(string reads1, string reads2, string reads3, string reads4, string reads5) CSEv_SSQC_ReadsParms_sssss =
 {
 	self.main_hand = reads1;
 	self.off_hand = reads2;
 	self.armorname = reads3;
 	self.spell_equipped = reads4;
+	self.armorname = reads5;
 };
 
 void() WipeParms =
