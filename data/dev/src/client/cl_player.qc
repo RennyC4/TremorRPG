@@ -268,7 +268,7 @@ void() Skeleton_ObjectDraw =
 	}
 
 	//
-	// Draw or update armor
+	// Draw armor
 	//
 
 	if (self.armorname != "" && self.armorname != "Plain Clothes")
@@ -279,45 +279,35 @@ void() Skeleton_ObjectDraw =
 			self.armor_vfx.owner = self;
 			self.armor_vfx.drawmask = MASK_VIEWMODEL;
 		}
-
-		string desired_model = __NULL__;
-		vector desired_offset = [0, 0, 0];
-		float desired_scale = 1;
-		float desired_fatness = 0;
-
-		if (self.armorname == "Padded Armor")
+		else
 		{
-			desired_offset = [0, 0, 0]; // local-space offset
-			desired_scale = 1;
-			desired_model = "models/armor0.glb";
+			//
+			// Models to draw
+			//
+
+			if (!self.bonfire)
+			{
+				// Shields
+				if (self.armorname == "Padded Armor")
+					setmodel(self.armor_vfx, "models/armor0.glb");
+			}
+			else
+				setmodel(self.armor_vfx, __NULL__);
 		}
 
-		if (self.armor_vfx.model != desired_model)
-		{
-			setmodel(self.armor_vfx, desired_model);
+		org = gettaginfo(self, gettagindex(self, "mixamorig:Spine2"));
+		offset = '0 0 0';  // offset relative to the bone
 
-			if (self.armor_vfx.skeletonindex)
-				skel_delete(self.armor_vfx.skeletonindex);
+		// local offset into world space
+		org += v_forward * offset_x;
+		org += v_right   * offset_y;
+		org += v_up      * offset_z;
 
-			if (desired_model != __NULL__)
-				self.armor_vfx.skeletonindex = skel_create(self.armor_vfx.modelindex);
-		}
+		self.armor_vfx.origin = org;
 
-		if (self.armor_vfx.skeletonindex && self.skeletonindex)
-			skel_copybones(self.armor_vfx.skeletonindex, self.skeletonindex, 0, 0);
-
-		// local → world transform
-		makevectors(self.angles);
-		vector world_offset = 
-		v_forward * desired_offset_x +
-		v_right   * desired_offset_y +
-		v_up      * desired_offset_z;
-
-		// Apply offset and rotation
-		self.armor_vfx.scale = desired_scale;
-		self.armor_vfx.fatness = desired_fatness;
-		self.armor_vfx.angles = self.angles;
-		setorigin(self.armor_vfx, self.origin + world_offset);
+		// angles
+		ang = vectoangles(v_forward, v_up);
+		self.armor_vfx.angles = ang;
 
 		// prevent player model intrusion
 		if (self.entnum == player_localentnum)
@@ -327,7 +317,7 @@ void() Skeleton_ObjectDraw =
 			else
 				self.armor_vfx.renderflags &= ~RF_EXTERNALMODEL;
 		}
-		
+
 		// Handle transparency / crouch
 		if (self.crouch)
 		{
