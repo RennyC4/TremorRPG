@@ -117,12 +117,29 @@ void() Skeleton_ObjectDraw =
 				// Arrows
 				if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
 				{
+					// prevent player model intrusion
 					if (self.entnum == player_localentnum)
 					{
-						if (!camera_mode && thirdcam_dist < 30)
-							self.weapon_vfx.renderflags |= RF_EXTERNALMODEL; // don't show quiver in first-person
-						else
-							self.weapon_vfx.renderflags &= ~RF_EXTERNALMODEL;
+						if (!camera_mode && thirdcam_dist < 30) // First-person mode
+						{
+							// In first-person: use world layer, hide model from camera
+							self.weapon_vfx.drawmask = MASK_ENGINE;
+							self.weapon_vfx.renderflags |= RF_EXTERNALMODEL;
+						}
+						else // Third-person mode
+						{
+							if (camera_gdist > 24) // Normal distance: show armor
+							{
+
+								self.weapon_vfx.drawmask = MASK_ENGINE;
+								self.weapon_vfx.renderflags &= ~RF_EXTERNALMODEL;
+							}
+							else // Too close: completely hide armor
+							{
+								self.weapon_vfx.drawmask = 0; // <- hide entity
+								self.weapon_vfx.renderflags &= ~RF_EXTERNALMODEL;
+							}
+						}
 					}
 
 					setmodel(self.weapon_vfx, "models/quiver.glb");
@@ -277,7 +294,6 @@ void() Skeleton_ObjectDraw =
 		{
 			self.armor_vfx = spawn();
 			self.armor_vfx.owner = self;
-			self.armor_vfx.drawmask = MASK_VIEWMODEL;
 		}
 		else
 		{
@@ -319,10 +335,26 @@ void() Skeleton_ObjectDraw =
 		// prevent player model intrusion
 		if (self.entnum == player_localentnum)
 		{
-			if (!camera_mode && thirdcam_dist < 30)
-				self.armor_vfx.renderflags |= RF_EXTERNALMODEL; // don't show armor in first-person
-			else
-				self.armor_vfx.renderflags &= ~RF_EXTERNALMODEL;
+			if (!camera_mode && thirdcam_dist < 30) // First-person mode
+			{
+				// In first-person: use world layer, hide model from camera
+				self.armor_vfx.drawmask = MASK_ENGINE;
+				self.armor_vfx.renderflags |= RF_EXTERNALMODEL;
+			}
+			else // Third-person mode
+			{
+				if (camera_gdist > 24) // Normal distance: show armor
+				{
+
+					self.armor_vfx.drawmask = MASK_ENGINE;
+					self.armor_vfx.renderflags &= ~RF_EXTERNALMODEL;
+				}
+				else // Too close: completely hide armor
+				{
+					self.armor_vfx.drawmask = 0; // <- hide entity
+					self.armor_vfx.renderflags &= ~RF_EXTERNALMODEL;
+				}
+			}
 		}
 
 		// Handle transparency / crouch

@@ -2198,6 +2198,7 @@ string autocvar_tremor_lighting;
 float deathcam_dist;
 float thirdcam_dist;
 float thirdcam_distz;
+float camera_gdist; // 3rd person camera position in world
 
 // buttons
 float button4;

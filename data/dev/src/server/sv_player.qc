@@ -2,7 +2,7 @@
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
-void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;self.melee_finished = time + 0.2;};
+void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;};
 void(entity targ, float type) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
 void(entity player) SendPlayerInventory;
@@ -202,6 +202,8 @@ void() PlayerJump =
 {
 	if (self.bonfire)
 		return;
+	if (self.dodge_finished > time)
+		return;
 
 	PlayerClimb();
 
@@ -383,7 +385,7 @@ void() CSEv_PlayerShowStats =
 
 	if (self.menu == MENU_CHARACTER)
 	{
-		self.melee_finished = time + 0.5; // prevent +attack misfire
+		self.menushut_finished = time + 0.2; // prevent +attack misfire
 		self.menu = MENU_OFF;
 		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
 	}
@@ -405,7 +407,7 @@ void() CSEv_PlayerShowInventory =
 
 	if (self.menu == MENU_INVENTORY)
 	{
-		self.melee_finished = time + 0.2; // prevent +attack misfire
+		self.menushut_finished = time + 0.2; // prevent +attack misfire
 		self.menu = MENU_OFF;
 		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
 	}
@@ -427,7 +429,7 @@ void() CSEv_PlayerShowMagic =
 
 	if (self.menu == MENU_MAGIC)
 	{
-		self.melee_finished = time + 0.2; // prevent +attack misfire
+		self.menushut_finished = time + 0.2; // prevent +attack misfire
 		self.menu = MENU_OFF;
 		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
 	}
@@ -768,97 +770,98 @@ void() CSEv_User_StartAttack_ =
 {
 	if (self.dodge_finished > time)
 		return;
+	if (self.menu != MENU_OFF)
+		return;
+	if (self.bonfire)
+		return;
 
-	if (self.menu == MENU_OFF && !self.bonfire)
+	if (self.deadflag == DEAD_DEAD || self.health <= 0)
 	{
-		if (self.deadflag == DEAD_DEAD || self.health <= 0)
+		if (self.respawn_finished < time)
 		{
-			if (self.respawn_finished < time)
-			{
-				PlayerSpawn(3); // respawn
-				self.melee_finished = time + 1; // prevent attack on spawn
-				self.pvp_autoflagged = FALSE;
-				return;
-			}
+			PlayerSpawn(3); // respawn
+			self.melee_finished = time + 1; // prevent attack on spawn
+			self.pvp_autoflagged = FALSE;
+			return;
 		}
-		else
+	}
+	else
+	{
+		if (!self.blocking)
 		{
-			if (!self.blocking)
+			if (self.melee_finished < time && self.cancast_finished < time && self.cast_finished < time && self.menushut_finished < time)
 			{
-				if (self.melee_finished < time && self.cancast_finished < time && self.cast_finished < time)
+				float stamcalc = self.skill_endurance * 0.015;
+
+				if (self.stamina >= (self.attack_stamina - stamcalc) && !self.button4)
 				{
-					float stamcalc = self.skill_endurance * 0.015;
+					float nobow = FALSE;
 
-					if (self.stamina >= (self.attack_stamina - stamcalc) && !self.button4)
+					// --------------------------------
+					// Air melee - absolute priority
+					// --------------------------------
+					if (!(self.flags & FL_ONGROUND))
 					{
-						float nobow = FALSE;
-
-						// --------------------------------
-						// Air melee - absolute priority
-						// --------------------------------
-						if (!(self.flags & FL_ONGROUND))
+						if (self.attack_type != 4) // not bow
+							self.anistate = ANISTATE_AIRMELEE;
+					}
+					else // Normal ground attacks
+					{
+						if (self.stepdodge_counter < time)
 						{
-							if (self.attack_type != 4) // not bow
-								self.anistate = ANISTATE_AIRMELEE;
-						}
-						else // Normal ground attacks
-						{
-							if (self.stepdodge_counter < time)
+							if (self.attack_type == 0)
+								self.anistate = ANISTATE_PUNCH;
+							else if (self.attack_type == 1)
+								self.anistate = ANISTATE_SLASH;
+							else if (self.attack_type == 2)
+								self.anistate = ANISTATE_STAB;
+							else if (self.attack_type == 3)
+								self.anistate = ANISTATE_SMASH;
+							else if (self.attack_type == 4)
 							{
-								if (self.attack_type == 0)
-									self.anistate = ANISTATE_PUNCH;
-								else if (self.attack_type == 1)
-									self.anistate = ANISTATE_SLASH;
-								else if (self.attack_type == 2)
-									self.anistate = ANISTATE_STAB;
-								else if (self.attack_type == 3)
-									self.anistate = ANISTATE_SMASH;
-								else if (self.attack_type == 4)
-								{
-									string lname = string_tolower(self.off_hand);
-									if (strstrofs(lname, "bow", 0) != -1 && self.flags & FL_ONGROUND)
-										self.anistate = ANISTATE_ARCHERY;
-									else
-										nobow = TRUE;
-								}
+								string lname = string_tolower(self.off_hand);
+								if (strstrofs(lname, "bow", 0) != -1 && self.flags & FL_ONGROUND)
+									self.anistate = ANISTATE_ARCHERY;
 								else
-									print("Error: Unknown attack_type in User_StartAttack\n");
+									nobow = TRUE;
 							}
 							else
-								self.anistate = ANISTATE_STEPCOUNTER;
+								print("Error: Unknown attack_type in User_StartAttack\n");
 						}
+						else
+							self.anistate = ANISTATE_STEPCOUNTER;
+					}
 
-						// reset crouch
-						self.crouch = FALSE;
-						setsize(self, [-16, -16, 0], [16, 16, 56]);
-						self.view_ofs = [0, 0, 48];
+					// reset crouch
+					self.crouch = FALSE;
+					setsize(self, [-16, -16, 0], [16, 16, 56]);
+					self.view_ofs = [0, 0, 48];
 
-						if (!nobow)
+					if (!nobow)
+					{
+						self.stamina -= (self.attack_stamina - stamcalc);
+						if (self.anistate == ANISTATE_STEPCOUNTER)
 						{
-							self.stamina -= (self.attack_stamina - stamcalc);
-							if (self.anistate == ANISTATE_STEPCOUNTER)
-							{
-								self.melee_finished = time + 1.5;
-								self.lockview_finished = time + 1.5;
-								self.velocitypush_finished = time + 0.75;
-								self.stepdodge_counter = time; // Turn off counter
-							}
-							else
-							{
-								self.melee_finished = time + self.attack_speed;
-								self.lockview_finished = time + self.attack_speed;
-								if (self.attack_type != 4)
-									self.velocitypush_finished = time + (self.attack_speed / 4);
-							}
+							self.melee_finished = time + 1.5;
+							self.lockview_finished = time + 1.5;
+							self.velocitypush_finished = time + 0.75;
+							self.stepdodge_counter = time; // Turn off counter
+						}
+						else
+						{
+							self.melee_finished = time + self.attack_speed;
+							self.lockview_finished = time + self.attack_speed;
+							if (self.attack_type != 4)
+								self.velocitypush_finished = time + (self.attack_speed / 4);
 						}
 					}
 				}
 			}
-			else if (self.blockvalue > 0)
-			{
-				self.anistate = ANISTATE_BASH;
-				DoAttack_ShieldBash();
-			}
+		}
+		else if (self.blockvalue > 0)
+		{
+			self.anistate = ANISTATE_BASH;
+			DoAttack_ShieldBash();
 		}
 	}
 };

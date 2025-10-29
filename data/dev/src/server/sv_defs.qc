@@ -1890,6 +1890,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float dodge_finished;
 .float godmode_finished;
 .float stepdodge_counter;
+.float menushut_finished;
 
 // Animation States
 .float anistate;

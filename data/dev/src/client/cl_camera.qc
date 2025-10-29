@@ -96,4 +96,6 @@ void() Camera_Third =
 		setviewprop(VF_VIEWENTITY, 1);
 	else
 		setviewprop(VF_VIEWENTITY, 0.0);
+
+	camera_gdist = dist;
 };
