@@ -368,7 +368,7 @@ void() monster_ai_think =
 				return;
 			}
 
-			setorigin(self, self.saveorigin);
+			setorigin(self, self.saveorigin + v_up * 5);
 			self.enemy = world;
 			self.goalentity = world;
 			self.movetype = MOVETYPE_STEP;
