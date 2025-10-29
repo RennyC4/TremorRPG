@@ -123,7 +123,8 @@ void() CSQC_LockOn_Update =
         lockon_angles_y += delta_y * frametime * (smooth * 0.75);
 
         // Apply yaw; leave pitch (X) alone
-        setproperty(VF_CL_VIEWANGLES_Y, lockon_angles_y);
+		setproperty(VF_ANGLES, lockon_angles);
+		setproperty(VF_CL_VIEWANGLES_Y, lockon_angles_y);
     }
 
     // Auto-unlock or cleanup

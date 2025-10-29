@@ -307,7 +307,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 			
 			damage = ceil(damage); // round up final damage output
 			if (self.attack_type == 1) // Slashing uses radius for cleave
-				DoRadiusDamage(self, self.origin + v_forward * 32, self.attack_length * 1.75, damage, FALSE, FALSE);
+				DoRadiusDamage(self, self.origin + v_forward * 48, self.attack_length * 1.35, damage, FALSE, FALSE);
 			else
 			{
 				DoDamage(trace_ent, self, damage, FALSE);
