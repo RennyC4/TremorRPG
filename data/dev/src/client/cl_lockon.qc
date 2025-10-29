@@ -1,143 +1,189 @@
-const float lock_on_fov = 0.86;
-const float lock_on_dist = 2000;
+// ============================
+// CONFIG
+// ============================
+const float LOCK_ON_FOV  = 0.86;
+const float LOCK_ON_DIST = 2000;
 
 float lock_on_active;
 entity lock_on_target;
+entity lockon_focus; // smoothed tracking entity
+float lockon_smoothness = 8; // higher = faster snapping
+vector lockon_angles;
 
-float(vector a, vector b) vdot = {return a_x * b_x + a_y * b_y + a_z * b_z;};
+// Utility
+float(vector a, vector b) vdot = { return a_x * b_x + a_y * b_y + a_z * b_z; };
 
+// ============================
+// VISIBILITY CHECK
+// ============================
 float(entity targ) LockOn_Visible =
 {
 	vector start = self.origin + self.view_ofs;
-	vector end = targ.origin + targ.view_ofs; // add nudge?
+	vector end   = targ.origin + targ.view_ofs;
 
 	traceline(start, end, TRUE, world);
 	if (trace_fraction == 1 || trace_ent == targ)
-		return TRUE; // clear line of sight return FALSE; 
+		return TRUE;
+	return FALSE;
 };
 
+// ============================
+// LOCK-ON UI DRAWING
+// ============================
 void(vector where) CSQC_LockOn_Plaques =
 {
 	vector plaque_coord = project(where);
 
-	if (plaque_coord_y > g_height / 2) // snap plaque
+	if (plaque_coord_y > g_height / 2)
 		plaque_coord_y = g_height / 2;
 
-	plaque_coord_x -= 16; // center it
+	plaque_coord_x -= 16;
 	plaque_coord_y -= 16;
 
 	if (plaque_coord_z > 0)
 	{
-		if (lock_on_target.classname == "player")
-		{
-			drawstring(plaque_coord+[1,1], lock_on_target.netname, [10, 10], [0, 0, 0], 1, 0); // shadow
-			drawstring(plaque_coord, lock_on_target.netname, [10, 10], [1, 1, 1], 1, 0);
-		}
-		else
-		{
-			drawstring(plaque_coord+[1,1], lock_on_target.displayname, [10, 10], [0, 0, 0], 1, 0); // shadow
-			drawstring(plaque_coord, lock_on_target.displayname, [10, 10], [1, 1, 1], 1, 0);
-		}
+		string name = (lock_on_target.classname == "player") ?
+			lock_on_target.netname : lock_on_target.displayname;
+
+		drawstring(plaque_coord + [1,1], name, [10,10], [0,0,0], 1, 0);
+		drawstring(plaque_coord, name, [10,10], [1,1,1], 1, 0);
 	}
 
-	// draw bar + level
+	// health bar
 	plaque_coord_x -= 12;
 	plaque_coord_y += 8;
-
 	vector hbar_size = '50 4 0';
-	hbar_size_x = (lock_on_target.health / lock_on_target.max_health) * hbar_size_x; // keep bar updated
+	hbar_size_x = (lock_on_target.health / lock_on_target.max_health) * hbar_size_x;
 	if (plaque_coord_z > 0)
 	{
-		drawfill(plaque_coord + [1 , 3], hbar_size, '0 0 0', 1, 0); // shadow
-		drawfill(plaque_coord + [0 , 2], hbar_size, '0.5 0 0', 1, 0);
+		drawfill(plaque_coord + [1,3], hbar_size, '0 0 0', 1, 0);
+		drawfill(plaque_coord + [0,2], hbar_size, '0.5 0 0', 1, 0);
 	}
 
+	// level
 	plaque_coord_x += 28;
 	string lvl = ftos(lock_on_target.level);
 	if (plaque_coord_z > 0)
 	{
-		drawstring(plaque_coord + [25, -1], lvl, [10, 10], [0, 0, 0], 1, 0); // shadow
-		drawstring(plaque_coord + [24, -2], lvl, [10, 10], [1, .8, 0], 1, 0);
+		drawstring(plaque_coord + [25,-1], lvl, [10,10], [0,0,0], 1, 0);
+		drawstring(plaque_coord + [24,-2], lvl, [10,10], [1,.8,0], 1, 0);
 	}
-	//
-	//
 
-	// crosshair on target
+	// crosshair
 	vector target_coord = project(where);
 	target_coord_x -= 32;
 	target_coord_y -= 32;
-
-	if (target_coord_y > g_height / 1.75) // snap target crosshair
+	if (target_coord_y > g_height / 1.75)
 		target_coord_y = g_height / 1.75;
-	
 	if (target_coord_z > 0)
-		drawpic(target_coord, "progs/targetdot.spr_0", [64, 64], '1 1 1', 1, 0);
+		drawpic(target_coord, "progs/targetdot.spr_0", [64,64], '1 1 1', 1, 0);
 };
 
-vector lockon_angles;
 void() CSQC_LockOn_Update =
 {
-	float player_health = getstatf(STAT_HEALTH);
-	float atbonfire = getstatf(STAT_BONFIRE);
+    float player_health = getstatf(STAT_HEALTH);
+    float atbonfire = getstatf(STAT_BONFIRE);
 
-	if (lock_on_active && lock_on_target && lock_on_target.health > 0)
-	{
-		vector dir = normalize(lock_on_target.origin - vPlayerOrigin); // don't change vPlayerOrigin, otherwise things break
-		vector ang = vectoangles(dir);
+    // Smooth follow target
+    if (lock_on_active && lock_on_target && lock_on_target.health > 0)
+    {
+        if (!lockon_focus)
+        {
+            lockon_focus = spawn();
+            lockon_focus.origin = lock_on_target.origin + lock_on_target.view_ofs;
+        }
 
-		setproperty(VF_ANGLES, ang);
-		setproperty(VF_CL_VIEWANGLES_Y, ang_y);
+        // Adjust smoothing speed by distance (optional)
+        float dist = vlen(lock_on_target.origin - vPlayerOrigin);
+        float smooth = lockon_smoothness;
+        if (dist < 800)
+            smooth = 12;
+        else if (dist > 1500)
+            smooth = 6;
 
-		//setproperty(VF_CL_VIEWANGLES, ang);
-		lockon_angles = ang;
-	}
+        // Smooth position toward target
+        vector target_pos = lock_on_target.origin + lock_on_target.view_ofs;
+        vector diff = target_pos - lockon_focus.origin;
+        lockon_focus.origin += diff * frametime * smooth;
 
-	// auto unlock
-	if (lock_on_active && (!lock_on_target || player_health <= 0 || atbonfire || lock_on_target.health <= 0 || vlen(lock_on_target.origin - vPlayerOrigin) > lock_on_dist || lock_on_target.ai_mode == AI_RUNBACK))
-	{
-		lock_on_target = world;
-		lock_on_active = FALSE;
-		sendevent("PitchUpdate", "v", lockon_angles);
-	}
+        // ---------------------------
+        // SMOOTH HORIZONTAL ROTATION ONLY
+        // ---------------------------
+        vector dir = lockon_focus.origin - vPlayerOrigin;
+
+        // Compute yaw only
+        float yaw_target = vectoyaw([dir_x, dir_y, 0]);
+
+        // Normalize delta to avoid wrap-around jitter
+        float delta_y = yaw_target - lockon_angles_y;
+        if (delta_y > 180) delta_y -= 360;
+        else if (delta_y < -180) delta_y += 360;
+
+        // Smooth interpolation for yaw
+        lockon_angles_y += delta_y * frametime * (smooth * 0.75);
+
+        // Apply yaw; leave pitch (X) alone
+        setproperty(VF_CL_VIEWANGLES_Y, lockon_angles_y);
+    }
+
+    // Auto-unlock or cleanup
+    if (lock_on_active && (!lock_on_target
+        || player_health <= 0
+        || atbonfire
+        || lock_on_target.health <= 0
+        || vlen(lock_on_target.origin - vPlayerOrigin) > LOCK_ON_DIST
+        || lock_on_target.ai_mode == AI_RUNBACK))
+    {
+        lock_on_target = world;
+        lock_on_active = FALSE;
+
+        if (lockon_focus)
+        {
+            remove(lockon_focus);
+            lockon_focus = world;
+        }
+
+        // Keep current pitch as-is; update yaw
+        sendevent("PitchUpdate", "v", lockon_angles);
+    }
 };
 
+
+// ============================
+// LOCK-ON TOGGLE
+// ============================
 void() CSQC_LockOn_Toggle =
 {
-	if (lock_on_active) // unlock
+	if (lock_on_active)
 	{
 		lock_on_active = FALSE;
 		lock_on_target = world;
+		if (lockon_focus) { remove(lockon_focus); lockon_focus = world; }
 		sendevent("PitchUpdate", "v", lockon_angles);
 		return;
 	}
 
 	entity best = world;
-	float best_dist = lock_on_dist;
+	float best_dist = LOCK_ON_DIST;
 	vector player_ang = getproperty(VF_ANGLES);
 	makevectors(player_ang);
-
 	vector forward = v_forward;
 
-	// search for monsters
+	// find monsters
 	for (entity e = world; (e = find(e, classname, "monster")); )
 	{
-		// skip dead or invalid
 		if (!e || e.health <= 0 || e.ai_mode == AI_RUNBACK || e == self)
 			continue;
 
 		vector dir = e.origin - self.origin;
 		float dist = vlen(dir);
-		if (dist > lock_on_dist)
-			continue;
-
+		if (dist > LOCK_ON_DIST) continue;
 		dir = normalize(dir);
 
 		float dot = vdot(forward, dir);
-
-		if (dot < lock_on_fov)	continue;
+		if (dot < LOCK_ON_FOV) continue;
 		if (!LockOn_Visible(e)) continue;
 
-		// closer target wins
 		if (dist < best_dist)
 		{
 			best_dist = dist;
@@ -145,26 +191,21 @@ void() CSQC_LockOn_Toggle =
 		}
 	}
 
-	// search for players
+	// find players
 	for (entity e = world; (e = find(e, classname, "player")); )
 	{
-		// skip dead or invalid
 		if (!e || e.health <= 0 || e.pvp != 1 || e == self)
 			continue;
 
 		vector dir = e.origin - self.origin;
 		float dist = vlen(dir);
-		if (dist > lock_on_dist)
-			continue;
-
+		if (dist > LOCK_ON_DIST) continue;
 		dir = normalize(dir);
 
 		float dot = vdot(forward, dir);
-
-		if (dot < lock_on_fov)	continue;
+		if (dot < LOCK_ON_FOV) continue;
 		if (!LockOn_Visible(e)) continue;
 
-		// closer target wins
 		if (dist < best_dist)
 		{
 			best_dist = dist;
@@ -176,6 +217,16 @@ void() CSQC_LockOn_Toggle =
 	{
 		lock_on_target = best;
 		lock_on_active = TRUE;
+
+		// spawn focus entity
+		if (!lockon_focus)
+			lockon_focus = spawn();
+		lockon_focus.origin = lock_on_target.origin + lock_on_target.view_ofs;
+
+		// set initial direction
+		vector dir = normalize(lockon_focus.origin - vPlayerOrigin);
+		lockon_angles = vectoangles(dir);
+
 		sendevent("PitchUpdate", "v", lockon_angles);
 	}
 	else
@@ -185,21 +236,21 @@ void() CSQC_LockOn_Toggle =
 	}
 };
 
+// ============================
+// LOCK-ON CYCLE
+// ============================
 void() CSQC_LockOn_Cycle =
 {
 	if (!lock_on_active)
-		return; // no lock to cycle through
+		return;
 
 	entity best = world;
 	float best_dot = -1;
-
 	vector player_ang = getproperty(VF_ANGLES);
 	makevectors(player_ang);
-
 	vector forward = v_forward;
 	entity current = lock_on_target;
 
-	// search for monsters
 	for (entity e = world; (e = find(e, classname, "monster")); )
 	{
 		if (!e || e.health <= 0 || e == current || e.ai_mode == AI_RUNBACK || e == self)
@@ -207,12 +258,8 @@ void() CSQC_LockOn_Cycle =
 
 		vector dir = normalize(e.origin - self.origin);
 		float dot = vdot(forward, dir);
-
-		if (dot < lock_on_fov)	continue;
+		if (dot < LOCK_ON_FOV) continue;
 		if (!LockOn_Visible(e)) continue;
-
-		// prioritize the next one clockwise in screen space
-		// or just pick the next with higher dot (closer to forward)
 		if (dot > best_dot)
 		{
 			best_dot = dot;
@@ -220,7 +267,6 @@ void() CSQC_LockOn_Cycle =
 		}
 	}
 
-	// search for players
 	for (entity e = world; (e = find(e, classname, "player")); )
 	{
 		if (!e || e.health <= 0 || e == current || e.pvp != 1 || e == self)
@@ -228,12 +274,8 @@ void() CSQC_LockOn_Cycle =
 
 		vector dir = normalize(e.origin - self.origin);
 		float dot = vdot(forward, dir);
-
-		if (dot < lock_on_fov)	continue;
+		if (dot < LOCK_ON_FOV) continue;
 		if (!LockOn_Visible(e)) continue;
-
-		// prioritize the next one clockwise in screen space
-		// or just pick the next with higher dot (closer to forward)
 		if (dot > best_dot)
 		{
 			best_dot = dot;
@@ -242,8 +284,10 @@ void() CSQC_LockOn_Cycle =
 	}
 
 	if (best && best != world)
+	{
 		lock_on_target = best;
-	else
-		lock_on_target = current; // optional: reset if no valid targets left
+		if (lockon_focus)
+			lockon_focus.origin = lock_on_target.origin + lock_on_target.view_ofs;
+	}
 	sendevent("PitchUpdate", "v", lockon_angles);
 };
