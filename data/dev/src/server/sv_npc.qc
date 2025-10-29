@@ -147,6 +147,9 @@ void() bonfire_use =
 	{
 		if (self.user.bonfire == FALSE)
 		{
+			self.user.lantern = FALSE;
+			self.user.effects &= ~EF_BRIGHTLIGHT;
+
 			// Restore stats
 			self.user.health = self.user.max_health;
 			self.user.mana = self.user.max_mana;
