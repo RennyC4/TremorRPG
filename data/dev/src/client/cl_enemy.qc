@@ -138,8 +138,6 @@ float(void) Monster_PreDraw =
 {
     Monster_Animate();
 	Skeleton_ObjectDraw();
-
-/*
     self.movetype = MOVETYPE_STEP;
 
 	// prepare rollback
@@ -167,7 +165,7 @@ float(void) Monster_PreDraw =
     setorigin(self, OldOrigin);
     self.angles = OldAngles;
     self.movetype = MOVETYPE_NONE;
-*/
+
     addentity(self);
 
     return PREDRAW_NEXT;
