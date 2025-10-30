@@ -36,7 +36,7 @@ void(entity player) SendMagicSpells =
 	WriteByte(MSG_MULTICAST, player.spell_count);
     for (i = 0; i < player.spell_count; i++)
         WriteString(MSG_MULTICAST, player.spell[i]);
-	multicast(self.origin, MULTICAST_ONE_R);
+	multicast(player.origin, MULTICAST_ONE_R);
 };
 
 string(string s) RemoveSpellPrefix =
@@ -185,10 +185,10 @@ void(float damage, vector ang) Cast_Thorn =
 void(float amount) Cast_LightHeal =
 {
 	amount = amount + (self.skill_defensivemagic * 0.1);
+	amount = ceil(amount);
 	self.health += amount;
 	if (self.health > self.max_health)
 		self.health = self.max_health;
-	amount = ceil(amount);
 
 	string eventlog_print = (strcat("^6Light Heal: ^2+", ftos(amount), "hp\n"));
 	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));

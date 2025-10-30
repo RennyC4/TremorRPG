@@ -192,41 +192,86 @@ void() monster_ai_attack =
 	self.nextthink = time + 0.1;
 };
 
+.float lateral_wiggle;
 void() monster_ai_move =
 {
-	if (self.stagger_finished > time)
-		return;
-	if (self.melee_finished > time)
-		return;
+    if (self.stagger_finished > time)
+        return;
+    if (self.melee_finished > time)
+        return;
 
-	if (self.enemy)
-	{
-		if (self.ai_backup_finished > time && self.melee_finished < time)
-		{
-			walkmove(self.angles_y, self.speed * -1); // keep monster slightly back from target
-			self.anistate = ANISTATE_RUN;
-		}
+    // enemy behavior
+    if (self.enemy)
+    {
+        vector to_enemy = self.enemy.origin - self.origin;
+        float dist_to_enemy = vlen(to_enemy);
 
-		if (range(self.enemy) == RANGE_CLOSE)
-			self.ai_backup_finished = time + random_range(0.7, 2.5); // too close, back up a bit
-		if (range(self.enemy) == RANGE_MELEE)
-			return; // don't move
-	}
+        // Dynamic back-off if too close
+        float safe_dist = 40 + random(10);
+        if (dist_to_enemy < safe_dist)
+        {
+            walkmove(self.angles_y, -self.speed);
+            self.anistate = ANISTATE_RUN;
+            self.ai_backup_finished = time + random_range(0.7, 2.0);
+            return;
+        }
 
-	if (self.goalentity)
-		movetogoal(self.speed);
+        // stop moving if in melee range
+        if (range(self.enemy) == RANGE_MELEE)
+            return;
 
-	if (self.flags & FL_ONGROUND) // allow monsters to slide off stuff, this is considered a hack
-		self.flags &= ~FL_ONGROUND;
+        // circle player slightly
+        if (random() < 0.2)
+        {
+            walkmove(self.angles_y + random_range(-20, 20), self.speed);
+            return;
+        }
+    }
 
-	/*
-	if (self.ai_mode == AI_RUNBACK) // monster is running back to origin
-	{
-		self.velocity = '0 0 0';
-		self.flags &= ~FL_ONGROUND;
-		vector forward = v_forward * 150;
-		self.velocity = forward;
-	}*/
+    // goal movement
+    if (self.goalentity)
+    {
+        // lateral wiggle
+        if (self.lateral_wiggle == __NULL__ || random() < 0.05)
+            self.lateral_wiggle = random_range(-10, 10); // small yaw offset
+
+        float target_yaw = self.angles_y + self.lateral_wiggle;
+        float delta_yaw = target_yaw - self.angles_y;
+        if (delta_yaw > 180) delta_yaw -= 360;
+        if (delta_yaw < -180) delta_yaw += 360;
+        if (delta_yaw > 5) delta_yaw = 5;
+        if (delta_yaw < -5) delta_yaw = -5;
+        self.angles_y += delta_yaw; // gradual yaw blending
+
+        makevectors([0, self.angles_y, 0]);
+
+        // slight diagonal movement (forward + small sidestep)
+        vector move_dir = v_forward * self.speed + v_right * (self.speed * 0.2);
+
+        // trace forward for obstacles
+        tracebox(self.origin, self.mins, self.maxs, self.origin + move_dir, FALSE, self);
+
+        if (trace_fraction < 1) // forward blocked — try sidestep smoothly
+        {
+            float sidestep_dist = self.speed * 0.5;
+
+            tracebox(self.origin, self.mins, self.maxs, self.origin + v_right * sidestep_dist, FALSE, self);
+            if (trace_fraction > 0.5)
+                walkmove(vectoyaw(v_right), sidestep_dist);
+            else
+                walkmove(vectoyaw(-v_right), sidestep_dist);
+        }
+        else // step-up / vertical adjustment
+        {
+            vector temp_goal = self.goalentity.origin;
+            temp_goal.z += 8; // small vertical tweak
+            float yaw = vectoyaw(temp_goal - self.origin);
+            walkmove(yaw, self.speed);
+        }
+    }
+
+    if (self.flags & FL_ONGROUND) // slide off small obstacles
+        self.flags &= ~FL_ONGROUND;
 };
 
 void() monster_ai_spawnrunback =

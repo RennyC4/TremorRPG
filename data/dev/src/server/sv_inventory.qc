@@ -35,15 +35,15 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 	if (price < 1)
 		price = 1;
 
+	float gold_ok = FALSE;
 	if (self.gold < price)
 	{
 		sprint(self, PRINT_HIGH, "Not enough ^3gold^7!\n");
 		return;
 	}
 	else
-		float gold_ok = TRUE;
+		gold_ok = TRUE;
 
-	
 	float count = 1;
 	string lname = string_tolower(itemname); // case insensitivity
 	if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
@@ -429,9 +429,10 @@ void() Item_Touch =
 
 	float check = AddToInventory(other, self.netname, 1); // self.netname is the item's identifier string
 
+	float h;
 	if (HasItem(other, "Health Potion"))
 	{
-		float h = GetItemCount(other, "Health Potion");
+		h = GetItemCount(other, "Health Potion");
 		if (h > 2)
 			check = FALSE;
 	}

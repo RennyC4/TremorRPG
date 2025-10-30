@@ -27,10 +27,8 @@ void() npc_use =
 	if (v >= 0)
 	{
 		while ((line = fgets(v)))
-		{
 			contents = strcat(contents, line, "\n");
-			self.npc_dialog = contents;
-		}
+		self.npc_dialog = contents;
 	}
 	else
 	{
