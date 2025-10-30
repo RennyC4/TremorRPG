@@ -236,6 +236,29 @@ void() OtherPlayer_Anistate =
 		}
 	}
 
+	if (self.anistate == ANISTATE_PARRY)
+	{
+		if (self.frame != frameforname(self.modelindex, "Parry"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Parry");
+			self.anim_state = ANIM_PARRY;
+			self.anim_attacking = FALSE; // turn off attack animation flag
+		}
+		speed = 1.25;
+	}
+
+	if (self.anistate == ANISTATE_IMPACT)
+	{
+		if (self.frame != frameforname(self.modelindex, "Impact"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Impact");
+			self.anim_state = ANIM_IMPACT;
+			self.anim_attacking = FALSE; // turn off attack animation flag
+		}
+	}
+
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
