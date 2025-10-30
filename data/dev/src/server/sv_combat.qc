@@ -737,6 +737,19 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
                 dmg = damage * 0.3;
         }
 
+        // -------------------------------
+        // PVP checks
+        // -------------------------------
+        if (attacker.classname == "player" && targ.classname == "player")
+        {
+            // If either player has PVP disabled, skip damage
+            if (attacker.pvp != 1 || targ.pvp != 1)
+                continue;
+
+            attacker.incombat = targ.incombat = TRUE;
+            attacker.incombat_finished = targ.incombat_finished = time + 30;
+        }
+
         // Apply jump attack bonus
         if (jumpattack)
         {
