@@ -744,6 +744,35 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
             targ.jumpattack_hit_finished = time + 2;
         }
 
+		// -------------------------------
+		// Backstab check
+		// -------------------------------
+		float backstab = FALSE;
+		float bs_damage = 0;
+
+		if (check_backstab(targ) && !jumpattack)
+		{
+			bs_damage = (attacker.skill_backstab * dmg);
+			if (attacker.attack_type == 2)
+				bs_damage += ceil(attacker.skill_pierce * (dmg / 1.5));
+			if (bs_damage < 1)
+				bs_damage = 1;
+			backstab = TRUE;
+
+			sound(targ, CHAN_AUTO, "backstab.wav", 1, ATTN_NORM);
+
+			if (attacker.classname == "player")
+				stuffcmd(attacker, sprintf("conecho event ^1Backstab! +%g damage !!\n", bs_damage));
+
+			if (targ.classname == "player" && targ.stagger_finished < time)
+			{
+				stuffcmd(targ, "conecho event ^1You've been staggered!\n");
+				targ.lockview_finished = targ.stagger_finished = time + 3;
+			}
+
+			dmg += bs_damage;
+		}
+
         // -------------------------------
         // Block / Parry logic
         // -------------------------------
