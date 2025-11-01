@@ -6,7 +6,7 @@ void(entity player, string itemname, float count) RemoveFromInventory;
 void(string itemname, float id) Player_EquipItem =
 {
 	string line;
-	string fix_itemname = string_remove_spaces(itemname);
+	string fix_itemname = string_tolower(string_remove_spaces(itemname));
 	string readfile = strcat("itm_", fix_itemname, ".txt");
 
 	float v = fopen(readfile, FILE_READ);
