@@ -1882,7 +1882,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 	float v = fopen(add_ext, FILE_READ);
 	if (v >= 0) // User exists
 	{
-		print ("That characters name is already taken\n");
+		sprint (self, PRINT_HIGH, "That characters name is already taken\n");
 		return;
 	}
 	else
