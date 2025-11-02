@@ -1,1 +1,1 @@
-172.218.252.12
+thinkcloud.ddns.net:27500
