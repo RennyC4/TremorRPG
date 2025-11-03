@@ -135,6 +135,7 @@ name_command bindlist[] =
 	{ "Camera", "toggle_camera" },
 	{ "Target", "target" },
 	{ "Cycle Target", "targetcycle" },
+	{ "Player List", "+showscores" },
 };
 
 void(string id, vector pos, vector size, string name, string command) bind_button =
