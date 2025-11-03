@@ -113,7 +113,7 @@ void(string itemname) CSEv_PlayerSellItem_s =
 	string line;
 	float price = 0;
 
-	string fix_itemname = string_remove_spaces(itemname);
+	string fix_itemname = string_tolower(string_remove_spaces(itemname));
 	string readfile = strcat("itm_", fix_itemname, ".txt");
 	float v = fopen(readfile, FILE_READ);
 	if (v >= 0)
