@@ -123,7 +123,7 @@ name_command bindlist[] =
 	{ "Back", "+back" },
 	{ "Left", "+moveleft" },
 	{ "Right", "+moveright" },
-	{ "Jump", "+jump" },
+	{ "Jump / Dodge", "+jump" },
 	{ "Attack", "+attack" },
 	{ "Cast Magic", "cast" },
 	{ "Skills Menu", "show_character" },
