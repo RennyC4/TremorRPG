@@ -2,6 +2,7 @@
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
+void() ClientConnect = {};
 void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;};
 void(entity targ, float type) CSEv_Player_SaveChar;
 void(float type) PlayerSpawn;
@@ -1179,12 +1180,6 @@ void() PlayerPostThink =
 	Player_CastMagic();
 };
 
-void() ClientConnect =
-{
-	bprint(PRINT_HIGH, self.netname);
-	bprint(PRINT_HIGH, " enters the zone\n");
-};
-
 void() PlayerDeath =
 {
 	self.respawn_finished = time + 5;
@@ -1272,6 +1267,8 @@ void(float type) PlayerSpawn =
 			setmodel(self, "models/player_f.glb");
 			modelindex_player_f = self.modelindex;
 		}
+		bprint(PRINT_HIGH, self.netname);
+		bprint(PRINT_HIGH, " enters the zone\n");
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
@@ -1306,6 +1303,8 @@ void(float type) PlayerSpawn =
 			setmodel(self, "models/player_f.glb");
 			modelindex_player_f = self.modelindex;
 		}
+		bprint(PRINT_HIGH, self.netname);
+		bprint(PRINT_HIGH, " enters the zone\n");
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
