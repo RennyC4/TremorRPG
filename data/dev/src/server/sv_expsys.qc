@@ -21,7 +21,7 @@ void(entity targ) Player_CheckLevelUp =
         stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
 
         // Cap XP properly and calculate next level XP
-        targ.exp = targ.exp_next;  
+		targ.exp = targ.exp_oldnext = targ.exp_next;
         targ.exp_next = ceil(100 * (targ.level * targ.level * 1.15));
 
         pointparticles(PART_LEVELUP, targ.origin);

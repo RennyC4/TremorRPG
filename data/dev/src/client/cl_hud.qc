@@ -351,31 +351,30 @@ void() Draw_Stamina =
 
 void() Draw_Exp =
 {
-	float e = getstatf(STAT_EXP);
-	float e2 = getstatf(STAT_EXPNEEDED);
-	float e3 = getstatf(STAT_EXPOLDNEEDED);
+    float e  = getstatf(STAT_EXP);
+    float e2 = getstatf(STAT_EXPNEEDED);
+    float e3 = getstatf(STAT_EXPOLDNEEDED);
 
-	float disp = e - e3;
-	float disp_max = e2 - e3;
-	vector disp_bar = [0, g_width, 0];
+    float disp = e - e3;
+    float disp_max = e2 - e3;
+    float ratio = bound(0, disp / disp_max, 1); // prevents overflow if exp > next
 
-	//
-	// Draw Experience
-	//
+    // Bar positions and dimensions
+    vector pos;
+    pos_x = g_width * 0.0001;
+    pos_y = g_height * 0.99;
+    pos_z = 0;
 
-	vector pos;
-	pos_x = g_width * 0.0001;
-	pos_y = g_height * 0.99;
-	pos_z = 0;
+    float bar_height = 8;
+    float bar_width  = g_width;
 
-	// Bar
-	vector ebar_size, ebar_size_max;
-	ebar_size_x = (disp / disp_max) * g_width; // keep bar updated
-	ebar_size_y = 8;
-	ebar_size_z = 0;
+    // Full bar background
+    vector full_size = [bar_width, bar_height, 0];
+    drawfill(pos, full_size, '0 0 0', 0.35, 0); // dark background
 
-	drawfill(pos + '1 1 0', ebar_size, '1 1 0', 0.25, 0);
-	drawfill(pos + '1 1 0', disp_bar, '1 1 0', 0.08, 0); // Full bar display
+    // Filled exp portion
+    vector fill_size = [bar_width * ratio, bar_height, 0];
+    drawfill(pos, fill_size, '1 1 0', 0.25, 0); // yellow exp fill
 };
 
 //
