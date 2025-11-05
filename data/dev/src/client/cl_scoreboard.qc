@@ -11,12 +11,12 @@ teamscores_t cl_teamscores_ranked[4];
 
 float(string pants1, string pants2) ComparePants =
 {
-	local vector v1, v2;
+	vector v1, v2;
 
 	v1 = stov(pants1);
 	v2 = stov(pants2);
 
-	local float dist, is_match;
+	float dist, is_match;
 	dist = vlen(v1 - v2);
 
 	is_match = 0;
@@ -186,10 +186,11 @@ void(vector virtmin, vector virtsize) Hud_Scoreboard =
 	float test = autocvar(cl_hudtest, 0);
 
 	// for counting players
-	local float players = 0;
+	float players = 0;
 
+	/*
 	// for printing team scores
-	local float is_teamplay = getstatf(GAME_TEAMPLAY);
+	float is_teamplay = getstatf(GAME_TEAMPLAY);
 	if (autocvar(cl_teams, 0) || is_teamplay)
 	{
 		for (float t = 0 ; t < 4 ; t++)
@@ -197,7 +198,7 @@ void(vector virtmin, vector virtsize) Hud_Scoreboard =
 			if (cl_teamscores_ranked[t].is_team > 0)
 			{
 				players++;
-				local string name = cl_teamscores_ranked[t].teamname;
+				string name = cl_teamscores_ranked[t].teamname;
 				drawfill(pos+[0,0]+[0,10*players], ([40,8]), stov(cl_teamscores_ranked[t].bottomcolor), .75, 0);
 				drawstring(pos+[8,0]+[0,10*players], strpad(-3, ftos(cl_teamscores_ranked[t].frags)), [8,8], [1,1,1], 1, 0);
 				drawstring(pos+[64,0]+[0,10*players], strconv(0,2,2, name), [8,8], [1,1,1], 1, 0);
@@ -205,6 +206,7 @@ void(vector virtmin, vector virtsize) Hud_Scoreboard =
 		}
 		players++;
 	}
+	*/
 
 	players++;
 	players++;
@@ -225,18 +227,14 @@ void(vector virtmin, vector virtsize) Hud_Scoreboard =
 		float isspec = stof(getplayerkeyvalue(i, "*spectator"));
 		float frags = stof(getplayerkeyvalue(i, "frags"));
 		string ping = getplayerkeyvalue(i, "ping");
-		vector top = stov(getplayerkeyvalue(i, "topcolor_rgb"));
-		vector bot = stov(getplayerkeyvalue(i, "bottomcolor_rgb"));
 
 		if (player_localentnum == stof(getplayerkeyvalue(i, "viewentity")))
 		{
 			drawfill([(virtsize_x/2)-140,pos_y-2]+[0,10*players], [280,12], [0,0,0], 0.5, 0);
-			drawfill([(virtsize_x/2)-140,pos_y-2]+[0,10*players], [280,12], bot, 0.25, 0);
+			//drawfill([(virtsize_x/2)-140,pos_y-2]+[0,10*players], [280,12], bot, 0.25, 0);
 		}
 		if (ping != "0" || test)
 			drawstring(pos-[8*5,0]+[6,2]+[0,10*players], strpad(-4, strconv(0,2,2, ping)), [6,6], [1,1,1], 1, 0);
-		drawfill(pos+[0,0]+[0,10*players], [40,4], top, 0.75, 0);
-		drawfill(pos+[0,4]+[0,10*players], [40,4], bot, 0.75, 0);
 		drawstring(pos+[8,0]+[0,10*players], strpad(-3, ftos(frags)), [8,8], [1,1,1], 1, 0);
 		drawstring(pos+[64,0]+[0,10*players], name, [8,8], [1,1,1], 1, 0);
 	}
