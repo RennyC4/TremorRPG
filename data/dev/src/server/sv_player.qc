@@ -534,8 +534,8 @@ void() Player_Use =
 		self.anistate = ANISTATE_NONE;
 		self.bonfire = FALSE;
 		self.bonfire_finished = time + 1; // fixes input bleed
-		self.user.pvp_autoflagged = FALSE;
-		self.user.pvpenable_count = 0;
+		self.pvp_autoflagged = FALSE;
+		self.pvpenable_count = 0;
 		CSEv_Player_SaveChar(self, 0); // full save user character
 		return;
 	}
