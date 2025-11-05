@@ -431,9 +431,11 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.health = readshort();
 		self.max_health = readshort();
 		self.level = readbyte();
+		/*
 		self.colormod_x = readcoord();
 		self.colormod_y = readcoord();
 		self.colormod_z = readcoord();
+		*/
 		self.pvp = readbyte();
 		self.loggedin = readbyte();
 		self.main_hand = readstring();

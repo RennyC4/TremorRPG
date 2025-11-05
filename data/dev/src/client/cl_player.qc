@@ -655,6 +655,8 @@ float(void) Player_PreDraw =
 	}
 	else // other players
 	{
+		self.angles_x = 0; // remove drawing other players pitch
+
 		if (self.anistate)
 			OtherPlayer_Anistate();
 		else

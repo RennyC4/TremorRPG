@@ -217,7 +217,6 @@ void() OtherPlayer_Anistate =
 	{
 		if (self.frame != frameforname(self.modelindex, "StepCounter"))
 		{
-			self.anim_attacking = FALSE; // turn off attack animation flag
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "StepCounter");
 			self.anim_state = ANIM_STEPCOUNTER;
@@ -228,7 +227,6 @@ void() OtherPlayer_Anistate =
 	{
 		if (self.frame != frameforname(self.modelindex, "Bash"))
 		{
-			self.anim_attacking = FALSE; // turn off attack animation flag
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Bash");
 			self.anim_state = ANIM_BASH;
@@ -243,7 +241,6 @@ void() OtherPlayer_Anistate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Parry");
 			self.anim_state = ANIM_PARRY;
-			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
 		speed = 1.25;
 	}
@@ -255,7 +252,6 @@ void() OtherPlayer_Anistate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Impact");
 			self.anim_state = ANIM_IMPACT;
-			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
 	}
 
@@ -654,14 +650,14 @@ void() Player_Animate =
     // Spell Charging Animation
     // -----------------------------
 	//if (self.cast_finished > time - 0.5) // add a 0.5 of leeway
-	if (self.cast_finished > time)
+	if (self.anistate == ANISTATE_CASTING)
 	{
         if (self.anim_state != ANIM_CASTING)
         {
             self.frame = frameforname(self.modelindex, "Casting");
             self.frame1time = 0;
             self.anim_state = ANIM_CASTING;
-			self.anim_attacking = FALSE; // turn off attack animation flag
+			self.anim_attacking = FALSE; // turn off attack animation flag 
         }
 		speed *= frametime;
 

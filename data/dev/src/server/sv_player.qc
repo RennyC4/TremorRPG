@@ -851,9 +851,6 @@ void() CSEv_User_StartAttack_ =
 							self.anistate = ANISTATE_STEPCOUNTER;
 					}
 
-					// Disabled as it interferes with stealth attacks
-					//Player_RemoveCrouch();
-
 					if (!nobow)
 					{
 						self.stamina -= (self.attack_stamina - stamcalc);
@@ -867,9 +864,11 @@ void() CSEv_User_StartAttack_ =
 						else
 						{
 							self.melee_finished = time + self.attack_speed;
-							self.lockview_finished = time + self.attack_speed;
 							if (self.attack_type != 4)
+							{
 								self.velocitypush_finished = time + (self.attack_speed / 4);
+								self.lockview_finished = time + self.attack_speed;
+							}
 						}
 					}
 				}
@@ -1378,9 +1377,11 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteShort(MSG_ENTITY, self.max_health);
 	WriteByte(MSG_ENTITY, self.level);
 
+	/*
 	WriteCoord(MSG_ENTITY, self.colormod_x); //
 	WriteCoord(MSG_ENTITY, self.colormod_y); // colormod
 	WriteCoord(MSG_ENTITY, self.colormod_z); //
+	*/
 
 	WriteByte(MSG_ENTITY, self.pvp);
 	WriteByte(MSG_ENTITY, self.loggedin);

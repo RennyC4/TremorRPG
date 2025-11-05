@@ -219,8 +219,8 @@ void() Player_CastMagic = // called from player postthink
 	{
 		if (self.cast_finished_spell == "Light Heal")
 		{
-			self.spellani_finished = time + 2; // Delay movement so animation can play
 			self.anistate = ANISTATE_CASTSELF;
+			self.spellani_finished = time + 2; // Delay movement so animation can play
 			Cast_LightHeal(spellpower);
 			self.mana -= 20;
 		}
@@ -239,8 +239,17 @@ void(vector ang) CSEv_DoAttack_Magic_v = // CSQC
 		return;
 	if (self.melee_finished > time)
 		return;
+
+	// Player cancels spell during charge
 	if (self.cast_finished > time)
+	{
+		self.cast_finished = time;
+		self.cast_finished_spell = ""; // important: always clear this after the spell is fired, or else it'll refire
+		self.anistate = ANISTATE_NONE;
+
+		sprint (self, PRINT_HIGH, "^1Spell cancelled!\n");
 		return;
+	}
 
 	// calculate base spell power by selected spell
 	float spellpower = ceil(random_range(self.spell_power_min, self.spell_power_max));

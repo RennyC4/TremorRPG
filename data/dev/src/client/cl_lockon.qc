@@ -125,21 +125,40 @@ void() CSQC_LockOn_Update =
 
     if (lock_on_active && lock_on_target && lock_on_target.health > 0)
     {
-		if (lockon_focus) // use smoothed focus entity, not target directly
+        // --- EARLY AUTO-UNLOCK (PVP checks before any rotation) ---
+        if (
+            ((self.flags & FL_CLIENT) && self.pvp != 1 && (lock_on_target.flags & FL_CLIENT)) || // self turned off PVP
+            ((lock_on_target.flags & FL_CLIENT) && lock_on_target.pvp != 1)                     // target turned off PVP
+        )
+        {
+            sendevent("PitchUpdate", "v", lockon_angles);
+            lock_on_target = world;
+            lock_on_active = FALSE;
+
+            if (lockon_focus)
+            {
+                remove(lockon_focus);
+                lockon_focus = world;
+            }
+            return; // stop immediately so it doesn’t continue rotating
+        }
+
+        // --- Normal lock-on aim update ---
+        if (lockon_focus) // use smoothed focus entity, not target directly
             vector dir = normalize(lockon_focus.origin - vPlayerOrigin);
         else
             dir = normalize(lock_on_target.origin - vPlayerOrigin);
 
-		vector dir2 = normalize(lock_on_target.origin - vPlayerOrigin);
+        vector dir2 = normalize(lock_on_target.origin - vPlayerOrigin);
 
         vector target_ang = vectoangles(dir);
-		vector target_angx = vectoangles(dir2);
+        vector target_angx = vectoangles(dir2);
 
         // only yaw is smoothed
         lockon_angles_y = LerpYaw(lockon_angles_y, target_ang_y, lockon_smoothness, frametime);
 
         // keep pitch/roll instantaneous
-		lockon_angles_x = target_angx_x;
+        lockon_angles_x = target_angx_x;
         lockon_angles_z = target_ang_z;
 
         vector new_angles = [target_angx_x, lockon_angles_y, 0];
@@ -148,19 +167,26 @@ void() CSQC_LockOn_Update =
         setproperty(VF_CL_VIEWANGLES_Y, lockon_angles_y);
     }
 
-    // --- Auto unlock check (unchanged) ---
-    if (lock_on_active && (!lock_on_target || player_health <= 0 || atbonfire ||
-        lock_on_target.health <= 0 || vlen(lock_on_target.origin - vPlayerOrigin) > LOCK_ON_DIST ||
+    // --- Auto unlock (redundant safety) ---
+    if (lock_on_active && (
+        !lock_on_target ||
+        player_health <= 0 ||
+        atbonfire ||
+        lock_on_target.health <= 0 ||
+        ((self.flags & FL_CLIENT) && self.pvp != 1 && (lock_on_target.flags & FL_CLIENT)) ||
+        ((lock_on_target.flags & FL_CLIENT) && lock_on_target.pvp != 1) ||
+        vlen(lock_on_target.origin - vPlayerOrigin) > LOCK_ON_DIST ||
         lock_on_target.ai_mode == AI_RUNBACK))
     {
         sendevent("PitchUpdate", "v", lockon_angles);
         lock_on_target = world;
         lock_on_active = FALSE;
-        if (lockon_focus) 
-		{
-			remove(lockon_focus);
-			lockon_focus = world;
-		}
+
+        if (lockon_focus)
+        {
+            remove(lockon_focus);
+            lockon_focus = world;
+        }
     }
 };
 
@@ -209,7 +235,7 @@ void() CSQC_LockOn_Toggle =
 	// find players
 	for (entity e = world; (e = find(e, classname, "player")); )
 	{
-		if (!e || e.health <= 0 || e.pvp != 1 || e == self)
+		if (!e || e.health <= 0 || e.pvp != 1 || e == self || self.pvp != 1)
 			continue;
 
 		vector dir = e.origin - self.origin;
