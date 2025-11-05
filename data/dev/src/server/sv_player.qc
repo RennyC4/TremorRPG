@@ -477,11 +477,14 @@ void() CSEv_User_TogglePVP_ =
 		return;
 	}
 
+	// switch dimension hit then run the trace
+	self.dimension_hit = player_dimension_hit + 1;
 	tracebox(self.origin, self.mins, self.maxs, self.origin, MOVE_NORMAL, self);
 
 	if (trace_startsolid)
 	{
-		sprint(self, PRINT_HIGH, "PVP: ^3Can't enable — too close to another player!\n");
+		sprint(self, PRINT_HIGH, "PVP: ^3Can't enable, too close to another player!\n");
+		self.dimension_hit = player_dimension_hit;
 		return;
 	}
 
@@ -530,6 +533,8 @@ void() Player_Use =
 		self.anistate = ANISTATE_NONE;
 		self.bonfire = FALSE;
 		self.bonfire_finished = time + 1; // fixes input bleed
+		self.user.pvp_autoflagged = FALSE;
+		self.user.pvpenable_count = 0;
 		CSEv_Player_SaveChar(self, 0); // full save user character
 		return;
 	}
@@ -1127,7 +1132,7 @@ void() PlayerPostThink =
 		}
 		else // count
 		{
-			if (self.pvpenable_finished < time)
+			if (self.pvpenable_finished < time && !self.bonfire)
 			{
 				self.pvpenable_count += 1;
 				self.pvpenable_finished = time + 1;
