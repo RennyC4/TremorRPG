@@ -51,19 +51,15 @@ void() Draw_ToolTip =
 
 		tt_fix_x = stringwidth(tt_line, 1); // get length
 		if (tt_fix_x > largest_x)
-			largest_x += tt_fix_x; // record largest length string in a file
+			largest_x += tt_fix_x; // record the largest length string in a file
 
 		linepos_y += 10;
 
 		tt_size[0] = largest_x * 8.75; // 10 is font size?
 		tt_size[1] = linepos_y + 10;
 
-		if (_cursor_position_x > g_width / 1.5)
-		{
+		if (_cursor_position_x > g_width / 1.5) // Tool tip: move position
 			tt_pos_x = _cursor_position_x - (g_width / 12) - tt_size[0];
-			//print ("Tool tip: MOVE!\n");
-		}
-
 	}
 	drawfill(tt_pos, [tt_size[0],tt_size[1]], MENU_BG_DARK, 0.9, 0);
 	drawtextfield(tt_pos+[2.5,2.5], [tt_size[0],tt_size[1]], 3, tt_contents);
@@ -201,22 +197,21 @@ void() Draw_InCombatorPVP =
 
 	if (!pvp || pvp == 2)
 	{
-		if (incombat) // only show when in combat or PVP flagged
+		if (incombat) // only show when in combat
 			drawpic (pos, "progs/combat.png", size, '1 1 1', 1, 0);
 	}
 	else if (pvp == 1)
-		drawpic (pos, "progs/combat.png", size, '1 .25 .25', 1, 0); // PVP Icon	
+		drawpic (pos, "progs/combat.png", size, '1 .25 .25', 1, 0); // PVP icon
 };
+
+//
+// Draw Health
+//
 
 void() Draw_Health =
 {
 	float h = getstatf(STAT_HEALTH);
 	float hmax = getstatf(STAT_MAXHEALTH);
-
-	//
-	// Draw Health
-	//
-
 	vector pos = [30, (g_height - 38)];
 
 	// Bar
@@ -249,15 +244,14 @@ void() Draw_Health =
 	drawstring (pos, h2, '8 8 0', '1 1 1', 1, 0);
 };
 
+//
+// Draw Mana
+//
+
 void() Draw_Mana =
 {
 	float m = getstatf(STAT_MANA);
 	float mmax = getstatf(STAT_MAXMANA);
-
-	//
-	// Draw Mana
-	//
-
 	vector pos = [30, (g_height - 28)];
 
 	// Bar
@@ -299,15 +293,14 @@ void() Draw_Mana =
 	}
 };
 
+//
+// Draw Stamina
+//
+
 void() Draw_Stamina =
 {
 	float s = getstatf(STAT_STAMINA);
 	float smax = 100;
-
-	//
-	// Draw Stamina
-	//
-
 	vector pos = [30, (g_height - 18)];
 
 	// Bar
@@ -349,6 +342,10 @@ void() Draw_Stamina =
 	drawstring (pos, s2, '8 8 0', '1 1 1', 1, 0);
 };
 
+//
+// Draw Experience
+//
+
 void() Draw_Exp =
 {
     float e  = getstatf(STAT_EXP);
@@ -385,6 +382,9 @@ entity doll;
 void() Skeleton_ObjectDraw;
 void(vector pos) Draw_3DPDoll =
 {
+	vector size = [150, 250];
+	sui_transform_box(pos, size);
+
 	string gender = getstats(STAT_GENDER);
 
     if (!doll) // Call this one time so we're not spawning infinite entities
@@ -483,10 +483,10 @@ void() User_CharacterScreen =
 	float disp_projmin = getstatf(STAT_PROJ_MIN);
 	float disp_projmax = getstatf(STAT_PROJ_MAX);
 	
-	vector pos = [25, 25];
+	vector pos = [0, 0];
 	vector size = [450, 325];
 
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
@@ -498,13 +498,15 @@ void() User_CharacterScreen =
 	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
 
 	// 3D Character box
+	pos = [25, 25];
 	size = [125, 150];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_border_box(pos, size, 2, MENU_BORDER, 0.3, 0);
 	sui_fill(pos, size, MENU_BG_DARK, 0.75, 0);
 
 	// Draw 3D doll model
-	pos = [37, -18];
+	pos_x -= 15;
+	pos_y -= 65;
 	Draw_3DPDoll(pos);
 
 	//Level, Experience, Next Experience
@@ -925,10 +927,10 @@ void() User_InventoryScreen =
 	float disp_projmin = getstatf(STAT_PROJ_MIN);
 	float disp_projmax = getstatf(STAT_PROJ_MAX);
 
-	vector pos = [25, 25];
+	vector pos = [0, 0];
 	vector size = [450, 325];
 
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
@@ -940,13 +942,15 @@ void() User_InventoryScreen =
 	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
 
 	// 3D Character box
+	pos = [25, 25];
 	size = [125, 150];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_border_box(pos, size, 2, MENU_BORDER, 0.3, 0);
 	sui_fill(pos, size, MENU_BG_DARK, 0.75, 0);
 
 	// Draw 3D doll model
-	pos = [37, -18];
+	pos_x -= 15;
+	pos_y -= 65;
 	Draw_3DPDoll(pos);
 
 	//Level, Experience, Next Experience
@@ -1207,10 +1211,10 @@ void() User_MagicScreen =
 	float disp_projmax = getstatf(STAT_PROJ_MAX);
 	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
 
-	vector pos = [25, 25];
+	vector pos = [0, 0];
 	vector size = [450, 325];
 
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
@@ -1222,13 +1226,15 @@ void() User_MagicScreen =
 	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
 
 	// 3D Character box
+	pos = [25, 25];
 	size = [125, 150];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_border_box(pos, size, 2, MENU_BORDER, 0.3, 0);
 	sui_fill(pos, size, MENU_BG_DARK, 0.75, 0);
 
 	// Draw 3D doll model
-	pos = [37, -18];
+	pos_x -= 15;
+	pos_y -= 65;
 	Draw_3DPDoll(pos);
 
 	//Level, Experience, Next Experience
