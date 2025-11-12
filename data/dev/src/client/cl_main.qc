@@ -28,6 +28,8 @@ void() CSQC_Ent_Remove =
 		remove(self.offhand_vfx);
 	if (self.arrow_vfx)
 		remove(self.arrow_vfx);
+	if (self.armor_vfx)
+		remove(self.armor_vfx);
 	//
 	remove(self);
 };
