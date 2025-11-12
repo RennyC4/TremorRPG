@@ -8,10 +8,10 @@ void() User_NPCDialogue =
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
-	vector pos = [25, 25];
+	vector pos = [0, 0];
 	vector size = [450, 325];
 
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
@@ -70,10 +70,10 @@ void() User_NPCBuySell =
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
-	vector pos = [25, 25];
+	vector pos = [0, 0];
 	vector size = [450, 325];
 
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
