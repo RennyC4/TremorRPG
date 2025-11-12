@@ -103,8 +103,14 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
 	addentities(MASK_VIEWMODEL | MASK_ENGINE);
-	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
-	setproperty(VF_ANGLES, view_angles);
+
+	// sv_cheats acts a bit differently, we also have to account for csaddons weirdness
+	// i'm not too worried about this because sv_cheats should only be used for development or making a cheat character
+	if (cvar("sv_cheats") == 0)
+	{
+		setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
+		setproperty(VF_ANGLES, view_angles);
+	}
 
 	CSQC_LockOn_Update();
 	if (health > 0)
