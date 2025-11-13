@@ -1858,6 +1858,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float exp_min; // for monsters (minimum amount of exp to give)
 .float exp_oldnext; // for csqc exp bar hud
 .float exp_next; // player, needed exp for next level
+.float gold_bank; // player, gold in bank
 .float gold; // player, for monsters (max amount of gold to give)
 .float gold_min; // for monsters (minimum amount of gold to give)
 .float attack_power_min; // player + monster damage
@@ -2010,11 +2011,12 @@ const float ANISTATE_IMPACT = 22;
 #define STAT_ATTACKSTAM 89
 #define STAT_PROJ_MIN 91
 #define STAT_PROJ_MAX 92
+#define STAT_GOLD_BANK 93
 
 // Job skills
-#define STAT_MINING 93
-#define STAT_FISHING 94
-#define STAT_WOODCUTTING 95
+#define STAT_MINING 94
+#define STAT_FISHING 95
+#define STAT_WOODCUTTING 96
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

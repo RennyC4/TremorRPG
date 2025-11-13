@@ -82,6 +82,7 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_ATTACKSTAM, EV_FLOAT, attack_stamina);
 	clientstat(STAT_PROJ_MIN, EV_FLOAT, projectile_power_min);
 	clientstat(STAT_PROJ_MAX, EV_FLOAT, projectile_power_max);
+	clientstat(STAT_GOLD_BANK, EV_FLOAT, gold_bank);
 
 	// Job Skills
 	clientstat(STAT_MINING, EV_FLOAT, skill_mining);

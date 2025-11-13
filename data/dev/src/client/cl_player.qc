@@ -672,6 +672,7 @@ float(void) Player_PreDraw =
 .float attack_released;
 .float anim_attacking;
 .float attack_finished;
+.float respawn_finished;
 void() Player_Think =
 {
 	float player_menu = getstatf(STAT_MENU);
@@ -683,10 +684,14 @@ void() Player_Think =
 		{
 			if (self.health <= 0)
 			{
-				sendevent("User_StartAttack", "");
+				if (self.attack_released)
+				{
+					self.respawn_finished = time + 1; // prevent +attack on respawn
+					sendevent("User_StartAttack", "");
+				}
 				return;
 			}
-			if (self.attack_released && !atbonfire)
+			else if (self.attack_released && !atbonfire && self.respawn_finished < time)
 			{
 				float stamina = getstatf(STAT_STAMINA);
 				float skill_endurance = getstatf(STAT_SKILL_ENDURANCE);

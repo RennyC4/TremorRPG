@@ -260,6 +260,8 @@ void(float whichdir) CSEv_PlayerDodge_f =
 {
 	if (self.bonfire)
 		return;
+	if (self.climbing)
+		return;
 	if (self.cast_finished > time)
 		return;
 	if (self.dodge_finished > time)
@@ -356,7 +358,7 @@ void() SV_RunClientCommand =
 	runstandardplayerphysics(self);
 };
 
-// function used for placing objects in terrain mode, cheats 
+// function used for helping developer placing objects in terrain mode + cheats 
 void() PlayerPrintStats =
 {
 	string pos_x = ftos(self.origin_x);
@@ -381,9 +383,6 @@ void() PlayerPrintStats =
 		AddToInventory(self, "Health Potion", 1);
 		AddToInventory(self, "Mana Potion", 1);
 	}
-
-	sprint(self, PRINT_HIGH, "Proj_Min: ", ftos(self.projectile_power_min), "\n");
-	sprint(self, PRINT_HIGH, "Proj_Min: ", ftos(self.projectile_power_max), "\n");
 };
 
 // called from CSQC ("show_character" console command)
@@ -799,8 +798,6 @@ void() CSEv_User_StartAttack_ =
 		if (self.respawn_finished < time)
 		{
 			PlayerSpawn(3); // respawn
-			self.melee_finished = time + 1; // prevent attack on spawn
-			self.pvp_autoflagged = FALSE;
 			return;
 		}
 	}

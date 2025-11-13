@@ -75,15 +75,13 @@ void() User_LoginScreen =
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
-	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 
-	sui_text([0, 4], MENU_TEXT_MEDIUM, "Tremor RPG", MENU_TEXT_1, 1, 0);
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
+	sui_pic(pos+[0,-90], [214,115.5], "textures/logo2.png", [1,1,1], 1, 0); // logo
 	sui_text([0, 32.5], MENU_TEXT_SMALL, "Desired Name", MENU_TEXT_MEDIUM, 1, 0);
 
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-
 	// Login / New character buttons
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	my_button("login_login", [0, size_y - 90], [size_x, 40], "Login") ? User_ResumeCharacter() : 0;
 	my_button("login_newchar", [0, size_y], [size_x, 40], "New Character") ? User_NewCharacter(LOGIN_GENDER) : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);

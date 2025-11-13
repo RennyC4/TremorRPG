@@ -2280,11 +2280,12 @@ const float MENU_MAGIC = 6; // user magic screen
 #define STAT_ATTACKSTAM 89
 #define STAT_PROJ_MIN 91
 #define STAT_PROJ_MAX 92
+#define STAT_GOLD_BANK 93
 
 // Job skills
-#define STAT_MINING 93
-#define STAT_FISHING 94
-#define STAT_WOODCUTTING 95
+#define STAT_MINING 94
+#define STAT_FISHING 95
+#define STAT_WOODCUTTING 96
 
 // Inventory - Player
 #define MAX_INVENTORY 32
