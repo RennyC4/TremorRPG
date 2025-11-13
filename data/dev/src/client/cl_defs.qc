@@ -2324,6 +2324,7 @@ const float AI_ATTACK = 2;
 const float AI_RUNBACK = 3;
 const float AI_PATROL = 4;
 
+string motd;
 .string gender;
 .string netname;
 .float climbing;

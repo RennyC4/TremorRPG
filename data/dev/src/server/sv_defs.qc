@@ -1719,7 +1719,7 @@ const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
-//const float CSQC_LOCKON_INFO = 5;
+const float CSQC_MOTD = 5;
 const float CSQC_MAGIC = 6;
 const float CSQC_LASTLOGIN = 7;
 const float CSQC_WRITESPARM = 8;
@@ -1823,6 +1823,7 @@ const float MENU_BANKING = 7; // user banking screen
 .float dodgedir;
 .float cnt;
 .float cnt2;
+string motd; // server motd text
 
 // health potion
 .float healthpot_heal_remaining;  // how much left to heal from this use

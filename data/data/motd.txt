@@ -1,2 +1,4 @@
-		^1Welcome to my server^7
-Feel free to change this message by editing /data/motd.txt
+^1Welcome to my server^7
+-
+Feel free to change this message by editing /data/motd.txt;
+be aware of character & line limitations.

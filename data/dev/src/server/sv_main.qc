@@ -187,6 +187,21 @@ void() worldspawn =
 	multilogin = cvar("sv_multilogin");
 	exp_multiplier = cvar("sv_expdmultiplier");
 	gold_multiplier = cvar("sv_goldmultiplier");
+
+	// Setup MOTD
+    float f;
+    string line, temp;
+
+    f = fopen("motd.txt", FILE_READ);
+    if (f)
+    {
+        motd = ""; // clear previous MOTD, if any
+        while ((line = fgets(f)))
+            motd = strcat(motd, line, "\n");
+        fclose(f);
+    }
+    else
+        motd = "";
 };
 
 //

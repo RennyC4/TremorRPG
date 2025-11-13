@@ -98,4 +98,16 @@ void() User_LoginScreen =
 	// Gender entry
 	my_button("login_male", [-30, 65], [50, 25], "Male") ? SetGender(0) : 0;
 	my_button("login_female", [30, 65], [50, 25], "Female") ? SetGender(1) : 0;
+
+	sui_pop_frame();
+
+	// Display MOTD on login screen, if any exists
+	if (motd != "")
+	{
+		pos = [0, g_height-65];
+		size = [435, 65];
+
+		drawfill(pos, size, MENU_BG_DARK, 0.25, 0);
+		drawtextfield(pos, size, 3, motd);
+	}
 };

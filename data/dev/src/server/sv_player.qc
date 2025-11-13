@@ -1475,6 +1475,13 @@ void() PutClientInServer =
 	}
 	else
 		PlayerSpawn(0);
+
+	// Send MOTD on user entry to CSQC
+	msg_entity = self;
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_MOTD);
+	WriteString(MSG_MULTICAST, motd);
+	multicast(self.origin, MULTICAST_ONE_R);
 };
 
 void() ClientDisconnect =

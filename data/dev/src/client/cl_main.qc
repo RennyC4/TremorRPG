@@ -341,7 +341,7 @@ const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
 const float CSQC_INVENTORY_NPC = 3;
 const float CSQC_TIMEOFDAY = 4;
-//const float CSQC_LOCKON_INFO = 5;
+const float CSQC_MOTD = 5;
 const float CSQC_MAGIC = 6;
 const float CSQC_LASTLOGIN = 7;
 const float CSQC_WRITESPARM = 8;
@@ -383,11 +383,9 @@ void() CSQC_Parse_Event =
 	if (event == CSQC_TIMEOFDAY)
 		timeofday = readbyte();
 
-	/*
-	if (event == CSQC_LOCKON_INFO)
-	{
-	}
-	*/
+	// motd
+	if (event == CSQC_MOTD)
+		motd = readstring();
 
 	// magic update
 	if (event == CSQC_MAGIC)
