@@ -1648,6 +1648,9 @@ void(entity targ, float type) CSEv_Player_SaveChar =
 	// .chr v1 upgrade
 	fputs(f, ftos(targ.gold_bank), "\n");
 
+	// .chr v2 upgrade
+	fputs(f, ftos(targ.exp_oldnext), "\n");
+
     fclose(f); // close file
 
     sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
@@ -1867,6 +1870,12 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			self.gold_bank = stof(line);
 		else
 			self.gold_bank = 0; // fallback for old characters
+
+		// .chr v2 upgrade
+		if (line = fgets(v))
+			self.exp_oldnext = stof(line);
+		else
+			self.exp_oldnext = self.exp_next; // fallback for old characters
 
 		fclose(v);
 
