@@ -267,7 +267,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 			{
 				string bind = getkeybind(scanx);
 
-				if (atbonfire) // Disable movement keys at bonfire
+				if (atbonfire || player_menu > 0) // Disable movement keys at bonfire/menu stuff
 				{
 					if (bind == "+forward" || bind == "+back" || bind == "+moveleft" || bind == "+moveright" || bind == "+jump")
 						return TRUE; // block movement
