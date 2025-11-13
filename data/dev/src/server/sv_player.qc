@@ -903,8 +903,10 @@ void() CSEv_User_StartAttack_ =
             {
                 self.melee_finished = time + self.attack_speed;
                 if (self.attack_type != 4)
+				{
                     self.velocitypush_finished = time + (self.attack_speed / 4);
-                self.lockview_finished = time + self.attack_speed;
+					self.lockview_finished = time + self.attack_speed; // bows don't lock player view
+				}
             }
         }
     }
