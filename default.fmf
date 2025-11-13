@@ -6,5 +6,4 @@ protocolname "tremorrpg"
 basegame data
 disablehomedir 1
 mainconfig "user.cfg"
-MAXVER FTE 6262
 MINVER FTE 6262
