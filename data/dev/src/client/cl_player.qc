@@ -537,6 +537,10 @@ void() Player_Hud =
 			User_NPCBuySell();
 			Draw_ToolTip();
 		}
+		if (player_menu == MENU_BANKING)
+		{
+			User_NPCBanking();
+		}
 	}
 	else // Regular gameplay
 	{

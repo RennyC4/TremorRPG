@@ -351,7 +351,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 
     if (self.attack_type == 3 && random() <= club_stagger)
     {
-        vector dir = normalize(targ.origin - self.origin);
+        dir = normalize(targ.origin - self.origin);
         targ.flags &= ~FL_ONGROUND;
         targ.velocity = dir * 200;
         targ.velocity_z += 125;
@@ -447,7 +447,7 @@ void() arrow_touch =
 				parry = TRUE;
 				sound(other, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
 
-				string eventlog_print = "^2Successful parry!";
+				eventlog_print = "^2Successful parry!";
 				stuffcmd(other, sprintf("conecho event %s\n", eventlog_print));
 				
 				pointparticles(PART_PARRY, other.origin + v_forward * 32 + v_up * other.view_ofs_z);
@@ -547,7 +547,7 @@ void(vector ang) CSEv_DoAttack_Arrow_v =
 		else
 			makevectors(self.angles);
 
-		vector forward = v_forward;
+		forward = v_forward;
 		arrow.velocity = forward * 1000;
 		arrow.angles = vectoangles(arrow.velocity);
 	}

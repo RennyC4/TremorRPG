@@ -235,7 +235,7 @@ void() PlayerJump =
 		return;
 	if (!(self.flags & FL_JUMPRELEASED))
 		return;
-	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC)
+	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_BANKING)
 		return;
 
 	float stamcalc = self.skill_acrobatic * 0.35; // skill calculation
@@ -272,7 +272,7 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		return;
 	if (!(self.flags & FL_JUMPRELEASED))
 		return;
-	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC)
+	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_BANKING)
 		return;
 
 	if (self.stamina >= 20)
@@ -454,6 +454,7 @@ void() CSEv_PlayerShowMagic =
 // called from CSQC button
 void() CSEv_PlayerShowBuySell = {stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav"));self.menu = MENU_BUYSELL;};
 void() CSEv_PlayerShowDialogue = {stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav"));self.menu = MENU_DIALOGUE;};
+void() CSEv_PlayerShowBanking = {stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav"));self.menu = MENU_BANKING;};
 
 // called from CSQC (PVP button)
 void() CSEv_User_TogglePVP_ =
@@ -1044,9 +1045,9 @@ void() PlayerPostThink =
 	// velocity push on player: melee/dodges
 	//
 	if (self.dodgedir != 8)
-		Player_VelocityPush(200, 0);
+		Player_VelocityPush(200);
 	else
-		Player_VelocityPush(150, 0); // step dodge speed
+		Player_VelocityPush(150); // step dodge speed
 	//
 	
 	if (self.healthpot_heal_remaining > 0 && time > self.healthpot_finished) // health potion - apply ongoing healing
@@ -1644,7 +1645,10 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     for (i = 0; i < targ.spell_count; i++)
         fputs(f, targ.spell[i], "\n");
 
-    fclose(f);
+	// .chr v1 upgrade
+	fputs(f, ftos(targ.gold_bank), "\n");
+
+    fclose(f); // close file
 
     sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
 };
@@ -1857,6 +1861,12 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 			if (line = fgets(v)) // add spell(s)
 				self.spell[i] = line;
 		}
+		
+		// .chr v1 upgrade
+		if (line = fgets(v))
+			self.gold_bank = stof(line);
+		else
+			self.gold_bank = 0; // fallback for old characters
 
 		fclose(v);
 
@@ -1913,6 +1923,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.off_hand = "Broken Buckler";
 		self.blockvalue = 4;
 		self.gold = 0;
+		self.gold_bank = 0;
 
 		// default armor
 		self.armorname = "Plain Clothes";

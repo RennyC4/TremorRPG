@@ -2215,6 +2215,7 @@ const float MENU_INVENTORY = 3; // user inventory screen
 const float MENU_DIALOGUE = 4; // for NPC interaction
 const float MENU_BUYSELL = 5; // for NPC interaction
 const float MENU_MAGIC = 6; // user magic screen
+const float MENU_BANKING = 7; // user banking screen
 
 //
 // Grab stats from SSQC 

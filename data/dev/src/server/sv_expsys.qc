@@ -35,7 +35,7 @@ void(entity targ, float expmin, float expmax) GiveExperience =
 {
     float amount = ceil(random_range(expmin, expmax));
 
-    float exp_multiplier = cvar("sv_expmultiplier");
+    exp_multiplier = cvar("sv_expmultiplier");
     if (exp_multiplier > 0)  // server-adjustable multiplier
         amount *= exp_multiplier;
 
@@ -56,7 +56,7 @@ void(entity targ, float goldmin, float goldmax) GiveGold =
 {
     float amount = ceil(random_range(goldmin, goldmax));
 
-    float gold_multiplier = cvar("sv_goldmultiplier");
+    gold_multiplier = cvar("sv_goldmultiplier");
     if (gold_multiplier > 0)  // server-adjustable multiplier
         amount *= gold_multiplier;
 

@@ -72,7 +72,7 @@ void(string itemname, float id) Player_EquipItem =
 	{
 		string armorname_e = "";
 		float armorvalue_e = 0;
-		float required_level = 1;
+		required_level = 1;
 
 		line = fgets(v); // skip price
 		line = fgets(v); if (line) armorname_e = line;
@@ -97,7 +97,7 @@ void(string itemname, float id) Player_EquipItem =
 	{
 		string off_hand_e = "";
 		float blockvalue_e = 0;
-		float required_level = 1;
+		required_level = 1;
 
 		line = fgets(v); // skip price
 		line = fgets(v); if (line) off_hand_e = line;

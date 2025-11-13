@@ -1,3 +1,10 @@
-^5Hello ...^7
+^5Hello there…
 
-I'm a banker, I do banking things; well .. not so much now, but soon!
+^7Welcome to Elderfen’s first proper bank! Quite the milestone, I must say.
+
+After years of delays—bandit raids, political nonsense, you name it—we’ve finally managed to open our doors.
+My family always dreamed of bringing a proper bank to this town, and now it’s real. Elderfen has always had
+potential, if a bit… unruly at times. Those bandits were a nuisance, but they’ve taught me patience—and the
+value of security!
+
+Keep your coin close, your plans closer, and remember: even a quiet town can prosper with a little guidance.

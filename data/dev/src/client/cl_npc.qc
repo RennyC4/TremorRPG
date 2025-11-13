@@ -16,7 +16,7 @@ void() User_NPCDialogue =
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
-	
+
 	// Display name
 	vector newpos = [2.5, 2.5];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
@@ -32,8 +32,10 @@ void() User_NPCDialogue =
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
 
 	float buysell = getstatf(STAT_VENDOR);
-	if (buysell)
+	if (buysell == 1)
 		my_button("npc_buy", newpos, [85, 22.5], "Buy / Sell") ? sendevent("PlayerShowBuySell", "") : 0;
+	else
+		my_button("npc_bank", newpos, [85, 22.5], "Banking") ? sendevent("PlayerShowBanking", "") : 0;
 
 	// NPC chatter box
 	newpos = [2.5, 0]; //reset newpos
@@ -183,4 +185,67 @@ void() User_NPCBuySell =
     }
 
 	sui_pop_frame();
+};
+
+string BANK_AMOUNT;
+// Character banking screens
+void() User_NPCBanking =
+{
+	vector pos = [0, 0];
+	vector size = [360, 160];
+
+	// line
+	vector drawline_pos;
+	float line_length = 118;
+	drawline_pos = [25, 25];
+
+	float disp_gold = getstatf(STAT_GOLD);
+	float disp_gold_bank = getstatf(STAT_GOLD_BANK);
+
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	sui_push_frame(pos, size);
+
+	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
+
+	sui_text([0, 0], MENU_TEXT_LARGE, "Banking", MENU_TEXT_MEDIUM, 1, 0);
+	sui_line(pos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1); // draw silly line
+
+	// Draw player vs bank gold
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	pos = [0, -30];
+	string player_gold = strcat("Your gold: ", ftos(disp_gold));
+	string player_gold_bank = strcat("Stored gold: ", ftos(disp_gold_bank));
+
+	sui_text(pos, MENU_TEXT_SMALL, player_gold, MENU_TEXT_MEDIUM, 1, 0);
+	pos_y += 10;
+	sui_text(pos, MENU_TEXT_SMALL, player_gold_bank, MENU_TEXT_MEDIUM, 1, 0);
+	//
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	pos = [5,0];
+	sui_text(pos, MENU_TEXT_MEDIUM, "Amount:", MENU_TEXT_1, 1, 0);
+
+	pos = [75,0];
+	// input box for numbers
+	sui_fill(pos, '240 25 0', MENU_BG_DARK, 0.75, 0);
+	text_input_control("gold_deposit", pos, [240, 25], 31, BANK_AMOUNT, cursor);
+	sui_border_box(pos, '240 25 0', 2, MENU_BORDER, 0.3, 0);
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+	pos_y += 25;
+	my_button("bank_deposit", [pos_x, pos_y], [240 / 2, 20], "Deposit") ? sendevent("User_BankDeposit", "s", BANK_AMOUNT) : 0;
+	my_button("bank_withdraw", [pos_x+120, pos_y], [240 / 2, 20], "Withdraw") ? sendevent("User_BankWithdraw", "s", BANK_AMOUNT) : 0;
+
+	// Leave button & X button
+	pos = [0,0];
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
+	my_button("npc_leave", pos, [50, 22.5], "Leave") ? sendevent("ShutDownMenus", "") : 0;
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	my_button("close", [0, 0], [15, 15], "X") ? sendevent("ShutDownMenus", "") : 0;
+
+	// Dialogue button
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
+	my_button("npc_talk", pos, [85, 22.5], "Dialogue") ? sendevent("PlayerShowDialogue", "") : 0;
 };

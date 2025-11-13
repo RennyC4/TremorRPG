@@ -180,9 +180,9 @@ void() worldspawn =
 	spawn_daynight();
 	
 	// additional cvar setup
-	registercvar("sv_multilogin", "0", "Allows a user to login with multiple accounts");
-	registercvar("sv_expdmultiplier", "0", "Experience multiplier");
-	registercvar("sv_goldmultiplier", "0", "Gold multiplier");
+	registercvar("sv_multilogin", "0");
+	registercvar("sv_expdmultiplier", "0");
+	registercvar("sv_goldmultiplier", "0");
 
 	multilogin = cvar("sv_multilogin");
 	exp_multiplier = cvar("sv_expdmultiplier");

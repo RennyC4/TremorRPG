@@ -13,6 +13,11 @@ void() CSQC_Precache =
 	precache_model("models/dagger0.glb");
 	precache_model("models/shield0.glb");
 	precache_model("models/shield1.glb");
+	precache_model("models/club0.glb");
+	precache_model("models/quiver.glb");
+	precache_model("models/bow0.glb");
+	precache_model("models/armor0.glb");
+	precache_model("models/arrow2.glb");
 };
 
 void() CSQC_Ent_Remove =

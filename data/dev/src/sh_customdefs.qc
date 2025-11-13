@@ -53,3 +53,23 @@ float() crandom =
 {
     return (random() * 2) - 1;
 };
+
+// Strip all non-numeric characters (integer only)
+string(string s) String_StripNonNumeric =
+{
+	string out = "";
+	float len = strlen(s);
+	float i;
+	float ch;
+
+	for (i = 0; i < len; i++)
+	{
+		ch = str2chr(s, i); // Get ASCII code at this index
+
+		// Keep digits 0–9 (ASCII 48–57)
+		if (ch >= 48 && ch <= 57)
+			out = strcat(out, substring(s, i, 1));
+	}
+
+	return out;
+};

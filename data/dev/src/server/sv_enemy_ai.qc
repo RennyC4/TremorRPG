@@ -158,6 +158,17 @@ float (entity targ) visible =
 	 	return FALSE;
 };
 
+// this visible function returns TRUE even if sight line crossed contents (above and below water), takes view_ofs into account
+float (entity targ) visible_ofs =
+{
+ 	traceline (self.origin + self.view_ofs, targ.origin + targ.view_ofs, TRUE, self); // "true", see through other monsters
+
+	if (trace_fraction == 1)
+ 		return TRUE;
+	else
+	 	return FALSE;
+};
+
 void() monster_ai_attack =
 {
 	if (self.melee_finished < time && self.stagger_finished < time)
@@ -498,7 +509,7 @@ void() monster_ai_think =
 				else
 				{
 					//if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
-					float dist = vlen(self.enemy.origin - self.origin);
+					dist = vlen(self.enemy.origin - self.origin);
 					if (dist <= self.attack_length)
 					{
 						if (!self.enemy.incombat)

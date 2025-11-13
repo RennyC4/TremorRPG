@@ -19,3 +19,4 @@ server/sv_misc.qc
 server/sv_items.qc
 server/sv_inventory.qc
 server/sv_funcs.qc
+server/sv_bank.qc

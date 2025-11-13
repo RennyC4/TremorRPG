@@ -1774,6 +1774,7 @@ const float MENU_INVENTORY = 3; // user inventory screen
 const float MENU_DIALOGUE = 4; // for NPC interaction
 const float MENU_BUYSELL = 5; // for NPC interaction
 const float MENU_MAGIC = 6; // user magic screen
+const float MENU_BANKING = 7; // user banking screen
 
 .float button3_pressed;
 
@@ -1892,6 +1893,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float godmode_finished;
 .float stepdodge_counter;
 .float menushut_finished;
+.float type; // born from defining which npc type users are interacting with
 
 // Animation States
 .float anistate;

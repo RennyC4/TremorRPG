@@ -39,36 +39,43 @@ void() npc_use =
 
 	DeleteInventory(self); // clear any inventory first, fixes gold doubling
 
-	// Grab NPC inventory from file
-	string what = "";
-	readfile = strcat("npc_", self.netname, "_i.txt");
-	float b = fopen(readfile, FILE_READ);
-	if (b >= 0)
+	if (!self.type) //type 0, regular NPC; may or may not buy/sell items
 	{
-		if (line = fgets(b)) // Get item count from text file
-			self.read_inv_count = stof(line);
-
-		float i;
-		for (i = 0; i < self.read_inv_count; i++)
+		// Grab NPC inventory from file
+		string what = "";
+		readfile = strcat("npc_", self.netname, "_i.txt");
+		float b = fopen(readfile, FILE_READ);
+		if (b >= 0)
 		{
-			if (line = fgets(b)) // Add item
-			{
-				what = line;
-				AddToInventory(self, line, 0);
-			}
-			if (line = fgets(b)) // Add count to item, NPCs use item count as buying price
-				AddToInventory(self, what, stof(line));
-		}
-		SendNPCInventory(self, self.user); // Send NPC inventory to CSQC
-		self.user.npc_vendor = TRUE;
-		fclose(b);
-	}
-	else
-	{
-		SendNPCInventory(self, self.user); // Clear NPC inventory when they have nothing either
-		self.user.npc_vendor = FALSE; // CSQC: don't draw buy button for player
-	}
+			if (line = fgets(b)) // Get item count from text file
+				self.read_inv_count = stof(line);
 
+			float i;
+			for (i = 0; i < self.read_inv_count; i++)
+			{
+				if (line = fgets(b)) // Add item
+				{
+					what = line;
+					AddToInventory(self, line, 0);
+				}
+				if (line = fgets(b)) // Add count to item, NPCs use item count as buying price
+					AddToInventory(self, what, stof(line));
+			}
+			SendNPCInventory(self, self.user); // Send NPC inventory to CSQC
+			self.user.npc_vendor = 1; // Buy button
+			fclose(b);
+		}
+		else // no item list found for npc
+		{
+			SendNPCInventory(self, self.user); // Clear NPC inventory when they have nothing either
+			self.user.npc_vendor = 0; // CSQC: don't draw buy button for player
+		}
+	}
+	else if (self.type == 1) // type 1, banking npc
+	{
+		self.user.npc_vendor = 2; // Banking button
+	}
+	
 	msg_entity = self.user;
 	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
 	WriteByte(MSG_MULTICAST, CSQC_NPCINFO); // custom opcode for "open npc dialog"
@@ -86,18 +93,38 @@ void() npc_use =
 
 void() npc_ai_think =
 {
-	for (entity b = world; (b = find(b, classname, "player"));) // search for customer nearby
+	entity best = world;
+	float best_dist = self.sight_range; // maximum distance NPC can "see"
+
+	for (entity b = world; (b = find(b, classname, "player"));) 
 	{
-		if (vlen(b.origin - self.origin) < self.sight_range && visible(b))
-			self.goalentity = b;
-		else
-			self.goalentity = world;
+		vector diff = (b.origin + b.view_ofs) - (self.origin + self.view_ofs);
+		float dist = vlen(diff);
+
+		if (dist <= self.sight_range && visible_ofs(b)) // check if within sight range and visible
+		{
+			if (dist < best_dist)
+			{
+				best = b;
+				best_dist = dist;
+			}
+		}
 	}
+
+	// --- Assign the closest visible player (if any) ---
+	if (best)
+		self.goalentity = best;
+	else
+		self.goalentity = world;
+
+	// --- Basic sanity check ---
 	if (!self.netname)
 	{
 		print("Error: NPC without a netname defined!\n");
 		self.netname = "error";
 	}
+
+	// --- Turn smoothly toward target ---
 	TurnToTarget(10);
 
 	self.nextthink = time + 0.1;
@@ -115,6 +142,7 @@ void() set_npc =
 		self.health = self.max_health;
 	self.takedamage = DAMAGE_NO;
 	self.classname = "npc";
+	self.view_ofs = '0 0 48';
 	self.radius_candamage = FALSE;
 	self.idealangles = self.angles;
 	self.th_use = npc_use;
@@ -122,9 +150,6 @@ void() set_npc =
 
 	if (!self.sight_range)
 		self.sight_range = 100;
-
-	//self.th_die = npc_death;
-	//self.exp = 0;
 
 	self.saveorigin = self.origin + v_up * 5; // stash initial spawn spot
 
