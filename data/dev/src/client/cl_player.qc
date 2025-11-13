@@ -673,19 +673,6 @@ float(void) Player_PreDraw =
     return PREDRAW_NEXT;
 };
 
-// Helper: Returns the distance to the ground beneath the player
-float() DistanceToGround =
-{
-    vector start = self.origin;
-    vector end = self.origin - '0 0 10'; // trace down 10 units at a time
-    tracebox(start, self.mins, self.maxs, end, FALSE, self);
-    
-    if (trace_fraction < 1)
-        return vlen((start) - (start + (end-start) * trace_fraction)); // distance to hit
-    else
-        return 9999; // no ground hit detected
-};
-
 .float attack_released;
 .float anim_attacking;
 .float attack_finished;
