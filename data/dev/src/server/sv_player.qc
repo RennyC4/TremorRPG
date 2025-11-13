@@ -1335,6 +1335,7 @@ void(float type) PlayerSpawn =
 		self.stamina = 100;
 		self.pvp_autoflagged = FALSE;
 		self.pvp = 0;
+		self.mana = self.max_mana;
 		self.incombat_finished = time;
 		self.crouch = FALSE;
 		self.alpha = 1;
@@ -1933,6 +1934,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.blockvalue = 4;
 		self.gold = 0;
 		self.gold_bank = 0;
+		self.exp_oldnext = 0;
 
 		// default armor
 		self.armorname = "Plain Clothes";
