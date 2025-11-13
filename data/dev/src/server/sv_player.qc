@@ -974,7 +974,7 @@ void() PlayerPreThink =
 			self.next_stun_allowed = 0; // cooldown expired
 
 		// attack / dodge / magic commitment / npc interaction menus
-		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL ||
+		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.menu == MENU_BANKING ||
 			self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time
 			|| self.dodge_finished > time)
 			self.maxspeed = 1;

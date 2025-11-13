@@ -191,6 +191,10 @@ string BANK_AMOUNT;
 // Character banking screens
 void() User_NPCBanking =
 {
+	// darken screen
+	vector scrsz = [g_width, g_height];
+	drawfill('0 0', scrsz, '0 0 0', 0.65);
+
 	vector pos = [0, 0];
 	vector size = [360, 160];
 
