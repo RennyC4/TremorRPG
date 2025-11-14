@@ -259,8 +259,6 @@ void() daynight_think =
         self.nextthink = time + 8;
     else
         self.nextthink = time + 4;
-	
-	self.nextthink = time + 0.1;
 };
 
 void() spawn_daynight =
