@@ -12,6 +12,13 @@ void() Skeleton_Animate;
 .entity arrow_vfx;
 .entity armor_vfx;
 
+string nightskybox = "skyworld_star";
+string dayskybox = "";
+const float TIME_DAWN = 0;
+const float TIME_DAY = 1;
+const float TIME_DUSK = 2;
+const float TIME_NIGHT = 3;
+
 //
 // Player skeleton attach objects
 //
@@ -440,13 +447,6 @@ void() CSQC_Input_Frame =
 	input_movevalues_y = bound(-350, input_movevalues_y, 350);
 	input_movevalues_z = bound(-350, input_movevalues_z, 350);
 };
-
-string nightskybox = "skyworld_star";
-string dayskybox = "";
-const float TIME_DAWN = 0;
-const float TIME_DAY = 1;
-const float TIME_DUSK = 2;
-const float TIME_NIGHT = 3;
 
 void() Player_DayNightHandler =
 {

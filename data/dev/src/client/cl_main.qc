@@ -49,6 +49,45 @@ float(string key, string val) find_player_id =
 	return -1;
 };
 
+void() Entity_DayNight_ApplyAll =
+{
+    if (!(substring(world.model, -3, 3) == "hmp"))
+        return; // Only hmp maps
+
+    for (entity e = world; (e = nextent(e));) // Loop through all csqc entities
+    {
+		if (!e.modelindex) // Only process entities with valid modelindex
+            continue;
+
+        string mdl = modelnameforindex(e.modelindex);
+
+		if (substring(mdl, strlen(mdl)-4, 4) != ".glb") // Only affect .glb models
+            continue;
+
+		e.drawflags = 7; // Apply the day/night logic to this entity, we're removing lighting
+        if (timeofday == TIME_DAY)
+            e.abslight = 500;
+        else if (timeofday == TIME_NIGHT)
+            e.abslight = 100;
+        else if (timeofday == TIME_DAWN)
+            e.abslight = 300;
+        else // dusk
+            e.abslight = 225;
+    }
+};
+
+.float old_modelindex;
+void() CL_ModelDelta =
+{
+    // `self` is the client entity currently receiving a delta update.
+    // The delta system has already set self.modelindex but hasn't committed it yet.
+    if (self.modelindex != self.old_modelindex)
+    {
+        string mdl = modelnameforindex(self.modelindex);
+        self.old_modelindex = self.modelindex;
+    }
+};
+
 noref void(float apiver, string enginename, float enginever) CSQC_Init =
 {
 	ZoneName_alpha = spawn();
@@ -57,6 +96,8 @@ noref void(float apiver, string enginename, float enginever) CSQC_Init =
 	drawfont = drawfont1;
 	// event box
 	drawfont2 = loadfont("", "cour", "12", -1, 0, 0); // set font
+
+	deltalisten("*glb", CL_ModelDelta, 0);
 };
 
 noref void() CSQC_WorldLoaded =
@@ -188,6 +229,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		pauseframe += 1;
 	else
 		pauseframe = 0;
+		
+	Entity_DayNight_ApplyAll();
 };
 
 float(string strCommand) CSQC_ConsoleCommand =
