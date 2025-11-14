@@ -222,6 +222,8 @@ void() PlayerJump =
 		return;
 	if (self.dodge_finished > time)
 		return;
+	if (self.stagger_finished > time)
+		return;
 
 	PlayerClimb();
 
@@ -262,6 +264,8 @@ void(float whichdir) CSEv_PlayerDodge_f =
 	if (self.climbing)
 		return;
 	if (self.cast_finished > time)
+		return;
+	if (self.stagger_finished > time)
 		return;
 	if (self.dodge_finished > time)
 		return;

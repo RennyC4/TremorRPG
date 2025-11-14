@@ -229,6 +229,7 @@ vector() monster_ai_calc_move_delta =
 float(void) Monster_PreDraw =
 {
     Monster_Animate();
+	/*
     self.movetype = MOVETYPE_STEP;
 
     vector OldOrigin = self.origin;
@@ -250,15 +251,17 @@ float(void) Monster_PreDraw =
 
     // --- Store predicted position temporarily ---
     self.origin = predicted_origin;
-
+	*/
     // --- Draw monster at smoothed predicted position ---
     Skeleton_ObjectDraw();
     addentity(self);
 
+	/*
     // --- Rollback to authoritative server position ---
     setorigin(self, OldOrigin);
     self.angles = OldAngles;
     self.movetype = MOVETYPE_NONE;
+	*/
 
     return PREDRAW_NEXT;
 };
