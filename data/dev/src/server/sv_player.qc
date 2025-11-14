@@ -1484,6 +1484,8 @@ void() PutClientInServer =
 	WriteByte(MSG_MULTICAST, CSQC_MOTD);
 	WriteString(MSG_MULTICAST, motd);
 	multicast(self.origin, MULTICAST_ONE_R);
+	
+	self.worldlight = TRUE;
 };
 
 void() ClientDisconnect =

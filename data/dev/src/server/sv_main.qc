@@ -244,6 +244,20 @@ void() daynight_think =
     {
         timeofday = newtimeofday;
 
+		// update entity lighting on world map server-side
+		for (entity c = world;(c = findfloat(c, worldlight, TRUE));)
+		{
+			c.drawflags = 7;
+			if (timeofday == TIME_DAY)
+				c.abslight = 1;
+			else if (timeofday == TIME_NIGHT)
+				c.abslight = 205;
+			else if (timeofday == TIME_DAWN)
+				c.abslight = 140;
+			else // dusk
+				c.abslight = 190;
+		}
+
         for (entity b = world; (b = find(b, classname, "player")); )
         {
             msg_entity = b;

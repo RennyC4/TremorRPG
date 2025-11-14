@@ -41,6 +41,7 @@ void() set_ally =
 	self.takedamage = DAMAGE_NO; // Change later?
 	self.classname = "ally";
 	self.radius_candamage = TRUE; // can be affected by radius damage
+	self.worldlight = TRUE;
 
 	//self.flags |= FL_MONSTER;
 	self.th_die = ally_death;

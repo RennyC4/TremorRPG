@@ -143,6 +143,7 @@ void() misc_barrel =
 	precache_model("models/barrel.glb");
 
 	self.solid = SOLID_SLIDEBOX;
+	self.worldlight = TRUE;
 
 	setmodel(self, "models/barrel.glb");
 	setsize(self, [-14, -14, 0], [14, 14, 28]);
@@ -159,6 +160,7 @@ void() misc_tree =
 	precache_model("models/tree.glb");
 
 	self.solid = SOLID_SLIDEBOX;
+	self.worldlight = TRUE;
 
 	setmodel(self, "models/tree.glb");
 	setsize(self, [-16, -16, 0], [16, 16, 100]);
@@ -175,6 +177,7 @@ void() misc_tree2 =
 	precache_model("models/tree2.glb");
 
 	self.solid = SOLID_SLIDEBOX;
+	self.worldlight = TRUE;
 
 	setmodel(self, "models/tree2.glb");
 	setsize(self, [-12, -12, 0], [12, 12, 100]);
@@ -221,6 +224,7 @@ void() misc_model =
 
 	self.solid = SOLID_NOT;
 	self.movetype = MOVETYPE_NONE;
+	self.worldlight = TRUE;
 
     // Only animate if given a frame range
     if (!self.last_frame)

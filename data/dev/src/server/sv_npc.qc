@@ -147,6 +147,7 @@ void() set_npc =
 	self.idealangles = self.angles;
 	self.th_use = npc_use;
 	self.frame = $stand;
+	self.worldlight = TRUE;
 
 	if (!self.sight_range)
 		self.sight_range = 100;

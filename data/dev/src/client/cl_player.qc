@@ -51,6 +51,7 @@ void() Skeleton_ObjectDraw =
 			self.lantern_vfx = spawn();
 			self.lantern_vfx.owner = self;
 			self.lantern_vfx.drawmask = MASK_VIEWMODEL;
+			self.lantern_vfx.worldlight = TRUE;
 
 			setmodel(self.lantern_vfx, "models/lantern.glb");
 		}
@@ -96,6 +97,7 @@ void() Skeleton_ObjectDraw =
 			self.weapon_vfx = spawn();
 			self.weapon_vfx.owner = self;
 			self.weapon_vfx.drawmask = MASK_VIEWMODEL;
+			self.weapon_vfx.worldlight = TRUE;
 		}
 		else
 		{
@@ -236,6 +238,7 @@ void() Skeleton_ObjectDraw =
 			self.offhand_vfx = spawn();
 			self.offhand_vfx.owner = self;
 			self.offhand_vfx.drawmask = MASK_VIEWMODEL;
+			self.offhand_vfx.worldlight = TRUE;
 		}
 		else
 		{
@@ -301,6 +304,7 @@ void() Skeleton_ObjectDraw =
 		{
 			self.armor_vfx = spawn();
 			self.armor_vfx.owner = self;
+			self.armor_vfx.worldlight = TRUE;
 		}
 		else
 		{

@@ -79,6 +79,23 @@ void(string rendererdescription) CSQC_RendererRestarted =
 	localcmd("exec haze.cfg\n");
 };
 
+void() CSQC_DayNight_Update =
+{
+	// update entity lighting on world map client-side, SSQC -> CSQC use inverted abslight values for some reason
+	for (entity c = world;(c = findfloat(c, worldlight, TRUE));)
+	{
+		c.drawflags = 7;
+		if (timeofday == TIME_DAY)
+			c.abslight = 255;     // inverted from 1
+		else if (timeofday == TIME_NIGHT)
+			c.abslight = 51;      // inverted from 205 (256 - 205)
+		else if (timeofday == TIME_DAWN)
+			c.abslight = 140;     // unchanged
+		else // dusk
+			c.abslight = 190;     // unchanged
+	}
+};
+
 // CALLED EVERY CLIENT RENDER FRAME
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
@@ -377,7 +394,10 @@ void() CSQC_Parse_Event =
 	}
 	// time of day for day / night effects
 	if (event == CSQC_TIMEOFDAY)
+	{
 		timeofday = readbyte();
+		CSQC_DayNight_Update();
+	}
 
 	// motd
 	if (event == CSQC_MOTD)
@@ -417,6 +437,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.predraw = Player_PreDraw;
 			self.drawmask = MASK_ENGINE;
 			self.view_ofs = '0 0 48';
+			self.worldlight = TRUE;
 		}
 
 		self.origin_x = readcoord();
@@ -473,6 +494,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.predraw = Monster_PreDraw;
 			self.drawmask = MASK_ENGINE;
 			self.view_ofs = '0 0 48';
+			self.worldlight = TRUE;
 		}
 
 		self.origin_x = readcoord();

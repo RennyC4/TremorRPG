@@ -2199,6 +2199,7 @@ float deathcam_dist;
 float thirdcam_dist;
 float thirdcam_distz;
 float camera_gdist; // 3rd person camera position in world
+.float worldlight;
 
 // buttons
 float button4;

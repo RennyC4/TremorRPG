@@ -1895,6 +1895,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float stepdodge_counter;
 .float menushut_finished;
 .float type; // born from defining which npc type users are interacting with
+.float worldlight; // entity is affected by .hmp drawflag+abslight
 
 // Animation States
 .float anistate;
