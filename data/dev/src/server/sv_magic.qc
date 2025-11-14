@@ -235,6 +235,8 @@ void(vector ang) CSEv_DoAttack_Magic_v = // CSQC
 		return;
 	if (self.spell_equipped == "None")
 		return;
+	if (self.bonfire)
+		return;
 	if (self.cancast_finished > time) // for insta-cast spells
 		return;
 	if (self.melee_finished > time)

@@ -193,22 +193,16 @@ void() monster_ai_attack =
 
 float() monster_ai_move =
 {
-    if (self.stagger_finished > time)
-        return 0;
-    if (self.melee_finished > time)
-        return 0;
-
     vector dir;
-    if (self.goalentity)
-        dir = normalize(self.goalentity.origin - self.origin);
-    else // Move forward in current facing direction
-        dir = [cos(deg2rad(self.angles_y)), sin(deg2rad(self.angles_y)), 0];
+    
+    // horizontal direction based on facing
+    dir = [cos(deg2rad(self.angles_y)), sin(deg2rad(self.angles_y)), 0];
+    dir.z = 0;
 
-    dir.z = 0; // horizontal only
-    float move_dist = (self.speed * 75) * frametime;
+    float move_dist = self.speed * 75 * frametime;
 
-	if (self.ai_mode == AI_PATROL)
-		move_dist *= 0.25;
+    if (self.ai_mode == AI_PATROL)
+        move_dist *= 0.25;
 
     vector newpos = self.origin + dir * move_dist;
 
@@ -219,13 +213,12 @@ float() monster_ai_move =
         // try stepping up
         vector step_pos = self.origin + '0 0 18';
         tracebox(step_pos, self.mins, self.maxs, step_pos + dir * move_dist, 0, self);
-        if (trace_fraction == 1)
-            self.origin = step_pos + dir * move_dist;
-        else
+        if (trace_fraction < 1)
             return 0; // blocked
+        self.origin = step_pos + dir * move_dist;
     }
     else
-        self.origin = self.origin + dir * move_dist;
+        self.origin = newpos;
 
     // snap to ground
     vector start = self.origin + '0 0 16';

@@ -134,38 +134,68 @@ void() Monster_Animate =
 	//print (ftos(frameduration(self.modelindex,self.frame)), "\n");
 };
 
+vector() monster_ai_calc_move_delta =
+{
+    vector dir = [cos(deg2rad(self.angles_y)), sin(deg2rad(self.angles_y)), 0];
+    dir.z = 0;
+
+    float move_dist = self.speed * 75 * frametime;
+    if (self.ai_mode == AI_PATROL)
+        move_dist *= 0.25;
+
+    vector delta = dir * move_dist;
+
+    // horizontal trace
+    vector newpos = self.origin + delta;
+    tracebox(self.origin, self.mins, self.maxs, newpos, 0, self);
+    if (trace_fraction < 1)
+    {
+        vector step_pos = self.origin + '0 0 18';
+        tracebox(step_pos, self.mins, self.maxs, step_pos + delta, 0, self);
+        if (trace_fraction < 1)
+            return '0 0 0'; // blocked
+        delta = step_pos + delta - self.origin;
+    }
+
+    // ground snap
+    vector start = self.origin + '0 0 16';
+    vector end   = self.origin - '0 0 128';
+    tracebox(start, self.mins, self.maxs, end, 0, self);
+    if (trace_fraction < 1)
+        delta = start + (end - start) * trace_fraction - self.origin;
+
+    return delta;
+};
+
 float(void) Monster_PreDraw =
 {
     Monster_Animate();
-	Skeleton_ObjectDraw();
     self.movetype = MOVETYPE_STEP;
 
-	// prepare rollback
-	vector OldOrigin = self.origin;
-	vector OldAngles = self.angles;
-		
-    float flSuccess;
+    vector OldOrigin = self.origin;
+    vector OldAngles = self.angles;
 
+    vector total_delta = '0 0 0';
+    vector move_delta;
+
+    // sum movement deltas over all missed client frames
     for (int i = servercommandframe + 1; i <= clientcommandframe; i++)
     {
-        if (input_timelength == 0)
-            break;
-
-		flSuccess = walkmove(self.angles_y, self.speed);
-
-        if (!flSuccess)
-            continue;
-
-		self.origin += v_forward * self.speed * input_timelength; // extra smoothing - slides monsters though
-
-        movetogoal(self.speed);
+        move_delta = monster_ai_calc_move_delta();
+        total_delta += move_delta;
     }
 
-    // rollback
+    // smooth interpolation
+    float smooth_factor = 0.15 * frametime; // adjust 0.1–0.2 for smoother/slower
+    self.origin = self.origin + total_delta * smooth_factor;
+
+    // rollback to server position (authoritative)
     setorigin(self, OldOrigin);
     self.angles = OldAngles;
     self.movetype = MOVETYPE_NONE;
 
+    // draw skeleton at smoothed position
+    Skeleton_ObjectDraw();
     addentity(self);
 
     return PREDRAW_NEXT;
