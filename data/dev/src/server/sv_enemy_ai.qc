@@ -209,7 +209,7 @@ float() monster_ai_move =
     dir = [cos(deg2rad(self.angles_y)), sin(deg2rad(self.angles_y)), 0];
     dir.z = 0;
 
-    float move_dist = self.speed * 75 * frametime;
+    float move_dist = self.speed;
     if (self.ai_mode == AI_PATROL)
         move_dist *= 0.25;
 
@@ -274,7 +274,7 @@ float() monster_ai_move =
 
     if (vlen(self.origin - self.last_origin) < 1) // very small movement
     {
-        self.stuck_time += frametime;
+        self.stuck_time += 0.05;
         if (self.stuck_time > 0.5) // stuck for >0.5s
         {
             // Force a random turn to get unstuck
@@ -411,55 +411,66 @@ void() monster_ai_think =
 			self.anistate = ANISTATE_RUN;
 		}
 	}
-	else // AI is jogging back close to spawn spot
-	{
-		vector target = self.ai_runback_temp.origin;
-		float dist = vlen(self.origin - target);
+else // AI is jogging back close to spawn spot
+{
+    vector target = self.ai_runback_temp.origin;
+    float dist = vlen(self.origin - target);
 
-		if (dist > 50)
-		{
-			float base_speed = 50; // min speed
-			float scale = 2;       // speed vs distance
+    if (dist > 50)
+    {
+        //
+        // RUNBACK SPEED = exactly self.speed (no scaling)
+        //
+        float movespeed = self.speed;
 
-			// move horizontally toward spawn
-			vector flat_target = [target_x, target_y, self.origin_z];
-			vector dir = normalize(flat_target - self.origin);
-			self.velocity = dir * (base_speed + dist * 0.5);
+        // move horizontally toward spawn
+        vector flat_target = [target_x, target_y, self.origin_z];
+        vector dir = normalize(flat_target - self.origin);
 
-			// smooth vertical alignment
-			float dz = target_z - self.origin_z;
-			float step = frametime * (base_speed + fabs(dz) * scale);
-			if (fabs(dz) > 1)
-				self.origin_z += step * (dz > 0 ? 1 : -1);
+        self.velocity = dir * movespeed;
 
-			// terrain hugging
-			vector start = self.origin + '0 0 16';   // start slightly above
-			vector end   = self.origin - '0 0 128';  // trace down a bit
-			tracebox(start, self.mins, self.maxs, end, MOVE_NORMAL, self);
+        //
+        // smooth vertical alignment (constant rate)
+        //
+        float dz = target_z - self.origin_z;
+        float climb_rate = 2;  // constant vertical speed
+        if (fabs(dz) > 1)
+            self.origin_z += climb_rate * (dz > 0 ? 1 : -1);
 
-			if (trace_fraction < 1)
-			{ // snap to floor, but not instantly
-				float ground_z = trace_endpos_z;
-				float diff = ground_z - self.origin_z;
-				if (fabs(diff) > 2)
-					self.origin_z += diff * 0.25; // smooth correction
-				else
-					self.origin_z = ground_z; // snap if very close
-			}
+        //
+        // terrain hugging
+        //
+        vector start = self.origin + '0 0 16';
+        vector end   = self.origin - '0 0 128';
+        tracebox(start, self.mins, self.maxs, end, MOVE_NORMAL, self);
 
-			setorigin(self, self.origin);
+        if (trace_fraction < 1)
+        {
+            float ground_z = trace_endpos_z;
+            float diff = ground_z - self.origin_z;
 
-			// cosmetics & logic
-			self.alpha = 0.25;
-			self.effects |= EF_ADDITIVE;
+            float ground_adjust = 4; // constant smoothing rate
+            if (fabs(diff) > 2)
+                self.origin_z += diff * 0.25; // smooth correction
+            else
+                self.origin_z = ground_z;
+        }
 
-			self.enemy = world;
-			self.goalentity = self.ai_runback_temp;
-			self.movetype = MOVETYPE_NOCLIP;
+        setorigin(self, self.origin);
 
-			if (self.health != self.max_health)
-				self.health = self.max_health;
-		}
+        //
+        // cosmetics & logic
+        //
+        self.alpha = 0.25;
+        self.effects |= EF_ADDITIVE;
+
+        self.enemy = world;
+        self.goalentity = self.ai_runback_temp;
+        self.movetype = MOVETYPE_NOCLIP;
+
+        if (self.health != self.max_health)
+            self.health = self.max_health;
+    }
 		else // reached spawn
 		{
 			tracebox(self.saveorigin, self.mins, self.maxs, self.saveorigin, MOVE_NORMAL, self);

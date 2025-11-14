@@ -211,8 +211,8 @@ void() Skeleton_ObjectDraw =
 			ang = vectoangles(v_forward, v_up);
 			self.weapon_vfx.angles = ang;
 			
-			// Stealth causes objects to alpha
-			if (self.crouch)
+			// Stealth causes objects to alpha, same with monsters running back to their spawn point
+			if (self.crouch || self.ai_mode == AI_RUNBACK)
 			{
 				self.weapon_vfx.effects = self.effects;
 				self.weapon_vfx.alpha = self.alpha;
@@ -278,8 +278,8 @@ void() Skeleton_ObjectDraw =
 			ang = vectoangles(v_forward, v_up);
 			self.offhand_vfx.angles = ang;
 
-			// Stealth causes objects to alpha
-			if (self.crouch)
+			// Stealth causes objects to alpha, same with monsters running back to their spawn point
+			if (self.crouch || self.ai_mode == AI_RUNBACK)
 			{
 				self.offhand_vfx.effects = self.effects;
 				self.offhand_vfx.alpha = self.alpha;
@@ -363,8 +363,8 @@ void() Skeleton_ObjectDraw =
 			}
 		}
 
-		// Handle transparency / crouch
-		if (self.crouch)
+		// Stealth causes objects to alpha, same with monsters running back to their spawn point
+		if (self.crouch || self.ai_mode == AI_RUNBACK)
 		{
 			self.armor_vfx.effects = self.effects;
 			self.armor_vfx.alpha = self.alpha;
