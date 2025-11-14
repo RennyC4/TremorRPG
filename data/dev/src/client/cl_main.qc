@@ -49,55 +49,112 @@ float(string key, string val) find_player_id =
 	return -1;
 };
 
+.float old_modelindex;
+.float old_abslight;
+.float old_timeofday;
+
 void() Entity_DayNight_ApplyAll =
 {
-    if (!(substring(world.model, -3, 3) == "hmp"))
-        return; // Only hmp maps
-
-    for (entity e = world; (e = nextent(e));) // Loop through all csqc entities
+	if (substring(world.model, strlen(world.model) - 3, 3) != "hmp")
+		return;
+	
+    for (entity e = world; (e = nextent(e));)
     {
-		if (!e.modelindex) // Only process entities with valid modelindex
+        if (!e.model)
             continue;
 
-        string mdl = modelnameforindex(e.modelindex);
-
-		if (substring(mdl, strlen(mdl)-4, 4) != ".glb") // Only affect .glb models
+        if (substring(e.model, strlen(e.model)-4, 4) != ".glb")
             continue;
 
-		e.drawflags = 7; // Apply the day/night logic to this entity, we're removing lighting
+        // Get numeric model index, optionally precaching if needed
+        if (!e.modelindex)
+            e.modelindex = getmodelindex(e.model); 
+
+        // Apply day/night logic
+        e.drawflags = 7; 
         if (timeofday == TIME_DAY)
-            e.abslight = 500;
+            e.abslight = 255;
         else if (timeofday == TIME_NIGHT)
-            e.abslight = 100;
+            e.abslight = 50;
         else if (timeofday == TIME_DAWN)
-            e.abslight = 300;
+            e.abslight = 180;
         else // dusk
-            e.abslight = 225;
+            e.abslight = 100;
     }
 };
 
-.float old_modelindex;
+// Apply day/night lighting to a single entity, only if needed
+void(entity targ) ApplyDayNightToEntity =
+{
+    if (!targ.model)
+        return;
+
+    if (substring(targ.model, strlen(targ.model)-4, 4) != ".glb")
+        return;
+
+    // Ensure numeric modelindex
+    if (!targ.modelindex)
+        targ.modelindex = getmodelindex(targ.model);
+
+    // Calculate the abslight for current timeofday
+    float new_light;
+    if (timeofday == TIME_DAY)
+        new_light = 255;
+    else if (timeofday == TIME_NIGHT)
+        new_light = 50;
+    else if (timeofday == TIME_DAWN)
+        new_light = 180;
+    else // dusk
+        new_light = 100;
+
+    // Only update if model changed or light value changed
+    if (targ.modelindex != targ.old_modelindex || new_light != targ.old_abslight)
+    {
+        targ.drawflags = 7; // remove engine lighting
+        targ.abslight = new_light;
+
+        targ.old_modelindex = targ.modelindex;
+        targ.old_abslight = new_light;
+    }
+};
+
+// Delta callback when an entity’s model changes
 void() CL_ModelDelta =
 {
-    // `self` is the client entity currently receiving a delta update.
-    // The delta system has already set self.modelindex but hasn't committed it yet.
-    if (self.modelindex != self.old_modelindex)
+    ApplyDayNightToEntity(self);
+};
+
+// Call this each frame or on time change to update dynamic lighting
+void() Entity_DayNight_UpdateTime =
+{
+    for (entity e = world; (e = nextent(e));)
     {
-        string mdl = modelnameforindex(self.modelindex);
-        self.old_modelindex = self.modelindex;
+        if (!e.model)
+            continue;
+
+        if (substring(e.model, strlen(e.model)-4, 4) != ".glb")
+            continue;
+
+        // Only update if timeofday has changed since last update
+        if (e.old_timeofday != timeofday)
+        {
+            ApplyDayNightToEntity(e);
+            e.old_timeofday = timeofday;
+        }
     }
 };
 
+// Initialization
 noref void(float apiver, string enginename, float enginever) CSQC_Init =
 {
-	ZoneName_alpha = spawn();
-	// default
-	drawfont1 = loadfont("", "fonts/trpg", "12", -1, 0, 0);
-	drawfont = drawfont1;
-	// event box
-	drawfont2 = loadfont("", "cour", "12", -1, 0, 0); // set font
+    ZoneName_alpha = spawn();
 
-	deltalisten("*glb", CL_ModelDelta, 0);
+    // Default fonts
+    drawfont1 = loadfont("", "fonts/trpg", "12", -1, 0, 0);
+    drawfont = drawfont1;
+    drawfont2 = loadfont("", "cour", "12", -1, 0, 0);
+
+    deltalisten("*glb", CL_ModelDelta, 0);
 };
 
 noref void() CSQC_WorldLoaded =
@@ -112,6 +169,7 @@ noref void() CSQC_WorldLoaded =
 		
 	CSQC_Precache();
 	last_input_time = time + 15; // don't use idle cam on map change
+	Entity_DayNight_ApplyAll();
 };
 
 void(string rendererdescription) CSQC_RendererRestarted =
@@ -196,13 +254,14 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 				if (thirdcam_dist != 24) // inital cam distance
 					thirdcam_dist = 24;
 				if (thirdcam_distz != 0) // inital cam z origin
-					thirdcam_dist = 0;
+					thirdcam_distz = 0;
 			}
 		}
 	}
 	else
 		Camera_DeathCam();
 
+	Entity_DayNight_UpdateTime();
 	renderscene(); // does what you think it does
 
 	if (lock_on_active)
@@ -229,8 +288,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		pauseframe += 1;
 	else
 		pauseframe = 0;
-		
-	Entity_DayNight_ApplyAll();
 };
 
 float(string strCommand) CSQC_ConsoleCommand =
@@ -277,10 +334,11 @@ float(string strCommand) CSQC_ConsoleCommand =
 			}
 		}
 	}
-	if (argv(0) == "+showscores") // scoreboard
+	if (argv(0) == "+showscores")
 		showscores = TRUE;
-	else
+	else if (argv(0) == "-showscores")
 		showscores = FALSE;
+
 	return FALSE;
 };
 
@@ -333,12 +391,6 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 			case IE_KEYUP:
 			{
 				string bind = getkeybind(scanx);
-
-				if (atbonfire) // Disable movement keys at bonfire
-				{
-					if (bind == "+forward" || bind == "+back" || bind == "+moveleft" || bind == "+moveright" || bind == "+jump")
-						return TRUE; // block movement
-				}
 
 				if (bind == "+moveleft")
 					button_left = FALSE;
@@ -464,6 +516,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.predraw = Player_PreDraw;
 			self.drawmask = MASK_ENGINE;
 			self.view_ofs = '0 0 48';
+			ApplyDayNightToEntity(self);
 		}
 
 		self.origin_x = readcoord();
@@ -520,6 +573,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.predraw = Monster_PreDraw;
 			self.drawmask = MASK_ENGINE;
 			self.view_ofs = '0 0 48';
+			ApplyDayNightToEntity(self);
 		}
 
 		self.origin_x = readcoord();
