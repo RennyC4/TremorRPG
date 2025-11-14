@@ -191,42 +191,100 @@ void() monster_ai_attack =
 	self.nextthink = time + 0.1;
 };
 
+.float avoid_dir;
+.float avoid_time;
+.vector last_origin;
+.float stuck_time;
 float() monster_ai_move =
 {
+	if (self.stagger_finished > time)
+		return 0;
+	if (self.melee_finished > time)
+		return 0;
+
     vector dir;
-    
+
     // horizontal direction based on facing
     dir = [cos(deg2rad(self.angles_y)), sin(deg2rad(self.angles_y)), 0];
     dir.z = 0;
 
     float move_dist = self.speed * 75 * frametime;
-
     if (self.ai_mode == AI_PATROL)
         move_dist *= 0.25;
 
     vector newpos = self.origin + dir * move_dist;
 
-    // trace horizontal movement
+    // --- Initialize avoidance memory ---
+    if (!self.avoid_dir)
+    {
+        self.avoid_dir = (random(0, 1) < 0.5) ? 1 : -1; // 1 = left, -1 = right
+        self.avoid_time = 0;
+    }
+
+    // --- Trace forward ---
     tracebox(self.origin, self.mins, self.maxs, newpos, 0, self);
     if (trace_fraction < 1)
     {
-        // try stepping up
+        // --- Try stepping up ---
         vector step_pos = self.origin + '0 0 18';
         tracebox(step_pos, self.mins, self.maxs, step_pos + dir * move_dist, 0, self);
-        if (trace_fraction < 1)
-            return 0; // blocked
-        self.origin = step_pos + dir * move_dist;
+        if (trace_fraction == 1)
+            self.origin = step_pos + dir * move_dist;
+        else
+        {
+            // --- Slide around obstacle using avoidance memory ---
+            float turn_angle = 30 * self.avoid_dir;
+            vector slide_dir = [cos(deg2rad(self.angles_y + turn_angle)),
+                                sin(deg2rad(self.angles_y + turn_angle)), 0];
+            vector slide_pos = self.origin + slide_dir * move_dist;
+            tracebox(self.origin, self.mins, self.maxs, slide_pos, 0, self);
+
+            if (trace_fraction == 1)
+            {
+                self.angles_y += turn_angle;   // turn slightly
+                self.origin = slide_pos;
+                self.avoid_time = time + 0.5;  // remember for 0.5s
+            }
+            else
+                self.avoid_dir *= -1; // Reverse avoidance if blocked
+        }
     }
     else
+    {
+        // path clear, reset avoidance after time expires
+        if (time > self.avoid_time)
+        {
+            self.avoid_dir = 0;
+            self.avoid_time = 0;
+        }
         self.origin = newpos;
+    }
 
-    // snap to ground
+    // --- Snap to ground ---
     vector start = self.origin + '0 0 16';
     vector end   = self.origin - '0 0 128';
     tracebox(start, self.mins, self.maxs, end, 0, self);
     if (trace_fraction < 1)
         self.origin = start + (end - start) * trace_fraction;
 
+    // --- Stuck detection ---
+    if (!self.last_origin)
+        self.last_origin = self.origin;
+
+    if (vlen(self.origin - self.last_origin) < 1) // very small movement
+    {
+        self.stuck_time += frametime;
+        if (self.stuck_time > 0.5) // stuck for >0.5s
+        {
+            // Force a random turn to get unstuck
+            self.angles_y += random(-180, 180);
+            self.stuck_time = 0;
+        }
+    }
+    else
+        self.stuck_time = 0; // reset counter if moving
+
+    self.last_origin = self.origin; // store current position
     setorigin(self, self.origin);
 
     return 1; // move successful
