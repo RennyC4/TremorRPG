@@ -49,101 +49,6 @@ float(string key, string val) find_player_id =
 	return -1;
 };
 
-.float old_modelindex;
-.float old_abslight;
-.float old_timeofday;
-
-void() Entity_DayNight_ApplyAll =
-{
-	if (substring(world.model, strlen(world.model) - 3, 3) != "hmp")
-		return;
-	
-    for (entity e = world; (e = nextent(e));)
-    {
-        if (!e.model)
-            continue;
-
-        if (substring(e.model, strlen(e.model)-4, 4) != ".glb")
-            continue;
-
-        // Get numeric model index, optionally precaching if needed
-        if (!e.modelindex)
-            e.modelindex = getmodelindex(e.model); 
-
-        // Apply day/night logic
-        e.drawflags = 7; 
-        if (timeofday == TIME_DAY)
-            e.abslight = 255;
-        else if (timeofday == TIME_NIGHT)
-            e.abslight = 50;
-        else if (timeofday == TIME_DAWN)
-            e.abslight = 180;
-        else // dusk
-            e.abslight = 100;
-    }
-};
-
-// Apply day/night lighting to a single entity, only if needed
-void(entity targ) ApplyDayNightToEntity =
-{
-    if (!targ.model)
-        return;
-
-    if (substring(targ.model, strlen(targ.model)-4, 4) != ".glb")
-        return;
-
-    // Ensure numeric modelindex
-    if (!targ.modelindex)
-        targ.modelindex = getmodelindex(targ.model);
-
-    // Calculate the abslight for current timeofday
-    float new_light;
-    if (timeofday == TIME_DAY)
-        new_light = 255;
-    else if (timeofday == TIME_NIGHT)
-        new_light = 50;
-    else if (timeofday == TIME_DAWN)
-        new_light = 180;
-    else // dusk
-        new_light = 100;
-
-    // Only update if model changed or light value changed
-    if (targ.modelindex != targ.old_modelindex || new_light != targ.old_abslight)
-    {
-        targ.drawflags = 7; // remove engine lighting
-        targ.abslight = new_light;
-
-        targ.old_modelindex = targ.modelindex;
-        targ.old_abslight = new_light;
-    }
-};
-
-// Delta callback when an entity’s model changes
-void() CL_ModelDelta =
-{
-    ApplyDayNightToEntity(self);
-};
-
-// Call this each frame or on time change to update dynamic lighting
-void() Entity_DayNight_UpdateTime =
-{
-    for (entity e = world; (e = nextent(e));)
-    {
-        if (!e.model)
-            continue;
-
-        if (substring(e.model, strlen(e.model)-4, 4) != ".glb")
-            continue;
-
-        // Only update if timeofday has changed since last update
-        if (e.old_timeofday != timeofday)
-        {
-            ApplyDayNightToEntity(e);
-            e.old_timeofday = timeofday;
-        }
-    }
-};
-
 // Initialization
 noref void(float apiver, string enginename, float enginever) CSQC_Init =
 {
@@ -153,8 +58,6 @@ noref void(float apiver, string enginename, float enginever) CSQC_Init =
     drawfont1 = loadfont("", "fonts/trpg", "12", -1, 0, 0);
     drawfont = drawfont1;
     drawfont2 = loadfont("", "cour", "12", -1, 0, 0);
-
-    deltalisten("*glb", CL_ModelDelta, 0);
 };
 
 noref void() CSQC_WorldLoaded =
@@ -169,7 +72,6 @@ noref void() CSQC_WorldLoaded =
 		
 	CSQC_Precache();
 	last_input_time = time + 15; // don't use idle cam on map change
-	Entity_DayNight_ApplyAll();
 };
 
 void(string rendererdescription) CSQC_RendererRestarted =
@@ -261,7 +163,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		Camera_DeathCam();
 
-	Entity_DayNight_UpdateTime();
 	renderscene(); // does what you think it does
 
 	if (lock_on_active)
@@ -516,7 +417,6 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.predraw = Player_PreDraw;
 			self.drawmask = MASK_ENGINE;
 			self.view_ofs = '0 0 48';
-			ApplyDayNightToEntity(self);
 		}
 
 		self.origin_x = readcoord();
@@ -573,7 +473,6 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.predraw = Monster_PreDraw;
 			self.drawmask = MASK_ENGINE;
 			self.view_ofs = '0 0 48';
-			ApplyDayNightToEntity(self);
 		}
 
 		self.origin_x = readcoord();
