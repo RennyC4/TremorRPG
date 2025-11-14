@@ -2,6 +2,7 @@
 
 server/sv_defs.qc
 sh_customdefs.qc
+math.qc
 server/sv_customdefs.qc
 server/sv_main.qc
 server/sv_expsys.qc
@@ -14,7 +15,6 @@ server/sv_magic.qc
 server/sv_triggers.qc
 server/sv_player.qc
 server/sv_npc.qc
-math.qc
 server/sv_misc.qc
 server/sv_items.qc
 server/sv_inventory.qc

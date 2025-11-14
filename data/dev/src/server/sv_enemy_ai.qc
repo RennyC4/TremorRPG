@@ -50,21 +50,13 @@ void(float speed) TurnToTarget =
 	vector dir, target_angles;
 	float turn_speed, diff;
 
-	if (self.classname == "npc")
+	if (self.goalentity)
 	{
-		if (self.goalentity)
-		{
-			dir = normalize(self.goalentity.origin - self.origin);
-			target_angles = vectoangles(dir);
-		}
-		else
-			target_angles = self.idealangles;
-	}
-	else
-	{
-		dir = normalize(self.goalentity.origin - self.origin); 
+		dir = normalize(self.goalentity.origin - self.origin);
 		target_angles = vectoangles(dir);
 	}
+	else
+		target_angles = self.idealangles;
 
     diff = anglemod(target_angles_y - self.angles_y);
 
@@ -187,11 +179,7 @@ void() monster_ai_attack =
 		else if (self.attack_type == 3)
 			self.anistate = ANISTATE_SMASH;
 		else if (self.attack_type == 4)
-		{
-			// TODO: Look at player
 			self.anistate = ANISTATE_ARCHERY;
-
-		}
 
 		if (self.attack_type == 4)
 			self.ai_doattack = time + (self.attack_speed / 2); // launch attack (bow)
@@ -203,86 +191,52 @@ void() monster_ai_attack =
 	self.nextthink = time + 0.1;
 };
 
-.float lateral_wiggle;
-void() monster_ai_move =
+float() monster_ai_move =
 {
     if (self.stagger_finished > time)
-        return;
+        return 0;
     if (self.melee_finished > time)
-        return;
+        return 0;
 
-    // enemy behavior
-    if (self.enemy)
-    {
-        vector to_enemy = self.enemy.origin - self.origin;
-        float dist_to_enemy = vlen(to_enemy);
-
-        // Dynamic back-off if too close
-        float safe_dist = 40 + random(10);
-        if (dist_to_enemy < safe_dist)
-        {
-            walkmove(self.angles_y, -self.speed);
-            self.anistate = ANISTATE_RUN;
-            self.ai_backup_finished = time + random_range(0.7, 2.0);
-            return;
-        }
-
-        // stop moving if in melee range
-        if (range(self.enemy) == RANGE_MELEE)
-            return;
-
-        // circle player slightly
-        if (random() < 0.2)
-        {
-            walkmove(self.angles_y + random_range(-20, 20), self.speed);
-            return;
-        }
-    }
-
-    // goal movement
+    vector dir;
     if (self.goalentity)
+        dir = normalize(self.goalentity.origin - self.origin);
+    else // Move forward in current facing direction
+        dir = [cos(deg2rad(self.angles_y)), sin(deg2rad(self.angles_y)), 0];
+
+    dir.z = 0; // horizontal only
+    float move_dist = self.speed;
+
+	if (self.ai_mode == AI_PATROL)
+		move_dist *= 0.25;
+
+    vector newpos = self.origin + dir * move_dist;
+
+    // trace horizontal movement
+    tracebox(self.origin, self.mins, self.maxs, newpos, 0, self);
+    if (trace_fraction < 1)
     {
-        // lateral wiggle
-        if (self.lateral_wiggle == __NULL__ || random() < 0.05)
-            self.lateral_wiggle = random_range(-10, 10); // small yaw offset
-
-        float target_yaw = self.angles_y + self.lateral_wiggle;
-        float delta_yaw = target_yaw - self.angles_y;
-        if (delta_yaw > 180) delta_yaw -= 360;
-        if (delta_yaw < -180) delta_yaw += 360;
-        if (delta_yaw > 5) delta_yaw = 5;
-        if (delta_yaw < -5) delta_yaw = -5;
-        self.angles_y += delta_yaw; // gradual yaw blending
-
-        makevectors([0, self.angles_y, 0]);
-
-        // slight diagonal movement (forward + small sidestep)
-        vector move_dir = v_forward * self.speed + v_right * (self.speed * 0.2);
-
-        // trace forward for obstacles
-        tracebox(self.origin, self.mins, self.maxs, self.origin + move_dir, FALSE, self);
-
-        if (trace_fraction < 1) // forward blocked — try sidestep smoothly
-        {
-            float sidestep_dist = self.speed * 0.5;
-
-            tracebox(self.origin, self.mins, self.maxs, self.origin + v_right * sidestep_dist, FALSE, self);
-            if (trace_fraction > 0.5)
-                walkmove(vectoyaw(v_right), sidestep_dist);
-            else
-                walkmove(vectoyaw(-v_right), sidestep_dist);
-        }
-        else // step-up / vertical adjustment
-        {
-            vector temp_goal = self.goalentity.origin;
-            temp_goal.z += 8; // small vertical tweak
-            float yaw = vectoyaw(temp_goal - self.origin);
-            walkmove(yaw, self.speed);
-        }
+        // try stepping up
+        vector step_pos = self.origin + '0 0 18';
+        tracebox(step_pos, self.mins, self.maxs, step_pos + dir * move_dist, 0, self);
+        if (trace_fraction == 1)
+            self.origin = step_pos + dir * move_dist;
+        else
+            return 0; // blocked
     }
+    else
+        self.origin = self.origin + dir * move_dist;
 
-    if (self.flags & FL_ONGROUND) // slide off small obstacles
-        self.flags &= ~FL_ONGROUND;
+    // snap to ground
+    vector start = self.origin + '0 0 16';
+    vector end   = self.origin - '0 0 128';
+    tracebox(start, self.mins, self.maxs, end, 0, self);
+    if (trace_fraction < 1)
+        self.origin = start + (end - start) * trace_fraction;
+
+    setorigin(self, self.origin);
+
+    return 1; // move successful
 };
 
 void() monster_ai_spawnrunback =
@@ -333,22 +287,30 @@ void() monster_ai_think =
 		// randomly turn and move
 		if (self.ai_patrolidle < time)
 		{
-			self.angles_x = 0;
-			self.idealangles_y = random()*360;
-			if (self.ai_move_dist > 1)
-				self.ai_patrolidle = time + 2 + random()*5;
-			if (random() < 0.35)
-				self.ai_standstill = time + 2 + random()*10;
-			TurnToTarget(self.turn_speed);
-			self.ai_mode = AI_IDLE;
-			self.anistate = ANISTATE_NONE;
+			if (self.ai_move_dist != 1)
+			{
+				self.angles_x = 0;
+				self.idealangles_y = random()*360;
+				if (self.ai_move_dist > 1)
+					self.ai_patrolidle = time + 2 + random()*5;
+				if (random() < 0.35)
+					self.ai_standstill = time + 2 + random()*10;
+				TurnToTarget(self.turn_speed);
+				self.ai_mode = AI_IDLE;
+				self.anistate = ANISTATE_NONE;
+			}
+			else // standing guard in an area
+			{
+				self.angles_x = 0;
+				self.ai_mode = AI_IDLE;
+				self.anistate = ANISTATE_NONE;
+			}
 		}
 		else
 		{
 			if (self.ai_standstill < time)
 			{
-				if (!walkmove(self.angles_y, self.speed / 4)) // failed, changed direction
-					self.idealangles_y = random() * 360;
+				monster_ai_move();
 				self.ai_mode = AI_PATROL;
 				self.anistate = ANISTATE_RUN;
 			}

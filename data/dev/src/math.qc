@@ -1,3 +1,8 @@
+float deg2rad(float deg)
+{
+    return deg * 3.14159265 / 180;
+}
+
 float(float min, float max) random_range =
 {
     return min + (random() * (max - min));

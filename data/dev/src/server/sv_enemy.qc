@@ -83,6 +83,8 @@ void() set_monster =
 	self.flags |= FL_MONSTER;
 	self.view_ofs = '0 0 48';
 	self.th_die = monster_death;
+	
+	self.idealangles_y = random()*360;
 
 	if (!self.sight_range)
 		self.sight_range = 500;
