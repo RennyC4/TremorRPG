@@ -688,7 +688,7 @@ void() Player_Think =
 
 	if (!player_menu)
 	{
-		if (input_buttons & 1) // attack button
+		if (input_buttons & 1) // attack button, or que'd up
 		{
 			if (self.health <= 0)
 			{
@@ -802,4 +802,9 @@ void() Player_Think =
 		if (button_down)
 			sendevent("PlayerDodge", "f", 3);
 	}
+
+	if (self.flags & FL_ONGROUND)
+		PlayerOnGround = TRUE;
+	else
+		PlayerOnGround = FALSE;
 };

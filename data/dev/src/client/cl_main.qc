@@ -291,7 +291,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 					if (bind == "+forward" || bind == "+back" || bind == "+moveleft" || bind == "+moveright" || bind == "+jump")
 						return TRUE; // block movement
 				}
-				
+
 				if (bind == "+moveleft")
 					button_left = TRUE;
 				if (bind == "+moveright")

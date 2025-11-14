@@ -184,7 +184,8 @@ void() monster_ai_attack =
 		if (self.attack_type == 4)
 			self.ai_doattack = time + (self.attack_speed / 2); // launch attack (bow)
 		else
-			self.ai_doattack = time + (self.attack_speed / 4); // launch attack
+			self.ai_doattack = time + (self.attack_speed / 4); // launch normal attack
+
 		self.melee_finished = time + self.attack_speed;
 	}
 	self.think = monster_ai_think;
@@ -314,6 +315,9 @@ void() monster_ai_think =
 
 	if (self.stagger_finished > time)
 	{
+		self.ai_attacktriggered = TRUE; // pre-maturely end attacking stuff, otherwise it'll still follow through oddly
+		self.ai_doattack = time;
+
 		if (self.impact_frame > time)
 			self.anistate = ANISTATE_IMPACT;
 		else
@@ -322,7 +326,7 @@ void() monster_ai_think =
 		self.nextthink = time + 0.1;
 		return;
 	}
-	self.impact_frame = time + 1.15; // impact frame timing
+	self.impact_frame = time + 1; // impact frame timing
 
 	// monster is walking normal its beat (no target)
 	if (self.ai_mode == AI_IDLE || self.ai_mode == AI_PATROL)
@@ -344,7 +348,7 @@ void() monster_ai_think =
 				self.idealangles_y = random()*360;
 				if (self.ai_move_dist > 1)
 					self.ai_patrolidle = time + 2 + random()*5;
-				if (random() < 0.35)
+				if (random() < 0.44)
 					self.ai_standstill = time + 2 + random()*10;
 				TurnToTarget(self.turn_speed);
 				self.ai_mode = AI_IDLE;
@@ -470,6 +474,9 @@ void() monster_ai_think =
 			self.enemy = world;
 			self.goalentity = world;
 			self.movetype = MOVETYPE_STEP;
+
+			self.ai_standstill = time + 4 + random()*4; // chill for a bit
+
 			self.ai_mode = AI_IDLE;
 			self.anistate = ANISTATE_NONE;
 
@@ -553,7 +560,7 @@ void() monster_ai_think =
 				{
 					if (self.ai_doattack < time && !self.ai_attacktriggered)
 					{
-						if (self.attack_type == 4)
+						if (self.attack_type == 4) // bow
 							CSEv_DoAttack_Arrow_v(self.angles);
 						else
 							CSEv_DoAttack_Melee_v(self.angles);

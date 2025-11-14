@@ -248,6 +248,7 @@ void() PlayerJump =
 
 		self.velocity_z += (270 + jumpcalc);
 		self.weaponframe = 0;
+		self.pressedJump = TRUE;
 		self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
 		self.button2 = 0;
 		if (stamcalc > 49)
@@ -265,8 +266,11 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		return;
 	if (self.cast_finished > time)
 		return;
-	if (self.stagger_finished > time)
-		return;
+
+// You should be able to dodge out of stagger
+//	if (self.stagger_finished > time)
+//		return;
+
 	if (self.dodge_finished > time)
 		return;
 	if (self.melee_finished > time)
@@ -304,6 +308,7 @@ void(float whichdir) CSEv_PlayerDodge_f =
 
 		self.velocitypush_finished = self.dodge_finished;
 		self.lockview_finished = self.dodge_finished;
+		self.stagger_finished = time; // remove stagger on dodge
 
 		Player_RemoveCrouch(); // remove crouch
 	}
@@ -792,6 +797,7 @@ float() CanAttack =
 {
     return (self.melee_finished < time &&
             self.cancast_finished < time &&
+			self.stagger_finished < time &&
             self.cast_finished < time &&
             self.menushut_finished < time);
 };
@@ -854,7 +860,7 @@ void() CSEv_User_StartAttack_ =
 		// -------------------------------
 		// Air melee attack priority with ground distance check
 		// -------------------------------
-		if (!(self.flags & FL_ONGROUND) && self.attack_type != 4 && self.inair_count >= 18)
+		if (!(self.flags & FL_ONGROUND) && self.attack_type != 4 && self.pressedJump)
 		{
 			self.anistate = ANISTATE_AIRMELEE;
 			self.melee_finished = time + self.attack_speed;
@@ -922,6 +928,13 @@ void() CSEv_User_StartAttack_ =
 
 void() Anistate_Handler =
 {
+	// Tied to stagger_finished
+	if (self.anistate == ANISTATE_STUNNED || self.anistate == ANISTATE_IMPACT)
+	{
+		if (self.stagger_finished < time)
+			self.anistate = ANISTATE_NONE;
+	}
+
 	// Tied to melee_finished
 	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_PUNCH || self.anistate == ANISTATE_BASH
 	|| self.anistate == ANISTATE_PARRY || self.anistate == ANISTATE_SMASH || self.anistate == ANISTATE_ARCHERY || self.anistate == ANISTATE_BLOCK
@@ -938,18 +951,21 @@ void() Anistate_Handler =
 				self.anistate = ANISTATE_NONE;
 		}
 	}
+
 	// Tied to spellani_finished
 	if (self.anistate == ANISTATE_CASTAOE || self.anistate == ANISTATE_CASTTARGET || self.anistate == ANISTATE_CASTSELF)
 	{
 		if (self.spellani_finished < time)
 			self.anistate = ANISTATE_NONE;
 	}
+
 	// Tied to potion_use_finished
 	if (self.anistate == ANISTATE_DRINK)
 	{
 		if (self.potion_use_finished < time)
 			self.anistate = ANISTATE_NONE;
 	}
+
 	// Tied to dodge_finished
 	if (self.anistate == ANISTATE_DODGE || self.anistate == ANISTATE_STEPDODGE)
 	{
@@ -1002,13 +1018,6 @@ void() PlayerPreThink =
 	// player movement + speed checks
 	if (self.stagger_finished < time)
 	{
-		if (self.anistate == ANISTATE_STUNNED || self.anistate == ANISTATE_IMPACT) // Reset stun state once stagger time is over
-			self.anistate = ANISTATE_NONE;
-
-		// === STUN COOLDOWN HANDLING ===
-		if (self.next_stun_allowed && self.next_stun_allowed < time)
-			self.next_stun_allowed = 0; // cooldown expired
-
 		// attack / dodge / magic commitment / npc interaction menus
 		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.menu == MENU_BANKING ||
 			self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time
@@ -1024,15 +1033,17 @@ void() PlayerPreThink =
 				self.maxspeed = 100;
 		}
 	}
-	else
+	else // stagger is active
 	{
-		// Only apply stun if not on cooldown
-		if (!self.next_stun_allowed || self.next_stun_allowed < time)
+		if (self.anistate != ANISTATE_IMPACT && self.anistate != ANISTATE_STUNNED)
 		{
-			self.anistate = ANISTATE_STUNNED;
-			self.maxspeed = 1; // staggered speed
-			self.next_stun_allowed = time + 2; // 2 seconds cooldown before next stun
+			self.anistate = ANISTATE_IMPACT;
+			self.impact_frame = time + 1; // impact frame duration
 		}
+		if (self.anistate == ANISTATE_IMPACT && self.impact_frame < time)
+			self.anistate = ANISTATE_STUNNED;
+
+		self.maxspeed = 1; // staggered speed
 	}
 	if (self.loggedin) // enforce name
 	{
@@ -1208,8 +1219,14 @@ void() PlayerPostThink =
 		self.effects &= ~EF_ADDITIVE;
 	}
 
-	if (self.flags & FL_ONGROUND && self.inair_swing_sfx)
-		self.inair_swing_sfx = FALSE;
+	if (self.flags & FL_ONGROUND)
+	{
+		if (self.inair_swing_sfx)
+			self.inair_swing_sfx = FALSE;
+		if (self.pressedJump)
+			self.pressedJump = FALSE;
+	}
+
 	Player_CastMagic();
 };
 

@@ -124,7 +124,7 @@ void() DoAttack_ShieldBash =
 };
 
 // =======================================
-// MAIN MELEE ATTACK FUNCTION
+// MAIN MELEE ATTACK FUNCTION - Traceline
 // =======================================
 .float staminamessage_finished;
 .float inair_swing_sfx;
@@ -281,6 +281,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
                 targ.melee_finished = time + 0.5;
                 targ.anistate = ANISTATE_BLOCK;
                 pointparticles(PART_BLOCK, targ.origin + v_forward * 32 + v_up * targ.view_ofs_z);
+				float blocked = TRUE;
             }
             else if (targ.stagger_finished < time)
             {
@@ -330,6 +331,8 @@ void(vector ang) CSEv_DoAttack_Melee_v =
         damage = 1;
 
     // Apply damage
+	if (!blocked)
+		targ.stagger_finished = time + 0.8; // impact frame on target only
     DoDamage(targ, self, damage, FALSE);
 
     // FX and hit sounds
@@ -422,6 +425,7 @@ void() arrow_touch =
 					other.melee_finished = time + 0.5;
 					other.anistate = ANISTATE_BLOCK;
 					pointparticles(PART_BLOCK, other.origin + v_forward * 32 + v_up * other.view_ofs_z);
+					float blocked = TRUE;
 				}
 				else
 				{
@@ -475,6 +479,8 @@ void() arrow_touch =
 			mid_z += (other.mins_z + other.maxs_z) * 0.5;
 			te_blood(mid, vel, 6);
 
+			if (!blocked)
+				other.stagger_finished = time + 0.8; // impact frame on target only
 			DoDamage(other, self.owner, damage, FALSE);
 			sound(self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
 		}
@@ -808,6 +814,7 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
                     targ.melee_finished = time + 0.5;
                     targ.anistate = ANISTATE_BLOCK;
                     pointparticles(PART_BLOCK, targ.origin + v_forward * 32 + v_up * targ.view_ofs_z);
+					float blocked = TRUE;
                 }
                 else if (targ.stagger_finished < time)
                 {
@@ -845,6 +852,8 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
         if (dmg < 1)
             dmg = 1;
 
+		if (!blocked)
+			targ.stagger_finished = time + 0.8; // impact frame on target only
         DoDamage(targ, attacker, dmg, silent);
         did_damage = TRUE;
 
