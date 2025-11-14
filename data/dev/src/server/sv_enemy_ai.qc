@@ -205,7 +205,7 @@ float() monster_ai_move =
         dir = [cos(deg2rad(self.angles_y)), sin(deg2rad(self.angles_y)), 0];
 
     dir.z = 0; // horizontal only
-    float move_dist = self.speed;
+    float move_dist = (self.speed * 75) * frametime;
 
 	if (self.ai_mode == AI_PATROL)
 		move_dist *= 0.25;
