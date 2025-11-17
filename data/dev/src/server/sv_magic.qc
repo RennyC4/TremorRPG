@@ -2,6 +2,8 @@
 // Magic system handlers
 //
 
+void() Player_RemoveCrouch;
+
 void(string itemname) LearnSpell =
 {
 	float i;
@@ -224,6 +226,7 @@ void() Player_CastMagic = // called from player postthink
 			Cast_LightHeal(spellpower);
 			self.mana -= 20;
 		}
+		Player_RemoveCrouch();
 		self.cast_finished_spell = ""; // important: always clear this after the spell is fired, or else it'll refire
 	}
 };
@@ -243,6 +246,8 @@ void(vector ang) CSEv_DoAttack_Magic_v = // CSQC
 		return;
 	if (self.melee_finished > time)
 		return;
+
+	Player_RemoveCrouch();
 
 	// Player cancels spell during charge
 	if (self.cast_finished > time)

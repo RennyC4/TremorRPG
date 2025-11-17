@@ -215,6 +215,8 @@ float(string strCommand) CSQC_ConsoleCommand =
 
 	tokenize(strCommand);
 
+	if (argv(0) == "toggle_crouch")
+		sendevent("PlayerCrouch", "");
 	if (argv(0) == "target")
 		LockOn_Toggle = TRUE;
 	if (argv(0) == "targetcycle")
@@ -232,8 +234,6 @@ float(string strCommand) CSQC_ConsoleCommand =
 		sendevent("PlayerShowInventory", "");
 	if (argv(0) == "show_magic")
 		sendevent("PlayerShowMagic", "");
-	if (argv(0) == "toggle_crouch")
-		sendevent("PlayerCrouch", "");
 	if (argv(0) == "toggle_camera") // send camera mode to SSQC for various reasons
 	{
 		float player_menu = getstatf(STAT_MENU);

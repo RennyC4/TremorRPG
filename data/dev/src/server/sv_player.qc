@@ -349,8 +349,19 @@ void() CSEv_PlayerCrouch =
 		return;
 	if (self.bonfire)
 		return;
+	if (self.melee_finished > time)
+		return;
+	if (self.stagger_finished > time)
+		return;
+	if (self.cancast_finished > time) // for insta-cast spells
+		return;
+	if (self.cast_finished > time)
+		return;
+	if (self.spellani_finished > time)
+		return;
 
-	if (!self.crouch) // --- Entering crouch ---
+	// --- Entering crouch ---
+	if (!self.crouch)
 	{
 		setsize(self, [-16, -16, 0], [16, 16, 28]);
 		self.view_ofs = [0, 0, 24];
