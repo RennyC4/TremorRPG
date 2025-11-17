@@ -106,41 +106,52 @@ void(entity targ, entity monster, float goldmin, float goldmax) GiveGold =
     stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
 };
 
-//--------------------------------
-//MonsterReward (shared XP & Gold)
-//--------------------------------
+// MonsterReward, Only reward players who did ≥10% of total damage
 void(entity self, entity killer) MonsterReward =
 {
-    float total_xp = ceil(random_range(self.exp_min, self.exp));
+    float total_xp   = ceil(random_range(self.exp_min, self.exp));
     float total_gold = ceil(random_range(self.gold_min, self.gold));
 
-    // Collect attackers
+    // Calculate total damage dealt by all attackers
+    float total_damage = 0;
+    for (float i = 0; i < 8; i++)
+        if (self.attackers[i])
+            total_damage += self.attacker_damage[i];
+
+    if (total_damage <= 0)
+        return;
+
+    // Collect attackers who did at least 10% of total damage
     entity sharelist[8];
     float count = 0;
 
     for (float i = 0; i < 8; i++)
     {
-        if (self.attackers[i])
+        if (!self.attackers[i])
+            continue;
+
+        // Check damage contribution
+        if (self.attacker_damage[i] >= total_damage * 0.10)
         {
             sharelist[count] = self.attackers[i];
             count += 1;
         }
     }
 
-    if (!count)
+    if (count <= 0)
         return;
 
-    // Split results
+    // Split XP/Gold evenly among valid attackers
     float xp_each   = total_xp / count;
     float gold_each = total_gold / count;
 
-    // Reward each attacker
     for (float i = 0; i < count; i++)
     {
         entity p = sharelist[i];
 
-		GiveExperience(p, self, xp_each, xp_each);
-		GiveGold(p, self, gold_each, gold_each);
+        // Fixed min/max values with diminishing returns handled inside
+        GiveExperience(p, self, xp_each, xp_each);
+        GiveGold(p, self, gold_each, gold_each);
     }
 };
 
