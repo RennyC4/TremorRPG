@@ -28,12 +28,38 @@ void(entity targ) Player_CheckLevelUp =
     }
 };
 
-// =======================================
+// ===============
 // Give Experience
-// =======================================
+// ===============
 void(entity targ, float expmin, float expmax) GiveExperience =
 {
     float amount = ceil(random_range(expmin, expmax));
+
+    // -----------------------------
+    // Level-based diminishing returns
+    // -----------------------------
+    float p_lvl = targ.level;
+    float m_lvl = self.level;
+    float lvl_diff = p_lvl - m_lvl;
+    float lvl_mod;
+
+    if (lvl_diff <= 0)
+		lvl_mod = 1.0 + (-lvl_diff * 0.05); // Monster is stronger or equal → XP bonus
+    else if (lvl_diff <= 1)
+        lvl_mod = 1.0; // Player is only 1 level higher → no penalty
+    else
+    {
+        // Player is 2+ levels higher → start 10% penalty per level
+        // lvl_diff = 2 → 80%
+        // lvl_diff = 3 → 70%
+        lvl_mod = 1.0 - (lvl_diff * 0.10);
+
+        if (lvl_mod < 0.10)
+            lvl_mod = 0.10; // minimum 10%
+    }
+
+    amount *= lvl_mod;
+    // -----------------------------
 
     exp_multiplier = cvar("sv_expmultiplier");
     if (exp_multiplier > 0)  // server-adjustable multiplier
@@ -45,7 +71,6 @@ void(entity targ, float expmin, float expmax) GiveExperience =
     string eventlog_print = strcat("^2", ftos(amount), "^7 exp received!\n");
     stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
 
-    // Check for level-ups after adding XP
     Player_CheckLevelUp(targ);
 };
 

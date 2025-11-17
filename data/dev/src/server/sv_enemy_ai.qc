@@ -411,66 +411,61 @@ void() monster_ai_think =
 			self.anistate = ANISTATE_RUN;
 		}
 	}
-else // AI is jogging back close to spawn spot
-{
-    vector target = self.ai_runback_temp.origin;
-    float dist = vlen(self.origin - target);
+	else // AI is jogging back close to spawn spot
+	{
+		vector target = self.ai_runback_temp.origin;
+		float dist = vlen(self.origin - target);
 
-    if (dist > 50)
-    {
-        //
-        // RUNBACK SPEED = exactly self.speed (no scaling)
-        //
-        float movespeed = self.speed;
+		if (dist > 50)
+		{
+			// move horizontally toward spawn
+			vector flat_target = [target_x, target_y, self.origin_z];
+			vector dir = normalize(flat_target - self.origin);
 
-        // move horizontally toward spawn
-        vector flat_target = [target_x, target_y, self.origin_z];
-        vector dir = normalize(flat_target - self.origin);
+			self.velocity = dir * self.speed;;
 
-        self.velocity = dir * movespeed;
+			//
+			// smooth vertical alignment (constant rate)
+			//
+			float dz = target_z - self.origin_z;
+			float climb_rate = 2;  // constant vertical speed
+			if (fabs(dz) > 1)
+				self.origin_z += climb_rate * (dz > 0 ? 1 : -1);
 
-        //
-        // smooth vertical alignment (constant rate)
-        //
-        float dz = target_z - self.origin_z;
-        float climb_rate = 2;  // constant vertical speed
-        if (fabs(dz) > 1)
-            self.origin_z += climb_rate * (dz > 0 ? 1 : -1);
+			//
+			// terrain hugging
+			//
+			vector start = self.origin + '0 0 16';
+			vector end   = self.origin - '0 0 128';
+			tracebox(start, self.mins, self.maxs, end, MOVE_NORMAL, self);
 
-        //
-        // terrain hugging
-        //
-        vector start = self.origin + '0 0 16';
-        vector end   = self.origin - '0 0 128';
-        tracebox(start, self.mins, self.maxs, end, MOVE_NORMAL, self);
+			if (trace_fraction < 1)
+			{
+				float ground_z = trace_endpos_z;
+				float diff = ground_z - self.origin_z;
 
-        if (trace_fraction < 1)
-        {
-            float ground_z = trace_endpos_z;
-            float diff = ground_z - self.origin_z;
+				float ground_adjust = 4; // constant smoothing rate
+				if (fabs(diff) > 2)
+					self.origin_z += diff * 0.25; // smooth correction
+				else
+					self.origin_z = ground_z;
+			}
 
-            float ground_adjust = 4; // constant smoothing rate
-            if (fabs(diff) > 2)
-                self.origin_z += diff * 0.25; // smooth correction
-            else
-                self.origin_z = ground_z;
-        }
+			setorigin(self, self.origin);
 
-        setorigin(self, self.origin);
+			//
+			// cosmetics & logic
+			//
+			self.alpha = 0.25;
+			self.effects |= EF_ADDITIVE;
 
-        //
-        // cosmetics & logic
-        //
-        self.alpha = 0.25;
-        self.effects |= EF_ADDITIVE;
+			self.enemy = world;
+			self.goalentity = self.ai_runback_temp;
+			self.movetype = MOVETYPE_NOCLIP;
 
-        self.enemy = world;
-        self.goalentity = self.ai_runback_temp;
-        self.movetype = MOVETYPE_NOCLIP;
-
-        if (self.health != self.max_health)
-            self.health = self.max_health;
-    }
+			if (self.health != self.max_health)
+				self.health = self.max_health;
+		}
 		else // reached spawn
 		{
 			tracebox(self.saveorigin, self.mins, self.maxs, self.saveorigin, MOVE_NORMAL, self);
