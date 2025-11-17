@@ -13,6 +13,7 @@ server/sv_ally.qc
 server/sv_combat.qc
 server/sv_magic.qc
 server/sv_triggers.qc
+server/sv_saveload.qc
 server/sv_player.qc
 server/sv_npc.qc
 server/sv_misc.qc
