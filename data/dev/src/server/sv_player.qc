@@ -218,44 +218,61 @@ void() Player_RemoveCrouch =
 
 void() PlayerJump =
 {
-	if (self.bonfire)
-		return;
-	if (self.dodge_finished > time)
-		return;
-	if (self.stagger_finished > time)
-		return;
+    if (self.bonfire)
+        return;
+    if (self.dodge_finished > time)
+        return;
+    if (self.stagger_finished > time)
+        return;
 
-	PlayerClimb();
+    PlayerClimb();
+    if (self.climbing)
+        return;
 
-	if (self.climbing)
-		return;
-	if (self.melee_finished > time)
-		return;
-	if (self.cast_finished > time)
-		return;
-	if (!(self.flags & FL_ONGROUND))
-		return;
-	if (!(self.flags & FL_JUMPRELEASED))
-		return;
-	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_BANKING)
-		return;
+    if (self.melee_finished > time)
+        return;
+    if (self.cast_finished > time)
+        return;
 
-	float stamcalc = self.skill_acrobatic * 0.35; // skill calculation
-	float jumpcalc = self.skill_acrobatic * 1.1; // skill calculation
-	if (self.stamina > (50 - stamcalc))
-	{
-		Player_RemoveCrouch(); // remove crouch
+    if (!(self.flags & FL_ONGROUND))
+        return;
+    if (!(self.flags & FL_JUMPRELEASED))
+        return;
 
-		self.velocity_z += (270 + jumpcalc);
-		self.weaponframe = 0;
-		self.pressedJump = TRUE;
-		self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
-		self.button2 = 0;
-		if (stamcalc > 49)
-			stamcalc = 49;
-		self.stamina -= (50 - stamcalc);
-		sound (self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
-	}
+    if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || 
+        self.menu == MENU_MAGIC || self.menu == MENU_BANKING)
+        return;
+
+    // Skill-based calculations
+    float stamcalc = self.skill_acrobatic * 0.35;
+    float jumpcalc = self.skill_acrobatic * 1.1;
+
+    // Cap
+    if (stamcalc > 35)
+        stamcalc = 35;
+
+    // Cap jump bonus to avoid excessive height
+    float maxJumpBonus = 150; // tweak as needed
+    if (jumpcalc > maxJumpBonus)
+        jumpcalc = maxJumpBonus;
+
+    // Optional minimum stamina cost
+    float staminaCost = max(5, 35 - stamcalc);
+
+    if (self.stamina >= staminaCost)
+    {
+        Player_RemoveCrouch();
+
+        // Perform jump
+        self.velocity_z += (270 + jumpcalc);
+        self.weaponframe = 0;
+        self.pressedJump = TRUE;
+        self.flags &= ~FL_JUMPRELEASED;
+        self.button2 = 0;
+        self.stamina -= staminaCost;
+
+        sound(self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
+    }
 };
 
 void(float whichdir) CSEv_PlayerDodge_f =
@@ -282,11 +299,11 @@ void(float whichdir) CSEv_PlayerDodge_f =
 	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_BANKING)
 		return;
 
-	if (self.stamina >= 20)
+	if (self.stamina >= 25)
 	{
 		self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
 		self.button2 = 0;
-		self.stamina -= 20;
+		self.stamina -= 25;
 
 		self.dodgedir = whichdir;
 		//print (ftos(self.dodgedir), "\n");
@@ -816,15 +833,10 @@ float() CanAttack =
 // Main SSQC attack function
 void() CSEv_User_StartAttack_ =
 {
-    // -------------------------------
-    // Early exit checks
-    // -------------------------------
     if (self.dodge_finished > time || self.menu != MENU_OFF || self.bonfire)
         return;
 
-    // -------------------------------
     // Dead / respawn check
-    // -------------------------------
     if (self.deadflag == DEAD_DEAD || self.health <= 0)
     {
         if (self.respawn_finished < time)
@@ -844,9 +856,7 @@ void() CSEv_User_StartAttack_ =
             return;
     }
 
-    // -------------------------------
     // Blocking with shield
-    // -------------------------------
     if (self.blocking && self.blockvalue > 0)
     {
         self.anistate = ANISTATE_BASH;
@@ -854,9 +864,7 @@ void() CSEv_User_StartAttack_ =
         return;
     }
 
-    // -------------------------------
     // Main attack logic
-    // -------------------------------
     if (!self.blocking && CanAttack())
     {
         float stamcalc = self.skill_endurance * 0.015;
@@ -868,9 +876,7 @@ void() CSEv_User_StartAttack_ =
         // Deduct stamina
         self.stamina -= requiredStamina;
 
-		// -------------------------------
 		// Air melee attack priority with ground distance check
-		// -------------------------------
 		if (!(self.flags & FL_ONGROUND) && self.attack_type != 4 && self.pressedJump)
 		{
 			self.anistate = ANISTATE_AIRMELEE;
@@ -880,9 +886,7 @@ void() CSEv_User_StartAttack_ =
 			return;
 		}
 
-        // -------------------------------
         // Ground attacks
-        // -------------------------------
         float nobow = FALSE;
 
         if (self.stepdodge_counter >= time)
@@ -999,8 +1003,11 @@ void() PlayerPreThink =
 	// Button1 we ignore
 	if (self.button2)
 	{
-		PlayerJump();
-		self.button2 = TRUE;
+		if (self.dodge_finished < time)
+		{
+			PlayerJump();
+			self.button2 = TRUE;
+		}
 	}
 	else
 	{
