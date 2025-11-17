@@ -198,6 +198,7 @@ float current_menu;
 const float MENU_MAIN = 1;
 const float MENU_SETTINGS = 2;
 const float MENU_HELP = 3;
+const float MENU_CREDITS = 4;
 
 vector binds_scroll;
 void() settings_menu =
@@ -316,6 +317,51 @@ void() help_menu =
 	sui_pop_frame();	
 };
 
+void() credits_menu =
+{
+    vector pos = [0, 0];
+    vector size = [360, 280];
+    vector realsize = getproperty(VF_SCREENVSIZE);
+
+    // Draw background
+    vector bg_size = [realsize_x, realsize_y];
+    sui_pic([0,0], bg_size, "textures/background.jpg", '0.5 0.5 0.5', 1, 0);
+
+    sui_push_frame(pos, size);
+
+    sui_fill([0, 0], size, MENU_BG, 0.75, 0);
+    sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+
+    sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
+    sui_text([0, 4], MENU_TEXT_MEDIUM, "Credits", [1,1,1], 1, 0);
+
+    float xpos = 6;
+    float ypos = 32;
+    float lineHeight = 8;
+
+    sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+    string lines[] = {
+        "^1haze^7 - particles, textures, general help, server hosting",
+        "^1spoike^7 - FTEQW help, programming help",
+        "^1shpuld^7 - SUI base",
+        "^1Ilya.Anchouz.Danilov^7 - Female player model",
+        "^1MMC Works^7 - low poly trees, flowers and grass",
+        "^1WispCorp^7 - Play testing & bug reports"
+    };
+
+	int numLines = 6;
+	for (int i = 0; i < numLines; i++)
+		sui_text([xpos, ypos + lineHeight*i], MENU_TEXT_SMALL, lines[i], [1,1,1], 1, 0);
+
+    sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
+    my_button("hlp_back", [-8, -8], [80, 20], "Back") ? current_menu = MENU_MAIN : 0;
+
+    if (sui_listen_back())
+        current_menu = MENU_MAIN;
+
+    sui_pop_frame();    
+};
+
 string server_ip;
 float connect_text;
 void() connect_mainserver =
@@ -371,8 +417,9 @@ void() main_menu =
 	sui_pic(logo_pos, logo_size+[5,5,5], "textures/logo.png", colour, 1, 0); // logo shadow effect
 	sui_pic(logo_pos, logo_size, "textures/logo.png", '1 1 1', 1, 0);
 
-	vector pos = [25, -100];
-	vector size = [120, 140];
+	// Handling the actual menu
+	vector pos = [25, -75];
+	vector size = [120, 180];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
 
@@ -385,22 +432,13 @@ void() main_menu =
 	my_button("mm_connect", [0, 8 +24], [size_x - 16, 20], "Multiplayer") ? connect_mainserver() : 0; // rennyc
 	my_button("mm_settings", [0, 8 + 48], [size_x - 16, 20], "Settings") ? current_menu = MENU_SETTINGS : 0;
 	my_button("mm_help", [0, 8 + 72], [size_x - 16, 20], "Help") ? current_menu = MENU_HELP : 0;
+	my_button("mm_credits", [0, 8 + 96], [size_x - 16, 20], "Credits") ? current_menu = MENU_CREDITS : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
 	my_button("mm_quit", [0, -8], [size_x - 16, 20], "Quit") ? localcmd("cfg_save;disconnect;quit\n") : 0;
 	sui_pop_frame();	
 
 	if (serverkey("constate") == "active")
 		connect_text = FALSE;
-
-	/*
-	// Draw connecting to server text
-	if (connect_text && server_ip != "")
-	{
-		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-		string connectmsg = strcat("^b^1Attempting to connect to ^7", server_ip);
-		sui_text([0, 0], MENU_TEXT_SMALL, connectmsg, MENU_TEXT_1, 1, 0);
-	}
-	*/
 
 	sui_set_default_kb_focus("mm_start");
 };
@@ -430,7 +468,8 @@ void(vector size) root_menu =
 	{
 		case MENU_MAIN: main_menu(); break;
 		case MENU_SETTINGS: settings_menu(); break;
-		case MENU_HELP: help_menu();
+		case MENU_HELP: help_menu(); break;
+		case MENU_CREDITS: credits_menu(); break;
 		default: break;
 	}
 };

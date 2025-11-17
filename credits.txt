@@ -1,6 +1,0 @@
-haze - particles, textures, general help, server hosting
-spoike - FTEQW help, programming help
-shpuld - SUI base
-Female Body base for rpg by Ilya.Anchouz.Danilov is licensed under Creative Commons Attribution
-MMC Works - low poly trees, flowers and grass
-WispCorp - Play testing & bug reports
