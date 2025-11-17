@@ -5,6 +5,7 @@
 .float ani_death;
 .float anim_state;       // 0=idle, 1=run, 2=attack, 3=climb, 4=death, etc.
 .float attack_triggered; // ensures one attack event per animation
+.float air_walk_timer; // counts down after leaving the ground
 
 // constants for clarity, these are strictly CSQC
 #define ANIM_IDLE   		0
@@ -176,7 +177,7 @@ void() OtherPlayer_Anistate =
 		{
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Drink");
-			self.anim_state = ANIM_STUNNED;
+			self.anim_state = ANIM_DRINK;
 		}
 		speed = 1.5;
 	}
@@ -243,16 +244,6 @@ void() OtherPlayer_Anistate =
 			self.anim_state = ANIM_PARRY;
 		}
 		speed = 1.25;
-	}
-
-	if (self.anistate == ANISTATE_IMPACT)
-	{
-		if (self.frame != frameforname(self.modelindex, "Impact"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Impact");
-			self.anim_state = ANIM_IMPACT;
-		}
 	}
 
     speed *= frametime;
@@ -730,30 +721,33 @@ void() Player_Animate =
 		return;
 	}
 
-	// -----------------------------
-    // Jump Animation
     // -----------------------------
-	if (!(self.flags & FL_ONGROUND) && !self.climbing)
-	{
-		if (self.anim_state != ANIM_JUMP && (self.velocity_z >= 200 || self.velocity_z <= -200))
-		{
-			self.frame = frameforname(self.modelindex, "Jump");
-			self.frame1time = 0;
-			self.anim_state = ANIM_JUMP;
-			self.anim_attacking = FALSE; // turn off attack animation flag
-		}
-		speed = 1.25;
-		speed *= frametime;
+    // Jump / Air-Walk Grace Animation
+    // -----------------------------
+    int inAir = !(self.flags & FL_ONGROUND) && !self.climbing;
+    if (inAir)
+    {
+        // Start or continue air-walk grace period
+        if (self.air_walk_timer <= 0)
+            self.air_walk_timer = 1.0; // 1 second grace
 
-		if (self.frame1time >= duration - 0.1) // Hold final frame at end
-			self.frame1time = duration - 0.1;
-		else
-		{
-			self.frame1time += speed;
-			self.frame2time = self.frame1time;
-		}
-		return; // skip rest
-	}
+        self.air_walk_timer -= frametime;
+
+        // Trigger jump animation
+        if (self.velocity_z >= 200 || self.air_walk_timer <= 0)
+        {
+            if (self.anim_state != ANIM_JUMP)
+            {
+                self.frame = frameforname(self.modelindex, "Jump");
+                self.frame1time = 0;
+                self.anim_state = ANIM_JUMP;
+                self.anim_attacking = FALSE;
+            }
+        }
+		speed = 1.5; // jump animation speed is faster
+    }
+    else
+        self.air_walk_timer = 0; // reset when grounded
 
     // -----------------------------
     // Reset death flag when alive again
@@ -870,121 +864,83 @@ void() Player_Animate =
 	// -----------------------------
 	// Idle / Run / Strafe Animations
 	// -----------------------------
-	else
-	{
-		vector vel = self.velocity;
-		float velspeed = vlen(vel);
+    else if (!(inAir || self.anim_attacking))
+    {
+        vector vel = self.velocity;
+        float velspeed = vlen(vel);
 
-		// Standing still → Idle
-		if (velspeed < 5) // Small threshold to ignore jitter
-		{
-			if (self.crouch)
-			{
-				if (self.anim_state != ANIM_CROUCHIDLE)
-				{
-					self.frame = frameforname(self.modelindex, "CrouchIdle");
-					self.frame1time = 0;
-					self.anim_state = ANIM_CROUCHIDLE;
-				}
-			}
-			else if (self.blocking && self.off_hand != "Empty")
-			{
-				if (self.anim_state != ANIM_BLOCKIDLE)
-				{
-					self.frame = frameforname(self.modelindex, "BlockIdle");
-					self.frame1time = 0;
-					self.anim_state = ANIM_BLOCKIDLE;
-				}
-			}
-			else
-			{
-				if (self.anim_state != ANIM_IDLE)
-				{
-					self.frame1time = 0;
-					self.frame = frameforname(self.modelindex, "Idle");
-					self.anim_state = ANIM_IDLE;
+        // Idle / Crouch / Block Idle
+        if (velspeed < 5)
+        {
+            if (self.crouch)
+            {
+                if (self.anim_state != ANIM_CROUCHIDLE)
+                    self.frame = frameforname(self.modelindex, "CrouchIdle"), self.anim_state = ANIM_CROUCHIDLE;
+            }
+            else if (self.blocking && self.off_hand != "Empty")
+            {
+                if (self.anim_state != ANIM_BLOCKIDLE)
+                    self.frame = frameforname(self.modelindex, "BlockIdle"), self.anim_state = ANIM_BLOCKIDLE;
+            }
+            else
+            {
+                if (self.anim_state != ANIM_IDLE)
+                {
+                    self.frame1time = 0;
+                    self.frame = frameforname(self.modelindex, "Idle");
+                    self.anim_state = ANIM_IDLE;
 
-					string gender = getstats(STAT_GENDER);
-					if (gender == "Female")
-						speed = 0.5;
-				}
-			}
-		}
-		else // Moving → Run or Strafe
-		{
-			// Convert velocity into local space (relative to facing)
-			vector fwd, right, up;
-			makevectors(self.angles);
-			fwd = v_forward;
-			right = v_right;
+                    string gender = getstats(STAT_GENDER);
+                    if (gender == "Female") speed = 0.5;
+                }
+            }
+        }
+        else
+        {
+            // Moving → Run / Strafe / Backpedal
+            vector fwd, right, up;
+            makevectors(self.angles);
+            fwd = v_forward;
+            right = v_right;
 
-			float forwarddot = dotproduct(normalize(vel), fwd);
-			float rightdot   = dotproduct(normalize(vel), right);
+            float forwarddot = dotproduct(normalize(vel), fwd);
+            float rightdot   = dotproduct(normalize(vel), right);
 
-			// Determine movement type
-			if (self.crouch)
-			{
-				if (self.anim_state != ANIM_CROUCHWALK)
-				{
-					self.frame = frameforname(self.modelindex, "CrouchWalk");
-					self.frame1time = 0;
-					self.anim_state = ANIM_CROUCHWALK;
-				}
-			}
-			else if (self.blocking && self.off_hand != "Empty")
-			{
-				if (self.anim_state != ANIM_BLOCKWALK)
-				{
-					self.frame = frameforname(self.modelindex, "BlockWalk");
-					self.frame1time = 0;
-					self.anim_state = ANIM_BLOCKWALK;
-				}
-			}
-			else
-			{
-				// Strafe left/right if horizontal motion dominates
-				if (rightdot > 0.5)
-				{
-					if (self.anim_state != ANIM_STRAFERIGHT)
-					{
-						self.frame = frameforname(self.modelindex, "StrafeRight");
-						self.frame1time = 0;
-						self.anim_state = ANIM_STRAFERIGHT;
-					}
-				}
-				else if (rightdot < -0.5)
-				{
-					if (self.anim_state != ANIM_STRAFELEFT)
-					{
-						self.frame = frameforname(self.modelindex, "StrafeLeft");
-						self.frame1time = 0;
-						self.anim_state = ANIM_STRAFELEFT;
-					}
-				}
-				else // Mostly forward/backward
-				{
-					if (forwarddot > 0)
-					{
-						if (self.anim_state != ANIM_RUN)
-						{
-							self.frame = frameforname(self.modelindex, "Run");
-							self.frame1time = 0;
-							self.anim_state = ANIM_RUN;
-						}
-					}
-					else if (forwarddot < 0)
-					{
-						if (self.anim_state != ANIM_BACKPEDAL)
-						{
-							self.frame = frameforname(self.modelindex, "Backpedal");
-							self.frame1time = 0;
-							self.anim_state = ANIM_BACKPEDAL;
-						}
-					}
-				}
-			}
-		}
-	}
+            if (self.crouch)
+            {
+                if (self.anim_state != ANIM_CROUCHWALK)
+                    self.frame = frameforname(self.modelindex, "CrouchWalk"), self.anim_state = ANIM_CROUCHWALK;
+            }
+            else if (self.blocking && self.off_hand != "Empty")
+            {
+                if (self.anim_state != ANIM_BLOCKWALK)
+                    self.frame = frameforname(self.modelindex, "BlockWalk"), self.anim_state = ANIM_BLOCKWALK;
+            }
+            else
+            {
+                if (rightdot > 0.5)
+                {
+                    if (self.anim_state != ANIM_STRAFERIGHT)
+                        self.frame = frameforname(self.modelindex, "StrafeRight"), self.anim_state = ANIM_STRAFERIGHT;
+                }
+                else if (rightdot < -0.5)
+                {
+                    if (self.anim_state != ANIM_STRAFELEFT)
+                        self.frame = frameforname(self.modelindex, "StrafeLeft"), self.anim_state = ANIM_STRAFELEFT;
+                }
+                else if (forwarddot > 0)
+                {
+                    if (self.anim_state != ANIM_RUN)
+                        self.frame = frameforname(self.modelindex, "Run"), self.anim_state = ANIM_RUN;
+                }
+                else if (forwarddot < 0)
+                {
+                    if (self.anim_state != ANIM_BACKPEDAL)
+                        self.frame = frameforname(self.modelindex, "Backpedal"), self.anim_state = ANIM_BACKPEDAL;
+                }
+            }
+        }
+    }
 
     // -----------------------------
     // Speed modifiers
