@@ -395,18 +395,21 @@ void() SV_RunClientCommand =
 };
 
 // function used for helping developer placing objects in terrain mode + cheats 
-void() PlayerPrintStats =
+void() Player_DeveloperBind =
 {
-	string pos_x = ftos(self.origin_x);
-	string pos_y = ftos(self.origin_y);
-	string pos_z = ftos(self.origin_z);
+	if (cvar("developer") > 0)
+	{
+		string pos_x = ftos(self.origin_x);
+		string pos_y = ftos(self.origin_y);
+		string pos_z = ftos(self.origin_z);
 
-	string ang_x = ftos(self.angles_x);
-	string ang_y = ftos(self.angles_y);
-	string ang_z = ftos(self.angles_z);
+		string ang_x = ftos(self.angles_x);
+		string ang_y = ftos(self.angles_y);
+		string ang_z = ftos(self.angles_z);
 
-	sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
-	sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
+		sprint(self, PRINT_HIGH, "Coords: ", pos_x, " ", pos_y, " ", pos_z);
+		sprint(self, PRINT_HIGH, "\nAngles: ", ang_x, " ", ang_y, "\n");
+	}
 
 	if (cvar("sv_cheats") > 0) // give cheat stats
 	{
@@ -534,7 +537,7 @@ void() CheckImpulses =
 	switch (self.impulse)
 	{
 		case 1:
-			PlayerPrintStats(); // Debugging
+			Player_DeveloperBind(); // Debugging
 		break;
 		default:
 			break;
