@@ -7,6 +7,7 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
 void(entity player, string itemname, float count) RemoveFromInventory;
 void() CSEv_User_UnequipMainhand_;
 float(entity player, string itemname) HasItem;
+void(entity targ, entity attacker, float damage) RegisterAttacker;
 
 .entity last_hit_attacker;
 .float last_hit_time;
@@ -580,35 +581,39 @@ void(vector ang) CSEv_DoAttack_Arrow_v =
 		CSEv_User_UnequipMainhand_();
 };
 
-
 void(entity targ) Player_CheckLevelUp;
-void(entity targ, entity attacker) DoDeath = 
+void(entity targ, entity attacker) DoDeath =
 {
-	if (attacker.classname == "player")
-	{
-		if (targ.flags & FL_MONSTER)
-		{
-			GiveExperience(attacker, targ.exp_min, targ.exp);
-			GiveGold(attacker, targ.gold_min, targ.gold);
-		}
-		if (targ.classname == "player") // PVP kill
-		{
-			attacker.reaper_marks += targ.level;
-			if (targ.gold > 1)
-				GiveGold(attacker, ceil(targ.gold / 4), ceil(targ.gold / 4));
-		}
-	}
+    // MONSTER DEATH (shared rewards)
+    if (targ.flags & FL_MONSTER)
+    {
+		if (attacker.classname == "player") // Only reward players, ignore monsters killing each other
+			MonsterReward(targ, attacker);
+    }
 
-	if (targ.th_die)
-	{
-		if (targ.noise3) // death sound
-			sound (targ, CHAN_VOICE, targ.noise3, 1, ATTN_NORM);
+    // PVP KILL
+    if (targ.classname == "player" && attacker.classname == "player")
+    {
+        attacker.reaper_marks += targ.level;
 
-		targ.think = targ.th_die;
-		targ.nextthink = time;
-	}
-	else
-		print(self.classname, "'s th_die routine is missing\n");
+        if (targ.gold > 1)
+        {
+            float steal = ceil(targ.gold / 4);
+            GiveGold(attacker, self, steal, steal);
+        }
+    }
+
+    // Play death animation / sound
+    if (targ.th_die)
+    {
+        if (targ.noise3)
+            sound(targ, CHAN_VOICE, targ.noise3, 1, ATTN_NORM);
+
+        targ.think = targ.th_die;
+        targ.nextthink = time;
+    }
+    else
+        print(targ.classname, "'s th_die routine is missing\n");
 };
 
 // =======================================
@@ -630,8 +635,12 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 	if (damage <= 0)
 		damage = 1;
 
+	// apply actual damage
 	if (!(targ.flags & FL_GODMODE))
+	{
 		targ.health -= damage;
+		RegisterAttacker(targ, attacker, damage);
+	}
 
 	string eventlog_print;
 
@@ -876,4 +885,31 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
     }
 
     return did_damage;
+};
+
+//
+// RegisterAttacker: Used to keep track of players who have dealt damage to a monster, used for rewards
+//
+void(entity targ, entity attacker, float damage) RegisterAttacker =
+{
+    if (!attacker || attacker.classname != "player")
+        return;
+
+    for (float i = 0; i < 8; i++)
+    {
+        // already recorded as attacker — add damage
+        if (targ.attackers[i] == attacker)
+        {
+            targ.attacker_damage[i] += damage;
+            return;
+        }
+
+        // free slot — record new attacker
+        if (!targ.attackers[i])
+        {
+            targ.attackers[i] = attacker;
+            targ.attacker_damage[i] = damage;
+            return;
+        }
+    }
 };

@@ -31,38 +31,31 @@ void(entity targ) Player_CheckLevelUp =
 // ===============
 // Give Experience
 // ===============
-void(entity targ, float expmin, float expmax) GiveExperience =
+void(entity targ, entity monster, float expmin, float expmax) GiveExperience =
 {
     float amount = ceil(random_range(expmin, expmax));
 
-    // -----------------------------
-    // Level-based diminishing returns
-    // -----------------------------
+    // Diminishing returns check
     float p_lvl = targ.level;
-    float m_lvl = self.level;
+    float m_lvl = monster.level;
     float lvl_diff = p_lvl - m_lvl;
     float lvl_mod;
 
     if (lvl_diff <= 0)
-		lvl_mod = 1.0 + (-lvl_diff * 0.05); // Monster is stronger or equal → XP bonus
+        lvl_mod = 1.0 + (-lvl_diff * 0.05);
     else if (lvl_diff <= 1)
-        lvl_mod = 1.0; // Player is only 1 level higher → no penalty
+        lvl_mod = 1.0;
     else
     {
-        // Player is 2+ levels higher → start 10% penalty per level
-        // lvl_diff = 2 → 80%
-        // lvl_diff = 3 → 70%
         lvl_mod = 1.0 - (lvl_diff * 0.10);
-
         if (lvl_mod < 0.10)
-            lvl_mod = 0.10; // minimum 10%
+            lvl_mod = 0.10;
     }
 
     amount *= lvl_mod;
-    // -----------------------------
 
     exp_multiplier = cvar("sv_expmultiplier");
-    if (exp_multiplier > 0)  // server-adjustable multiplier
+    if (exp_multiplier > 0)
         amount *= exp_multiplier;
 
     amount = ceil(amount);
@@ -74,15 +67,36 @@ void(entity targ, float expmin, float expmax) GiveExperience =
     Player_CheckLevelUp(targ);
 };
 
-// =======================================
+// ==========
 // Give Gold
-// =======================================
-void(entity targ, float goldmin, float goldmax) GiveGold =
+// ==========
+void(entity targ, entity monster, float goldmin, float goldmax) GiveGold =
 {
     float amount = ceil(random_range(goldmin, goldmax));
 
+    // Diminishing returns based on level difference
+    float p_lvl = targ.level;
+    float m_lvl = monster.level;
+    float lvl_diff = p_lvl - m_lvl;
+    float lvl_mod;
+
+    if (lvl_diff <= 0)
+        lvl_mod = 1.0 + (-lvl_diff * 0.05); // Monster stronger → bonus
+    else if (lvl_diff <= 1)
+        lvl_mod = 1.0; // Only 1 level higher → no penalty
+    else
+    {
+        // Player 2+ levels higher → 10% penalty per level
+        lvl_mod = 1.0 - (lvl_diff * 0.10);
+
+        if (lvl_mod < 0.10)
+            lvl_mod = 0.10; // 10% minimum gold
+    }
+
+    amount *= lvl_mod;
+
     gold_multiplier = cvar("sv_goldmultiplier");
-    if (gold_multiplier > 0)  // server-adjustable multiplier
+    if (gold_multiplier > 0)
         amount *= gold_multiplier;
 
     amount = ceil(amount);
@@ -90,6 +104,44 @@ void(entity targ, float goldmin, float goldmax) GiveGold =
 
     string eventlog_print = strcat("^3", ftos(amount), "^7 gold received!\n");
     stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
+};
+
+//--------------------------------
+//MonsterReward (shared XP & Gold)
+//--------------------------------
+void(entity self, entity killer) MonsterReward =
+{
+    float total_xp = ceil(random_range(self.exp_min, self.exp));
+    float total_gold = ceil(random_range(self.gold_min, self.gold));
+
+    // Collect attackers
+    entity sharelist[8];
+    float count = 0;
+
+    for (float i = 0; i < 8; i++)
+    {
+        if (self.attackers[i])
+        {
+            sharelist[count] = self.attackers[i];
+            count += 1;
+        }
+    }
+
+    if (!count)
+        return;
+
+    // Split results
+    float xp_each   = total_xp / count;
+    float gold_each = total_gold / count;
+
+    // Reward each attacker
+    for (float i = 0; i < count; i++)
+    {
+        entity p = sharelist[i];
+
+		GiveExperience(p, self, xp_each, xp_each);
+		GiveGold(p, self, gold_each, gold_each);
+    }
 };
 
 // ==================

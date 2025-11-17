@@ -2068,3 +2068,7 @@ const float TIME_DAWN = 0;
 const float TIME_DAY = 1;
 const float TIME_DUSK = 2;
 const float TIME_NIGHT = 3;
+
+// max 8 attackers for monster rewards
+.entity attackers[8];
+.float attacker_damage[8];
