@@ -58,8 +58,23 @@ void() monster_respawn =
 	self.nextthink = time + 0.1;
 };
 
+void() monster_ai_spawnrunback =
+{
+	if (!self.ai_runback_temp)
+	{
+		self.ai_runback_temp = spawn();
+		self.ai_runback_temp.owner = self;
+		setmodel(self.ai_runback_temp, string_null);
+		setorigin(self.ai_runback_temp, self.origin);
+		setsize(self.ai_runback_temp, self.mins, self.maxs);
+		movetofloor(self.ai_runback_temp);
+	}
+};
+
 void() set_monster =
 {
+	self.SendEntity = Monster_SendEntity;
+
 	if (self.model)
 		precache_model(self.model); // model
 	if (self.noise)
@@ -104,10 +119,10 @@ void() set_monster =
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 
 	self.flags |= FL_FINDABLE_NONSOLID;
+	
+	movetofloor(self);
 	monster_ai_spawnrunback();
 
 	self.think = monster_ai_think;
 	self.nextthink = time + 0.1 + random()*1; // stagger start think
-	
-	self.SendEntity = Monster_SendEntity;
 };

@@ -2,6 +2,17 @@
 
 #define printf(x, ...) print(sprintf(x, __VA_ARGS__))
 
+void(entity targ) movetofloor =
+{
+	vector start = targ.origin;
+	vector end = start - '0 0 10000';
+
+	traceline(start, end, TRUE, self);
+
+	if (trace_fraction < 1)
+		setorigin(targ, trace_endpos);
+};
+
 // Removes spaces from a string
 string(string s) string_remove_spaces =
 {

@@ -214,6 +214,13 @@ float daynight_speed;
 
 void() daynight_think =
 {
+	// Let's not contend with day/night while developing
+	if (cvar("developer") > 0)
+	{
+		remove(self);
+		return;
+	}
+
     daynight_speed += 0.05;
     if (daynight_speed >= 2 * M_PI)
         daynight_speed -= 2 * M_PI;

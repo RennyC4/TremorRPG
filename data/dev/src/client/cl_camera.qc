@@ -5,6 +5,9 @@
 // death camera
 void() Camera_DeathCam =
 {
+	if (cvar("developer") > 0)
+		return;
+
 	vector plyr_pos = getproperty(VF_ORIGIN);
 	vector ang = [90, cltime * 16, 0];
 
@@ -32,6 +35,9 @@ void() Camera_DeathCam =
 // idle + bonfire camera
 void() Camera_IdleOrbit =
 {
+	if (cvar("developer") > 0)
+		return;
+
     float health = getstatf(STAT_HEALTH);
 	float atbonfire = getstatf(STAT_BONFIRE);
 
@@ -70,6 +76,9 @@ void() Camera_IdleOrbit =
 // regular 3rd person camera
 void() Camera_Third =
 {
+	if (cvar("developer") > 0)
+		return;
+
 	float health = getstatf(STAT_HEALTH);
 	if (health <= 0)
 		return;

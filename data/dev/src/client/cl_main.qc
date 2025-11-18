@@ -99,23 +99,28 @@ void() CSQC_DayNight_Update =
 // CALLED EVERY CLIENT RENDER FRAME
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
-	if (cvar("developer") > 0) // setup developer mode
-	{
-		clearscene();
-		setproperty(VF_DRAWENGINESBAR, 0);
-		addentities(MASK_ENGINE);
-		renderscene();
-		return;
-	}
-
 	vector virtsize = [width, height];
-	float pause = serverkeyfloat(SERVERKEY_PAUSESTATE);
-	float health = getstatf(STAT_HEALTH);
-	float atbonfire = getstatf(STAT_BONFIRE);
 
 	g_width = width;
 	g_height = height;
 	framecount = framecount + 1;
+
+	// setup developer mode
+	if (cvar("developer") > 0)
+	{
+		clearscene();
+
+		setproperty(VF_DRAWENGINESBAR, 0);
+		setproperty(VF_DRAWCROSSHAIR, 1);
+		addentities(MASK_VIEWMODEL | MASK_ENGINE);
+
+		renderscene();
+		return;
+	}
+
+	float pause = serverkeyfloat(SERVERKEY_PAUSESTATE);
+	float health = getstatf(STAT_HEALTH);
+	float atbonfire = getstatf(STAT_BONFIRE);
 
 	clearscene(); // clear and update our global screen resolution vars
 	setproperty(VF_DRAWENGINESBAR, 0); // disable quake status bar
@@ -211,7 +216,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 float(string strCommand) CSQC_ConsoleCommand =
 {
 	if (cvar("developer") > 0)
-		return;
+		return FALSE;
 
 	tokenize(strCommand);
 
@@ -263,7 +268,7 @@ float(string strCommand) CSQC_ConsoleCommand =
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
 	if (cvar("developer") > 0)
-		return;
+		return FALSE;
 
 	last_input_time = time;
 	player_idle = FALSE;

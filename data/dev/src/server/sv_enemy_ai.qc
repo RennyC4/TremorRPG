@@ -291,316 +291,325 @@ float() monster_ai_move =
     return 1; // move successful
 };
 
-void() monster_ai_spawnrunback =
-{
-	if (!self.ai_runback_temp)
-	{
-		self.ai_runback_temp = spawn();
-		self.ai_runback_temp.owner = self;
-		setmodel(self.ai_runback_temp, string_null);
-		setorigin(self.ai_runback_temp, self.origin);
-	}
-};
-
 // main monster ai execution function
 .float impact_frame;
 void() monster_ai_think =
 {
-	self.SendFlags = 1;
-	makevectors(self.angles);
+    self.SendFlags = 1;
+    makevectors(self.angles);
 
-	// Debugging
-	//string l = ftos(self.ai_mode);
-	//print(l, "\n");
+    // ---------------------------
+    // Manual waterlevel check
+    // ---------------------------
+    vector feet_pos = self.origin + '0 0 8';
+    vector waist_pos = self.origin + '0 0 24';
+    vector head_pos = self.origin + '0 0 48';
 
-	if (self.stagger_finished > time)
-	{
-		self.ai_attacktriggered = TRUE; // pre-maturely end attacking stuff, otherwise it'll still follow through oddly
-		self.ai_doattack = time;
+    float cont_feet = pointcontents(feet_pos);
+    float cont_waist = pointcontents(waist_pos);
+    float cont_head = pointcontents(head_pos);
 
-		if (self.impact_frame > time)
-			self.anistate = ANISTATE_IMPACT;
-		else
-			self.anistate = ANISTATE_STUNNED;
+    self.waterlevel = 0;
+    if (cont_feet == CONTENT_WATER) self.waterlevel = 1;
+    if (cont_waist == CONTENT_WATER) self.waterlevel = 2;
+    if (cont_head == CONTENT_WATER) self.waterlevel = 3;
 
-		self.nextthink = time + 0.1;
-		return;
-	}
-	self.impact_frame = time + 1; // impact frame timing
+    // ---------------------------
+    // Force run-back if water above waist
+    // ---------------------------
+    if (self.waterlevel >= 2 && self.ai_mode != AI_RUNBACK)
+    {
+        self.goalentity = self.ai_runback_temp;
+        self.enemy = world;
+        self.ai_mode = AI_RUNBACK;
+        self.anistate = ANISTATE_RUN;
+        self.nextthink = time + 0.1;
+        return;
+    }
 
-	// monster is walking normal its beat (no target)
-	if (self.ai_mode == AI_IDLE || self.ai_mode == AI_PATROL)
-	{
-		if (!self.enemy)
-		{
-			if (self.health < self.max_health) // monsters regen health when they're idle patrolling
-				self.health ++;
-			else
-				self.health = self.max_health;
-		}
+    // ---------------------------
+    // Stagger / impact handling
+    // ---------------------------
+    if (self.stagger_finished > time)
+    {
+        self.ai_attacktriggered = TRUE;
+        self.ai_doattack = time;
 
-		// randomly turn and move
-		if (self.ai_patrolidle < time)
-		{
-			if (self.ai_move_dist != 1)
-			{
-				self.angles_x = 0;
-				self.idealangles_y = random()*360;
-				if (self.ai_move_dist > 1)
-					self.ai_patrolidle = time + 2 + random()*5;
-				if (random() < 0.44)
-					self.ai_standstill = time + 2 + random()*10;
-				TurnToTarget(self.turn_speed);
-				self.ai_mode = AI_IDLE;
-				self.anistate = ANISTATE_NONE;
-			}
-			else // standing guard in an area
-			{
-				self.angles_x = 0;
-				self.ai_mode = AI_IDLE;
-				self.anistate = ANISTATE_NONE;
-			}
-		}
-		else
-		{
-			if (self.ai_standstill < time)
-			{
-				monster_ai_move();
-				self.ai_mode = AI_PATROL;
-				self.anistate = ANISTATE_RUN;
-			}
-		}
+        if (self.impact_frame > time)
+            self.anistate = ANISTATE_IMPACT;
+        else
+            self.anistate = ANISTATE_STUNNED;
 
-		// Patrolling randomly, searching for players nearby
-		for (entity targ = world;(targ = find(targ, classname, "player"));)
-		{
-			if (vlen(targ.origin - self.origin) <= self.sight_range && targ.deadflag != DEAD_DEAD && visible(targ) && infront_stealth(targ, self) && targ.bonfire == FALSE)
-			{
-				if (self.noise)
-					sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
-				self.goalentity = self.enemy = targ;
-				self.ai_mode = AI_CHASE;
-				self.anistate = ANISTATE_RUN;
-				targ.incombat = TRUE; // flag player for combat
-				targ.incombat_finished = time + 15;
-				string eventlog_print = (strcat("^1You engage in combat!\n"));
-				stuffcmd (targ, sprintf("conecho event %s\n", eventlog_print));
+        self.nextthink = time + 0.1;
+        return;
+    }
+    self.impact_frame = time + 1; // impact frame timing
 
-			}
-		}
-	}
+    // ---------------------------
+    // Idle / Patrol behavior
+    // ---------------------------
+    if (self.ai_mode == AI_IDLE || self.ai_mode == AI_PATROL)
+    {
+        if (!self.enemy)
+        {
+            if (self.health < self.max_health)
+                self.health++;
+            else
+                self.health = self.max_health;
+        }
 
-	// Keep track of saved origin
-	float b = vlen(self.origin - self.saveorigin);
-	if (self.ai_mode != AI_RUNBACK)
-	{
-		// monsters have default range of 2000 for chasing a target if they're not patrolling
-		if (self.ai_move_dist <= 1)
-			float ai_move_dist_check = 2000;
-		else
-			ai_move_dist_check = self.ai_move_dist;
-			
-		if (b >= ai_move_dist_check)
-		{
-			self.goalentity = self.ai_runback_temp;
-			if (!self.goalentity)
-				print ("error in monster ai\n");
+        if (self.ai_patrolidle < time)
+        {
+            if (self.ai_move_dist != 1)
+            {
+                self.angles_x = 0;
+                self.idealangles_y = random()*360;
+                if (self.ai_move_dist > 1)
+                    self.ai_patrolidle = time + 2 + random()*5;
+                if (random() < 0.44)
+                    self.ai_standstill = time + 2 + random()*10;
+                TurnToTarget(self.turn_speed);
+                self.ai_mode = AI_IDLE;
+                self.anistate = ANISTATE_NONE;
+            }
+            else
+            {
+                self.angles_x = 0;
+                self.ai_mode = AI_IDLE;
+                self.anistate = ANISTATE_NONE;
+            }
+        }
+        else
+        {
+            if (self.ai_standstill < time)
+            {
+                monster_ai_move();
+                self.ai_mode = AI_PATROL;
+                self.anistate = ANISTATE_RUN;
+            }
+        }
 
-			self.enemy = world;
-			self.ai_mode = AI_RUNBACK;
-			self.anistate = ANISTATE_RUN;
-		}
-	}
-	else // AI is jogging back close to spawn spot
-	{
-		vector target = self.ai_runback_temp.origin;
-		float dist = vlen(self.origin - target);
+        // Detect players
+        for (entity targ = world; (targ = find(targ, classname, "player"));)
+        {
+            if (vlen(targ.origin - self.origin) <= self.sight_range &&
+                targ.deadflag != DEAD_DEAD &&
+                visible(targ) &&
+                infront_stealth(targ, self) &&
+                targ.bonfire == FALSE)
+            {
+                if (self.noise)
+                    sound(self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
 
-		if (dist > 50)
-		{
-			// move horizontally toward spawn
-			vector flat_target = [target_x, target_y, self.origin_z];
-			vector dir = normalize(flat_target - self.origin);
+                self.goalentity = self.enemy = targ;
+                self.ai_mode = AI_CHASE;
+                self.anistate = ANISTATE_RUN;
 
-			self.velocity = dir * self.speed;;
+                targ.incombat = TRUE;
+                targ.incombat_finished = time + 15;
+                string eventlog_print = (strcat("^1You engage in combat!\n"));
+                stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
+            }
+        }
+    }
 
-			//
-			// smooth vertical alignment (constant rate)
-			//
-			float dz = target_z - self.origin_z;
-			float climb_rate = 2;  // constant vertical speed
-			if (fabs(dz) > 1)
-				self.origin_z += climb_rate * (dz > 0 ? 1 : -1);
+    // ---------------------------
+    // Distance from spawn handling
+    // ---------------------------
+    float b = vlen(self.origin - self.saveorigin);
+    float ai_move_dist_check = (self.ai_move_dist <= 1) ? 2000 : self.ai_move_dist;
 
-			//
-			// terrain hugging
-			//
-			vector start = self.origin + '0 0 16';
-			vector end   = self.origin - '0 0 128';
-			tracebox(start, self.mins, self.maxs, end, MOVE_NORMAL, self);
+    if (self.ai_mode != AI_RUNBACK && b >= ai_move_dist_check)
+    {
+        self.goalentity = self.ai_runback_temp;
+        if (!self.goalentity) print("error in monster ai\n");
+        self.enemy = world;
+        self.ai_mode = AI_RUNBACK;
+        self.anistate = ANISTATE_RUN;
+    }
 
-			if (trace_fraction < 1)
-			{
-				float ground_z = trace_endpos_z;
-				float diff = ground_z - self.origin_z;
+    // ---------------------------
+    // Run-back behavior
+    // ---------------------------
+    if (self.ai_mode == AI_RUNBACK)
+    {
+        vector target = self.ai_runback_temp.origin;
+        float dist = vlen(self.origin - target);
 
-				float ground_adjust = 4; // constant smoothing rate
-				if (fabs(diff) > 2)
-					self.origin_z += diff * 0.25; // smooth correction
-				else
-					self.origin_z = ground_z;
-			}
+        if (dist > 50)
+        {
+            vector flat_target = [target_x, target_y, self.origin_z];
+            vector dir = normalize(flat_target - self.origin);
 
-			setorigin(self, self.origin);
+            self.velocity = dir * self.speed;
 
-			//
-			// cosmetics & logic
-			//
-			self.alpha = 0.25;
-			self.effects |= EF_ADDITIVE;
+            // smooth vertical alignment
+            float dz = target_z - self.origin_z;
+            float climb_rate = 2;
+            if (fabs(dz) > 1)
+                self.origin_z += climb_rate * (dz > 0 ? 1 : -1);
 
-			self.enemy = world;
-			self.goalentity = self.ai_runback_temp;
-			self.movetype = MOVETYPE_NOCLIP;
+            // terrain hugging
+            vector start = self.origin + '0 0 16';
+            vector end = self.origin - '0 0 128';
+            tracebox(start, self.mins, self.maxs, end, MOVE_NORMAL, self);
 
-			if (self.health != self.max_health)
-				self.health = self.max_health;
-		}
-		else // reached spawn
-		{
-			tracebox(self.saveorigin, self.mins, self.maxs, self.saveorigin, MOVE_NORMAL, self);
-			if (trace_startsolid || trace_fraction < 1)
-			{
-				self.nextthink = time + 1;
-				self.think = monster_ai_think;
-				return;
-			}
+            if (trace_fraction < 1)
+            {
+                float ground_z = trace_endpos_z;
+                float diff = ground_z - self.origin_z;
 
-			setorigin(self, self.saveorigin + v_up * 5);
-			self.enemy = world;
-			self.goalentity = world;
-			self.movetype = MOVETYPE_STEP;
+                if (fabs(diff) > 2)
+                    self.origin_z += diff * 0.25;
+                else
+                    self.origin_z = ground_z;
+            }
 
-			self.ai_standstill = time + 4 + random()*4; // chill for a bit
+            setorigin(self, self.origin);
 
-			self.ai_mode = AI_IDLE;
-			self.anistate = ANISTATE_NONE;
+            // cosmetics
+            self.alpha = 0.25;
+            self.effects |= EF_ADDITIVE;
 
-			self.alpha = 1;
-			self.effects &= ~EF_ADDITIVE;
-			self.velocity = '0 0 0';
-		}
-	}
+            self.enemy = world;
+            self.goalentity = self.ai_runback_temp;
+            self.movetype = MOVETYPE_NOCLIP;
 
-	// monster got something
-	if (self.goalentity) 
-	{
-		if (self.stagger_finished < time)
-		{
-			if (self.melee_finished > time) // TODO? : Monster attack tracking can be done animation+per-monster
-				TurnToTarget(self.turn_speed / 2);
-			else
-				TurnToTarget(self.turn_speed);
-		}
-	
-		if (self.ai_mode != AI_RUNBACK)
-			self.ai_mode = AI_CHASE;
+            if (self.health != self.max_health)
+                self.health = self.max_health;
+        }
+        else
+        {
+            tracebox(self.saveorigin, self.mins, self.maxs, self.saveorigin, MOVE_NORMAL, self);
+            if (trace_startsolid || trace_fraction < 1)
+            {
+                self.nextthink = time + 1;
+                self.think = monster_ai_think;
+                return;
+            }
 
-		if (self.enemy.flags & FL_CLIENT && self.enemy.classname == "player" && self.enemy.health > 0)
-		{
-			if (self.melee_finished < time && self.stagger_finished < time)
-			{
-				// Ranged attack (bow)
-				if (self.attack_type == 4)
-				{
-					if (range(self.enemy) > RANGE_MELEE && visible(self.enemy))
-					{
-						if (!self.enemy.incombat)
-						{
-							self.enemy.incombat = TRUE;
-							self.enemy.incombat_finished = time + 15;
-						}
-						self.ai_attacktriggered = FALSE;
-						self.ai_mode = AI_ATTACK;
-						self.anistate = ANISTATE_NONE;
-						self.think = monster_ai_attack;
-					}
-					else
-					{
-						self.ai_mode = AI_CHASE;
-						self.anistate = ANISTATE_RUN;
-					}
-				}
-				// Melee attack
-				else
-				{
-					//if (range(self.enemy) == RANGE_MELEE || range(self.enemy) == RANGE_CLOSE)
-					dist = vlen(self.enemy.origin - self.origin);
-					if (dist <= self.attack_length)
-					{
-						if (!self.enemy.incombat)
-						{
-							self.enemy.incombat = TRUE;
-							self.enemy.incombat_finished = time + 15;
-						}
-						self.ai_attacktriggered = FALSE;
-						self.ai_mode = AI_ATTACK;
-						self.anistate = ANISTATE_NONE;
-						self.think = monster_ai_attack;
-					}
-					else
-					{
-						if (!self.enemy.incombat)
-						{
-							self.enemy.incombat = TRUE;
-							self.enemy.incombat_finished = time + 15;
-						}
-						self.ai_mode = AI_CHASE;
-						self.anistate = ANISTATE_RUN;
-					}
-				}
-			}
-			else
-			{
-				if (self.stagger_finished < time)
-				{
-					if (self.ai_doattack < time && !self.ai_attacktriggered)
-					{
-						if (self.attack_type == 4) // bow
-							CSEv_DoAttack_Arrow_v(self.angles);
-						else
-							CSEv_DoAttack_Melee_v(self.angles);
+            setorigin(self, self.saveorigin + v_up * 5);
+            self.enemy = world;
+            self.goalentity = world;
+            self.movetype = MOVETYPE_STEP;
 
-						self.ai_attacktriggered = TRUE;
-					}
-					else if (self.melee_finished < time)
-					{
-						self.anistate = ANISTATE_NONE;
-						self.ai_attacktriggered = FALSE;
-					}
-				}
-			}
-			PitchToTarget();
-		}
-		monster_ai_move();
-	}
+            self.ai_standstill = time + 4 + random()*4;
+            self.ai_mode = AI_IDLE;
+            self.anistate = ANISTATE_NONE;
 
-	// enemy dead / used a bonfire
-	if (self.enemy && (self.enemy.health <= 0 || self.enemy.bonfire == TRUE))
-	{
-		self.angles_x = 0;
-		self.oldenemy = self.enemy; // stash last killed or lost to bonfire
-		self.goalentity = self.ai_runback_temp;
-		if (!self.goalentity)
-			print ("error in monster ai\n");
+            self.alpha = 1;
+            self.effects &= ~EF_ADDITIVE;
+            self.velocity = '0 0 0';
+            movetofloor(self);
+        }
+    }
 
-		self.enemy = world;
-		self.ai_mode = AI_RUNBACK;
-		self.anistate = ANISTATE_RUN;
-	}
+    // ---------------------------
+    // Combat behavior
+    // ---------------------------
+    if (self.goalentity)
+    {
+        if (self.stagger_finished < time)
+        {
+            if (self.melee_finished > time)
+                TurnToTarget(self.turn_speed / 2);
+            else
+                TurnToTarget(self.turn_speed);
+        }
 
-	// Debugging
-	//print ("Dist: ", ftos(b), "\n");
+        if (self.ai_mode != AI_RUNBACK)
+            self.ai_mode = AI_CHASE;
 
-	self.nextthink = time + 0.1;
+        if (self.enemy.flags & FL_CLIENT &&
+            self.enemy.classname == "player" &&
+            self.enemy.health > 0)
+        {
+            float dist = vlen(self.enemy.origin - self.origin);
+
+            if (self.melee_finished < time && self.stagger_finished < time)
+            {
+                // Ranged attack
+                if (self.attack_type == 4)
+                {
+                    if (dist > RANGE_MELEE && visible(self.enemy))
+                    {
+                        if (!self.enemy.incombat)
+                        {
+                            self.enemy.incombat = TRUE;
+                            self.enemy.incombat_finished = time + 15;
+                        }
+                        self.ai_attacktriggered = FALSE;
+                        self.ai_mode = AI_ATTACK;
+                        self.anistate = ANISTATE_NONE;
+                        self.think = monster_ai_attack;
+                    }
+                    else
+                    {
+                        self.ai_mode = AI_CHASE;
+                        self.anistate = ANISTATE_RUN;
+                    }
+                }
+                // Melee attack
+                else if (dist <= self.attack_length)
+                {
+                    if (!self.enemy.incombat)
+                    {
+                        self.enemy.incombat = TRUE;
+                        self.enemy.incombat_finished = time + 15;
+                    }
+                    self.ai_attacktriggered = FALSE;
+                    self.ai_mode = AI_ATTACK;
+                    self.anistate = ANISTATE_NONE;
+                    self.think = monster_ai_attack;
+                }
+                else
+                {
+                    if (!self.enemy.incombat)
+                    {
+                        self.enemy.incombat = TRUE;
+                        self.enemy.incombat_finished = time + 15;
+                    }
+                    self.ai_mode = AI_CHASE;
+                    self.anistate = ANISTATE_RUN;
+                }
+            }
+            else if (self.stagger_finished < time)
+            {
+                if (self.ai_doattack < time && !self.ai_attacktriggered)
+                {
+                    if (self.attack_type == 4)
+                        CSEv_DoAttack_Arrow_v(self.angles);
+                    else
+                        CSEv_DoAttack_Melee_v(self.angles);
+
+                    self.ai_attacktriggered = TRUE;
+                }
+                else if (self.melee_finished < time)
+                {
+                    self.anistate = ANISTATE_NONE;
+                    self.ai_attacktriggered = FALSE;
+                }
+            }
+            PitchToTarget();
+        }
+        monster_ai_move();
+    }
+
+    // ---------------------------
+    // Handle dead / bonfire
+    // ---------------------------
+    if (self.enemy && (self.enemy.health <= 0 || self.enemy.bonfire == TRUE))
+    {
+        self.angles_x = 0;
+        self.oldenemy = self.enemy;
+        self.goalentity = self.ai_runback_temp;
+        if (!self.goalentity)
+            print("error in monster ai\n");
+
+        self.enemy = world;
+        self.ai_mode = AI_RUNBACK;
+        self.anistate = ANISTATE_RUN;
+    }
+
+    self.nextthink = time + 0.1;
 };

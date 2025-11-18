@@ -395,7 +395,7 @@ void() SV_RunClientCommand =
 // function used for helping developer placing objects in terrain mode + cheats 
 void() Player_DeveloperBind =
 {
-	if (cvar("developer") > 0)
+	if (cvar("developer") > 0 ||  cvar("sv_cheats") > 0)
 	{
 		string pos_x = ftos(self.origin_x);
 		string pos_y = ftos(self.origin_y);
@@ -1081,6 +1081,9 @@ void() PlayerPreThink =
 // Ran after physics
 void() PlayerPostThink =
 {
+	if (cvar("developer") > 0)
+		return;
+
 	self.SendFlags = 1;
 
 	if (!self.loggedin)
