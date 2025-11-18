@@ -277,8 +277,10 @@ void(vector ang) CSEv_DoAttack_Melee_v =
                 targ.stamina -= stamcalc_block;
 
                 vector dir = normalize(targ.origin - self.origin);
-                targ.velocity = dir * 150;
+				targ.velocity = '0 0 0';
                 targ.flags &= ~FL_ONGROUND;
+                targ.velocity = dir * 150;
+				
                 targ.melee_finished = time + 0.5;
                 targ.anistate = ANISTATE_BLOCK;
                 pointparticles(PART_BLOCK, targ.origin + v_forward * 32 + v_up * targ.view_ofs_z);
@@ -426,7 +428,7 @@ void() arrow_touch =
 					other.velocity = '0 0 0';
 					other.flags &= ~FL_ONGROUND;
 					other.velocity = dir * 150;
-
+				
 					other.melee_finished = time + 0.5;
 					other.anistate = ANISTATE_BLOCK;
 					pointparticles(PART_BLOCK, other.origin + v_forward * 32 + v_up * other.view_ofs_z);
@@ -826,9 +828,10 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
                     dmg -= targ.blockvalue;
                     targ.stamina -= stamcalc_block;
 
-                    vector dir = normalize(targ.origin - attacker.origin);
-                    targ.velocity = dir * 150;
-                    targ.flags &= ~FL_ONGROUND;
+					vector dir = normalize(targ.origin - self.origin);
+					targ.velocity = '0 0 0';
+					targ.flags &= ~FL_ONGROUND;
+					targ.velocity = dir * 150;
                     targ.melee_finished = time + 0.5;
                     targ.anistate = ANISTATE_BLOCK;
                     pointparticles(PART_BLOCK, targ.origin + v_forward * 32 + v_up * targ.view_ofs_z);

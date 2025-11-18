@@ -1896,6 +1896,9 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float type; // born from defining which npc type users are interacting with
 .float worldlight; // entity is affected by .hmp drawflag+abslight
 .float pressedJump;
+.float block_chance; // for monsters
+.float dodge_chance; // for monsters
+.float block_finished;
 
 // Animation States
 .float anistate;

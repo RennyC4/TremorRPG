@@ -31,6 +31,19 @@ void() Monster_Animate =
 
 	speed *= frametime;
 
+	if (self.anistate == ANISTATE_BLOCK)
+	{
+		if (self.frame != (self.frame = frameforname(self.modelindex, "Block")))
+			self.frame1time = 0; // reset timestamp
+		self.frame = frameforname(self.modelindex, "Block");
+
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = self.frame1time; // hold
+		else
+			self.frame1time += speed;
+		return;
+	}
+
 	if (self.anistate == ANISTATE_PUNCH)
 	{
 		if (self.frame != (self.frame = frameforname(self.modelindex, "Punch")))
