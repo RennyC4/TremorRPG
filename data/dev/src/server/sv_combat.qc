@@ -212,6 +212,8 @@ void(vector ang) CSEv_DoAttack_Melee_v =
     entity targ = trace_ent;
     if (!targ || !targ.takedamage || targ.health <= 0 || targ.deadflag != DEAD_NO)
         return;
+    if ((self.flags & FL_MONSTER) && (targ.flags & FL_MONSTER))
+        return; // monsters cannot hit each other
 
     // Prevent repeat hits from jump attacks
     if (targ.jumpattack_hit_finished > time || targ.godmode_finished > time)
@@ -391,6 +393,9 @@ void() arrow_touch =
 
 	if (other != self.owner && other.takedamage && other.health > 0 && other.deadflag == DEAD_NO && other.godmode_finished < time)
 	{
+        if ((self.owner.flags & FL_MONSTER) && (other.flags & FL_MONSTER))
+            return; // monsters cannot hit each other
+
 		float bow_power = ceil(random_range(self.owner.projectile_power_min, self.owner.projectile_power_max));
 		float arrow_power = ceil(random_range(self.owner.attack_power_min, self.owner.attack_power_max));
 		float damage = bow_power + arrow_power + (self.owner.skill_archery * 0.1);
@@ -730,6 +735,8 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
     {
         if (targ == attacker)
             continue;
+	    if ((targ.flags & FL_MONSTER) && (attacker.flags & FL_MONSTER))
+			continue; // skip monster vs monster
 		if (targ == self)
 			continue;
         if (vlen(targ.origin - org) > radius)
