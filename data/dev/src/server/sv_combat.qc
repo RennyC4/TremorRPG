@@ -333,7 +333,11 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 
     // Apply damage
 	if (!blocked)
+	{
 		targ.stagger_finished = time + 0.8; // impact frame on target only
+		if (targ.melee_finished > time)
+			targ.melee_finished = time;
+	}
     DoDamage(targ, self, damage, FALSE);
 
     // FX and hit sounds
@@ -480,8 +484,13 @@ void() arrow_touch =
 			mid_z += (other.mins_z + other.maxs_z) * 0.5;
 			te_blood(mid, vel, 6);
 
+    // Apply damage
 			if (!blocked)
+			{
 				other.stagger_finished = time + 0.8; // impact frame on target only
+				if (other.melee_finished > time)
+					other.melee_finished = time;
+			}
 			DoDamage(other, self.owner, damage, FALSE);
 			sound(self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
 		}
@@ -861,9 +870,14 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
         if (dmg < 1)
             dmg = 1;
 
+		// Apply damage
 		if (!blocked)
+		{
 			targ.stagger_finished = time + 0.8; // impact frame on target only
-        DoDamage(targ, attacker, dmg, silent);
+			if (targ.melee_finished > time)
+				targ.melee_finished = time;
+		}
+		DoDamage(targ, attacker, dmg, silent);
         did_damage = TRUE;
 
         // -------------------------------
