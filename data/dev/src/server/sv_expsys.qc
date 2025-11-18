@@ -35,22 +35,30 @@ void(entity targ, entity monster, float expmin, float expmax) GiveExperience =
 {
     float amount = ceil(random_range(expmin, expmax));
 
-    // Diminishing returns check
-    float p_lvl = targ.level;
-    float m_lvl = monster.level;
-    float lvl_diff = p_lvl - m_lvl;
-    float lvl_mod;
+	// diminishing returns: starts at 3+ levels above
+	float p_lvl = targ.level;
+	float m_lvl = monster.level;
+	float lvl_diff = p_lvl - m_lvl;
+	float lvl_mod;
 
-    if (lvl_diff <= 0)
-        lvl_mod = 1.0 + (-lvl_diff * 0.05);
-    else if (lvl_diff <= 1)
-        lvl_mod = 1.0;
-    else
-    {
-        lvl_mod = 1.0 - (lvl_diff * 0.10);
-        if (lvl_mod < 0.10)
-            lvl_mod = 0.10;
-    }
+	// If monster is higher level → bonus XP
+	if (lvl_diff <= 0)
+		lvl_mod = 1.0 + (-lvl_diff * 0.05);
+
+	// If monster is only up to 2 levels lower → no penalty
+	else if (lvl_diff <= 2)
+		lvl_mod = 1.0;
+
+	// 3+ levels above → soft diminishing returns
+	else
+	{
+		float extra_lvls = lvl_diff - 2;
+		lvl_mod = 1.0 - (extra_lvls * 0.05); // -5% XP per extra level above 2
+
+		// Never go below 25%
+		if (lvl_mod < 0.25)
+			lvl_mod = 0.25;
+	}
 
     amount *= lvl_mod;
 
@@ -73,27 +81,6 @@ void(entity targ, entity monster, float expmin, float expmax) GiveExperience =
 void(entity targ, entity monster, float goldmin, float goldmax) GiveGold =
 {
     float amount = ceil(random_range(goldmin, goldmax));
-
-    // Diminishing returns based on level difference
-    float p_lvl = targ.level;
-    float m_lvl = monster.level;
-    float lvl_diff = p_lvl - m_lvl;
-    float lvl_mod;
-
-    if (lvl_diff <= 0)
-        lvl_mod = 1.0 + (-lvl_diff * 0.05); // Monster stronger → bonus
-    else if (lvl_diff <= 1)
-        lvl_mod = 1.0; // Only 1 level higher → no penalty
-    else
-    {
-        // Player 2+ levels higher → 10% penalty per level
-        lvl_mod = 1.0 - (lvl_diff * 0.10);
-
-        if (lvl_mod < 0.10)
-            lvl_mod = 0.10; // 10% minimum gold
-    }
-
-    amount *= lvl_mod;
 
     gold_multiplier = cvar("sv_goldmultiplier");
     if (gold_multiplier > 0)
