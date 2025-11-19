@@ -232,8 +232,6 @@ void() daynight_think =
     float dusk_len = 0.10 * cycle; // 10%
     float night_len = 0.40 * cycle; // 40%
 
-    // float dawn_len = cycle - (day_len + dusk_len + night_len); // 10%
-
     float a = daynight_speed; // 0..2PI
     float newtimeofday;
 
@@ -280,6 +278,9 @@ void() daynight_think =
         self.nextthink = time + 8;
     else
         self.nextthink = time + 4;
+
+	// for debugging
+	//self.nextthink = time + 0.1;
 };
 
 void() spawn_daynight =

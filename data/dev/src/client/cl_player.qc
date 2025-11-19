@@ -454,53 +454,55 @@ void() CSQC_Input_Frame =
 
 void() Player_DayNightHandler =
 {
+	vector scrsz = [g_width, g_height];
+
 	if (timeofday == TIME_DAY) // day
 	{
+		drawfill('0 0', scrsz, '255 255 255', 0);
 		if (cvar("r_shadow_realtime_world_lightmaps") != 1)
 		{
 			cvar_set("r_shadow_realtime_world_lightmaps", "1");
 			cvar_set("r_skybox", dayskybox);
 			localcmd("fog 0.02\n");
 			cvar_set("r_skyfog", "0.5");
-			cvar_set("v_cshift_empty", "0 0 0");
 		}
 	}
 	else if (timeofday == TIME_NIGHT) // night
 	{
+		drawfill('0 0', scrsz, '0 0 50', 0.1);
 		if (cvar("r_shadow_realtime_world_lightmaps") != 0.1)
 		{
 			cvar_set("r_shadow_realtime_world_lightmaps", "0.1");
 			cvar_set("r_skybox", nightskybox);
 			localcmd("fog 0.05 0\n");
 			cvar_set("r_skyfog", "0");
-			cvar_set("v_cshift_empty", "0 0 50 125");
 		}
 	}
 	else if (timeofday == TIME_DAWN) // early morning (dawn)
 	{
+		drawfill('0 0', scrsz, '255 255 255', 0.1);
 		if (cvar("r_shadow_realtime_world_lightmaps") != 0.5)
 		{
 			cvar_set("r_shadow_realtime_world_lightmaps", "0.5");
 			cvar_set("r_skybox", dayskybox);
 			localcmd("fog 0.035\n");
-			cvar_set("r_skyfog", "0.25");
-			cvar_set("v_cshift_empty", "0 0 0");
+			cvar_set("r_skyfog", "0.1");
 		}
 	}
 	else // sunset (dusk)
 	{
+		drawfill('0 0', scrsz, '130 25 0', 0.1);
 		if (cvar("r_shadow_realtime_world_lightmaps") != 0.25)
 		{
 			cvar_set("r_shadow_realtime_world_lightmaps", "0.25");
 			cvar_set("r_skybox", dayskybox);
 			localcmd("fog 0.035 0.3 .15 0 1\n");
 			cvar_set("r_skyfog", "0.8");
-			cvar_set("v_cshift_empty", "130 25 0 32");
 		}
 	}
 };
 
-void() Player_Hud =
+void() Player_Screen =
 {
 	if (cvar("developer") != 0)
 		return;
@@ -548,6 +550,8 @@ void() Player_Hud =
 	}
 	else // Regular gameplay
 	{
+		Player_DayNightHandler();
+
 		float zonedisplay_finished = getstatf(STAT_ZONENAME_TIME);
 		float health = getstatf(STAT_HEALTH);
 		float casting = getstatf(STAT_CASTING);
@@ -597,7 +601,6 @@ void() Player_Hud =
 
 		setcursormode(FALSE,"", 0, 0);
 	}
-	Player_DayNightHandler();
 };
 
 void() Player_Think;

@@ -69,9 +69,9 @@ noref void() CSQC_WorldLoaded =
 	registercommand("toggle_crouch", "Crouching & sneaking\n");
 	registercommand("toggle_camera", "3rd person camera toggle\n");
 	registercommand("+use", "Use what is in front of player\n");
-		
+
 	CSQC_Precache();
-	last_input_time = time + 15; // don't use idle cam on map change
+	last_input_time = time + 15; // reset idle cam on map change
 };
 
 void(string rendererdescription) CSQC_RendererRestarted =
@@ -195,10 +195,9 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	if (showscores)
 	{
 		Hud_UpdateScores();
-		Hud_Scoreboard('0 0 0', virtsize);
+		Hud_Scoreboard([0, 0, 0], virtsize);
 	}
-	else
-		Player_Hud();
+	Player_Screen(); // HUD, day/night rendering, etc
 
 	sui_menu_nav();
 	sui_end();
@@ -261,6 +260,17 @@ float(string strCommand) CSQC_ConsoleCommand =
 		showscores = TRUE;
 	else if (argv(0) == "-showscores")
 		showscores = FALSE;
+
+	//
+	// Blocked console commands
+	//
+	if (argv(0) == "r_shadow_realtime_world_lightmaps")		return TRUE;
+	if (argv(0) == "r_skybox")		return TRUE;
+	if (argv(0) == "r_skyfog")		return TRUE;
+	if (argv(0) == "fog")		return TRUE;
+	//
+	//
+	//
 
 	return FALSE;
 };
