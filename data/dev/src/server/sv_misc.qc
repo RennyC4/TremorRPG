@@ -44,6 +44,7 @@ void() set_dlight =
 	{
 		self.pflags = PFLAGS_FULLDYNAMIC;
 		self.pflags |= PFLAGS_NOSHADOW;
+		self.light_lev /= 1.5;
 	}
 	else
 	{
