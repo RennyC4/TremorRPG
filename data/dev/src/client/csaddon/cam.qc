@@ -1102,6 +1102,7 @@ float(float keycode, float unicode, vector *curmousepos_in, vector mousediff) ed
 	return FALSE;
 };
 
+/* RennyC: WTF
 float(string str) CSQC_ConsoleCommand =
 {
 	local float numargs;
@@ -1119,6 +1120,7 @@ float(string str) CSQC_ConsoleCommand =
 	}
 	return FALSE;
 };
+*/
 
 void() Cam_Init =
 {

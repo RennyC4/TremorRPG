@@ -539,13 +539,13 @@ const int CONTENTBIT_SKY = 0x80000000i;
 const int CONTENTBITS_POINTSOLID = CONTENTBIT_SOLID|0x00000002i|CONTENTBIT_BODY;	/* Bits that traceline would normally consider solid */
 const int CONTENTBITS_BOXSOLID = CONTENTBIT_SOLID|0x00000002i|CONTENTBIT_BODY|CONTENTBIT_PLAYERCLIP;	/* Bits that tracebox would normally consider solid */
 const int CONTENTBITS_FLUID = CONTENTBIT_WATER|CONTENTBIT_SLIME|CONTENTBIT_LAVA|CONTENTBIT_SKY;
-const float SPA_POSITION = 0;	/* These SPA_* constants are to specify which attribute is returned by the getsurfacepointattribute builtin */
-const float SPA_S_AXIS = 1;
-const float SPA_T_AXIS = 2;
-const float SPA_R_AXIS = 3;	/* aka: SPA_NORMAL */
-const float SPA_TEXCOORDS0 = 4;
-const float SPA_LIGHTMAP0_TEXCOORDS = 5;
-const float SPA_LIGHTMAP0_COLOR = 6;
+//const float SPA_POSITION = 0;	/* These SPA_* constants are to specify which attribute is returned by the getsurfacepointattribute builtin */
+//const float SPA_S_AXIS = 1;
+//const float SPA_T_AXIS = 2;
+//const float SPA_R_AXIS = 3;	/* aka: SPA_NORMAL */
+//const float SPA_TEXCOORDS0 = 4;
+//const float SPA_LIGHTMAP0_TEXCOORDS = 5;
+//const float SPA_LIGHTMAP0_COLOR = 6;
 const float CHAN_AUTO = 0;	/* The automatic channel, play as many sounds on this channel as you want, and they'll all play, however the other channels will replace each other. */
 const float CHAN_WEAPON = 1;
 const float CHAN_VOICE = 2;
@@ -651,7 +651,7 @@ const float EV_VARIANT = 9;
 hashtable gamestate;	/* Special hash table index for hash_add and hash_get. Entries in this table will persist over map changes (and doesn't need to be created/deleted). */
 const float HASH_REPLACE = 256;	/* Used with hash_add. Attempts to remove the old value instead of adding two values for a single key. */
 const float HASH_ADD = 512;	/* Used with hash_add. The new entry will be inserted in addition to the existing entry. */
-const float STAT_HEALTH = 0;	/* Player's health. */
+//const float STAT_HEALTH = 0;	/* Player's health. */
 const float STAT_WEAPONMODELI = 2;	/* This is the modelindex of the current viewmodel (renamed from the original name 'STAT_WEAPON' due to confusions). */
 const float STAT_AMMO = 3;	/* player.currentammo */
 const float STAT_ARMOR = 4;
@@ -1415,8 +1415,8 @@ vector (vector v) unproject = #310; /*
 vector (vector v) project = #311; /*
 		Transform a 3d world-space point into a 2d screen-space point, according the various origin+angle+fov etc settings set via setproperty. */
 
-float(vector pos, vector size, float alignflags, string text) drawtextfield = #0:drawtextfield; /*
-		Draws a multi-line block of text, including word wrapping and alignment. alignflags bits are RTLB, typically 3. Returns the total number of lines. */
+//float(vector pos, vector size, float alignflags, string text) drawtextfield = #0:drawtextfield; /*
+//		Draws a multi-line block of text, including word wrapping and alignment. alignflags bits are RTLB, typically 3. Returns the total number of lines. */
 
 void(float width, vector pos1, vector pos2, vector rgb, float alpha, optional float drawflag) drawline = #315; /*
 		Draws a 2d line between the two 2d points. */
@@ -1427,8 +1427,8 @@ float(string name) iscachedpic = #316; /*
 string(string name, optional float trywad) precache_pic = #317; /*
 		Forces the engine to load the named image. If trywad is specified, the specified name must any lack path and extension. */
 
-void(string imagename, int width, int height, void *pixeldata, optional int datasize, optional int format) r_uploadimage = #0:r_uploadimage; /* Part of FTE_CSQC_RAWIMAGES
-		Updates a texture with the specified rgba data. Will be created if needed. If blobsize is specified then the image is decoded (eg .ktx or .dds data) instead of being raw R8G8B8A data. You'll typically want shaderforname to also generate a shader to use the texture. */
+//void(string imagename, int width, int height, void *pixeldata, optional int datasize, optional int format) r_uploadimage = #0:r_uploadimage; /* Part of FTE_CSQC_RAWIMAGES
+//		Updates a texture with the specified rgba data. Will be created if needed. If blobsize is specified then the image is decoded (eg .ktx or .dds data) instead of being raw R8G8B8A data. You'll typically want shaderforname to also generate a shader to use the texture. */
 
 int*(string filename, __out int width, __out int height) r_readimage = #0:r_readimage; /* Part of FTE_CSQC_RAWIMAGES
 		Reads and decodes an image from disk, providing raw R8G8B8A pixel data. Should not be used for dds or ktx etc formats. Returns __NULL__ if the image could not be read for any reason. Use memfree to free the data once you're done with it. */
@@ -1598,9 +1598,9 @@ typedef struct {
 void(float reverbslot, reverbinfo_t *reverbinfo, int sizeofreverinfo_t) setup_reverb = #0:setup_reverb; /* Part of FTE_CSQC_REVERB
 		Reconfigures a reverb slot for weird effects. Slot 0 is reserved for no effects. Slot 1 is reserved for underwater effects. Reserved slots will be reinitialised on snd_restart, but can otherwise be changed. These reverb slots can be activated with SetListener. Note that reverb will currently only work when using OpenAL. */
 
-void(string cmdname) registercommand = #352; /*
-		Register the given console command, for easy console use.
-		Console commands that are later used will invoke CSQC_ConsoleCommand. */
+//void(string cmdname) registercommand = #352; /*
+//		Register the given console command, for easy console use.
+//		Console commands that are later used will invoke CSQC_ConsoleCommand. */
 
 float(entity ent) wasfreed = #353; /*
 		Quickly check to see if the entity is currently free. This function is only valid during the two-second non-reuse window, after that it may give bad results. Try one second to make it more robust. */

@@ -1736,22 +1736,22 @@ void(vector mousepos) editor_brushes_overlay =
 
 void() editor_brushes_registercommands =
 {
-#define brusheditormode(n,v) registercommand("+brushedit_"n);registercommand("-brushedit_"n);
-brusheditormodes
-#undef brusheditormode
-	registercommand("brushedit_undo");
-	registercommand("brushedit_redo");
-	registercommand("brushedit_delete");
-	registercommand("brushedit_create");
-	registercommand("brushedit_slice");
-	registercommand("brushedit_matchface");
-	registercommand("brushedit_resettexcoords");
-	registercommand("brushedit_settexture");
-	registercommand("brushedit_subtract");
-	registercommand("brushedit_binds");
-	registercommand("brushedit_binds_default");
-	registercommand("+brushedit_nogrid");
-	registercommand("-brushedit_nogrid");
+//#define brusheditormode(n,v) registercommand("+brushedit_"n);registercommand("-brushedit_"n);
+//brusheditormodes
+//#undef brusheditormode
+	registercommand("brushedit_undo", "");
+	registercommand("brushedit_redo", "");
+	registercommand("brushedit_delete", "");
+	registercommand("brushedit_create", "");
+	registercommand("brushedit_slice", "");
+	registercommand("brushedit_matchface", "");
+	registercommand("brushedit_resettexcoords", "");
+	registercommand("brushedit_settexture", "");
+	registercommand("brushedit_subtract", "");
+	registercommand("brushedit_binds", "");
+	registercommand("brushedit_binds_default", "");
+	registercommand("+brushedit_nogrid", "");
+	registercommand("-brushedit_nogrid", "");
 };
 
 float() editor_brushes_command =

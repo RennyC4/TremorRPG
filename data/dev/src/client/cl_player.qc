@@ -450,6 +450,111 @@ void() CSQC_Input_Frame =
 	input_movevalues_x = bound(-350, input_movevalues_x, 350);
 	input_movevalues_y = bound(-350, input_movevalues_y, 350);
 	input_movevalues_z = bound(-350, input_movevalues_z, 350);
+
+	vector t, o;
+	if (autocvar_ca_show)	//when we're using the UI, don't send any attack or jump stuff. these are generally annoying modifiers or so
+		input_buttons = 0;
+		
+	if ((input_buttons & 1) && pointedshadername == "")
+	{
+		t = mousefar;
+		o = mousenear;
+		if (vlen(o - t) > 8192)
+			t = o + normalize(t)*8192;
+		traceline(o, t, TRUE, world);
+
+		if (vlen(trace_endpos - o) < 512)
+		{
+			float s = getsurfacenearpoint(trace_ent, trace_endpos);
+			pointedshadername = getsurfacetexture(trace_ent, s);
+			pointedsurfacenormal = getsurfacenormal(trace_ent, s);
+			if (gecko_get_texture_extent(pointedshadername) == '0 0 0')
+				pointedshadername = "";
+			if (pointedshadername == "")
+				pointedshadername = "";
+			else
+			{
+				//fixme: no unfocus!
+				pointedshadername = strzone(pointedshadername);
+				//print("sending input to ", pointedshadername, "\n");
+
+				gecko_navigate(pointedshadername, "cmd:focus");
+
+				pointedent = trace_ent;
+				pointedsurface = s;
+			}
+		}
+	}
+
+	if (pointedshadername != "")
+	{
+		input_buttons = input_buttons - (input_buttons & 1);
+
+		makevectors(input_angles);
+		if (v_forward * pointedsurfacenormal >= 0)
+		{
+			gecko_navigate(pointedshadername, "cmd:unfocus");
+			strunzone(pointedshadername);
+			pointedshadername = "";
+		//	print("release (angle)!\n");
+		}
+		else
+		{
+			t = mousefar;
+			o = mousenear;
+			if (vlen(o - t) > 8192)
+				t = o + normalize(t)*8192;
+			traceline(o, t, TRUE, world);
+
+			//this code is vile.
+			//it expects the texture to be aligned to the surface plane with flat projection.
+			//it will also break on any polysoup/patch surfaces
+			//it should at least accept any weird shaped cut up triangles, so long as they're all flat on the surface.
+
+			vector xyz1, xyz2, xyz3;
+			vector st1, st2, st3;
+			xyz1 = getsurfacepointattribute(pointedent, pointedsurface, 0, 0);
+			xyz2 = getsurfacepointattribute(pointedent, pointedsurface, 1, 0);
+			xyz3 = getsurfacepointattribute(pointedent, pointedsurface, 2, 0);
+			st1 = getsurfacepointattribute(pointedent, pointedsurface, 0, 4);
+			st2 = getsurfacepointattribute(pointedent, pointedsurface, 1, 4);
+			st3 = getsurfacepointattribute(pointedent, pointedsurface, 2, 4);
+
+			float f1, f2, backoff;
+			vector dir1 = xyz2 - xyz1;
+			vector std1 = st2 - st1;
+			vector dir2 = xyz3 - xyz1;
+			vector std2 = st3 - st1;
+			f1 = 1/vlen(dir1);
+			dir1 *= f1;
+			std1 *= f1;
+			backoff = dir1 * dir2;
+			std2 = std2 - (std1 * backoff);
+			dir2 = dir2 - (dir1 * backoff);
+			f2 = 1/vlen(dir2);
+			dir1 *= f2;
+			std1 *= f2;
+			//the two directions should be perpendicular, and normalized
+
+			float d1 = dir1*xyz1;
+			float p = dir1*trace_endpos;
+			float d2 = dir1*(xyz1+dir1);
+			f1 = (p-d1) / (d2 - d1);
+
+			d1 = dir2*xyz1;
+			p = dir2*trace_endpos;
+			d2 = dir2*(xyz1+dir2);
+			f2 = (p-d1) / (d2 - d1);
+
+			vector res = st1 + std1*f1 + std2*f2;
+
+			res_x-= floor(res_x);
+			res_y-= floor(res_y);
+			gecko_mousemove(pointedshadername, res_x, res_y);
+
+//			pointparticles(particleeffectnum("te_spike"), xyz1 + dir1*f1 + dir2*f2, trace_plane_normal, 1);
+		}
+	}
 };
 
 void() Player_DayNightHandler =

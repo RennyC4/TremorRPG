@@ -4,6 +4,7 @@
 
 void() Hud_UpdateScores;
 void(vector virtmin, vector virtsize) Hud_Scoreboard;
+static void(float seat, vector mn, vector sz) renderscene_helper;
 
 void() CSQC_Precache =
 {
@@ -106,6 +107,49 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	//================
 	if (cvar("developer") > 0)
 	{
+			float foo;
+		clearscene();
+		setproperty(VF_ACTIVESEAT, 0, TRUE);	//in_forceseat can prevent this from already being true, sadly. silly csqc mods with no splitscreen support...
+		setproperty(VF_DRAWENGINESBAR, 1);
+		setproperty(VF_DRAWCROSSHAIR, 1);
+		wrap_addentities(intermission?MASK_ENGINE:(MASK_VIEWMODEL|MASK_ENGINE));
+
+		foo = numclientseats;
+	//	if (autocvar_ca_show)
+	//		foo = 0;
+		switch(foo)
+		{
+		case 0:	//just in case someone runs us in dp
+		case 1:
+			wrap_renderscene();
+			break;
+		case 2:
+			renderscene_helper(0, [0, 0], [width, height/2]);
+			renderscene_helper(1, [0, height/2], [width, height/2]);
+			setviewprop(VF_LPLAYER, 0, FALSE);
+			drawline(1, [0, height/2], [width, height/2], '0 0 0', 1);
+			break;
+		case 3:
+			renderscene_helper(0, [0, 0], [width, height/2]);
+			renderscene_helper(1, [0, height/2], [width/2, height/2]);
+			renderscene_helper(2, [width/2, height/2], [width/2, height/2]);
+			setviewprop(VF_LPLAYER, 0, FALSE);
+			drawline(1, [0, height/2], [width, height/2], '0 0 0', 1);
+			drawline(1, [width/2, height/2], [width/2, height], '0 0 0', 1);
+			break;
+		default:
+		case 4:
+			renderscene_helper(0, [0, 0], [width/2, height/2]);
+			renderscene_helper(1, [width/2, 0], [width/2, height/2]);
+			renderscene_helper(2, [0, height/2], [width/2, height/2]);
+			renderscene_helper(3, [width/2, height/2], [width/2, height/2]);
+			setviewprop(VF_LPLAYER, 0, FALSE);
+			drawline(1, [0, height/2], [width, height/2], '0 0 0', 1);
+			drawline(1, [width/2, 0], [width/2, height], '0 0 0', 1);
+			break;
+		}
+	
+		/*
 		clearscene();
 
 		setproperty(VF_DRAWENGINESBAR, 0);
@@ -115,6 +159,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 		renderscene();
 		return;
+		*/
 	}
 	//
 
@@ -220,10 +265,10 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 float(string strCommand) CSQC_ConsoleCommand =
 {
-	if (cvar("developer") > 0)
-		return FALSE;
-
 	tokenize(strCommand);
+
+	if (cvar("developer") > 0) // terrain editor
+		return editor_brushes_command();
 
 	if (argv(0) == "toggle_crouch")
 		sendevent("PlayerCrouch", "");
@@ -281,10 +326,13 @@ float(string strCommand) CSQC_ConsoleCommand =
 	return FALSE;
 };
 
+//float (float event, float parama, float paramb) wrap_InputEvent;
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
-	if (cvar("sv_cheats") > 0 && cvar("developer") > 0)
-		return FALSE;
+	if (cvar("developer") > 0) // Terrain editor
+	{
+		return wrap_InputEvent(evtype, scanx, chary);
+	}
 
 	last_input_time = time;
 	player_idle = FALSE;
@@ -545,4 +593,9 @@ void(float flIsNew) CSQC_Ent_Update =
 	}
 };
 
-noref void CSQC_Shutdown() = {};
+noref void CSQC_Shutdown() =
+{
+#ifdef CAMQUAKE
+	spline_shutdown();
+#endif
+};
