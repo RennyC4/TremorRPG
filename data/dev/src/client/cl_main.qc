@@ -107,60 +107,19 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	//================
 	if (cvar("developer") > 0)
 	{
-			float foo;
-		clearscene();
-		setproperty(VF_ACTIVESEAT, 0, TRUE);	//in_forceseat can prevent this from already being true, sadly. silly csqc mods with no splitscreen support...
-		setproperty(VF_DRAWENGINESBAR, 1);
-		setproperty(VF_DRAWCROSSHAIR, 1);
-		wrap_addentities(intermission?MASK_ENGINE:(MASK_VIEWMODEL|MASK_ENGINE));
-
-		foo = numclientseats;
-	//	if (autocvar_ca_show)
-	//		foo = 0;
-		switch(foo)
-		{
-		case 0:	//just in case someone runs us in dp
-		case 1:
-			wrap_renderscene();
-			break;
-		case 2:
-			renderscene_helper(0, [0, 0], [width, height/2]);
-			renderscene_helper(1, [0, height/2], [width, height/2]);
-			setviewprop(VF_LPLAYER, 0, FALSE);
-			drawline(1, [0, height/2], [width, height/2], '0 0 0', 1);
-			break;
-		case 3:
-			renderscene_helper(0, [0, 0], [width, height/2]);
-			renderscene_helper(1, [0, height/2], [width/2, height/2]);
-			renderscene_helper(2, [width/2, height/2], [width/2, height/2]);
-			setviewprop(VF_LPLAYER, 0, FALSE);
-			drawline(1, [0, height/2], [width, height/2], '0 0 0', 1);
-			drawline(1, [width/2, height/2], [width/2, height], '0 0 0', 1);
-			break;
-		default:
-		case 4:
-			renderscene_helper(0, [0, 0], [width/2, height/2]);
-			renderscene_helper(1, [width/2, 0], [width/2, height/2]);
-			renderscene_helper(2, [0, height/2], [width/2, height/2]);
-			renderscene_helper(3, [width/2, height/2], [width/2, height/2]);
-			setviewprop(VF_LPLAYER, 0, FALSE);
-			drawline(1, [0, height/2], [width, height/2], '0 0 0', 1);
-			drawline(1, [width/2, 0], [width/2, height], '0 0 0', 1);
-			break;
-		}
-	
-		/*
 		clearscene();
 
-		setproperty(VF_DRAWENGINESBAR, 0);
-		setproperty(VF_DRAWCROSSHAIR, 1);
+		setproperty(VF_DRAWENGINESBAR, 0);        // optional: show engine bar
+		setproperty(VF_DRAWCROSSHAIR, 1);         // hide default crosshair
 
+		// Render the world
 		addentities(MASK_VIEWMODEL | MASK_ENGINE);
 
-		renderscene();
-		return;
-		*/
+		wrap_renderscene();
+		return; // skip normal SUI / HUD rendering
 	}
+	//
+	//
 	//
 
 	vector virtsize = [width, height];

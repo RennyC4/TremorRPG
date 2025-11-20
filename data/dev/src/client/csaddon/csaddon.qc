@@ -99,13 +99,15 @@ void() wrap_renderscene =
 		}
 	}
 
+	/*
 	//don't do anything if this is a subview. this avoids getting confused.
 	if (!(float)getproperty(VF_DRAWWORLD))
 	{
 		renderscene();
 		return;
 	}
-
+	*/
+	
 	vidsize = getproperty(VF_SCREENVSIZE);
 
 	/*inactive? then show nothing*/
@@ -405,106 +407,12 @@ float (float event, float parama, float paramb) wrap_InputEvent =
 	return FALSE;
 };
 
-
 void(float mask) wrap_addentities =
 {
-	if (autocvar_ca_show)
-	{
-		mask = mask - (mask & MASK_VIEWMODEL);
-		if (autocvar_ca_editormode == MODE_ENTSEDIT)
-			mask = 0;
-	}
+	mask = mask | MASK_ENGINE | MASK_VIEWMODEL;
 	addentities(mask);
 };
 
-var float autocvar_fov = 90;
-static void(float seat, vector mn, vector sz) renderscene_helper =
-{
-	if (seat)
-	{
-		setproperty(VF_ACTIVESEAT, seat, TRUE);	//updates globals, true means resets view properties too (but not ents)
-		setproperty(VF_VIEWENTITY, player_localentnum);
-		if (!intermission)
-			wrap_addentities(MASK_VIEWMODEL);
-	}
-	setproperty(VF_VIEWPORT, mn, sz);
-	setproperty(VF_AFOV, autocvar_fov);
-	wrap_renderscene();
-};
-
-/*this is a fallback function, in case the main progs does not have one*/
-/*
-void(float width, float height, float do2d) CSQC_UpdateView =
-{
-	float foo;
-	clearscene();
-	setproperty(VF_ACTIVESEAT, 0, TRUE);	//in_forceseat can prevent this from already being true, sadly. silly csqc mods with no splitscreen support...
-	setproperty(VF_DRAWENGINESBAR, 1);
-	setproperty(VF_DRAWCROSSHAIR, 1);
-	wrap_addentities(intermission?MASK_ENGINE:(MASK_VIEWMODEL|MASK_ENGINE));
-
-	foo = numclientseats;
-//	if (autocvar_ca_show)
-//		foo = 0;
-	switch(foo)
-	{
-	case 0:	//just in case someone runs us in dp
-	case 1:
-		wrap_renderscene();
-		break;
-	case 2:
-		renderscene_helper(0, [0, 0], [width, height/2]);
-		renderscene_helper(1, [0, height/2], [width, height/2]);
-		setviewprop(VF_LPLAYER, 0, FALSE);
-		drawline(1, [0, height/2], [width, height/2], '0 0 0', 1);
-		break;
-	case 3:
-		renderscene_helper(0, [0, 0], [width, height/2]);
-		renderscene_helper(1, [0, height/2], [width/2, height/2]);
-		renderscene_helper(2, [width/2, height/2], [width/2, height/2]);
-		setviewprop(VF_LPLAYER, 0, FALSE);
-		drawline(1, [0, height/2], [width, height/2], '0 0 0', 1);
-		drawline(1, [width/2, height/2], [width/2, height], '0 0 0', 1);
-		break;
-	default:
-	case 4:
-		renderscene_helper(0, [0, 0], [width/2, height/2]);
-		renderscene_helper(1, [width/2, 0], [width/2, height/2]);
-		renderscene_helper(2, [0, height/2], [width/2, height/2]);
-		renderscene_helper(3, [width/2, height/2], [width/2, height/2]);
-		setviewprop(VF_LPLAYER, 0, FALSE);
-		drawline(1, [0, height/2], [width, height/2], '0 0 0', 1);
-		drawline(1, [width/2, 0], [width/2, height], '0 0 0', 1);
-		break;
-	}
-};
-*/
-
-/*
-float(string txt, string info) CSQC_ConsoleLink =
-{
-	print("Console link pressed. Text \"", txt, "\"\n");
-	print("Info: \"", info, "\"\n");
-
-	return FALSE;
-};
-*/
-
-/*
-float(string cmd) CSQC_ConsoleCommand =
-{
-	tokenize(cmd);
-	return editor_brushes_command();
-};
-*/
-
-/*this is a fallback function, in case the main progs does not have one*/
-/*
-float (float event, float parama, float paramb, float devid) CSQC_InputEvent =
-{
-	return wrap_InputEvent(event, parama, paramb);
-};
-*/
 void(float prevprogs) init =
 {
 #ifdef CAMQUAKE
