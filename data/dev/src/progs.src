@@ -1,3 +1,4 @@
+#pragma sourcefile cs_progs.src
 #pragma sourcefile cl_progs.src
 #pragma sourcefile sv_progs.src
 #pragma sourcefile m_progs.src
