@@ -480,7 +480,7 @@ void() Player_DayNightHandler =
 	}
 	else if (timeofday == TIME_DAWN) // early morning (dawn)
 	{
-		drawfill('0 0', scrsz, '255 255 255', 0.1);
+		drawfill('0 0', scrsz, '255 255 255', 0.075);
 		if (cvar("r_shadow_realtime_world_lightmaps") != 0.5)
 		{
 			cvar_set("r_shadow_realtime_world_lightmaps", "0.5");
@@ -504,9 +504,6 @@ void() Player_DayNightHandler =
 
 void() Player_Screen =
 {
-	if (cvar("developer") != 0)
-		return;
-
 	float player_loggedin = getstatf(STAT_LOGGEDIN);
 	float player_menu = getstatf(STAT_MENU);
 	if (player_menu > 0)

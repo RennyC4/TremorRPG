@@ -52,6 +52,8 @@ float(string key, string val) find_player_id =
 // Initialization
 noref void(float apiver, string enginename, float enginever) CSQC_Init =
 {
+	addprogs("csaddon.dat");
+
     ZoneName_alpha = spawn();
 
     // Default fonts
@@ -99,24 +101,28 @@ void() CSQC_DayNight_Update =
 // CALLED EVERY CLIENT RENDER FRAME
 void(float width, float height, float menushown) CSQC_UpdateView =
 {
-	vector virtsize = [width, height];
-
-	g_width = width;
-	g_height = height;
-	framecount = framecount + 1;
-
-	// setup developer mode
+	//================
+	// DEVELOPER MODE: used for terrain editing
+	//================
 	if (cvar("developer") > 0)
 	{
 		clearscene();
 
 		setproperty(VF_DRAWENGINESBAR, 0);
 		setproperty(VF_DRAWCROSSHAIR, 1);
+
 		addentities(MASK_VIEWMODEL | MASK_ENGINE);
 
 		renderscene();
 		return;
 	}
+	//
+
+	vector virtsize = [width, height];
+
+	g_width = width;
+	g_height = height;
+	framecount = framecount + 1;
 
 	float pause = serverkeyfloat(SERVERKEY_PAUSESTATE);
 	float health = getstatf(STAT_HEALTH);
@@ -130,8 +136,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
-	addentities(MASK_VIEWMODEL | MASK_ENGINE);
-
 	// sv_cheats acts a bit differently, we also have to account for csaddons weirdness
 	// i'm not too worried about this because sv_cheats should only be used for development or making a cheat character
 	if (cvar("sv_cheats") == 0)
@@ -139,6 +143,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
 		setproperty(VF_ANGLES, view_angles);
 	}
+
+	addentities(MASK_VIEWMODEL | MASK_ENGINE);
 
 	CSQC_LockOn_Update();
 	if (health > 0)
@@ -277,7 +283,7 @@ float(string strCommand) CSQC_ConsoleCommand =
 
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
-	if (cvar("developer") > 0)
+	if (cvar("sv_cheats") > 0 && cvar("developer") > 0)
 		return FALSE;
 
 	last_input_time = time;
@@ -361,6 +367,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 		sui_input_event(evtype, scanx, chary, devid); // Menu input only (login or special screens)
 		return TRUE;
 	}
+
 	return FALSE;
 };
 
