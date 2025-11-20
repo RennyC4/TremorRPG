@@ -109,13 +109,13 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	{
 		clearscene();
 
-		setproperty(VF_DRAWENGINESBAR, 0);        // optional: show engine bar
-		setproperty(VF_DRAWCROSSHAIR, 1);         // hide default crosshair
+		setproperty(VF_DRAWENGINESBAR, 0);
+		setproperty(VF_DRAWCROSSHAIR, 1);
 
 		// Render the world
 		addentities(MASK_VIEWMODEL | MASK_ENGINE);
-
 		wrap_renderscene();
+
 		return; // skip normal SUI / HUD rendering
 	}
 	//
@@ -140,13 +140,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
-	// sv_cheats acts a bit differently, we also have to account for csaddons weirdness
-	// i'm not too worried about this because sv_cheats should only be used for development or making a cheat character
-	if (cvar("sv_cheats") == 0)
-	{
-		setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
-		setproperty(VF_ANGLES, view_angles);
-	}
+	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
+	setproperty(VF_ANGLES, view_angles);
 
 	addentities(MASK_VIEWMODEL | MASK_ENGINE);
 

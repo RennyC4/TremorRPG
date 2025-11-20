@@ -98,15 +98,6 @@ void() wrap_renderscene =
 			localcmd("changelevel . .\n");
 		}
 	}
-
-	/*
-	//don't do anything if this is a subview. this avoids getting confused.
-	if (!(float)getproperty(VF_DRAWWORLD))
-	{
-		renderscene();
-		return;
-	}
-	*/
 	
 	vidsize = getproperty(VF_SCREENVSIZE);
 

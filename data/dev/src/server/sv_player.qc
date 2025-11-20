@@ -1486,7 +1486,7 @@ void() PutClientInServer =
 	self.spawnloc = parm2;
 	//
 
-	if (cvar("sv_cheats") == 0)
+	if (cvar("developer") == 0)
 		self.SendEntity = Player_SendEntity;
 
 	// map transition
