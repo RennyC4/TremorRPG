@@ -55,9 +55,9 @@ void(entity targ, entity monster, float expmin, float expmax) GiveExperience =
 		float extra_lvls = lvl_diff - 2;
 		lvl_mod = 1.0 - (extra_lvls * 0.05); // -5% XP per extra level above 2
 
-		// Never go below 25%
-		if (lvl_mod < 0.25)
-			lvl_mod = 0.25;
+		// Never go below 15%
+		if (lvl_mod < 0.15)
+			lvl_mod = 0.15;
 	}
 
     amount *= lvl_mod;
