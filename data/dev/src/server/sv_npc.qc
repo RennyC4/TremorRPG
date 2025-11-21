@@ -32,7 +32,10 @@ void() npc_use =
 	}
 	else
 	{
-		print ("Error: NPC dialogue file not found\n");
+		// Not all NPC's wish to talk, keep it in debug print however
+		dprint("Possible Error: NPC dialogue file not found\n");
+		self.think = npc_ai_think;
+		self.nextthink = time + 0.1;
 		return;
 	}
 	fclose(v);

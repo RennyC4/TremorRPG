@@ -1089,3 +1089,11 @@
 "wait" "10000"
 "light" "200"
 }
+// entity 18
+{
+"classname" "set_npc"
+"origin" "-120 -72 8"
+"angle" "0"
+"model" "models/lumberjack_m.glb"
+"netname" "Halvar"
+}
