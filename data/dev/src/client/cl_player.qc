@@ -559,51 +559,80 @@ void() CSQC_Input_Frame =
 
 void() Player_DayNightHandler =
 {
+	static float next_fog_update = 0;
+	float do_fog = FALSE;
+
 	vector scrsz = [g_width, g_height];
+
+	if (time >= next_fog_update)
+	{
+		do_fog = TRUE;
+		next_fog_update = time + 1.0;
+	}
 
 	if (timeofday == TIME_DAY) // day
 	{
 		drawfill('0 0', scrsz, '255 255 255', 0);
+
 		if (cvar("r_shadow_realtime_world_lightmaps") != 1)
-		{
 			cvar_set("r_shadow_realtime_world_lightmaps", "1");
+
+		if (cvar_string("r_skybox") != dayskybox)
 			cvar_set("r_skybox", dayskybox);
-			localcmd("fog 0.02\n");
+
+		if (cvar("r_skyfog") != 0.5)
 			cvar_set("r_skyfog", "0.5");
-		}
+
+		if (do_fog)
+			localcmd("fog 0.02\n");
 	}
 	else if (timeofday == TIME_NIGHT) // night
 	{
 		drawfill('0 0', scrsz, '0 0 50', 0.1);
+
 		if (cvar("r_shadow_realtime_world_lightmaps") != 0.1)
-		{
 			cvar_set("r_shadow_realtime_world_lightmaps", "0.1");
+
+		if (cvar_string("r_skybox") != nightskybox)
 			cvar_set("r_skybox", nightskybox);
-			localcmd("fog 0.05 0\n");
+
+		if (cvar("r_skyfog") != 0)
 			cvar_set("r_skyfog", "0");
-		}
+
+		if (do_fog)
+			localcmd("fog 0.05 0\n");
 	}
 	else if (timeofday == TIME_DAWN) // early morning (dawn)
 	{
 		drawfill('0 0', scrsz, '255 255 255', 0.075);
+
 		if (cvar("r_shadow_realtime_world_lightmaps") != 0.5)
-		{
 			cvar_set("r_shadow_realtime_world_lightmaps", "0.5");
+
+		if (cvar_string("r_skybox") != dayskybox)
 			cvar_set("r_skybox", dayskybox);
-			localcmd("fog 0.035\n");
+
+		if (cvar("r_skyfog") != 0.1)
 			cvar_set("r_skyfog", "0.1");
-		}
+
+		if (do_fog)
+			localcmd("fog 0.035\n");
 	}
 	else // sunset (dusk)
 	{
 		drawfill('0 0', scrsz, '130 25 0', 0.1);
+
 		if (cvar("r_shadow_realtime_world_lightmaps") != 0.25)
-		{
 			cvar_set("r_shadow_realtime_world_lightmaps", "0.25");
+
+		if (cvar_string("r_skybox") != dayskybox)
 			cvar_set("r_skybox", dayskybox);
-			localcmd("fog 0.035 0.3 .15 0 1\n");
+
+		if (cvar("r_skyfog") != 0.8)
 			cvar_set("r_skyfog", "0.8");
-		}
+
+		if (do_fog)
+			localcmd("fog 0.035 0.3 .15 0 1\n");
 	}
 };
 
