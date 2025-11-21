@@ -5530,7 +5530,7 @@
 "style" "1"
 "color" "1 0.33333334 0"
 "light_lev" "222"
-"spawnflags" "1"
+"spawnflags" "0"
 "angle" "90"
 }
 // entity 133
@@ -5546,7 +5546,7 @@
 "style" "1"
 "color" "1 0.33333334 0"
 "light_lev" "222"
-"spawnflags" "1"
+"spawnflags" "0"
 "angle" "270"
 }
 // entity 135
@@ -5683,14 +5683,14 @@
 // entity 149
 {
 "classname" "misc_model"
-"origin" "-1304 -632 56"
+"origin" "-1272 -632 56"
 "model" "models/candle.glb"
 "angle" "300"
 }
 // entity 150
 {
 "classname" "misc_model"
-"origin" "-1320 -616 56"
+"origin" "-1288 -616 56"
 "model" "models/candle.glb"
 "angle" "45"
 }
@@ -5706,7 +5706,7 @@
 // entity 152
 {
 "classname" "light"
-"origin" "-1312 -624 56"
+"origin" "-1280 -624 56"
 "light" "11"
 "color" "161 161 0"
 "style" "1"
