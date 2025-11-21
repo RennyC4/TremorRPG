@@ -109,6 +109,10 @@ void() Skeleton_ObjectDraw =
 
 			if (!self.bonfire)
 			{
+				// Misc
+				if (self.main_hand == "Hatchet")
+					setmodel(self.weapon_vfx, "models/hatchet0.glb");
+
 				// Swords
 				if (self.main_hand == "Broken Sword")
 					setmodel(self.weapon_vfx, "models/sword0.glb");

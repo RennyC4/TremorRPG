@@ -1,4 +1,4 @@
-9
+10
 Short Sword
 200
 Health Potion
@@ -17,3 +17,5 @@ Scrap Arrow
 10
 Lantern
 80
+Hatchet
+25

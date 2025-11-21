@@ -353,6 +353,8 @@ void(string itemname) CSEv_UseItem_s =
 		Player_UseItem(3, itemname);
 
 	// Main hand equippables (weapons)
+	if (itemname == "Hatchet")
+		Player_EquipItem(itemname, 0);
 	if (itemname == "Broken Sword")
 		Player_EquipItem(itemname, 0);
 	else if (itemname == "Short Sword")
