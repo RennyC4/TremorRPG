@@ -34,8 +34,10 @@ void() User_NPCDialogue =
 	float buysell = getstatf(STAT_VENDOR);
 	if (buysell == 1)
 		my_button("npc_buy", newpos, [85, 22.5], "Buy / Sell") ? sendevent("PlayerShowBuySell", "") : 0;
-	else
+	else if (buysell == 2)
 		my_button("npc_bank", newpos, [85, 22.5], "Banking") ? sendevent("PlayerShowBanking", "") : 0;
+	else if (buysell == 3)
+		my_button("npc_wood", newpos, [85, 22.5], "Sell Wood");// ? sendevent("PlayerShowBanking", "") : 0;
 
 	// NPC chatter box
 	newpos = [2.5, 0]; //reset newpos

@@ -1096,4 +1096,5 @@
 "angle" "0"
 "model" "models/lumberjack_m.glb"
 "netname" "Halvar"
+"type" "2"
 }

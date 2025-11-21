@@ -65,7 +65,7 @@ void() npc_use =
 					AddToInventory(self, what, stof(line));
 			}
 			SendNPCInventory(self, self.user); // Send NPC inventory to CSQC
-			self.user.npc_vendor = 1; // Buy button
+			self.user.npc_vendor = 1; // Buy/Sell button
 			fclose(b);
 		}
 		else // no item list found for npc
@@ -75,9 +75,9 @@ void() npc_use =
 		}
 	}
 	else if (self.type == 1) // type 1, banking npc
-	{
 		self.user.npc_vendor = 2; // Banking button
-	}
+	else if (self.type == 2)
+		self.user.npc_vendor = 3; // Sell wood button
 	
 	msg_entity = self.user;
 	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
