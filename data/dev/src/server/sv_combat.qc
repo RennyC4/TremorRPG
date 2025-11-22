@@ -131,6 +131,13 @@ void() DoAttack_ShieldBash =
 .float inair_swing_sfx;
 void(vector ang) CSEv_DoAttack_Melee_v =
 {
+	// Hatchet runs its own code if one is equipped
+	if (self.main_hand == "Hatchet")
+	{
+		DoJob_Hatchet();
+		return;
+	}
+
     // -------------------------------
     // Increment attack_id safely
     // -------------------------------

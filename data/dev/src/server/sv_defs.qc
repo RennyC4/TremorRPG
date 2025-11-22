@@ -1825,6 +1825,7 @@ const float MENU_BANKING = 7; // user banking screen
 .float cnt2;
 .float count;
 string motd; // server motd text
+.string mdl;
 
 // health potion
 .float healthpot_heal_remaining;  // how much left to heal from this use
