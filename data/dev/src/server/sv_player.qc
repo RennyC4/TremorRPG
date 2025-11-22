@@ -260,6 +260,14 @@ void() PlayerJump =
     if (self.stamina >= staminaCost)
     {
         Player_RemoveCrouch();
+		if (self.potion_use_finished > time) // cancel potion use
+		{
+			self.healthpot_heal_rate = self.healthpot_heal_remaining = 0;
+			self.healthpot_finished = time;
+			self.manapot_heal_rate = self.manapot_heal_remaining = 0;
+			self.manapot_finished = time;
+			self.potion_use_finished = time;
+		}
 
         // Perform jump
         self.velocity_z += (270 + jumpcalc);
@@ -299,6 +307,15 @@ void(float whichdir) CSEv_PlayerDodge_f =
 
 	if (self.stamina >= 25)
 	{
+		if (self.potion_use_finished > time) // cancel potion use
+		{
+			self.healthpot_heal_rate = self.healthpot_heal_remaining = 0;
+			self.healthpot_finished = time;
+			self.manapot_heal_rate = self.manapot_heal_remaining = 0;
+			self.manapot_finished = time;
+			self.potion_use_finished = time;
+		}
+
 		self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
 		self.button2 = 0;
 		self.stamina -= 25;
