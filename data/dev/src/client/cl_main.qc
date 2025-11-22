@@ -87,15 +87,19 @@ void() CSQC_DayNight_Update =
 	// update entity lighting on world map client-side, SSQC -> CSQC use inverted abslight values for some reason
 	for (entity c = world;(c = findfloat(c, worldlight, TRUE));)
 	{
+		float light;
+
 		c.drawflags = 7;
 		if (timeofday == TIME_DAY)
-			c.abslight = 255;     // inverted from 1
+			light = 1;
 		else if (timeofday == TIME_NIGHT)
-			c.abslight = 51;      // inverted from 205 (256 - 205)
+			light = 225;
 		else if (timeofday == TIME_DAWN)
-			c.abslight = 140;     // unchanged
-		else // dusk
-			c.abslight = 190;     // unchanged
+			light = 140;
+		else
+			light = 190;
+
+		c.abslight = 255 - light;
 	}
 };
 

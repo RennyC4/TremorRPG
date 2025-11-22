@@ -482,6 +482,7 @@ void() User_CharacterScreen =
 	float disp_woodcutting = getstatf(STAT_WOODCUTTING);
 	float disp_projmin = getstatf(STAT_PROJ_MIN);
 	float disp_projmax = getstatf(STAT_PROJ_MAX);
+	float disp_bankgold = getstatf(STAT_GOLD_BANK);
 	
 	vector pos = [0, 0];
 	vector size = [450, 325];
@@ -524,7 +525,7 @@ void() User_CharacterScreen =
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Gold: ^7", ftos(disp_gold));
+	displaystat = strcat("^5Gold: ^7", ftos(disp_gold), "^8 Bank: ", ftos(disp_bankgold));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -926,6 +927,7 @@ void() User_InventoryScreen =
 	float disp_spellmax = getstatf(STAT_SPELLMAX);
 	float disp_projmin = getstatf(STAT_PROJ_MIN);
 	float disp_projmax = getstatf(STAT_PROJ_MAX);
+	float disp_bankgold = getstatf(STAT_GOLD_BANK);
 
 	vector pos = [0, 0];
 	vector size = [450, 325];
@@ -1210,6 +1212,7 @@ void() User_MagicScreen =
 	float disp_projmin = getstatf(STAT_PROJ_MIN);
 	float disp_projmax = getstatf(STAT_PROJ_MAX);
 	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
+	float disp_bankgold = getstatf(STAT_GOLD_BANK);
 
 	vector pos = [0, 0];
 	vector size = [450, 325];

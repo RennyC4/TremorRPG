@@ -640,7 +640,6 @@ void() Player_Animate =
 	// -----------------------------
     // Spell Charging Animation
     // -----------------------------
-	//if (self.cast_finished > time - 0.5) // add a 0.5 of leeway
 	if (self.anistate == ANISTATE_CASTING)
 	{
         if (self.anim_state != ANIM_CASTING)

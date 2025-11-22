@@ -77,7 +77,7 @@ void() Skeleton_ObjectDraw =
 			if (camera_mode)
 				pointparticles(PART_LANTERN, org, [0, 0, 0]);
 
-			dynamiclight_add(org, 700, [1, .7, .7], 1, "", PFLAGS_CORONA);
+			dynamiclight_add(org, 600, [1, .6, .6], 1, "", PFLAGS_CORONA);
 		}
 	}
 	else if (self.lantern_vfx)

@@ -122,12 +122,12 @@ void() worldspawn =
 	PART_MANAPOTION = particleeffectnum("manapotion");
 	PART_BLOCK = particleeffectnum("block");
 	PART_PARRY = particleeffectnum("parry");
+	PART_MAGIC_CASTING = particleeffectnum("magiccast");
+	PART_MAGIC_CASTING_ORB = particleeffectnum("magiccast_orb");
 
-	// Magic
+	// Magic Spells - Particles
 	PART_MAGIC_THORN1 = particleeffectnum("thornhit");
 	PART_MAGIC_THORN2 = particleeffectnum("thornwall");
-
-	PART_MAGIC_CASTING = particleeffectnum("magiccast");
 	PART_MAGIC_LIGHTHEAL = particleeffectnum("lightheal");
 	//
 
@@ -256,7 +256,7 @@ void() daynight_think =
 			if (timeofday == TIME_DAY)
 				c.abslight = 1;
 			else if (timeofday == TIME_NIGHT)
-				c.abslight = 205;
+				c.abslight = 225;
 			else if (timeofday == TIME_DAWN)
 				c.abslight = 140;
 			else // dusk

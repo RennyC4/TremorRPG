@@ -208,6 +208,8 @@ void() Player_CastMagic = // called from player postthink
 	if (self.cast_finished > time)
 	{
 		self.anistate = ANISTATE_CASTING;
+		makevectors(self.angles);
+		pointparticles(PART_MAGIC_CASTING_ORB, self.origin + v_right * 12 + v_up * 16);
 		if (self.casting_loop < time)
 		{
 			pointparticles(PART_MAGIC_CASTING, self.origin);

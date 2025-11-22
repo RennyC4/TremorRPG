@@ -451,7 +451,7 @@ void() monster_ai_think =
         vector target = self.ai_runback_temp.origin;
         float dist = vlen(self.origin - target);
 
-        if (dist > 50)
+        if (dist > 75)
         {
             vector flat_target = [target_x, target_y, self.origin_z];
             vector dir = normalize(flat_target - self.origin);

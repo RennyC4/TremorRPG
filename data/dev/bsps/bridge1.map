@@ -106,7 +106,7 @@
 // entity 1
 {
 "classname" "light"
-"origin" "8 968 648"
+"origin" "0 1792 1344"
 "delay" "3"
 "wait" "10000"
 "light" "200"
