@@ -845,6 +845,7 @@ float() CanAttack =
             self.cancast_finished < time &&
 			self.stagger_finished < time &&
             self.cast_finished < time &&
+			self.potion_use_finished < time &&
             self.menushut_finished < time);
 };
 

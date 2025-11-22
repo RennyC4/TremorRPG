@@ -155,9 +155,10 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
     if (cvar("developer") > 0)
         return;
 
-    string line;
     string add_ext = strcat(LOGIN_NAME, ".chr");
+    string line;
 
+    // --- Step 0: Check GUID ---
     float f = fopen(add_ext, FILE_READ);
     if (f >= 0)
     {
@@ -169,8 +170,10 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
                 fclose(f);
                 return;
             }
+        fclose(f);
     }
 
+    // --- Step 1: Prevent multiple logins ---
     if (cvar("sv_multilogin") == 0)
     {
         for (entity targ = world; (targ = find(targ, classname, "player")); )
@@ -183,7 +186,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
         }
     }
 
-    // --- STEP 1: Read the file dynamically ---
+    // --- Step 2: Read the entire file dynamically ---
     float v = fopen(add_ext, FILE_READ);
     if (v < 0)
     {
@@ -209,98 +212,105 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
     }
     fclose(v);
 
-    if (inv_count_line < 0) inv_count_line = 44;
-    if (spell_count_line < 0) spell_count_line = 45;
+    // --- Safe fallbacks for old files ---
+    if (inv_count_line < 0) inv_count_line = total_lines;       // points to end of file
+    if (spell_count_line < 0) spell_count_line = total_lines;   // points to end of file
 
-    // --- STEP 2: Parse stats & skills ---
-    self.netname = self.loginname = file_contents[1];
-    self.gender = file_contents[2];
-    self.music = file_contents[3];
-    self.zonename = file_contents[4];
+    // --- Step 3: Parse stats & skills (fixed lines) ---
+    self.netname = self.loginname = (total_lines > 1) ? file_contents[1] : LOGIN_NAME;
+    self.gender = (total_lines > 2) ? file_contents[2] : "Male";
+    self.music = (total_lines > 3) ? file_contents[3] : "";
+    self.zonename = (total_lines > 4) ? file_contents[4] : "";
 
     if (!self.loggedin)
     {
-        self.origin_x = stof(file_contents[5]);
-        self.origin_y = stof(file_contents[6]);
-        self.origin_z = stof(file_contents[7]);
-        self.angles_x = stof(file_contents[8]);
-        self.angles_y = stof(file_contents[9]);
-        self.angles_z = stof(file_contents[10]);
+        self.origin_x = (total_lines > 5) ? stof(file_contents[5]) : 0;
+        self.origin_y = (total_lines > 6) ? stof(file_contents[6]) : 0;
+        self.origin_z = (total_lines > 7) ? stof(file_contents[7]) : 0;
+        self.angles_x = (total_lines > 8) ? stof(file_contents[8]) : 0;
+        self.angles_y = (total_lines > 9) ? stof(file_contents[9]) : 0;
+        self.angles_z = (total_lines > 10) ? stof(file_contents[10]) : 0;
     }
 
-    self.health = stof(file_contents[11]);
-    if (self.health < 0) self.health = 1;
-    self.max_health = stof(file_contents[12]);
-    self.mana = stof(file_contents[13]);
-    self.max_mana = stof(file_contents[14]);
-    self.level = stof(file_contents[15]);
-    self.skillpoints = stof(file_contents[16]);
-    self.exp = stof(file_contents[17]);
-    self.exp_next = stof(file_contents[18]);
-    self.gold = stof(file_contents[19]);
-    self.attack_power_min = stof(file_contents[20]);
-    self.attack_power_max = stof(file_contents[21]);
-    self.attack_speed = stof(file_contents[22]);
-    self.attack_type = stof(file_contents[23]);
-    self.attack_stamina = stof(file_contents[24]);
-    self.attack_length = stof(file_contents[25]);
-    self.main_hand = file_contents[26];
-    self.off_hand = file_contents[27];
-    self.armorname = file_contents[28];
-    self.armorvalue = stof(file_contents[29]);
-    self.pvp = stof(file_contents[30]);
-    self.pvpenable_count = stof(file_contents[31]);
-    self.pvp_autoflagged = stof(file_contents[32]);
-    self.blockvalue = stof(file_contents[33]);
-    self.spell_equipped = file_contents[34];
-    self.spell_power_min = stof(file_contents[35]);
-    self.spell_power_max = stof(file_contents[36]);
-    self.projectile_power_min = stof(file_contents[37]);
-    self.projectile_power_max = stof(file_contents[38]);
+    self.health = (total_lines > 11) ? stof(file_contents[11]) : 100;
+    if (self.health < 1) self.health = 1;
+    self.max_health = (total_lines > 12) ? stof(file_contents[12]) : 100;
+    self.mana = (total_lines > 13) ? stof(file_contents[13]) : 50;
+    self.max_mana = (total_lines > 14) ? stof(file_contents[14]) : 50;
+    self.level = (total_lines > 15) ? stof(file_contents[15]) : 1;
+    self.skillpoints = (total_lines > 16) ? stof(file_contents[16]) : 0;
+    self.exp = (total_lines > 17) ? stof(file_contents[17]) : 0;
+    self.exp_next = (total_lines > 18) ? stof(file_contents[18]) : 100;
+    self.gold = (total_lines > 19) ? stof(file_contents[19]) : 0;
+    self.attack_power_min = (total_lines > 20) ? stof(file_contents[20]) : 1;
+    self.attack_power_max = (total_lines > 21) ? stof(file_contents[21]) : 1;
+    self.attack_speed = (total_lines > 22) ? stof(file_contents[22]) : 1;
+    self.attack_type = (total_lines > 23) ? stof(file_contents[23]) : 0;
+    self.attack_stamina = (total_lines > 24) ? stof(file_contents[24]) : 0;
+    self.attack_length = (total_lines > 25) ? stof(file_contents[25]) : 1;
+    self.main_hand = (total_lines > 26) ? file_contents[26] : "";
+    self.off_hand = (total_lines > 27) ? file_contents[27] : "";
+    self.armorname = (total_lines > 28) ? file_contents[28] : "";
+    self.armorvalue = (total_lines > 29) ? stof(file_contents[29]) : 0;
+    self.pvp = (total_lines > 30) ? stof(file_contents[30]) : 0;
+    self.pvpenable_count = (total_lines > 31) ? stof(file_contents[31]) : 0;
+    self.pvp_autoflagged = (total_lines > 32) ? stof(file_contents[32]) : 0;
+    self.blockvalue = (total_lines > 33) ? stof(file_contents[33]) : 0;
+    self.spell_equipped = (total_lines > 34) ? file_contents[34] : "";
+    self.spell_power_min = (total_lines > 35) ? stof(file_contents[35]) : 0;
+    self.spell_power_max = (total_lines > 36) ? stof(file_contents[36]) : 0;
+    self.projectile_power_min = (total_lines > 37) ? stof(file_contents[37]) : 0;
+    self.projectile_power_max = (total_lines > 38) ? stof(file_contents[38]) : 0;
 
-    self.skill_unarmed = stof(file_contents[39]);
-    self.skill_slash = stof(file_contents[40]);
-    self.skill_pierce = stof(file_contents[41]);
-    self.skill_bash = stof(file_contents[42]);
-    self.skill_stealth = stof(file_contents[43]);
-    self.skill_backstab = stof(file_contents[44]);
-    self.skill_offensivemagic = stof(file_contents[45]);
-    self.skill_defensivemagic = stof(file_contents[46]);
-    self.skill_neutralmagic = stof(file_contents[47]);
-    self.skill_endurance = stof(file_contents[48]);
-    self.skill_spellresist = stof(file_contents[49]);
-    self.skill_archery = stof(file_contents[50]);
-    self.skill_healthregen = stof(file_contents[51]);
-    self.skill_manaregen = stof(file_contents[52]);
-    self.skill_haggle = stof(file_contents[53]);
-    self.skill_climb = stof(file_contents[54]);
-    self.skill_swim = stof(file_contents[55]);
-    self.skill_acrobatic = stof(file_contents[56]);
-    self.skill_mining = stof(file_contents[57]);
-    self.skill_fishing = stof(file_contents[58]);
-    self.skill_woodcutting = stof(file_contents[59]);
+    // skills (lines 39–59)
+    self.skill_unarmed = (total_lines > 39) ? stof(file_contents[39]) : 0;
+    self.skill_slash = (total_lines > 40) ? stof(file_contents[40]) : 0;
+    self.skill_pierce = (total_lines > 41) ? stof(file_contents[41]) : 0;
+    self.skill_bash = (total_lines > 42) ? stof(file_contents[42]) : 0;
+    self.skill_stealth = (total_lines > 43) ? stof(file_contents[43]) : 0;
+    self.skill_backstab = (total_lines > 44) ? stof(file_contents[44]) : 0;
+    self.skill_offensivemagic = (total_lines > 45) ? stof(file_contents[45]) : 0;
+    self.skill_defensivemagic = (total_lines > 46) ? stof(file_contents[46]) : 0;
+    self.skill_neutralmagic = (total_lines > 47) ? stof(file_contents[47]) : 0;
+    self.skill_endurance = (total_lines > 48) ? stof(file_contents[48]) : 0;
+    self.skill_spellresist = (total_lines > 49) ? stof(file_contents[49]) : 0;
+    self.skill_archery = (total_lines > 50) ? stof(file_contents[50]) : 0;
+    self.skill_healthregen = (total_lines > 51) ? stof(file_contents[51]) : 0;
+    self.skill_manaregen = (total_lines > 52) ? stof(file_contents[52]) : 0;
+    self.skill_haggle = (total_lines > 53) ? stof(file_contents[53]) : 0;
+    self.skill_climb = (total_lines > 54) ? stof(file_contents[54]) : 0;
+    self.skill_swim = (total_lines > 55) ? stof(file_contents[55]) : 0;
+    self.skill_acrobatic = (total_lines > 56) ? stof(file_contents[56]) : 0;
+    self.skill_mining = (total_lines > 57) ? stof(file_contents[57]) : 0;
+    self.skill_fishing = (total_lines > 58) ? stof(file_contents[58]) : 0;
+    self.skill_woodcutting = (total_lines > 59) ? stof(file_contents[59]) : 0;
 
-    // --- STEP 3: Load inventory & spells dynamically ---
-    self.read_inv_count = stof(file_contents[inv_count_line]);
-    self.spell_count = stof(file_contents[spell_count_line]);
+    // --- Step 4: Load inventory safely ---
+    self.read_inv_count = (inv_count_line < total_lines) ? stof(file_contents[inv_count_line]) : 0;
+    if (self.read_inv_count > 64) { self.read_inv_count = 64; sprint(self, PRINT_HIGH, "Inventory truncated to 64 items\n"); }
 
     string what = "";
     float i;
-    for (i = 0; i < self.read_inv_count; i++)
+    for (i = 0; i < self.read_inv_count && (inv_count_line + 1 + (i*2)) < total_lines && i < 64; i++)
     {
         what = file_contents[inv_count_line + 1 + (i * 2)];
         AddToInventory(self, what, 0);
-        AddToInventory(self, what, stof(file_contents[inv_count_line + 2 + (i * 2)]));
+        if (inv_count_line + 2 + (i*2) < total_lines)
+            AddToInventory(self, what, stof(file_contents[inv_count_line + 2 + (i * 2)]));
     }
 
-    for (i = 0; i < self.spell_count; i++)
+    // --- Step 5: Load spells safely ---
+    self.spell_count = (spell_count_line < total_lines) ? stof(file_contents[spell_count_line]) : 0;
+    if (self.spell_count > 64) { self.spell_count = 64; sprint(self, PRINT_HIGH, "Spell list truncated to 64 spells\n"); }
+
+    for (i = 0; i < self.spell_count && (spell_count_line + 1 + i) < total_lines && i < 64; i++)
         self.spell[i] = file_contents[spell_count_line + 1 + i];
 
-    // upgrades
+    // --- Step 6: Load upgrades ---
     self.gold_bank = (spell_count_line + self.spell_count + 1 < total_lines) ? stof(file_contents[spell_count_line + self.spell_count + 1]) : 0;
     self.exp_oldnext = (spell_count_line + self.spell_count + 2 < total_lines) ? stof(file_contents[spell_count_line + self.spell_count + 2]) : self.exp_next;
 
-    // finalize player
+    // --- Step 7: Finalize player ---
     setorigin(self, self.origin);
     self.fixangle = TRUE;
     self.displayname = self.loginname;
