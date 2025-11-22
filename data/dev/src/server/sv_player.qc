@@ -947,7 +947,8 @@ void() CSEv_User_StartAttack_ =
                 self.melee_finished = time + self.attack_speed;
                 if (self.attack_type != 4)
 				{
-                    self.velocitypush_finished = time + (self.attack_speed / 4);
+					if (self.main_hand != "Hatchet") // hatchet-use doesn't push players
+						self.velocitypush_finished = time + (self.attack_speed / 4);
 					self.lockview_finished = time + self.attack_speed; // bows don't lock player view
 				}
             }
@@ -1544,7 +1545,14 @@ void() PutClientInServer =
 	WriteByte(MSG_MULTICAST, CSQC_MOTD);
 	WriteString(MSG_MULTICAST, motd);
 	multicast(self.origin, MULTICAST_ONE_R);
-	
+
+	// Send time of day to players CSQC
+	msg_entity = self;
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_TIMEOFDAY);
+	WriteByte(MSG_MULTICAST, timeofday);
+	multicast(self.origin, MULTICAST_ONE_R);
+
 	self.worldlight = TRUE;
 };
 
