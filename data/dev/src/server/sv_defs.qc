@@ -1823,6 +1823,7 @@ const float MENU_BANKING = 7; // user banking screen
 .float dodgedir;
 .float cnt;
 .float cnt2;
+.float count;
 string motd; // server motd text
 
 // health potion

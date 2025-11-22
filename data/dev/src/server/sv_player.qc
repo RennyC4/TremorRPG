@@ -4,7 +4,7 @@
 
 void() ClientConnect = {};
 void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;};
-void(entity targ, float type) CSEv_Player_SaveChar;
+void(entity targ, float type) CSEv_Player_SaveChar
 void(entity player) SendPlayerInventory;
 void(entity player) SendMagicSpells;
 void() ClientKill = {};

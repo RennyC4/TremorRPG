@@ -242,55 +242,43 @@ void() itemchest_think =
 {
 	self.owner = world; // allow original owner to grab item
 	self.touch = Item_Touch;
-	self.think = sub_remove; // Dropped items remove after a minute
-	self.nextthink = time + 60;
+	self.think = sub_remove; // Dropped items remove after 30 seconds
+	self.nextthink = time + 30;
 };
 
-void(entity targ) SaveInventory =
-{
-	float i, s;
-	string line;
-	string inv = strcat(targ.loginname, ".chr");
 
-	// read original contents
-	float f = fopen(inv, FILE_READ);
-	if (!f)
-		return;
-
-	string buffer = "";
-	for (s = 0; s < 60; s++) // copy first 60 lines untouched
-	{
-		line = fgets(f);
-		if (!line)
-			break; // stop if file shorter than 60 lines
-		buffer = strcat(buffer, line, "\n");
-	}
-	fclose(f);
-
-	// Now rewrite the file
-	float b = fopen(inv, FILE_WRITE);
-	if (!b)
-		return;
-
-	// write back first 60 lines
-	fputs(b, buffer);
-
-    // now overwrite inventory section
-    for (i = 0; i < targ.inv_count; i++)
-    {
-        fputs(b, targ.inventory[i]);
-        fputs(b, "\n");
-        fputs(b, ftos(targ.inventory_count[i]));
-        fputs(b, "\n");
-    }
-
-	fclose(b);
-};
-
-// Spawn chest
+// Spawn item chest
+.float itemdrop_finished;
 void(string itemname) CSEv_DropItem_s =
 {
-	makevectors (self.angles);
+	if (self.itemdrop_finished > time)
+	{
+		float remaining = self.itemdrop_finished - time;
+		remaining = ceil(remaining);
+		sprint(self, PRINT_HIGH, "You must wait ", ftos(remaining), " more seconds before dropping another item.\n");
+		return;
+	}
+
+	float dropcount = 1; // regular drop count
+
+	// special cases - example: scrap Arrows drop in bundles of 10
+	if (!strcmp(itemname, "Scrap Arrow"))
+	{
+		float arrowcount = GetItemCount(self, "Scrap Arrow");
+
+		if (arrowcount >= 10)
+			dropcount = 10;
+		else
+			dropcount = arrowcount;
+	}
+
+	if (dropcount <= 0)
+	{
+		sprint(self, PRINT_HIGH, "You don't have any ", itemname, " to drop.\n");
+		return;
+	}
+
+	makevectors(self.angles);
 
 	entity itemchest = spawn();
 	itemchest.owner = self;
@@ -298,36 +286,40 @@ void(string itemname) CSEv_DropItem_s =
 	itemchest.solid = SOLID_TRIGGER;
 	itemchest.classname = "item";
 	itemchest.flags = FL_ITEM;
-	itemchest.netname = itemname; // netname = what its holding
+	itemchest.netname = itemname;
 	itemchest.scale = 0.75;
-	itemchest.angles_y = random()*360;
+	itemchest.angles_y = random() * 360;
 	itemchest.modelflags = MF_ROTATE;
+
+	itemchest.count = dropcount; // store the amount being dropped
 
 	setmodel(itemchest, "models/chest.glb");
 	setsize(itemchest, '-16 -16 -0', '16 16 16');
 	setorigin(itemchest, self.origin);
 	itemchest.velocity_z = 270;
-	vector dir = v_forward;
-	dir = normalize(dir);
-	itemchest.velocity = itemchest.velocity + dir * (random_range(100, 300));
+
+	vector dir = normalize(v_forward);
+	itemchest.velocity = itemchest.velocity + dir * random_range(100, 300);
 
 	itemchest.think = itemchest_think;
 	itemchest.nextthink = time + 1;
 
-	sound (self, CHAN_AUTO, "item/drop.wav", 1, ATTN_NORM);
+	sound(self, CHAN_AUTO, "item/drop.wav", 1, ATTN_NORM);
 
-	string eventlog_print = (strcat("Dropped ", itemname, "\n"));
-	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+	string eventlog_print = strcat("Dropped ", ftos(dropcount), " ", itemname, "\n");
+	stuffcmd(self, sprintf("conecho event %s\n", eventlog_print));
 
-	if (itemname == "Lantern" && self.lantern)
+	// Lantern check
+	if (!strcmp(itemname, "Lantern") && self.lantern)
 	{
 		self.effects &= ~EF_BRIGHTLIGHT;
 		self.lantern = FALSE;
 	}
 
-	// Remove inventory item
-	RemoveFromInventory(self, itemname, 1);
-	SaveInventory(self);
+	// Remove number from inventory
+	RemoveFromInventory(self, itemname, dropcount);
+
+	self.itemdrop_finished = time + 1;
 };
 
 void(string itemname) CSEv_UseItem_s =
@@ -426,38 +418,48 @@ void() Item_Touch =
 {
     if (other.classname != "player")
         return;
-	if (self.stagger_finished > time) // prevent console spam on items that cannot be picked up
-		return;
+    if (self.stagger_finished > time) // prevent console spam on items that cannot be picked up
+        return;
 
-	float check = AddToInventory(other, self.netname, 1); // self.netname is the item's identifier string
+    float check;
+    float h;
 
-	float h;
-	if (HasItem(other, "Health Potion"))
-	{
-		h = GetItemCount(other, "Health Potion");
-		if (h > 2)
-			check = FALSE;
-	}
+    // Try adding the item first
+    float amount = self.count;
+	if (amount <= 0)
+		amount = 1;
 
-	if (HasItem(other, "Mana Potion"))
-	{
-		h = GetItemCount(other, "Mana Potion");
-		if (h > 2)
-			check = FALSE;
-	}
+	check = AddToInventory(other, self.netname, amount);
+
+    // Only enforce potion limits if the item being picked up IS a potion
+    if (!strcmp(self.netname, "Health Potion") || !strcmp(self.netname, "Mana Potion"))
+    {
+        if (HasItem(other, self.netname))
+        {
+            h = GetItemCount(other, self.netname);
+
+            if (h > 2) // Already have more than 2? Block pickup
+                check = FALSE;
+        }
+    }
 
 	if (check) // player can grab item
 	{
-		string eventlog_print = (strcat("Got ", self.netname, "\n"));
-		stuffcmd (other, sprintf("conecho event %s\n", eventlog_print));
+		float amount = self.count;
+		if (amount <= 0)
+			amount = 1;
+
+		string eventlog_print = strcat("Acquired ",ftos(amount), " ", self.netname, "\n");
+		stuffcmd(other, sprintf("conecho event %s\n", eventlog_print));
+
 		sound(other, CHAN_AUTO, "item/get.wav", 1, ATTN_NORM);
 
 		SaveInventory(other);
 		remove(self);
 	}
-	else if (self.stagger_finished < time)
-	{
-		sprint (other, PRINT_HIGH, "Cannot hold item: ", self.netname, "\n");
-		self.stagger_finished = time + 3;
-	}
+    else if (self.stagger_finished < time)
+    {
+        sprint(other, PRINT_HIGH, "Cannot hold item: ", self.netname, "\n");
+        self.stagger_finished = time + 3;
+    }
 };
