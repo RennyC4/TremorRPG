@@ -63,6 +63,9 @@ void() User_NPCDialogue =
 		linepos_y += 10;
 	}
 
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	my_button("close", [0, 0], [15, 15], "X") ? sendevent("ShutDownMenus", "") : 0;
+
 	sui_pop_frame();
 };
 
