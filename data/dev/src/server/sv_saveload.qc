@@ -21,24 +21,24 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     string old_origin[6];
     float f, i;
 
-    // Preserve some data for map transfers
-    if (type == 1) // map transfer
+    // --- Step 0: Preserve old file data for backward compatibility ---
+    f = fopen(filename, FILE_READ);
+    if (f >= 0)
     {
-        f = fopen(filename, FILE_READ);
-        if (f >= 0)
-        {
-            fgets(f); // guid
-            fgets(f); // loginname
-            fgets(f); // gender
-            old_music = fgets(f);
-            fgets(f); // zonename
-            for (i = 0; i < 6; i++)
-                old_origin[i] = fgets(f);
-            fclose(f);
-        }
+        string line;
+        fgets(f); // guid
+        fgets(f); // loginname
+        fgets(f); // gender
+        old_music = fgets(f);
+
+        fgets(f); // zonename
+        for (i = 0; i < 6; i++)
+            old_origin[i] = fgets(f);
+
+        fclose(f);
     }
 
-    // Open file for writing
+    // --- Step 1: Open file for writing ---
     f = fopen(filename, FILE_WRITE);
     if (f < 0) return;
 
@@ -46,13 +46,7 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     fputs(f, targ.guid, "\n");
     fputs(f, targ.loginname, "\n");
     fputs(f, targ.gender, "\n");
-
-    // Preserve music from old file if it exists
-    if (old_music != __NULL__)
-        fputs(f, old_music, "\n");
-    else
-        fputs(f, targ.music, "\n");
-
+    fputs(f, (old_music != __NULL__) ? old_music : targ.music, "\n");
     fputs(f, targ.zonename, "\n");
 
     // Origin + angles
@@ -72,21 +66,15 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     }
 
     // --- STATS ---
-    fputs(f, ftos(targ.health), "\n");
-    fputs(f, ftos(targ.max_health), "\n");
-    fputs(f, ftos(targ.mana), "\n");
-    fputs(f, ftos(targ.max_mana), "\n");
-    fputs(f, ftos(targ.level), "\n");
-    fputs(f, ftos(targ.skillpoints), "\n");
-    fputs(f, ftos(targ.exp), "\n");
-    fputs(f, ftos(targ.exp_next), "\n");
-    fputs(f, ftos(targ.gold), "\n");
-    fputs(f, ftos(targ.attack_power_min), "\n");
-    fputs(f, ftos(targ.attack_power_max), "\n");
-    fputs(f, ftos(targ.attack_speed), "\n");
-    fputs(f, ftos(targ.attack_type), "\n");
-    fputs(f, ftos(targ.attack_stamina), "\n");
-    fputs(f, ftos(targ.attack_length), "\n");
+    float stats[] = {
+        targ.health, targ.max_health, targ.mana, targ.max_mana, targ.level,
+        targ.skillpoints, targ.exp, targ.exp_next, targ.gold, targ.attack_power_min,
+        targ.attack_power_max, targ.attack_speed, targ.attack_type, targ.attack_stamina,
+        targ.attack_length
+    };
+    for (i = 0; i < 15; i++)
+        fputs(f, ftos(stats[i]), "\n");
+
     fputs(f, targ.main_hand, "\n");
     fputs(f, targ.off_hand, "\n");
     fputs(f, targ.armorname, "\n");
@@ -102,27 +90,16 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     fputs(f, ftos(targ.projectile_power_max), "\n");
 
     // --- SKILLS ---
-    fputs(f, ftos(targ.skill_unarmed), "\n");
-    fputs(f, ftos(targ.skill_slash), "\n");
-    fputs(f, ftos(targ.skill_pierce), "\n");
-    fputs(f, ftos(targ.skill_bash), "\n");
-    fputs(f, ftos(targ.skill_stealth), "\n");
-    fputs(f, ftos(targ.skill_backstab), "\n");
-    fputs(f, ftos(targ.skill_offensivemagic), "\n");
-    fputs(f, ftos(targ.skill_defensivemagic), "\n");
-    fputs(f, ftos(targ.skill_neutralmagic), "\n");
-    fputs(f, ftos(targ.skill_endurance), "\n");
-    fputs(f, ftos(targ.skill_spellresist), "\n");
-    fputs(f, ftos(targ.skill_archery), "\n");
-    fputs(f, ftos(targ.skill_healthregen), "\n");
-    fputs(f, ftos(targ.skill_manaregen), "\n");
-    fputs(f, ftos(targ.skill_haggle), "\n");
-    fputs(f, ftos(targ.skill_climb), "\n");
-    fputs(f, ftos(targ.skill_swim), "\n");
-    fputs(f, ftos(targ.skill_acrobatic), "\n");
-    fputs(f, ftos(targ.skill_mining), "\n");
-    fputs(f, ftos(targ.skill_fishing), "\n");
-    fputs(f, ftos(targ.skill_woodcutting), "\n");
+    float skills[] = {
+        targ.skill_unarmed, targ.skill_slash, targ.skill_pierce, targ.skill_bash,
+        targ.skill_stealth, targ.skill_backstab, targ.skill_offensivemagic, targ.skill_defensivemagic,
+        targ.skill_neutralmagic, targ.skill_endurance, targ.skill_spellresist, targ.skill_archery,
+        targ.skill_healthregen, targ.skill_manaregen, targ.skill_haggle, targ.skill_climb,
+        targ.skill_swim, targ.skill_acrobatic, targ.skill_mining, targ.skill_fishing,
+        targ.skill_woodcutting
+    };
+    for (i = 0; i < 21; i++)
+        fputs(f, ftos(skills[i]), "\n");
 
     // --- INVENTORY ---
     fputs(f, "#INVENTORY_START\n");
@@ -139,7 +116,7 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     for (i = 0; i < targ.spell_count; i++)
         fputs(f, targ.spell[i], "\n");
 
-    // --- UPGRADES ---
+    // --- UPGRADES (always save current in-memory values) ---
     fputs(f, ftos(targ.gold_bank), "\n");
     fputs(f, ftos(targ.exp_oldnext), "\n");
     fputs(f, ftos(targ.hatchet_durability), "\n");
@@ -307,10 +284,14 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
     for (i = 0; i < self.spell_count && (spell_count_line + 1 + i) < total_lines && i < 64; i++)
         self.spell[i] = file_contents[spell_count_line + 1 + i];
 
-    // --- Step 6: Load upgrades ---
-    self.gold_bank = (spell_count_line + self.spell_count + 1 < total_lines) ? stof(file_contents[spell_count_line + self.spell_count + 1]) : 0;
-    self.exp_oldnext = (spell_count_line + self.spell_count + 2 < total_lines) ? stof(file_contents[spell_count_line + self.spell_count + 2]) : self.exp_next;
-    self.hatchet_durability = (spell_count_line + self.spell_count + 3 < total_lines) ? stof(file_contents[spell_count_line + self.spell_count + 3]) : self.hatchet_durability;
+	// --- Step 6: Load upgrades safely ---
+	float upgrades_start = spell_count_line + self.spell_count + 1;
+	// Load gold bank, default to 0 if missing
+	self.gold_bank = (upgrades_start < total_lines) ? stof(file_contents[upgrades_start]) : 0;
+	// Load old next exp, default to self.exp_next if missing
+	self.exp_oldnext = (upgrades_start + 1 < total_lines) ? stof(file_contents[upgrades_start + 1]) : self.exp_next;
+	// Load hatchet durability, default to 100 if missing (or whatever your default is)
+	self.hatchet_durability = (upgrades_start + 2 < total_lines) ? stof(file_contents[upgrades_start + 2]) : 100;
 
     // --- Step 7: Finalize player ---
     setorigin(self, self.origin);
@@ -324,7 +305,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 };
 
 // ===================
-// SAVE INVENTORY ONLY
+// SAVE INVENTORY ONLY + (backwards-compatible)
 // ===================
 void(entity targ) SaveInventory =
 {
@@ -332,7 +313,6 @@ void(entity targ) SaveInventory =
     float f, b;
     float i;
 
-    // --- STEP 1: Read old file ---
     f = fopen(filename, FILE_READ);
     if (f < 0) return;
 
@@ -352,17 +332,19 @@ void(entity targ) SaveInventory =
     fclose(f);
 
     if (inv_start < 0) inv_start = 0;
-    if (spell_start < 0) spell_start = inv_start + 2; // safe fallback
+    if (spell_start < 0) spell_start = inv_start + 2;
 
-    // --- STEP 2: Open file for writing ---
+    // Preserve upgrades
+    float upgrades_start = spell_start + 1 + targ.spell_count;
+
     b = fopen(filename, FILE_WRITE);
     if (b < 0) return;
 
-    // --- STEP 3: Write all lines before inventory ---
+    // Write all lines before inventory
     for (i = 0; i < inv_start; i++)
         fputs(b, file_contents[i], "\n");
 
-    // --- STEP 4: Write inventory ---
+    // Write inventory
     fputs(b, "#INVENTORY_START\n");
     fputs(b, ftos(targ.inv_count), "\n");
     for (i = 0; i < targ.inv_count; i++)
@@ -371,19 +353,21 @@ void(entity targ) SaveInventory =
         fputs(b, ftos(targ.inventory_count[i]), "\n");
     }
 
-    // --- STEP 5: Write spells ---
+    // Write spells
     fputs(b, "#SPELLS_START\n");
     fputs(b, ftos(targ.spell_count), "\n");
     for (i = 0; i < targ.spell_count; i++)
         fputs(b, targ.spell[i], "\n");
 
-    // --- STEP 6: Write remaining lines after spells ---
-    for (i = spell_start + 2; i < total_lines; i++) // skip old spell count + spells
-    {
+    // Write upgrades (current in-memory values)
+    fputs(b, ftos(targ.gold_bank), "\n");
+    fputs(b, ftos(targ.exp_oldnext), "\n");
+    fputs(b, ftos(targ.hatchet_durability), "\n");
+
+    // Write remaining lines after upgrades (future-proof)
+    for (i = upgrades_start + 3; i < total_lines; i++)
         if (strlen(file_contents[i]) > 0)
             fputs(b, file_contents[i], "\n");
-    }
 
     fclose(b);
-    //sprint(targ, PRINT_HIGH, strcat(targ.loginname, " inventory saved\n"));
 };
