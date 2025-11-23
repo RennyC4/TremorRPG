@@ -1,1 +1,1 @@
-tremorrpg.exe +set vid_fullscreen 0 -dedicated +sv_serverip 99.248.148.145 +mapcluster world.hmp
+tremorrpg.exe +set vid_fullscreen 0 -dedicated +sv_serverip 99.248.148.145 +mapcluster world.hmp +sv_pure 1

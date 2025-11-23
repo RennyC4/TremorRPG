@@ -972,7 +972,7 @@ void() User_InventoryScreen =
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Gold: ^7", ftos(disp_gold));
+	displaystat = strcat("^5Gold: ^7", ftos(disp_gold), "^8 Bank: ", ftos(disp_bankgold));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
@@ -1257,7 +1257,7 @@ void() User_MagicScreen =
 
 	newpos_y += 10;
 
-	displaystat = strcat("^5Gold: ^7", ftos(disp_gold));
+	displaystat = strcat("^5Gold: ^7", ftos(disp_gold), "^8 Bank: ", ftos(disp_bankgold));
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
