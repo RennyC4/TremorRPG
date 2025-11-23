@@ -142,6 +142,7 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     // --- UPGRADES ---
     fputs(f, ftos(targ.gold_bank), "\n");
     fputs(f, ftos(targ.exp_oldnext), "\n");
+    fputs(f, ftos(targ.hatchet_durability), "\n");
 
     fclose(f);
     sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
@@ -309,6 +310,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
     // --- Step 6: Load upgrades ---
     self.gold_bank = (spell_count_line + self.spell_count + 1 < total_lines) ? stof(file_contents[spell_count_line + self.spell_count + 1]) : 0;
     self.exp_oldnext = (spell_count_line + self.spell_count + 2 < total_lines) ? stof(file_contents[spell_count_line + self.spell_count + 2]) : self.exp_next;
+    self.hatchet_durability = (spell_count_line + self.spell_count + 3 < total_lines) ? stof(file_contents[spell_count_line + self.spell_count + 3]) : self.hatchet_durability;
 
     // --- Step 7: Finalize player ---
     setorigin(self, self.origin);

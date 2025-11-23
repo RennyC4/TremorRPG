@@ -59,17 +59,21 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 			if (self.classname == "player" && itemname == "Health Potion" && self.inventory_count[i] >= 2)
 			{
 				sprint (self, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
-				gold_ok = FALSE;
 				return;
 			}
 			// Mana potion check
 			if (self.classname == "player" && itemname == "Mana Potion" && self.inventory_count[i] >= 2)
 			{
 				sprint (self, PRINT_HIGH, "Can only hold 2 ", itemname, "s\n");
-				gold_ok = FALSE;
 				return;
 			}
-			
+			// Hatchet check
+			if (self.classname == "player" && itemname == "Hatchet" && HasItem(self, "Hatchet"))
+			{
+				sprint(self, PRINT_HIGH, "Can only carry 1 Hatchet.\n");
+				return;
+			}
+
 			if (gold_ok)
 				self.gold -= price;
 
@@ -105,6 +109,9 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
     self.inventory[self.inv_count] = itemname;
     self.inventory_count[self.inv_count] = count;
     self.inv_count++;
+	
+	if (itemname == "Hatchet")
+		self.hatchet_durability = 100;
 };
 
 // Selling an item to a vendor
@@ -424,12 +431,20 @@ void() Item_Touch =
     float check;
     float h;
 
+    // Only allow 1 hatchet per player
+    if (self.netname == "Hatchet" && HasItem(other, "Hatchet"))
+    {
+        sprint(other, PRINT_HIGH, "You can only carry one Hatchet.\n");
+        self.stagger_finished = time + 3;
+        return;
+    }
+
     // Try adding the item first
     float amount = self.count;
-	if (amount <= 0)
-		amount = 1;
+    if (amount <= 0)
+        amount = 1;
 
-	check = AddToInventory(other, self.netname, amount);
+    check = AddToInventory(other, self.netname, amount);
 
     // Only enforce potion limits if the item being picked up IS a potion
     if (!strcmp(self.netname, "Health Potion") || !strcmp(self.netname, "Mana Potion"))
@@ -443,20 +458,20 @@ void() Item_Touch =
         }
     }
 
-	if (check) // player can grab item
-	{
-		float amount = self.count;
-		if (amount <= 0)
-			amount = 1;
+    if (check) // player can grab item
+    {
+        float amount = self.count;
+        if (amount <= 0)
+            amount = 1;
 
-		string eventlog_print = strcat("Acquired ",ftos(amount), " ", self.netname, "\n");
-		stuffcmd(other, sprintf("conecho event %s\n", eventlog_print));
+        string eventlog_print = strcat("Acquired ", ftos(amount), " ", self.netname, "\n");
+        stuffcmd(other, sprintf("conecho event %s\n", eventlog_print));
 
-		sound(other, CHAN_AUTO, "item/get.wav", 1, ATTN_NORM);
+        sound(other, CHAN_AUTO, "item/get.wav", 1, ATTN_NORM);
 
-		SaveInventory(other);
-		remove(self);
-	}
+        SaveInventory(other);
+        remove(self);
+    }
     else if (self.stagger_finished < time)
     {
         sprint(other, PRINT_HIGH, "Cannot hold item: ", self.netname, "\n");

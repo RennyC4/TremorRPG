@@ -154,6 +154,35 @@ void() tree_remove =
 };
 
 //
+// Hatchet durability + break logic
+//
+void() Hatchet_CheckBreak =
+{
+    float wear;
+    float break_chance;
+
+    wear = 0.2 + trace_ent.level * 0.1;
+    wear *= (1.1 - (self.skill_woodcutting * 0.01));
+    if (wear < 0.05) wear = 0.05;
+
+    self.hatchet_durability -= wear;
+
+    if (self.hatchet_durability <= 10)
+    {
+        break_chance = (10 - self.hatchet_durability) * 0.02;
+
+        if (random() < break_chance)
+        {
+            stuffcmd(self, sprintf("play %s\n", "item/equip.wav")); // play sound
+            centerprint(self, "^1Your hatchet broke!\n");
+			CSEv_User_UnequipMainhand_();			
+            RemoveFromInventory(self, "Hatchet", 1);
+            self.hatchet_durability = 0;
+        }
+    }
+};
+
+//
 // Hatchet hitting tree code
 //
 
@@ -227,6 +256,7 @@ void() DoJob_Hatchet =
             trace_ent.think = tree_remove;
             trace_ent.nextthink = time + 0.25;
         }
+		Hatchet_CheckBreak();
     }
 };
 

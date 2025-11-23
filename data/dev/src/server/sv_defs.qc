@@ -1901,6 +1901,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float block_chance; // for monsters
 .float dodge_chance; // for monsters
 .float block_finished;
+.float hatchet_durability;
 
 // Animation States
 .float anistate;

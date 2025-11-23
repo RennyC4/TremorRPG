@@ -123,7 +123,7 @@ void(string itemname, float id) Player_EquipItem =
 	fclose(v);
 
 	// --- Equip sound and message ---
-	stuffcmd(self, "play item/equip.wav\n");
+	stuffcmd(self, sprintf("play %s\n", "item/equip.wav")); // play sound
 	sprint(self, PRINT_HIGH, strcat(itemname, " equipped\n"));
 };
 
