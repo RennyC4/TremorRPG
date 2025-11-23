@@ -3,6 +3,104 @@
 //
 
 #define TREE_RESPAWN 60
+#define LUMBER_BASE_VALUE 5
+#define LUMBER_LEVEL1_SKILL 15
+#define LUMBER_LEVEL1_BONUS 7
+
+void() CSEv_PlayerSellLumber =
+{
+    float i;
+    float lumber_count = 0;
+    float haggle_bonus;
+    float wood_bonus;
+    float soft_bonus;
+    float price_per;
+    float total_gold;
+
+    // Find lumber stack
+    for (i = 0; i < self.inv_count; i++)
+    {
+        if (self.inventory[i] == "Lumber")
+        {
+            lumber_count = self.inventory_count[i];
+            break;
+        }
+    }
+
+    if (lumber_count <= 0)
+    {
+        sprint(self, PRINT_HIGH, "You have no Lumber to sell.\n");
+        return;
+    }
+
+    haggle_bonus = ceil(self.skill_haggle * 0.5); // Haggle matters
+
+    // Main woodcutting scaling:
+    // Smoothly approaches +7 around skill 15
+    wood_bonus = LUMBER_LEVEL1_BONUS * (self.skill_woodcutting / (self.skill_woodcutting + LUMBER_LEVEL1_SKILL));
+
+    // Add a very slow growth over time (soft drift past 15)
+    soft_bonus = sqrt(self.skill_woodcutting) * 0.2;
+
+    price_per = LUMBER_BASE_VALUE
+              + haggle_bonus
+              + floor(wood_bonus + soft_bonus);
+
+    total_gold = price_per * lumber_count;
+
+    
+    self.gold += total_gold; // give gold
+    RemoveFromInventory(self, "Lumber", lumber_count);
+
+    // string crap
+    string s_count = ftos(lumber_count);
+    string s_gold  = ftos(total_gold);
+    string s_price = ftos(price_per);
+
+    sprint(self, PRINT_HIGH, "Sold ", s_count, " Lumber for ^3", s_gold, "^7 gold.\n");
+
+    string eventlog_print = strcat("Sold ", s_count, " Lumber ^2+^3", s_gold, "g");
+
+    stuffcmd(self, sprintf("conecho event %s\n", eventlog_print));
+    stuffcmd(self, sprintf("play %s\n", "menu/menu_buysell.wav"));
+
+    SendPlayerInventory(self);
+};
+
+void() tree_lumberdrop_think =
+{
+	self.touch = Item_Touch;
+	self.think = sub_remove; //  remove after 30 seconds
+	self.nextthink = time + 30;
+};
+
+// Spawn lumber bundle
+void() tree_lumberdrop =
+{
+	entity lumber = spawn();
+	lumber.owner = self;
+	lumber.movetype = MOVETYPE_TOSS;
+	lumber.solid = SOLID_TRIGGER;
+	lumber.classname = "item";
+	lumber.flags = FL_ITEM;
+	lumber.netname = "Lumber";
+	lumber.scale = 0.75;
+	lumber.angles_y = random() * 360;
+	lumber.modelflags = MF_ROTATE;
+
+	setmodel(lumber, "models/lumberbundle.glb");
+	setsize(lumber, '-16 -16 -0', '16 16 16');
+	setorigin(lumber, self.origin);
+	lumber.velocity_z = 270;
+
+	vector throwrand = [0, self.angles_y + random()*360, 0];
+	makevectors(throwrand);
+	vector dir = normalize(v_forward);
+	lumber.velocity = lumber.velocity + dir * random_range(50, 100);
+
+	lumber.think = tree_lumberdrop_think;
+	lumber.nextthink = time + 1;
+};
 
 void() tree_respawn =
 {
@@ -17,9 +115,11 @@ void() tree_respawn =
     }
 
 	self.alpha = 1;
+	self.angles_x = 0; // reset angle
     self.solid = SOLID_SLIDEBOX;
     self.takedamage = DAMAGE_AIM;
     self.health = self.max_health;
+	self.cnt = FALSE; // allow item spawn again
 
     setmodel(self, self.mdl);
 	setsize(self, self.mins, self.maxs);
@@ -28,6 +128,19 @@ void() tree_respawn =
 // Fade tree out on death
 void() tree_remove =
 {
+	if (!self.cnt) // run once
+	{
+		pointparticles(PART_TREEFALL, self.origin);
+		sound(self, CHAN_VOICE, "treefall.wav", 1, ATTN_NORM);
+		tree_lumberdrop();
+		self.cnt = TRUE;
+	}
+
+	if (self.angles_x > -90)
+		self.angles_x -= 5;
+	else
+		self.angles_x = -90;
+
 	if (self.alpha > 0.1)
 		self.alpha -= 0.05;
 	else
@@ -56,10 +169,11 @@ void() DoJob_Hatchet =
 
     traceline(source, end, FALSE, self);
 
+    // Swing sound
+	sound(self, CHAN_WEAPON, "hatchet1.wav", 1, ATTN_NORM);
+
     if (trace_fraction == 1)
         return; // nothing hit
-
-    // Swing sound
 
     if (trace_ent.classname == "tree")
     {
@@ -78,11 +192,9 @@ void() DoJob_Hatchet =
             return;
         }
 
-        // Play sound
         // Do particle effect
-
+		pointparticles(PART_TREEHIT, trace_endpos);
         trace_ent.health -= ceil(dmg);
-        sprint(self, PRINT_HIGH, "Hit a tree: Play sound\n");
         
         // --- XP gain ---
         float xp_chance;
@@ -104,6 +216,8 @@ void() DoJob_Hatchet =
 			sprint(self, PRINT_HIGH, "Woodcutting increased to ", f, "\n");
 		}
 
+		sound(trace_ent, CHAN_BODY, "hittree.wav", 1, ATTN_NORM);
+
         // Tree destroyed
         if (trace_ent.health <= 0)
         {
@@ -111,7 +225,7 @@ void() DoJob_Hatchet =
             trace_ent.takedamage = DAMAGE_NO;
         
             trace_ent.think = tree_remove;
-            trace_ent.nextthink = time;
+            trace_ent.nextthink = time + 0.25;
         }
     }
 };
@@ -123,6 +237,8 @@ void() DoJob_Hatchet =
 void() misc_tree =
 {
 	precache_model("models/tree.glb");
+	precache_sound("hittree.wav");
+	precache_sound("treefall.wav");
 
 	self.solid = SOLID_SLIDEBOX;
 	self.worldlight = TRUE;
@@ -147,6 +263,8 @@ void() misc_tree =
 void() misc_tree2 =
 {
 	precache_model("models/tree2.glb");
+	precache_sound("hittree.wav");
+	precache_sound("treefall.wav");
 
 	self.solid = SOLID_SLIDEBOX;
 	self.worldlight = TRUE;

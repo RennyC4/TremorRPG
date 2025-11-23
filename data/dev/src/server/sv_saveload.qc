@@ -321,9 +321,9 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
     sprint(self, PRINT_HIGH, strcat(self.loginname, " character resumed\n"));
 };
 
-// ============================================================
-// SAVE INVENTORY ONLY (Safe & Dynamic)
-// ============================================================
+// ===================
+// SAVE INVENTORY ONLY
+// ===================
 void(entity targ) SaveInventory =
 {
     string filename = strcat(targ.loginname, ".chr");
@@ -383,5 +383,5 @@ void(entity targ) SaveInventory =
     }
 
     fclose(b);
-    sprint(targ, PRINT_HIGH, strcat(targ.loginname, " inventory saved\n"));
+    //sprint(targ, PRINT_HIGH, strcat(targ.loginname, " inventory saved\n"));
 };

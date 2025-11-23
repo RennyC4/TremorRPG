@@ -8,6 +8,7 @@ void(entity player, string itemname, float count) RemoveFromInventory;
 void() CSEv_User_UnequipMainhand_;
 float(entity player, string itemname) HasItem;
 void(entity targ, entity attacker, float damage) RegisterAttacker;
+void() DoJob_Hatchet;
 
 .entity last_hit_attacker;
 .float last_hit_time;

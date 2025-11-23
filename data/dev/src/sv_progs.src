@@ -10,7 +10,6 @@ server/sv_enemy_ai.qc
 server/sv_enemy.qc
 server/sv_ally_ai.qc
 server/sv_ally.qc
-server/sv_job_wood.qc
 server/sv_combat.qc
 server/sv_magic.qc
 server/sv_triggers.qc
@@ -22,3 +21,4 @@ server/sv_items.qc
 server/sv_inventory.qc
 server/sv_funcs.qc
 server/sv_bank.qc
+server/sv_job_wood.qc

@@ -2052,6 +2052,8 @@ var float PART_HEALTHPOTION;
 var float PART_MANAPOTION;
 var float PART_BLOCK;
 var float PART_PARRY;
+var float PART_TREEHIT;
+var float PART_TREEFALL;
 
 // Inventory
 #define MAX_INVENTORY 32 // how many slots allowed

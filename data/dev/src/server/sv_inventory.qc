@@ -238,6 +238,7 @@ void(entity player) DeleteInventory =
 	player.inv_count = 0; // Reset inventory count
 };
 
+// item check thinking
 void() itemchest_think =
 {
 	self.owner = world; // allow original owner to grab item
@@ -245,7 +246,6 @@ void() itemchest_think =
 	self.think = sub_remove; // Dropped items remove after 30 seconds
 	self.nextthink = time + 30;
 };
-
 
 // Spawn item chest
 .float itemdrop_finished;

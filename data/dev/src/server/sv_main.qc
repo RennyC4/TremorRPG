@@ -124,6 +124,8 @@ void() worldspawn =
 	PART_PARRY = particleeffectnum("parry");
 	PART_MAGIC_CASTING = particleeffectnum("magiccast");
 	PART_MAGIC_CASTING_ORB = particleeffectnum("magiccast_orb");
+	PART_TREEHIT = particleeffectnum("treehit");
+	PART_TREEFALL = particleeffectnum("treefall");
 
 	// Magic Spells - Particles
 	PART_MAGIC_THORN1 = particleeffectnum("thornhit");
@@ -138,6 +140,7 @@ void() worldspawn =
 	precache_model("progs/targetdot.spr");
 
 	precache_sound ("levelup.wav");
+	precache_sound ("hatchet1.wav");
 	precache_sound ("arrow1.wav");
 	precache_sound ("arrow2.wav");
 	precache_sound ("sword1.wav");

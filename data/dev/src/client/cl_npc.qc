@@ -37,7 +37,7 @@ void() User_NPCDialogue =
 	else if (buysell == 2)
 		my_button("npc_bank", newpos, [85, 22.5], "Banking") ? sendevent("PlayerShowBanking", "") : 0;
 	else if (buysell == 3)
-		my_button("npc_wood", newpos, [85, 22.5], "Sell Wood");// ? sendevent("PlayerShowBanking", "") : 0;
+		my_button("npc_wood", newpos, [85, 22.5], "Sell Lumber") ? sendevent("PlayerSellLumber", "") : 0;
 
 	// NPC chatter box
 	newpos = [2.5, 0]; //reset newpos
@@ -192,8 +192,8 @@ void() User_NPCBuySell =
 	sui_pop_frame();
 };
 
-string BANK_AMOUNT;
 // Character banking screens
+string BANK_AMOUNT;
 void() User_NPCBanking =
 {
 	// darken screen
