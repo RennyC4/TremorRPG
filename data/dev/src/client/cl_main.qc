@@ -425,6 +425,7 @@ void() CSQC_Parse_Event =
 	{
 		timeofday = readbyte();
 		CSQC_DayNight_Update();
+		Player_DayNightHandler();
 	}
 
 	// motd
