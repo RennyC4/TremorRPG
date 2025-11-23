@@ -33,14 +33,22 @@ void() CSEv_PlayerSellLumber =
         return;
     }
 
-    haggle_bonus = ceil(self.skill_haggle * 0.5); // Haggle matters
+    // Haggle bonus
+    haggle_bonus = ceil(self.skill_haggle * 0.5);
 
-    // Main woodcutting scaling:
-    // Smoothly approaches +7 around skill 15
-    wood_bonus = LUMBER_LEVEL1_BONUS * (self.skill_woodcutting / (self.skill_woodcutting + LUMBER_LEVEL1_SKILL));
+    // --- Harsher woodcutting scaling ---
+    wood_bonus = LUMBER_LEVEL1_BONUS * (self.skill_woodcutting / 
+                  (self.skill_woodcutting + (LUMBER_LEVEL1_SKILL * 2.5)));
 
-    // Add a very slow growth over time (soft drift past 15)
-    soft_bonus = sqrt(self.skill_woodcutting) * 0.2;
+    // Very slow late-game drift
+    soft_bonus = sqrt(self.skill_woodcutting) * 0.08;
+
+    // Hard caps to prevent gold inflation
+    if (wood_bonus > LUMBER_LEVEL1_BONUS)
+        wood_bonus = LUMBER_LEVEL1_BONUS;
+
+    if (soft_bonus > 2.0)
+        soft_bonus = 2.0;
 
     price_per = LUMBER_BASE_VALUE
               + haggle_bonus
@@ -48,11 +56,11 @@ void() CSEv_PlayerSellLumber =
 
     total_gold = price_per * lumber_count;
 
-    
-    self.gold += total_gold; // give gold
+    // Give gold and remove lumber
+    self.gold += total_gold;
     RemoveFromInventory(self, "Lumber", lumber_count);
 
-    // string crap
+    // Output strings
     string s_count = ftos(lumber_count);
     string s_gold  = ftos(total_gold);
     string s_price = ftos(price_per);
@@ -74,7 +82,7 @@ void() tree_lumberdrop_think =
 	self.nextthink = time + 30;
 };
 
-// Spawn lumber bundle
+// Spawn lumber bundle scaled by tree level
 void() tree_lumberdrop =
 {
 	entity lumber = spawn();
@@ -87,6 +95,14 @@ void() tree_lumberdrop =
 	lumber.scale = 0.75;
 	lumber.angles_y = random() * 360;
 	lumber.modelflags = MF_ROTATE;
+
+	// Scale drop amount by tree level
+	if (self.level == 0) lumber.count = 1;
+	else if (self.level == 1) lumber.count = 2;
+	else if (self.level == 2) lumber.count = 3;
+	else if (self.level == 3) lumber.count = 4;
+	else if (self.level == 4) lumber.count = 5;
+	else if (self.level >= 5) lumber.count = 6;
 
 	setmodel(lumber, "models/lumberbundle.glb");
 	setsize(lumber, '-16 -16 -0', '16 16 16');
@@ -109,7 +125,7 @@ void() tree_respawn =
     tracebox(self.origin, self.mins, self.maxs, self.origin, FALSE, self);
     if (trace_fraction < 1 || trace_startsolid || trace_allsolid)
     {
-        self.nextthink = time + TREE_RESPAWN; // retry in 5 seconds
+        self.nextthink = time + TREE_RESPAWN;
         self.think = tree_respawn;
         return;
     }
@@ -132,6 +148,7 @@ void() tree_remove =
 	{
 		pointparticles(PART_TREEFALL, self.origin);
 		sound(self, CHAN_VOICE, "treefall.wav", 1, ATTN_NORM);
+
 		tree_lumberdrop();
 		self.cnt = TRUE;
 	}
