@@ -23,15 +23,70 @@ void() User_ResumeCharacter_MapTransfer =
 	LOGIN_NAME = Send_LastLogin; // set for CSQC's sake
 };
 
-void() User_ResumeCharacter =
+string() ReadLastLogin =
 {
-	if (!LOGIN_NAME)
-	{
-		print("Please enter your past character name\n");
-		return;
-	}
-	else
-		sendevent("ResumeCharacter", "s", LOGIN_NAME);
+    float f;
+    string line;
+
+    f = fopen("lastlogin", FILE_READ);
+    if (f < 0)
+        return ""; // file doesn't exist
+
+    line = fgets(f);
+    fclose(f);
+
+    if (line == "")
+        return "";
+
+    return line;
+};
+
+void(string name) WriteLastLogin =
+{
+    float f;
+
+    if (!name || name == "")
+        return;
+
+    f = fopen("lastlogin", FILE_WRITE);
+    if (f < 0)
+        return;
+
+    fputs(f, name);
+    fclose(f);
+};
+
+void(float lastlogin) User_ResumeCharacter =
+{
+    string last;
+
+    // If user wants to use last login file
+    if (lastlogin)
+    {
+        last = ReadLastLogin();
+
+        if (!last || last == "")
+        {
+            print("No last login exists, you must login at least once\n");
+            return;
+        }
+
+        LOGIN_NAME = last;
+        sendevent("ResumeCharacter", "s", LOGIN_NAME);
+        return;
+    }
+
+    // No name given and not using last login
+    if (!LOGIN_NAME || LOGIN_NAME == "")
+    {
+        print("Please enter your past characters name\n");
+        return;
+    }
+
+    // Save for next time
+    WriteLastLogin(LOGIN_NAME);
+
+    sendevent("ResumeCharacter", "s", LOGIN_NAME);
 };
 
 void(string sendgender) User_NewCharacter =
@@ -82,7 +137,8 @@ void() User_LoginScreen =
 
 	// Login / New character buttons
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	my_button("login_login", [0, size_y - 90], [size_x, 40], "Login") ? User_ResumeCharacter() : 0;
+	my_button("login_login", [0, size_y - 90], [size_x / 2, 40], "Login") ? User_ResumeCharacter(FALSE) : 0;
+	my_button("login_lastlogin", [size_x / 2, size_y - 90], [size_x / 2, 40], "Use Last Login") ? User_ResumeCharacter(TRUE) : 0;
 	my_button("login_newchar", [0, size_y], [size_x, 40], "New Character") ? User_NewCharacter(LOGIN_GENDER) : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	my_button("login_quit", [g_width / 2.18, g_height / 2.25], [40, 40], "Disconnect") ? localcmd("disconnect\n") : 0;
