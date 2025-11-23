@@ -592,7 +592,7 @@ void() Player_DayNightHandler =
 				cvar_set("r_skyfog", "0.5");
 
 				localcmd("fog 0.02\n");
-			}
+		}
 	}
 	else if (timeofday == TIME_NIGHT) // night
 	{
