@@ -85,9 +85,16 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 			stuffcmd (self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
 
             self.inventory_count[i] += count;
-            return;
+			return;
         }
     }
+
+	// Hatchet check
+	if (self.classname == "player" && itemname == "Hatchet" && (HasItem(self, "Hatchet") || self.main_hand == "Hatchet"))
+	{
+		sprint(self, PRINT_HIGH, "Can only carry 1 Hatchet.\n");
+		return;
+	}
 
     // if new item, check space
     if (self.inv_count >= MAX_INVENTORY)
@@ -432,7 +439,7 @@ void() Item_Touch =
     float h;
 
     // Only allow 1 hatchet per player
-    if (self.netname == "Hatchet" && HasItem(other, "Hatchet"))
+    if (self.netname == "Hatchet" && (HasItem(other, "Hatchet") || other.main_hand == "Hatchet"))
     {
         sprint(other, PRINT_HIGH, "You can only carry one Hatchet.\n");
         self.stagger_finished = time + 3;

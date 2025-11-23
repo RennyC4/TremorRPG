@@ -5,6 +5,7 @@ void() Player_Animate;
 void() Draw_NameTag;
 void() OtherPlayer_Anistate;
 void() Skeleton_Animate;
+void() CSQC_DayNight_Update;
 
 .entity lantern_vfx;
 .entity weapon_vfx;
@@ -563,15 +564,16 @@ void() CSQC_Input_Frame =
 
 void() Player_DayNightHandler =
 {
-	static float next_fog_update = 0;
+	static float next_time_update = 0;
 	float do_fog = FALSE;
 
 	vector scrsz = [g_width, g_height];
 
-	if (time >= next_fog_update)
+	if (time >= next_time_update)
 	{
+		CSQC_DayNight_Update();
 		do_fog = TRUE;
-		next_fog_update = time + 1.0;
+		next_time_update = time + 1.0;
 	}
 
 	if (timeofday == TIME_DAY) // day
