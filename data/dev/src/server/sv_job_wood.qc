@@ -60,8 +60,8 @@ void() CSEv_PlayerSellLumber =
     sprint(self, PRINT_HIGH, "Sold ", s_count, " Lumber for ^3", s_gold, "^7 gold.\n");
 
     string eventlog_print = strcat("Sold ", s_count, " Lumber ^2+^3", s_gold, "g");
-
     stuffcmd(self, sprintf("conecho event %s\n", eventlog_print));
+
     stuffcmd(self, sprintf("play %s\n", "menu/menu_buysell.wav"));
 
     SendPlayerInventory(self);
@@ -174,7 +174,11 @@ void() Hatchet_CheckBreak =
         if (random() < break_chance)
         {
             stuffcmd(self, sprintf("play %s\n", "item/equip.wav")); // play sound
-            centerprint(self, "^1Your hatchet broke!\n");
+            sprint(self, PRINT_HIGH, "^1Your hatchet broke!\n");
+
+			string eventlog_print = strcat("^1Your hatchet broke!\n");
+			stuffcmd(self, sprintf("conecho event %s\n", eventlog_print));
+
 			CSEv_User_UnequipMainhand_();			
             RemoveFromInventory(self, "Hatchet", 1);
             self.hatchet_durability = 0;
