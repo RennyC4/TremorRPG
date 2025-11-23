@@ -68,7 +68,7 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 				return;
 			}
 			// Hatchet check
-			if (self.classname == "player" && itemname == "Hatchet" && HasItem(self, "Hatchet"))
+			if (self.classname == "player" && itemname == "Hatchet" && HasItem(self, "Hatchet") && self.main_hand != "Hatchet")
 			{
 				sprint(self, PRINT_HIGH, "Can only carry 1 Hatchet.\n");
 				return;

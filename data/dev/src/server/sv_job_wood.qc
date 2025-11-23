@@ -283,6 +283,7 @@ void() misc_tree =
 	setmodel(self, "models/tree.glb");
 	setsize(self, [-16, -16, 0], [16, 16, 100]);
 
+	setorigin(self, self.origin + v_up * 256); // just in case we're in the terrain
 	droptofloor();
 };
 
@@ -309,5 +310,6 @@ void() misc_tree2 =
 	setmodel(self, "models/tree2.glb");
 	setsize(self, [-12, -12, 0], [12, 12, 100]);
 
+	setorigin(self, self.origin + v_up * 256); // just in case we're in the terrain
 	droptofloor();
 };
