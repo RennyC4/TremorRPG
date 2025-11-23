@@ -803,10 +803,10 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
 		// -------------------------------
 		float backstab = FALSE;
 		float bs_damage = 0;
-
+		float howmuch = 0.1;
 		if (check_backstab(targ) && !jumpattack)
 		{
-			bs_damage = (attacker.skill_backstab * dmg);
+			bs_damage = (attacker.skill_backstab * howmuch);
 			if (attacker.attack_type == 2)
 				bs_damage += ceil(attacker.skill_pierce * (dmg / 1.5));
 			if (bs_damage < 1)
