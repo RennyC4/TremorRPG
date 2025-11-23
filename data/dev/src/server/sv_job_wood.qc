@@ -283,6 +283,7 @@ void() misc_tree =
 	self.alpha = 1;
 	self.mdl = "models/tree.glb";
 	self.level = 1;
+	self.deadflag = DEAD_DEAD; // Prevent thorn and other spells from hitting me
 
 	setmodel(self, "models/tree.glb");
 	setsize(self, [-16, -16, 0], [16, 16, 100]);
@@ -312,6 +313,7 @@ void() misc_tree2 =
 	self.alpha = 1;
 	self.mdl = "models/tree2.glb";
 	self.level = 0;
+	self.deadflag = DEAD_DEAD; // Prevent thorn and other spells from hitting me
 
 	setmodel(self, "models/tree2.glb");
 	setsize(self, [-12, -12, 0], [12, 12, 100]);
