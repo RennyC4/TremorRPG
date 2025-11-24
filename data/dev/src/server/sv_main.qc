@@ -347,28 +347,31 @@ void(entity cl, string msg) PlayerSayHook =
         SendChat_Zone_Message(e, msg2);
 };
 
-/*
 void(string str) SV_ParseClientCommand =
 {
     float numargs = tokenize(str);
+    if (numargs < 1)
+        return;
 
-	if (argv(0) == "say")
+	if (self.classname == "player") // this is needed otherwise servers break
 	{
-		if (CheckChatFlood(self))
+		if (argv(0) == "say")
 		{
-			sprint(self, PRINT_HIGH, "^1Spam limit reached, please wait\n");
-			return;
+			if (CheckChatFlood(self))
+			{
+				sprint(self, PRINT_HIGH, "^1Spam limit reached, please wait\n");
+				return;
+			}
+
+			string raw = substring(str, 4, strlen(str));
+
+			if (strlen(raw) > CHAT_MAX_CHARS)
+				raw = substring(raw, 0, CHAT_MAX_CHARS);
+
+			string msg = strcat("[^2Zone^7]^5", self.netname, "^7: ", raw);
+
+			for (entity e = world; (e = find(e, classname, "player")) ;)
+				SendChat_Zone_Message(e, msg);
 		}
-
-		string raw = substring(str, 4, strlen(str));
-
-		if (strlen(raw) > CHAT_MAX_CHARS)
-			raw = substring(raw, 0, CHAT_MAX_CHARS);
-
-		string msg = strcat("[^2Zone^7]^5", self.netname, "^7: ", raw);
-
-		for (entity e = world; (e = find(e, classname, "player")) ;)
-			SendChat_Zone_Message(e, msg);
 	}
 };
-*/
