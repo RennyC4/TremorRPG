@@ -1091,6 +1091,8 @@ void() PlayerPreThink =
 		if (self.loginname != self.netname)
 			forceinfokey(self, "name", self.loginname);
 	}
+	else
+			forceinfokey(self, "name", "");
 
 	if (self.menu == MENU_INVENTORY || self.menu == MENU_BUYSELL)
 		SendPlayerInventory(self); // send inventory to CSQC

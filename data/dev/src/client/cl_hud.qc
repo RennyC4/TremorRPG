@@ -8,7 +8,7 @@ void() Draw_NameTag =
     {
         if (vlen(b.origin - vPlayerOrigin) <= 1250)
         {
-            if (b.entnum != player_localentnum && b.loggedin && b.modelindex != 0 && b != lock_on_target)
+			if (b.entnum != player_localentnum && b.modelindex != 0 && b != lock_on_target && b.netname != "")
             {
                 // Use world-space top of model
                 vector top = b.origin + [0,0,b.maxs_z] + [0,0,10]; // 10 units above head

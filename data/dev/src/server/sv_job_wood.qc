@@ -288,6 +288,7 @@ void() DoJob_Hatchet =
 void() misc_tree =
 {
 	precache_model("models/tree.glb");
+	precache_model("models/lumberbundle.glb");
 	precache_sound("hittree.wav");
 	precache_sound("treefall.wav");
 
@@ -318,6 +319,7 @@ void() misc_tree =
 void() misc_tree2 =
 {
 	precache_model("models/tree2.glb");
+	precache_model("models/lumberbundle.glb");
 	precache_sound("hittree.wav");
 	precache_sound("treefall.wav");
 
