@@ -373,6 +373,6 @@ void(string str) SV_ParseClientCommand =
 		for (entity e = world; (e = find(e, classname, "player")) ;)
 			SendChat_Zone_Message(e, msg);
 
-		print(msg); // print messages on server logs
+		print(msg, "\n"); // print messages on server logs
 	}
 };

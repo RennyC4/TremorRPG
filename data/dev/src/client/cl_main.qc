@@ -287,6 +287,11 @@ float(string strCommand) CSQC_ConsoleCommand =
 //float (float event, float parama, float paramb) wrap_InputEvent;
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
+	if (evtype == K_ESCAPE)
+	{
+		print ("Yeah\n");
+	}
+
 	if (cvar("developer") > 0) // Terrain editor
 	{
 		return wrap_InputEvent(evtype, scanx, chary);

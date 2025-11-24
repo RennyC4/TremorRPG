@@ -521,148 +521,148 @@ void() monster_ai_think =
         }
     }
 
-// ---------------------------
-// Combat & Defensive Behavior
-// ---------------------------
-if (self.goalentity)
-{
-    self.stamina = 100; // needed to pass some combat checks
+	// ---------------------------
+	// Combat & Defensive Behavior
+	// ---------------------------
+	if (self.goalentity)
+	{
+		self.stamina = 100; // needed to pass some combat checks
 
-    // ---------------------------
-    // Handle active blocking
-    // ---------------------------
-    if (self.blocking)
-    {
-        if (time >= self.block_finished)
-        {
-            // Block duration ended
-            self.blocking = FALSE;
-            self.anistate = ANISTATE_NONE;
-        }
-        else
-        {
-            // Maintain block animation
-            self.anistate = ANISTATE_BLOCK;
-            self.nextthink = time + 0.05; // refresh quickly during block
-            return; // skip other actions while blocking
-        }
-    }
+		// ---------------------------
+		// Handle active blocking
+		// ---------------------------
+		if (self.blocking)
+		{
+			if (time >= self.block_finished)
+			{
+				// Block duration ended
+				self.blocking = FALSE;
+				self.anistate = ANISTATE_NONE;
+			}
+			else
+			{
+				// Maintain block animation
+				self.anistate = ANISTATE_BLOCK;
+				self.nextthink = time + 0.05; // refresh quickly during block
+				return; // skip other actions while blocking
+			}
+		}
 
-    // ---------------------------
-    // Turn to target if not staggered
-    // ---------------------------
-    if (self.stagger_finished < time)
-    {
-        if (self.melee_finished > time)
-            TurnToTarget(self.turn_speed / 2);
-        else
-            TurnToTarget(self.turn_speed);
-    }
+		// ---------------------------
+		// Turn to target if not staggered
+		// ---------------------------
+		if (self.stagger_finished < time)
+		{
+			if (self.melee_finished > time)
+				TurnToTarget(self.turn_speed / 2);
+			else
+				TurnToTarget(self.turn_speed);
+		}
 
-    // ---------------------------
-    // Chase mode if not running back
-    // ---------------------------
-    if (self.ai_mode != AI_RUNBACK)
-        self.ai_mode = AI_CHASE;
+		// ---------------------------
+		// Chase mode if not running back
+		// ---------------------------
+		if (self.ai_mode != AI_RUNBACK)
+			self.ai_mode = AI_CHASE;
 
-    if (self.enemy.flags & FL_CLIENT &&
-        self.enemy.classname == "player" &&
-        self.enemy.health > 0)
-    {
-        float dist = vlen(self.enemy.origin - self.origin);
+		if (self.enemy.flags & FL_CLIENT &&
+			self.enemy.classname == "player" &&
+			self.enemy.health > 0)
+		{
+			float dist = vlen(self.enemy.origin - self.origin);
 
-        // ---------------------------
-        // Defensive maneuvers: block
-        // ---------------------------
-        if ((self.enemy.melee_finished > time || self.enemy.spellani_finished > time) &&
-             !self.blocking && infront(self.enemy) && self.blockvalue > 0)
-        {
-            if (random() < self.block_chance)
-            {
-                self.blocking = TRUE;
-                self.anistate = ANISTATE_BLOCK;
-                self.block_finished = time + 0.5; // block lasts 0.5s
-                self.nextthink = time + 0.05; // refresh think quickly
-                return; // skip attacks until block ends
-            }
-        }
+			// ---------------------------
+			// Defensive maneuvers: block
+			// ---------------------------
+			if ((self.enemy.melee_finished > time || self.enemy.spellani_finished > time) &&
+				 !self.blocking && infront(self.enemy) && self.blockvalue > 0)
+			{
+				if (random() < self.block_chance)
+				{
+					self.blocking = TRUE;
+					self.anistate = ANISTATE_BLOCK;
+					self.block_finished = time + 0.5; // block lasts 0.5s
+					self.nextthink = time + 0.05; // refresh think quickly
+					return; // skip attacks until block ends
+				}
+			}
 
-        // ---------------------------
-        // Attack logic
-        // ---------------------------
-        if (self.melee_finished < time && self.stagger_finished < time)
-        {
-            // Ranged attack
-            if (self.attack_type == 4)
-            {
-                if (dist > RANGE_MELEE && visible(self.enemy))
-                {
-                    if (!self.enemy.incombat)
-                    {
-                        self.enemy.incombat = TRUE;
-                        self.enemy.incombat_finished = time + 15;
-                    }
-                    self.ai_attacktriggered = FALSE;
-                    self.ai_mode = AI_ATTACK;
-                    self.anistate = ANISTATE_NONE;
-                    self.think = monster_ai_attack;
-                }
-                else
-                {
-                    self.ai_mode = AI_CHASE;
-                    self.anistate = ANISTATE_RUN;
-                }
-            }
-            // Melee attack
-            else if (dist <= self.attack_length)
-            {
-                if (!self.enemy.incombat)
-                {
-                    self.enemy.incombat = TRUE;
-                    self.enemy.incombat_finished = time + 15;
-                }
-                self.ai_attacktriggered = FALSE;
-                self.ai_mode = AI_ATTACK;
-                self.anistate = ANISTATE_NONE;
-                self.think = monster_ai_attack;
-            }
-            else
-            {
-                if (!self.enemy.incombat)
-                {
-                    self.enemy.incombat = TRUE;
-                    self.enemy.incombat_finished = time + 15;
-                }
-                self.ai_mode = AI_CHASE;
-                self.anistate = ANISTATE_RUN;
-            }
-        }
-        else if (self.stagger_finished < time)
-        {
-            if (self.ai_doattack < time && !self.ai_attacktriggered)
-            {
-                if (self.attack_type == 4)
-                    CSEv_DoAttack_Arrow_v(self.angles);
-                else
-                    CSEv_DoAttack_Melee_v(self.angles);
+			// ---------------------------
+			// Attack logic
+			// ---------------------------
+			if (self.melee_finished < time && self.stagger_finished < time)
+			{
+				// Ranged attack
+				if (self.attack_type == 4)
+				{
+					if (dist > RANGE_MELEE && visible(self.enemy))
+					{
+						if (!self.enemy.incombat)
+						{
+							self.enemy.incombat = TRUE;
+							self.enemy.incombat_finished = time + 15;
+						}
+						self.ai_attacktriggered = FALSE;
+						self.ai_mode = AI_ATTACK;
+						self.anistate = ANISTATE_NONE;
+						self.think = monster_ai_attack;
+					}
+					else
+					{
+						self.ai_mode = AI_CHASE;
+						self.anistate = ANISTATE_RUN;
+					}
+				}
+				// Melee attack
+				else if (dist <= self.attack_length)
+				{
+					if (!self.enemy.incombat)
+					{
+						self.enemy.incombat = TRUE;
+						self.enemy.incombat_finished = time + 15;
+					}
+					self.ai_attacktriggered = FALSE;
+					self.ai_mode = AI_ATTACK;
+					self.anistate = ANISTATE_NONE;
+					self.think = monster_ai_attack;
+				}
+				else
+				{
+					if (!self.enemy.incombat)
+					{
+						self.enemy.incombat = TRUE;
+						self.enemy.incombat_finished = time + 15;
+					}
+					self.ai_mode = AI_CHASE;
+					self.anistate = ANISTATE_RUN;
+				}
+			}
+			else if (self.stagger_finished < time)
+			{
+				if (self.ai_doattack < time && !self.ai_attacktriggered)
+				{
+					if (self.attack_type == 4)
+						CSEv_DoAttack_Arrow_v(self.angles);
+					else
+						CSEv_DoAttack_Melee_v(self.angles);
 
-                self.ai_attacktriggered = TRUE;
-            }
-            else if (self.melee_finished < time)
-            {
-                self.anistate = ANISTATE_NONE;
-                self.ai_attacktriggered = FALSE;
-            }
-        }
+					self.ai_attacktriggered = TRUE;
+				}
+				else if (self.melee_finished < time)
+				{
+					self.anistate = ANISTATE_NONE;
+					self.ai_attacktriggered = FALSE;
+				}
+			}
 
-        PitchToTarget();
-    }
+			PitchToTarget();
+		}
 
-    // ---------------------------
-    // Movement
-    // ---------------------------
-    monster_ai_move();
-}
+		// ---------------------------
+		// Movement
+		// ---------------------------
+		monster_ai_move();
+	}
 
     // ---------------------------
     // Handle dead / bonfire
