@@ -377,6 +377,102 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 	return FALSE;
 };
 
+void(string msg) CSQC_AddChatMessage =
+{
+    float i;
+
+    // shift everything down
+    for (i = MAX_CHAT_LINES - 1; i > 0; i--)
+    {
+        chat_lines[i] = chat_lines[i - 1];
+        chat_times[i] = chat_times[i - 1];
+    }
+
+    chat_lines[0] = msg;
+    chat_times[0] = time;
+};
+
+string(string s) StripColors =
+{
+    string out = "";
+    float i = 0;
+    float len = strlen(s);
+
+    while (i < len)
+    {
+        if (substring(s, i, 1) == "^")
+        {
+            i += 2; // skip ^ and next char
+            continue;
+        }
+
+        out = strcat(out, substring(s, i, 1));
+        i++;
+    }
+
+    return out;
+};
+
+void(string msg) CSQC_WrapAndAddChat =
+{
+    string clean = StripColors(msg);
+    float len = strlen(clean);
+    float pos = 0;
+
+    float real_index = 0; // index into original string
+
+    while (pos < len)
+    {
+        float max = CHAT_LINE_CHARS;
+        float end = pos + max;
+
+        if (end >= len)
+        {
+            CSQC_AddChatMessage(substring(msg, real_index, strlen(msg)));
+            break;
+        }
+
+        float cut = end;
+
+        // find last space
+        while (cut > pos && substring(clean, cut, 1) != " ")
+            cut--;
+
+        if (cut == pos)
+            cut = end;
+
+        // Now: get corresponding real string indices
+        float clean_i = 0;
+        float real_i = 0;
+
+        while (clean_i < cut && real_i < strlen(msg))
+        {
+            if (substring(msg, real_i, 1) == "^")
+                real_i += 2;
+            else
+            {
+                clean_i++;
+                real_i++;
+            }
+        }
+
+        string line = substring(msg, real_index, real_i - real_index);
+        CSQC_AddChatMessage(line);
+
+        real_index = real_i;
+
+        // Skip spaces
+        while (real_index < strlen(msg) &&
+               substring(msg, real_index, 1) == " ")
+        {
+            real_index++;
+            pos++;
+        }
+
+        pos = cut;
+    }
+};
+
 // CGAMEPACKET events
 const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
@@ -388,6 +484,8 @@ const float CSQC_LASTLOGIN = 7;
 const float CSQC_WRITESPARM = 8;
 const float CSQC_READSPARM = 9;
 const float CSQC_WIPESPARM = 10;
+const float CSQC_SAY_ZONE = 11;
+const float CSQC_SAY_LOCAL = 12;
 
 void() CSQC_Parse_Event =
 {
@@ -447,6 +545,11 @@ void() CSQC_Parse_Event =
 		sParms_Read();
 	if (event == CSQC_WIPESPARM)
 		sParms_Wipe();
+	if (event == CSQC_SAY_ZONE)
+	{
+		string msg = readstring();
+		CSQC_WrapAndAddChat(msg); // add to chat box
+	}
 };
 
 void(float flIsNew) CSQC_Ent_Update =

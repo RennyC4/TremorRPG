@@ -712,6 +712,7 @@ void() Player_Screen =
 		if (!player_idle && health > 0)
 		{
 			Draw_EventLog();
+			Draw_ChatLog();
 			Draw_Health();
 			Draw_Mana();
 			Draw_Stamina();

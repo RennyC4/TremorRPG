@@ -1725,6 +1725,8 @@ const float CSQC_LASTLOGIN = 7;
 const float CSQC_WRITESPARM = 8;
 const float CSQC_READSPARM = 9;
 const float CSQC_WIPESPARM = 10;
+const float CSQC_SAY_ZONE = 11;
+const float CSQC_SAY_LOCAL = 12;
 
 // Function defs
 .void()		th_die;
@@ -2081,3 +2083,10 @@ const float TIME_NIGHT = 3;
 // max 8 attackers for monster rewards
 .entity attackers[8];
 .float attacker_damage[8];
+
+// Chat setup
+.float chat_last_time;
+.float chat_flood_count;
+#define CHAT_FLOOD_TIME   1   // Minimum time between messages
+#define CHAT_FLOOD_LIMIT  5     // Messages allowed in a short burst
+#define CHAT_FLOOD_RESET  4   // Time before flood counter resets

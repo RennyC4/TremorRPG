@@ -166,6 +166,41 @@ void(float screenwidth, float screenheight) Draw_ZoneName =
 	drawstring(pos, zonename, '18 18', '.9 .1 0', (sin(ZoneName_alpha.doalpha*0.40)*1), 0);
 };
 
+void() Draw_ChatLog =
+{
+    vector size = [230, 100];
+    vector pos;
+
+    float offset_right = 0;
+    float offset_bottom = 7;
+
+    pos_x = g_width - size_x - offset_right;
+    pos_y = g_height - size_y - offset_bottom;
+    pos = [pos_x, pos_y];
+
+    sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+    sui_push_frame(pos, size);
+
+    // Background
+    sui_fill([0, 0], size, '0 0 0', 0.5, 0);
+    sui_border_box([0, 0], size, 2, '0 0 0', 0.1, 0);
+
+    // Draw chat text
+    float y = 4;
+    float i;
+
+    for (i = MAX_CHAT_LINES - 1; i >= 0; i--)
+    {
+        if (!chat_lines[i])
+            continue;
+
+		sui_text([2,y], MENU_TEXT_SMALL, chat_lines[i], '1 1 1', 1, 0);
+        y += 12;
+    }
+
+    sui_pop_frame();
+};
+
 void() Draw_EventLog =
 {
 	vector pos = [0, -45];

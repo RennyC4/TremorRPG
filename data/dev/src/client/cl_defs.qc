@@ -2382,3 +2382,9 @@ const float ANISTATE_DODGE = 19;
 const float ANISTATE_STEPDODGE = 20;
 const float ANISTATE_STEPCOUNTER = 21;
 const float ANISTATE_IMPACT = 22;
+
+// Chat setup
+#define CHAT_LINE_CHARS 68
+#define MAX_CHAT_LINES 8
+string chat_lines[MAX_CHAT_LINES];
+float chat_times[MAX_CHAT_LINES];

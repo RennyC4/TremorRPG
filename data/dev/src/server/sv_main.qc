@@ -299,3 +299,65 @@ void() spawn_daynight =
 	daynight.think = daynight_think;
 	daynight.nextthink = time + 0.1;
 };
+
+float(entity e) CheckChatFlood =
+{
+    // If enough time passed, reset counter
+    if (time - e.chat_last_time > CHAT_FLOOD_RESET)
+        e.chat_flood_count = 0;
+
+    // Increase counter
+    e.chat_flood_count += 1;
+
+    // Detect flooding
+    if (e.chat_flood_count > CHAT_FLOOD_LIMIT)
+        return TRUE;
+
+    // Detect spam speed
+    if (time - e.chat_last_time < CHAT_FLOOD_TIME)
+        return TRUE;
+
+    e.chat_last_time = time;
+
+    return FALSE;
+};
+
+void() SendChat_Zone_Message(entity to, string msg) =
+{
+    msg_entity = to;
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+    WriteByte(MSG_MULTICAST, CSQC_SAY_ZONE); // zone chat packet
+    WriteString(MSG_MULTICAST, msg);
+    multicast(self.origin, MULTICAST_ONE_R);
+}
+
+#define CHAT_MAX_CHARS 90
+void SV_ParseClientCommand(string str)
+{
+    float numargs;
+    numargs = tokenize(str);
+
+    if (numargs < 1)
+        return;
+
+	if (argv(0) == "say")
+	{
+		if (CheckChatFlood(self))
+		{
+			sprint(self, PRINT_HIGH, "^1Spam limit reached, please wait\n");
+			return;
+		}
+
+		string raw = substring(str, 4, strlen(str));
+
+		if (strlen(raw) > CHAT_MAX_CHARS)
+			raw = substring(raw, 0, CHAT_MAX_CHARS);
+
+		string msg = strcat("[^2Zone^7] ^5", self.netname, "^7: ", raw);
+
+		for (entity e = world; (e = find(e, classname, "player")) ;)
+			SendChat_Zone_Message(e, msg);
+
+		return;
+	}
+};
