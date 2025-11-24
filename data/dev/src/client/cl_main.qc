@@ -558,8 +558,8 @@ void() CSQC_Parse_Event =
 	if (event == CSQC_SAY_NEARBY)
 	{
 		string msg = readstring();
-
 		CSQC_WrapAndAddChat(msg); // add to chat box
+		// TODO: Speech bubble crap
 	}
 };
 

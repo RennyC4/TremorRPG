@@ -4,31 +4,36 @@
 
 void() Draw_NameTag =
 {
-	for (entity b = world;(b = find(b, classname, "player"));)
-	{
-		if (vlen(b.origin - vPlayerOrigin) <= 1250)
-		{
-			if (b.entnum != player_localentnum && b.loggedin && b.modelindex != 0 && b != lock_on_target)
-			{
-				makevectors(b.angles);
-				vector nametag_org = project(b.origin + v_up * 60 - v_right * 6);
+    for (entity b = world; (b = find(b, classname, "player"));)
+    {
+        if (vlen(b.origin - vPlayerOrigin) <= 1250)
+        {
+            if (b.entnum != player_localentnum && b.loggedin && b.modelindex != 0 && b != lock_on_target)
+            {
+                // Use world-space top of model
+                vector top = b.origin + [0,0,b.maxs_z] + [0,0,10]; // 10 units above head
 
-				if (nametag_org_z > 0)
-				{
-					if (b.pvp != 1)
-					{
-						drawstring (nametag_org+[1,1], b.netname, [10, 10], '0 0 0', 1, 0); // shadow
-						drawstring (nametag_org, b.netname, [10, 10], '.5 .5 1', 1, 0);
-					}
-					else
-					{
-						drawstring (nametag_org+[1,1], b.netname, [10, 10], '0 0 0', 1, 0); // shadow
-						drawstring (nametag_org, b.netname, [10, 10], '1 .25 .25', 1, 0);
-					}
-				}
-			}
-		}
-	}
+                // Project to screen
+                vector nametag_org = project(top);
+
+                if (nametag_org_z > 0)
+                {
+                    // Center the text
+                    float w = stringwidth(b.netname, TRUE, [10,10]);
+                    vector draw_pos = nametag_org - [w, 0, 0];
+
+                    // Draw shadow
+                    drawstring(draw_pos + [1,1,0], b.netname, [10,10], '0 0 0', 1, 0);
+
+                    // Draw actual text
+                    if (b.pvp != 1)
+                        drawstring(draw_pos, b.netname, [10,10], '.5 .5 1', 1, 0);
+                    else
+                        drawstring(draw_pos, b.netname, [10,10], '1 .25 .25', 1, 0);
+                }
+            }
+        }
+    }
 };
 
 void() Draw_ToolTip =

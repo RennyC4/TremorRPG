@@ -344,11 +344,9 @@ void(entity to, string msg) SendChat_Message_Nearby =
 #define CHAT_MAX_CHARS 90
 void(string str) SV_ParseClientCommand =
 {
-    float numargs = tokenize(str);
+    float numargs = tokenize_console(str);
     if (numargs < 1)
         return;
-	if (self.classname != "player") // don't remove unless you like to break server downloads & everything else
-		return;
 
 	// Zone chat
 	if (argv(0) == "say")
@@ -394,4 +392,7 @@ void(string str) SV_ParseClientCommand =
 		}
 		print(msg, "\n"); // print messages on server logs
 	}
+
+	// handle the rest
+	clientcommand(self, str);
 };
