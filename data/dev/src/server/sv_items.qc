@@ -1,6 +1,7 @@
 //
 // Items and all their different uses
 //
+
 void(entity player, string itemname, float count) RemoveFromInventory;
 
 void(string itemname, float id) Player_EquipItem =
@@ -125,9 +126,6 @@ void(string itemname, float id) Player_EquipItem =
 	// --- Equip sound and message ---
 	stuffcmd(self, sprintf("play %s\n", "item/equip.wav")); // play sound
 	sprint(self, PRINT_HIGH, strcat(itemname, " equipped\n"));
-	
-    // Force the equipment flag to be sent
-    self.SendFlags |= PSF_EQUIPMENT;
 };
 
 void(float id, string itemname) Player_UseItem =
@@ -227,9 +225,6 @@ void() CSEv_User_UnequipMainhand_ =
 
     stuffcmd(self, sprintf("play %s\n", "item/equip.wav")); // play sound
     sprint(self, PRINT_HIGH, "Main hand unequipped\n");
-
-    // Force the equipment flag to be sent
-    self.SendFlags |= PSF_EQUIPMENT;
 };
 
 void() CSEv_User_UnequipOffhand_ =
@@ -249,7 +244,4 @@ void() CSEv_User_UnequipOffhand_ =
 
 	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
 	sprint(self, PRINT_HIGH, strcat("Off hand unequipped\n"));
-	
-	// Force the equipment flag to be sent
-    self.SendFlags |= PSF_EQUIPMENT;
 };

@@ -1404,11 +1404,6 @@ void(float type) PlayerSpawn =
 		self.loggedin = FALSE;
 		self.radius_candamage = FALSE;
 
-		// reset last equipment cache
-		self.last_main_hand = "";
-		self.last_off_hand  = "";
-		self.last_armorname = "";
-
 		stuffcmd (self, sprintf("music sound/music/track03.ogg\n")); // login screen music
 	}
 	else if (type == 1) // put first time player in
@@ -1446,11 +1441,6 @@ void(float type) PlayerSpawn =
 		bprint(PRINT_HIGH, self.netname);
 		bprint(PRINT_HIGH, " enters the zone\n");
 
-		// reset last equipment cache
-		self.last_main_hand = "";
-		self.last_off_hand  = "";
-		self.last_armorname = "";
-
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
 	else if (type == 2) // map transition spawn
@@ -1487,10 +1477,6 @@ void(float type) PlayerSpawn =
 		bprint(PRINT_HIGH, self.netname);
 		bprint(PRINT_HIGH, " enters the zone\n");
 
-		// reset last equipment cache
-		self.last_main_hand = "";
-		self.last_off_hand  = "";
-		self.last_armorname = "";
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
@@ -1534,11 +1520,6 @@ void(float type) PlayerSpawn =
 		self.angles = spawn_spot.angles;
 		self.fixangle = TRUE;
 		self.velocity = '0 0 0';
-
-		// reset last equipment cache
-		self.last_main_hand = "";
-		self.last_off_hand  = "";
-		self.last_armorname = "";
 
 		stuffcmd (self, sprintf("music %s\n", self.music));
 		CSEv_Player_SaveChar(self, 0); // full save on respawn
@@ -1844,11 +1825,6 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.pvp = FALSE;
 
 		self.spell_equipped = "None";
-
-		// reset last equipment cache
-		self.last_main_hand = "";
-		self.last_off_hand  = "";
-		self.last_armorname = "";
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		self.displayname = self.loginname;
