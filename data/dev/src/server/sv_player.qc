@@ -2,6 +2,9 @@
 //	Player.qc - Various stuff done for the player, including per-frame functions like PlayerPreThink and PlayerPostThink, also client specific stuff like PutClientInServer etc
 //
 
+float(entity ePVEnt, float flChanged) Player_SendEntity;
+
+
 void() ClientConnect = {};
 void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;};
 void(entity targ, float type) CSEv_Player_SaveChar
@@ -1097,13 +1100,88 @@ void() PlayerPreThink =
 	CheckImpulses();
 };
 
+void(float flIsNew) Player_SendFlags =
+{
+    float flChanged = 0;
+
+    // On first spawn, send all fields
+    if (flIsNew)
+    {
+        flChanged = PSF_ORIGIN | PSF_ANGLES | PSF_VELOCITY | PSF_FLAGS | PSF_EFFECTS |
+                    PSF_HEALTH | PSF_LEVEL | PSF_PVP | PSF_EQUIPMENT | PSF_ANIMATION |
+                    PSF_MISC | PSF_MODEL | PSF_NAME;
+    }
+    else
+    {
+        // ORIGIN
+        if (self.origin != self.last_origin)
+            flChanged |= PSF_ORIGIN;
+
+        // ANGLES
+        if (self.v_angle != self.last_v_angle)
+            flChanged |= PSF_ANGLES;
+
+        // VELOCITY
+        if (self.velocity != self.last_velocity)
+            flChanged |= PSF_VELOCITY;
+
+        // FLAGS / EFFECTS
+        if (self.flags != self.last_flags)
+            flChanged |= PSF_FLAGS;
+        if (self.effects != self.last_effects)
+            flChanged |= PSF_EFFECTS;
+
+        // HEALTH
+        if (self.health != self.last_health || self.max_health != self.last_max_health)
+            flChanged |= PSF_HEALTH;
+
+        // LEVEL
+        if (self.level != self.last_level)
+            flChanged |= PSF_LEVEL;
+
+        // PVP
+        if (self.pvp != self.last_pvp)
+            flChanged |= PSF_PVP;
+
+        // EQUIPMENT
+        if (self.main_hand != self.last_main_hand ||
+            self.off_hand != self.last_off_hand ||
+            self.armorname != self.last_armorname)
+            flChanged |= PSF_EQUIPMENT;
+
+        // ANIMATION
+        if (self.anistate != self.last_anistate ||
+            self.cast_finished != self.last_cast_finished ||
+            self.attack_type != self.last_attack_type ||
+            self.blocking != self.last_blocking)
+            flChanged |= PSF_ANIMATION;
+
+        // MISC small flags
+        if (self.climbing != self.last_climbing ||
+            self.bonfire != self.last_bonfire ||
+            self.crouch != self.last_crouch ||
+            self.dodgedir != self.last_dodgedir ||
+            self.stepdodge_counter != self.last_stepdodge)
+            flChanged |= PSF_MISC;
+
+        // MODEL & NAME
+        if (self.modelindex != self.last_modelindex)
+            flChanged |= PSF_MODEL;
+        if (self.netname != self.last_netname)
+            flChanged |= PSF_NAME;
+    }
+
+    self.SendFlags = flChanged;
+};
+
 // Ran after physics
 void() PlayerPostThink =
 {
 	if (cvar("developer") > 0)
 		return;
 
-	self.SendFlags = 1;
+	//self.SendFlags = 1;
+	Player_SendFlags(FALSE);
 
 	if (!self.loggedin)
 		return;
@@ -1324,6 +1402,11 @@ void(float type) PlayerSpawn =
 		self.loggedin = FALSE;
 		self.radius_candamage = FALSE;
 
+		// reset last equipment cache
+		self.last_main_hand = "";
+		self.last_off_hand  = "";
+		self.last_armorname = "";
+
 		stuffcmd (self, sprintf("music sound/music/track03.ogg\n")); // login screen music
 	}
 	else if (type == 1) // put first time player in
@@ -1361,6 +1444,11 @@ void(float type) PlayerSpawn =
 		bprint(PRINT_HIGH, self.netname);
 		bprint(PRINT_HIGH, " enters the zone\n");
 
+		// reset last equipment cache
+		self.last_main_hand = "";
+		self.last_off_hand  = "";
+		self.last_armorname = "";
+
 		stuffcmd (self, sprintf("music %s\n", self.music));
 	}
 	else if (type == 2) // map transition spawn
@@ -1396,6 +1484,11 @@ void(float type) PlayerSpawn =
 		}
 		bprint(PRINT_HIGH, self.netname);
 		bprint(PRINT_HIGH, " enters the zone\n");
+
+		// reset last equipment cache
+		self.last_main_hand = "";
+		self.last_off_hand  = "";
+		self.last_armorname = "";
 
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
@@ -1440,63 +1533,154 @@ void(float type) PlayerSpawn =
 		self.fixangle = TRUE;
 		self.velocity = '0 0 0';
 
+		// reset last equipment cache
+		self.last_main_hand = "";
+		self.last_off_hand  = "";
+		self.last_armorname = "";
+
 		stuffcmd (self, sprintf("music %s\n", self.music));
 		CSEv_Player_SaveChar(self, 0); // full save on respawn
 	}
 };
 
+// ======================================
+// Send only changed entity data
+// ======================================
 float(entity ePVEnt, float flChanged) Player_SendEntity =
 {
-	WriteByte(MSG_ENTITY, ENT_PLAYER); // Unique identifier
+    // Unique identifier for player entity
+    WriteByte(MSG_ENTITY, ENT_PLAYER);
 
-	WriteCoord(MSG_ENTITY, self.origin_x); // Position X
-	WriteCoord(MSG_ENTITY, self.origin_y); // Position Y
-	WriteCoord(MSG_ENTITY, self.origin_z); // Position Z
+	WriteByte(MSG_ENTITY, flChanged & 255);           // lower 8 bits
+	WriteByte(MSG_ENTITY, (flChanged >> 8) & 255);   // upper 8 bits
 
-	WriteCoord(MSG_ENTITY, self.v_angle_x); // View angle X
-	WriteCoord(MSG_ENTITY, self.v_angle_y); // View angle Y
-	WriteCoord(MSG_ENTITY, self.v_angle_z); // View angle Z
+    // --- ORIGIN ---
+    if (flChanged & PSF_ORIGIN)
+    {
+        WriteCoord(MSG_ENTITY, self.origin_x);
+        WriteCoord(MSG_ENTITY, self.origin_y);
+        WriteCoord(MSG_ENTITY, self.origin_z);
+    }
 
-	WriteShort(MSG_ENTITY, self.velocity_x); // Velocity X
-	WriteShort(MSG_ENTITY, self.velocity_y); // Velocity X
-	WriteShort(MSG_ENTITY, self.velocity_z); // Velocity X
+    // --- ANGLES ---
+    if (flChanged & PSF_ANGLES)
+    {
+        WriteCoord(MSG_ENTITY, self.v_angle_x);
+        WriteCoord(MSG_ENTITY, self.v_angle_y);
+        WriteCoord(MSG_ENTITY, self.v_angle_z);
+    }
 
-	WriteFloat(MSG_ENTITY, self.flags); // Flags, important for physics
-	WriteFloat(MSG_ENTITY, self.effects); // Effects
-	WriteShort(MSG_ENTITY, self.modelindex);
-	WriteString(MSG_ENTITY, self.netname);
-	WriteByte(MSG_ENTITY, self.climbing); // Climbing - Animation
-	WriteShort(MSG_ENTITY, self.health); // Animation + additional checks
-	WriteShort(MSG_ENTITY, self.max_health);
-	WriteByte(MSG_ENTITY, self.level);
+    // --- VELOCITY ---
+    if (flChanged & PSF_VELOCITY)
+    {
+        WriteShort(MSG_ENTITY, self.velocity_x);
+        WriteShort(MSG_ENTITY, self.velocity_y);
+        WriteShort(MSG_ENTITY, self.velocity_z);
+    }
 
-	WriteByte(MSG_ENTITY, self.pvp);
-	WriteByte(MSG_ENTITY, self.loggedin);
-	WriteString(MSG_ENTITY, self.main_hand);
-	WriteString(MSG_ENTITY, self.off_hand);
-	WriteByte(MSG_ENTITY, self.anistate);
-	WriteByte(MSG_ENTITY, self.bonfire);
-	WriteByte(MSG_ENTITY, self.cast_finished);
-	WriteByte(MSG_ENTITY, self.attack_type);
-	WriteByte(MSG_ENTITY, self.blocking);
-	WriteByte(MSG_ENTITY, self.crouch);
-	WriteByte(MSG_ENTITY, self.dodgedir);
-	WriteByte(MSG_ENTITY, self.stepdodge_counter);
-	WriteString(MSG_ENTITY, self.armorname);
-	
-	return TRUE;
+    // --- FLAGS & EFFECTS ---
+    if (flChanged & PSF_FLAGS)   WriteFloat(MSG_ENTITY, self.flags);
+    if (flChanged & PSF_EFFECTS) WriteFloat(MSG_ENTITY, self.effects);
+
+    // --- MODEL & NAME ---
+    if (flChanged & PSF_MODEL) WriteShort(MSG_ENTITY, self.modelindex);
+    if (flChanged & PSF_NAME)  WriteString(MSG_ENTITY, self.netname);
+
+    // --- HEALTH ---
+    if (flChanged & PSF_HEALTH)
+    {
+        WriteShort(MSG_ENTITY, self.health);
+        WriteShort(MSG_ENTITY, self.max_health);
+    }
+
+    // --- LEVEL & PVP ---
+    if (flChanged & PSF_LEVEL) WriteByte(MSG_ENTITY, self.level);
+    if (flChanged & PSF_PVP)   WriteByte(MSG_ENTITY, self.pvp);
+
+    // --- EQUIPMENT ---
+    if (flChanged & PSF_EQUIPMENT)
+    {
+        WriteString(MSG_ENTITY, self.main_hand);
+        WriteString(MSG_ENTITY, self.off_hand);
+        WriteString(MSG_ENTITY, self.armorname);
+    }
+
+    // --- ANIMATION & ACTION STATES ---
+    if (flChanged & PSF_ANIMATION)
+    {
+        WriteByte(MSG_ENTITY, self.anistate);
+        WriteByte(MSG_ENTITY, self.cast_finished);
+        WriteByte(MSG_ENTITY, self.attack_type);
+        WriteByte(MSG_ENTITY, self.blocking);
+    }
+
+    // --- MISC small flags ---
+    if (flChanged & PSF_MISC)
+    {
+        WriteByte(MSG_ENTITY, self.climbing);
+        WriteByte(MSG_ENTITY, self.bonfire);
+        WriteByte(MSG_ENTITY, self.crouch);
+        WriteByte(MSG_ENTITY, self.dodgedir);
+        WriteByte(MSG_ENTITY, self.stepdodge_counter);
+    }
+
+    // --- Update last sent values ---
+    if (flChanged & PSF_ORIGIN)       self.last_origin = self.origin;
+    if (flChanged & PSF_ANGLES)       self.last_v_angle = self.v_angle;
+    if (flChanged & PSF_VELOCITY)     self.last_velocity = self.velocity;
+    if (flChanged & PSF_FLAGS)        self.last_flags = self.flags;
+    if (flChanged & PSF_EFFECTS)      self.last_effects = self.effects;
+    if (flChanged & PSF_MODEL)        self.last_modelindex = self.modelindex;
+    if (flChanged & PSF_NAME)         self.last_netname = self.netname;
+    if (flChanged & PSF_HEALTH)
+    {
+        self.last_health = self.health;
+        self.last_max_health = self.max_health;
+    }
+    if (flChanged & PSF_LEVEL)        self.last_level = self.level;
+    if (flChanged & PSF_PVP)          self.last_pvp = self.pvp;
+    if (flChanged & PSF_EQUIPMENT)
+    {
+        self.last_main_hand = self.main_hand;
+        self.last_off_hand = self.off_hand;
+        self.last_armorname = self.armorname;
+    }
+    if (flChanged & PSF_ANIMATION)
+    {
+        self.last_anistate = self.anistate;
+        self.last_cast_finished = self.cast_finished;
+        self.last_attack_type = self.attack_type;
+        self.last_blocking = self.blocking;
+    }
+    if (flChanged & PSF_MISC)
+    {
+        self.last_climbing = self.climbing;
+        self.last_bonfire = self.bonfire;
+        self.last_crouch = self.crouch;
+        self.last_dodgedir = self.dodgedir;
+        self.last_stepdodge = self.stepdodge_counter;
+    }
+
+    return TRUE;
 };
 
 void() PutClientInServer =
 {
-	if (cvar("developer") > 0)
-		return;
+    if (cvar("developer") > 0)
+        return;
 
-	player_chain_add(self);
+    player_chain_add(self);
 
-	// this is important, do not remove them
-	self.loggedin = parm1;
-	self.spawnloc = parm2;
+    // IMPORTANT: Register sender first
+    if (cvar("developer") == 0)
+        self.SendEntity = Player_SendEntity;
+
+    // Now force a full delta AFTER SendEntity exists
+    Player_SendFlags(TRUE);
+
+    // this is important, do not remove
+    self.loggedin = parm1;
+    self.spawnloc = parm2;
 	//
 
 	if (cvar("developer") == 0)
@@ -1658,6 +1842,11 @@ void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
 		self.pvp = FALSE;
 
 		self.spell_equipped = "None";
+
+		// reset last equipment cache
+		self.last_main_hand = "";
+		self.last_off_hand  = "";
+		self.last_armorname = "";
 
 		forceinfokey(self, "name", LOGIN_NAME);
 		self.displayname = self.loginname;

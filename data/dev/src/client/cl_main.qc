@@ -2,6 +2,27 @@
 // CSQC - Main file
 //
 
+// ========================
+// Player Send Flags (PSF)
+// ========================
+
+// Bit positions (max 16 for two bytes)
+#define PSF_ORIGIN        1       // 0b0000000000000001
+#define PSF_ANGLES        2       // 0b0000000000000010
+#define PSF_VELOCITY      4       // 0b0000000000000100
+#define PSF_FLAGS         8       // 0b0000000000001000
+#define PSF_EFFECTS       16      // 0b0000000000010000
+#define PSF_MODEL         32      // 0b0000000000100000
+#define PSF_NAME          64      // 0b0000000001000000
+#define PSF_HEALTH        128     // 0b0000000010000000
+
+// Second byte (shifted by 8)
+#define PSF_LEVEL         256     // 0b0000000100000000
+#define PSF_PVP           512     // 0b0000001000000000
+#define PSF_EQUIPMENT     1024    // 0b0000010000000000
+#define PSF_ANIMATION     2048    // 0b0000100000000000
+#define PSF_MISC          4096    // 0b0001000000000000
+
 void() Hud_UpdateScores;
 void(vector virtmin, vector virtsize) Hud_Scoreboard;
 static void(float seat, vector mn, vector sz) renderscene_helper;
@@ -287,15 +308,8 @@ float(string strCommand) CSQC_ConsoleCommand =
 //float (float event, float parama, float paramb) wrap_InputEvent;
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
-	if (evtype == K_ESCAPE)
-	{
-		print ("Yeah\n");
-	}
-
 	if (cvar("developer") > 0) // Terrain editor
-	{
 		return wrap_InputEvent(evtype, scanx, chary);
-	}
 
 	last_input_time = time;
 	player_idle = FALSE;
@@ -565,64 +579,94 @@ void() CSQC_Parse_Event =
 
 void(float flIsNew) CSQC_Ent_Update =
 {
-	float flEntType = readbyte();
+    float flEntType = readbyte();
 
-	//
-	// Players
-	//
-	if (flEntType == ENT_PLAYER)
-	{
-		if (flIsNew == TRUE)
-		{
-			self.classname = "player";
-			self.solid = SOLID_TRIGGER;
-			self.predraw = Player_PreDraw;
-			self.drawmask = MASK_ENGINE;
-			self.view_ofs = '0 0 48';
-			self.worldlight = TRUE;
-		}
+    if (flEntType == ENT_PLAYER)
+    {
+		float deltaFlags1 = readbyte(); // first 8 flags
+		float deltaFlags2 = readbyte(); // next 8 flags
+		float deltaFlags = deltaFlags1 + (deltaFlags2 * 256);
 
-		self.origin_x = readcoord();
-		self.origin_y = readcoord();
-		self.origin_z = readcoord();
+        if (flIsNew)
+        {
+            self.classname = "player";
+            self.solid = SOLID_TRIGGER;
+            self.predraw = Player_PreDraw;
+            self.drawmask = MASK_ENGINE;
+            self.view_ofs = '0 0 48';
+            self.worldlight = TRUE;
+            setsize(self, [-16, -16, 0], [16, 16, 56]);
+        }
 
-		self.angles_x = readcoord();
-		self.angles_y = readcoord();
-		self.angles_z = readcoord();
+        if (deltaFlags & PSF_ORIGIN)
+        {
+            self.origin_x = readcoord();
+            self.origin_y = readcoord();
+            self.origin_z = readcoord();
+        }
 
-		self.velocity_x = readshort();
-		self.velocity_y = readshort();
-		self.velocity_z = readshort();
-		self.flags = readfloat();
-		self.effects = readfloat();
-		self.modelindex = readshort();
-		self.netname = readstring();
-		self.climbing = readbyte();
-		self.health = readshort();
-		self.max_health = readshort();
-		self.level = readbyte();
-		/*
-		self.colormod_x = readcoord();
-		self.colormod_y = readcoord();
-		self.colormod_z = readcoord();
-		*/
-		self.pvp = readbyte();
-		self.loggedin = readbyte();
-		self.main_hand = readstring();
-		self.off_hand = readstring();
-		self.anistate = readbyte();
-		self.bonfire = readbyte();
-		self.cast_finished = readbyte();
-		self.attack_type = readbyte();
-		self.blocking = readbyte();
-		self.crouch = readbyte();
-		self.dodgedir = readbyte();
-		self.stepdodge_counter = readbyte();
-		self.armorname = readstring();
+        if (deltaFlags & PSF_ANGLES)
+        {
+            self.angles_x = readcoord();
+            self.angles_y = readcoord();
+            self.angles_z = readcoord();
+        }
 
-		setsize(self, [-16, -16, 0], [16, 16, 56]);
-		setorigin(self, self.origin);
-	}
+        if (deltaFlags & PSF_VELOCITY)
+        {
+            self.velocity_x = readshort();
+            self.velocity_y = readshort();
+            self.velocity_z = readshort();
+        }
+
+        if (deltaFlags & PSF_FLAGS)
+            self.flags = readfloat();
+        if (deltaFlags & PSF_EFFECTS)
+            self.effects = readfloat();
+
+        if (deltaFlags & PSF_MODEL)
+            self.modelindex = readshort();
+        if (deltaFlags & PSF_NAME)
+            self.netname = readstring();
+
+        if (deltaFlags & PSF_HEALTH)
+        {
+            self.health = readshort();
+            self.max_health = readshort();
+        }
+
+        if (deltaFlags & PSF_LEVEL)
+            self.level = readbyte();
+        if (deltaFlags & PSF_PVP)
+            self.pvp = readbyte();
+
+        if (deltaFlags & PSF_EQUIPMENT)
+        {
+            self.main_hand = readstring();
+            self.off_hand = readstring();
+            self.armorname = readstring();
+        }
+
+        if (deltaFlags & PSF_ANIMATION)
+        {
+            self.anistate = readbyte();
+            self.cast_finished = readbyte();
+            self.attack_type = readbyte();
+            self.blocking = readbyte();
+        }
+
+        if (deltaFlags & PSF_MISC)
+        {
+            self.climbing = readbyte();
+            self.bonfire = readbyte();
+            self.crouch = readbyte();
+            self.dodgedir = readbyte();
+            self.stepdodge_counter = readbyte();
+        }
+
+        if (flIsNew)
+            setorigin(self, self.origin);
+    }
 
 	//
 	// Monsters

@@ -17,6 +17,7 @@ const float AI_PATROL = 4;
 .float ai_doattack;
 .float ai_attacktriggered;
 
+void(float flIsNew) Monster_SendFlags;
 void() monster_ai_think;
 void() monster_respawn;
 void(vector ang) CSEv_DoAttack_Melee_v;
@@ -310,7 +311,7 @@ float() monster_ai_move =
 .float impact_frame;
 void() monster_ai_think =
 {
-    self.SendFlags = 1;
+    Monster_SendFlags(FALSE);
     makevectors(self.angles);
 
     // ---------------------------

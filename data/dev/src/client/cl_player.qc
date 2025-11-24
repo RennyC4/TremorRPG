@@ -26,9 +26,6 @@ const float TIME_NIGHT = 3;
 
 void() Skeleton_ObjectDraw =
 {
-	if (!self.loggedin && self.classname == "player")
-		return;
-
 	string gender = getstats(STAT_GENDER); // TODO? send .gender from SSQC, this is shared with monsters that use player bones
 
 	if (!self.skeletonindex)
