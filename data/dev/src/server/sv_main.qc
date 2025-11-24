@@ -332,13 +332,25 @@ void() SendChat_Zone_Message(entity to, string msg) =
 }
 
 #define CHAT_MAX_CHARS 90
-void SV_ParseClientCommand(string str)
-{
-    float numargs;
-    numargs = tokenize(str);
 
-    if (numargs < 1)
+void(entity cl, string msg) PlayerSayHook =
+{
+    if (CheckChatFlood(cl))
+	{
+        sprint(cl, PRINT_HIGH, "^1Spam limit reached, please wait\n");
         return;
+    }
+    string text = substring(msg, 0, CHAT_MAX_CHARS);
+    string msg2 = strcat("[^2Zone^7]^5", self.netname, "^7: ", text);
+
+    for (entity e = world; (e = find(e, classname, "player")); )
+        SendChat_Zone_Message(e, msg2);
+};
+
+/*
+void(string str) SV_ParseClientCommand =
+{
+    float numargs = tokenize(str);
 
 	if (argv(0) == "say")
 	{
@@ -357,7 +369,6 @@ void SV_ParseClientCommand(string str)
 
 		for (entity e = world; (e = find(e, classname, "player")) ;)
 			SendChat_Zone_Message(e, msg);
-
-		return;
 	}
 };
+*/
