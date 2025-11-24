@@ -489,8 +489,8 @@ const float CSQC_LASTLOGIN = 7;
 const float CSQC_WRITESPARM = 8;
 const float CSQC_READSPARM = 9;
 const float CSQC_WIPESPARM = 10;
-const float CSQC_SAY_ZONE = 11;
-const float CSQC_SAY_LOCAL = 12;
+const float CSQC_SAY = 11;
+const float CSQC_SAY_NEARBY = 12;
 
 void() CSQC_Parse_Event =
 {
@@ -550,9 +550,15 @@ void() CSQC_Parse_Event =
 		sParms_Read();
 	if (event == CSQC_WIPESPARM)
 		sParms_Wipe();
-	if (event == CSQC_SAY_ZONE)
+	if (event == CSQC_SAY)
 	{
 		string msg = readstring();
+		CSQC_WrapAndAddChat(msg); // add to chat box
+	}
+	if (event == CSQC_SAY_NEARBY)
+	{
+		string msg = readstring();
+
 		CSQC_WrapAndAddChat(msg); // add to chat box
 	}
 };

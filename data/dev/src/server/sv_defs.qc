@@ -1725,8 +1725,8 @@ const float CSQC_LASTLOGIN = 7;
 const float CSQC_WRITESPARM = 8;
 const float CSQC_READSPARM = 9;
 const float CSQC_WIPESPARM = 10;
-const float CSQC_SAY_ZONE = 11;
-const float CSQC_SAY_LOCAL = 12;
+const float CSQC_SAY = 11;
+const float CSQC_SAY_NEARBY = 12;
 
 // Function defs
 .void()		th_die;

@@ -1470,12 +1470,6 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 	WriteShort(MSG_ENTITY, self.max_health);
 	WriteByte(MSG_ENTITY, self.level);
 
-	/*
-	WriteCoord(MSG_ENTITY, self.colormod_x); //
-	WriteCoord(MSG_ENTITY, self.colormod_y); // colormod
-	WriteCoord(MSG_ENTITY, self.colormod_z); //
-	*/
-
 	WriteByte(MSG_ENTITY, self.pvp);
 	WriteByte(MSG_ENTITY, self.loggedin);
 	WriteString(MSG_ENTITY, self.main_hand);

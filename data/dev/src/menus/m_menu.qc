@@ -136,6 +136,8 @@ name_command bindlist[] =
 	{ "Target", "target" },
 	{ "Cycle Target", "targetcycle" },
 	{ "Player List", "+showscores" },
+	{ "Chat (Zone)", "messagemode" },
+	{ "Chat (Nearby)", "messagemode2" },
 };
 
 void(string id, vector pos, vector size, string name, string command) bind_button =

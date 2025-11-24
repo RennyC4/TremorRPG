@@ -322,31 +322,26 @@ float(entity e) CheckChatFlood =
     return FALSE;
 };
 
-void() SendChat_Zone_Message(entity to, string msg) =
+void(entity to, string msg) SendChat_Message =
 {
     msg_entity = to;
 	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
-    WriteByte(MSG_MULTICAST, CSQC_SAY_ZONE); // zone chat packet
+    WriteByte(MSG_MULTICAST, CSQC_SAY); // zone chat packet
     WriteString(MSG_MULTICAST, msg);
     multicast(self.origin, MULTICAST_ONE_R);
-}
-
-#define CHAT_MAX_CHARS 90
-
-void(entity cl, string msg) PlayerSayHook =
-{
-    if (CheckChatFlood(cl))
-	{
-        sprint(cl, PRINT_HIGH, "^1Spam limit reached, please wait\n");
-        return;
-    }
-    string text = substring(msg, 0, CHAT_MAX_CHARS);
-    string msg2 = strcat("[^2Zone^7]^5", self.netname, "^7: ", text);
-
-    for (entity e = world; (e = find(e, classname, "player")); )
-        SendChat_Zone_Message(e, msg2);
 };
 
+void(entity to, string msg) SendChat_Message_Nearby =
+{
+    msg_entity = to;
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+    WriteByte(MSG_MULTICAST, CSQC_SAY_NEARBY); // nearby chat packet
+    WriteString(MSG_MULTICAST, msg);
+    //WriteShort(MSG_MULTICAST, num); // send entity number
+    multicast(self.origin, MULTICAST_ONE_R);
+};
+
+#define CHAT_MAX_CHARS 90
 void(string str) SV_ParseClientCommand =
 {
     float numargs = tokenize(str);
@@ -355,6 +350,7 @@ void(string str) SV_ParseClientCommand =
 	if (self.classname != "player") // don't remove unless you like to break server downloads & everything else
 		return;
 
+	// Zone chat
 	if (argv(0) == "say")
 	{
 		if (CheckChatFlood(self))
@@ -371,8 +367,31 @@ void(string str) SV_ParseClientCommand =
 		string msg = strcat("[^2Zone^7]^5", self.netname, "^7: ", raw);
 
 		for (entity e = world; (e = find(e, classname, "player")) ;)
-			SendChat_Zone_Message(e, msg);
+			SendChat_Message(e, msg);
 
+		print(msg, "\n"); // print messages on server logs
+	}
+	// Nearby chat
+	if (argv(0) == "say_team")
+	{
+		if (CheckChatFlood(self))
+		{
+			sprint(self, PRINT_HIGH, "^1Spam limit reached, please wait\n");
+			return;
+		}
+
+		string raw = substring(str, 9, strlen(str));
+
+		if (strlen(raw) > CHAT_MAX_CHARS)
+			raw = substring(raw, 0, CHAT_MAX_CHARS);
+
+		string msg = strcat("[^1Nearby^7]^5", self.netname, "^7: ", raw);
+
+		for (entity e = world; (e = find(e, classname, "player")) ;)
+		{
+			if (vlen(e.origin - self.origin) <= 1250)
+				SendChat_Message_Nearby(e, msg);
+		}
 		print(msg, "\n"); // print messages on server logs
 	}
 };
