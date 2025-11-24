@@ -366,8 +366,6 @@ void(string str) SV_ParseClientCommand =
 
 		for (entity e = world; (e = find(e, classname, "player")) ;)
 			SendChat_Message(e, msg);
-
-		print(msg, "\n"); // print messages on server logs
 	}
 	// Nearby chat
 	if (argv(0) == "say_team")
@@ -390,7 +388,6 @@ void(string str) SV_ParseClientCommand =
 			if (vlen(e.origin - self.origin) <= 1250)
 				SendChat_Message_Nearby(e, msg);
 		}
-		print(msg, "\n"); // print messages on server logs
 	}
 
 	// handle the rest
