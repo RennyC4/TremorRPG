@@ -747,6 +747,7 @@ void() Player_Screen =
 };
 
 void() Player_Think;
+float SERVER_FRAME_INTERVAL = 0.05;
 float(void) Player_PreDraw =
 {
     if (self.entnum == player_localentnum)
@@ -809,15 +810,32 @@ float(void) Player_PreDraw =
 	}
 	else // other players
 	{
-		self.angles_x = 0; // remove drawing other players pitch
+		// Remove pitch so other players don't look weird
+		self.angles_x = 0;
 
+		// Update animation
 		if (self.anistate)
 			OtherPlayer_Anistate();
 		else
 			Player_Animate();
 
+		// --- Smooth position interpolation ---
+		float flTimeSinceUpdate = time - self.last_update_time;
+		float flInterpFactor = flTimeSinceUpdate / (SERVER_FRAME_INTERVAL); // server_frame_interval = time between server updates
+		if (flInterpFactor > 1) flInterpFactor = 1; // clamp
+
+		vector vInterpolated = self.prev_origin + (self.last_origin - self.prev_origin) * flInterpFactor;
+
+		// Optional tiny extrapolation using velocity
+		float flExtrapTime = 0.05; // 50 ms extrapolation
+		vInterpolated += self.velocity * flExtrapTime;
+
+		self.origin = vInterpolated;
+		setorigin(self, self.origin);
+
+		// Draw skeleton and attached objects
 		Skeleton_ObjectDraw();
-        addentity(self);
+		addentity(self);
 	}
 
     return PREDRAW_NEXT;

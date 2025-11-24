@@ -598,12 +598,17 @@ void(float flIsNew) CSQC_Ent_Update =
             setsize(self, [-16, -16, 0], [16, 16, 56]);
         }
 
-        if (deltaFlags & PSF_ORIGIN)
-        {
-            self.origin_x = readcoord();
-            self.origin_y = readcoord();
-            self.origin_z = readcoord();
-        }
+		if (deltaFlags & PSF_ORIGIN)
+		{
+			self.origin_x = readcoord();
+			self.origin_y = readcoord();
+			self.origin_z = readcoord();
+
+			// Update interpolation fields AFTER origin is updated
+			self.prev_origin = self.last_origin;
+			self.last_origin = self.origin;
+			self.last_update_time = time;
+		}
 
         if (deltaFlags & PSF_ANGLES)
         {
@@ -612,12 +617,12 @@ void(float flIsNew) CSQC_Ent_Update =
             self.angles_z = readcoord();
         }
 
-        if (deltaFlags & PSF_VELOCITY)
-        {
-            self.velocity_x = readshort();
-            self.velocity_y = readshort();
-            self.velocity_z = readshort();
-        }
+		if (deltaFlags & PSF_VELOCITY)
+		{
+			self.velocity_x = readshort();
+			self.velocity_y = readshort();
+			self.velocity_z = readshort();
+		}
 
         if (deltaFlags & PSF_FLAGS)
             self.flags = readfloat();
