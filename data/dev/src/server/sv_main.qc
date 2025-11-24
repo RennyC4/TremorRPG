@@ -353,7 +353,7 @@ void SV_ParseClientCommand(string str)
 		if (strlen(raw) > CHAT_MAX_CHARS)
 			raw = substring(raw, 0, CHAT_MAX_CHARS);
 
-		string msg = strcat("[^2Zone^7] ^5", self.netname, "^7: ", raw);
+		string msg = strcat("[^2Zone^7]^5", self.netname, "^7: ", raw);
 
 		for (entity e = world; (e = find(e, classname, "player")) ;)
 			SendChat_Zone_Message(e, msg);
