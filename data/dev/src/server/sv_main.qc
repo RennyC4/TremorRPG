@@ -352,26 +352,27 @@ void(string str) SV_ParseClientCommand =
     float numargs = tokenize(str);
     if (numargs < 1)
         return;
+	if (self.classname != "player") // don't remove unless you like to break server downloads & everything else
+		return;
 
-	if (self.classname == "player") // this is needed otherwise servers break
+	if (argv(0) == "say")
 	{
-		if (argv(0) == "say")
+		if (CheckChatFlood(self))
 		{
-			if (CheckChatFlood(self))
-			{
-				sprint(self, PRINT_HIGH, "^1Spam limit reached, please wait\n");
-				return;
-			}
-
-			string raw = substring(str, 4, strlen(str));
-
-			if (strlen(raw) > CHAT_MAX_CHARS)
-				raw = substring(raw, 0, CHAT_MAX_CHARS);
-
-			string msg = strcat("[^2Zone^7]^5", self.netname, "^7: ", raw);
-
-			for (entity e = world; (e = find(e, classname, "player")) ;)
-				SendChat_Zone_Message(e, msg);
+			sprint(self, PRINT_HIGH, "^1Spam limit reached, please wait\n");
+			return;
 		}
+
+		string raw = substring(str, 4, strlen(str));
+
+		if (strlen(raw) > CHAT_MAX_CHARS)
+			raw = substring(raw, 0, CHAT_MAX_CHARS);
+
+		string msg = strcat("[^2Zone^7]^5", self.netname, "^7: ", raw);
+
+		for (entity e = world; (e = find(e, classname, "player")) ;)
+			SendChat_Zone_Message(e, msg);
+
+		print(msg); // print messages on server logs
 	}
 };
