@@ -73,6 +73,7 @@ void() ore_remove =
 
 	if (!self.cnt)
 	{
+		sound(self, CHAN_BODY, "orebreak.wav", 1, ATTN_NORM);
 		pointparticles(PART_OREDIE, self.origin);
 		mining_oredrop();
 		self.cnt = TRUE;
@@ -132,14 +133,14 @@ void() Pick_CheckBreak =
 
 void() DoJob_Pick =
 {
-    vector source, end;
+    vector source, end, particle_org;
     float dmg = 1 + floor(self.skill_mining / 20); // scaling
 
     makevectors(self.v_angle);
 
     source = self.origin + self.view_ofs;
     end = source + v_forward * 64;  // pick reach
-
+	
     traceline(source, end, FALSE, self);
 
     // Swing sound
@@ -147,6 +148,8 @@ void() DoJob_Pick =
 
     if (trace_fraction == 1)
         return; // nothing hit
+
+	particle_org = trace_endpos - v_forward * 16;
 
     if (trace_ent.classname == "ore_copper")
     {
@@ -166,7 +169,7 @@ void() DoJob_Pick =
         }
 
         // Do particle effect
-        pointparticles(PART_OREHIT, trace_endpos);
+        pointparticles(PART_OREHIT, particle_org);
 		trace_ent.health -= ceil(dmg);
         
         // --- XP gain ---
@@ -214,6 +217,7 @@ void() misc_ore_copper =
 
 	precache_model("models/ore_copper.glb");
 	precache_sound("hitore.wav");
+	precache_sound("orebreak.wav");
 
 	self.worldlight = TRUE;
 	self.classname = "ore_copper";
