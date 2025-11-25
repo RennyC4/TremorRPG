@@ -2,7 +2,6 @@
 // Trees and their stats concerning wood working
 //
 
-#define TREE_RESPAWN 120
 #define LUMBER_BASE_VALUE 5
 #define LUMBER_LEVEL1_SKILL 15
 #define LUMBER_LEVEL1_BONUS 7
@@ -125,7 +124,8 @@ void() tree_respawn =
     tracebox(self.origin, self.mins, self.maxs, self.origin, FALSE, self);
     if (trace_fraction < 1 || trace_startsolid || trace_allsolid)
     {
-        self.nextthink = time + TREE_RESPAWN;
+		float respawn_time = 10;  // retry in 10 seconds if blocked
+        self.nextthink = time + respawn_time;
         self.think = tree_respawn;
         return;
     }
@@ -164,7 +164,8 @@ void() tree_remove =
 	{
 		setmodel(self, __NULL__); // don't draw tree
 		self.think = tree_respawn;
-		self.nextthink = time + TREE_RESPAWN;
+		float respawn_time = 120 + random() * 480;  // 120–600 seconds
+		self.nextthink = time + respawn_time;
 		return;
 	}
 	self.nextthink = time + 0.1;

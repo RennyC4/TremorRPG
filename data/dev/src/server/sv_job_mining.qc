@@ -50,7 +50,7 @@ void() ore_respawn =
     tracebox(self.origin, self.mins, self.maxs, self.origin, FALSE, self);
     if (trace_fraction < 1 || trace_startsolid || trace_allsolid)
     {
-        self.nextthink = time + 5;
+        self.nextthink = time + 10; // retry in 10 seconds if blocked
         self.think = ore_respawn;
         return;
     }
@@ -82,7 +82,7 @@ void() ore_remove =
         self.alpha -= 0.05;
     else
     {
-        float respawn_time = 60 + random() * 240;
+        float respawn_time = 120 + random() * 480;  // 120–600 seconds
 
         setmodel(self, __NULL__);
         self.think = ore_respawn;
