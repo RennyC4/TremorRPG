@@ -9,6 +9,7 @@ void() CSEv_User_UnequipMainhand_;
 float(entity player, string itemname) HasItem;
 void(entity targ, entity attacker, float damage) RegisterAttacker;
 void() DoJob_Hatchet;
+void() DoJob_Pick;
 
 .entity last_hit_attacker;
 .float last_hit_time;
@@ -136,6 +137,12 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 	if (self.main_hand == "Hatchet")
 	{
 		DoJob_Hatchet();
+		return;
+	}
+	// Mining runs its own code if one is equipped
+	if (self.main_hand == "Mining Pick")
+	{
+		DoJob_Pick();
 		return;
 	}
 

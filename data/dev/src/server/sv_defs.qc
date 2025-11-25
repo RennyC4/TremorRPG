@@ -1899,6 +1899,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float dodge_chance; // for monsters
 .float block_finished;
 .float hatchet_durability;
+.float pick_durability;
 
 // Animation States
 .float anistate;
@@ -2052,6 +2053,8 @@ var float PART_BLOCK;
 var float PART_PARRY;
 var float PART_TREEHIT;
 var float PART_TREEFALL;
+var float PART_OREHIT;
+var float PART_OREDIE;
 
 // Inventory
 #define MAX_INVENTORY 32 // how many slots allowed

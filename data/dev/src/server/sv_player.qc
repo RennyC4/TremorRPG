@@ -951,7 +951,7 @@ void() CSEv_User_StartAttack_ =
                 self.melee_finished = time + self.attack_speed;
                 if (self.attack_type != 4)
 				{
-					if (self.main_hand != "Hatchet") // hatchet-use doesn't push players
+					if (self.main_hand != "Hatchet" && self.main_hand != "Mining Pick") // hatchet+pick doesn't push players
 						self.velocitypush_finished = time + (self.attack_speed / 4);
 					self.lockview_finished = time + self.attack_speed; // bows don't lock player view
 				}

@@ -1,4 +1,4 @@
-10
+11
 Short Sword
 200
 Health Potion
@@ -19,3 +19,5 @@ Lantern
 80
 Hatchet
 25
+Mining Pick
+40

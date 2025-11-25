@@ -877,7 +877,9 @@ void() User_CharacterScreen =
 	newpos_x = 5;
 	
 	newpos_y += 10;
-	displaystat = strcat("^5Mining: ^7", ftos(disp_mining));
+	
+	string e = sprintf("%.1f", disp_mining);
+	displaystat = strcat("^5Mining: ^7", e);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;

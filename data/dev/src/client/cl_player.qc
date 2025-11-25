@@ -110,6 +110,8 @@ void() Skeleton_ObjectDraw =
 				// Misc
 				if (self.main_hand == "Hatchet")
 					setmodel(self.weapon_vfx, "models/hatchet0.glb");
+				if (self.main_hand == "Mining Pick")
+					setmodel(self.weapon_vfx, "models/pick0.glb");
 
 				// Swords
 				if (self.main_hand == "Broken Sword")

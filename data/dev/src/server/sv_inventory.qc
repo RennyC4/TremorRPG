@@ -73,6 +73,12 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 				sprint(self, PRINT_HIGH, "Can only carry 1 Hatchet.\n");
 				return;
 			}
+			// Mining Pick check
+			if (self.classname == "player" && itemname == "Mining Pick" && (HasItem(self, "Mining Pick") || self.main_hand == "Mining Pick"))
+			{
+				sprint(self, PRINT_HIGH, "Can only carry 1 Mining Pick.\n");
+				return;
+			}
 
 			if (gold_ok)
 				self.gold -= price;
@@ -93,6 +99,12 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 	if (self.classname == "player" && itemname == "Hatchet" && (HasItem(self, "Hatchet") || self.main_hand == "Hatchet"))
 	{
 		sprint(self, PRINT_HIGH, "Can only carry 1 Hatchet.\n");
+		return;
+	}
+	// Mining Pick check
+	if (self.classname == "player" && itemname == "Mining Pick" && (HasItem(self, "Mining Pick") || self.main_hand == "Mining Pick"))
+	{
+		sprint(self, PRINT_HIGH, "Can only carry 1 Mining Pick.\n");
 		return;
 	}
 
@@ -119,6 +131,8 @@ void(string itemname, float price) CSEv_PlayerBuyItem_sf =
 	
 	if (itemname == "Hatchet")
 		self.hatchet_durability = 100;
+	if (itemname == "Mining Pick")
+		self.pick_durability = 100;
 };
 
 // Selling an item to a vendor
@@ -361,6 +375,8 @@ void(string itemname) CSEv_UseItem_s =
 	// Main hand equippables (weapons)
 	if (itemname == "Hatchet")
 		Player_EquipItem(itemname, 0);
+	if (itemname == "Mining Pick")
+		Player_EquipItem(itemname, 0);
 	if (itemname == "Broken Sword")
 		Player_EquipItem(itemname, 0);
 	else if (itemname == "Short Sword")
@@ -442,6 +458,13 @@ void() Item_Touch =
     if (self.netname == "Hatchet" && (HasItem(other, "Hatchet") || other.main_hand == "Hatchet"))
     {
         sprint(other, PRINT_HIGH, "You can only carry one Hatchet.\n");
+        self.stagger_finished = time + 3;
+        return;
+    }
+    // Only allow 1 mining pick per player
+    if (self.netname == "Mining Pick" && (HasItem(other, "Mining Pick") || other.main_hand == "Mining Pick"))
+    {
+        sprint(other, PRINT_HIGH, "You can only carry one Mining Pick.\n");
         self.stagger_finished = time + 3;
         return;
     }

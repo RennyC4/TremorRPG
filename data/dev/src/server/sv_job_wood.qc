@@ -2,7 +2,7 @@
 // Trees and their stats concerning wood working
 //
 
-#define TREE_RESPAWN 60
+#define TREE_RESPAWN 120
 #define LUMBER_BASE_VALUE 5
 #define LUMBER_LEVEL1_SKILL 15
 #define LUMBER_LEVEL1_BONUS 7
@@ -307,7 +307,7 @@ void() misc_tree =
 	setsize(self, [-16, -16, 0], [16, 16, 100]);
 
 	// terrain check
-	self.origin_z += 256;
+	self.origin_z += 64;
 	setorigin(self, self.origin);
 	droptofloor();
 };
@@ -338,7 +338,7 @@ void() misc_tree2 =
 	setsize(self, [-12, -12, 0], [12, 12, 100]);
 
 	// terrain check
-	self.origin_z += 256;
+	self.origin_z += 64;
 	setorigin(self, self.origin);
 	droptofloor();
 };

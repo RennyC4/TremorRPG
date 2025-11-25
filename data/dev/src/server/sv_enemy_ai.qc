@@ -412,7 +412,8 @@ void() monster_ai_think =
                 targ.deadflag != DEAD_DEAD &&
                 visible(targ) &&
                 infront_stealth(targ, self) &&
-                targ.bonfire == FALSE)
+                targ.bonfire == FALSE &&
+				!targ.flags & FL_NOTARGET)
             {
                 if (self.noise)
                     sound(self, CHAN_VOICE, self.noise, 1, ATTN_NORM);

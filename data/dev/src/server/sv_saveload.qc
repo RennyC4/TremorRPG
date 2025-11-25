@@ -120,6 +120,7 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     fputs(f, ftos(targ.gold_bank), "\n");
     fputs(f, ftos(targ.exp_oldnext), "\n");
     fputs(f, ftos(targ.hatchet_durability), "\n");
+    fputs(f, ftos(targ.pick_durability), "\n");
 
     fclose(f);
     sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
@@ -290,8 +291,10 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	self.gold_bank = (upgrades_start < total_lines) ? stof(file_contents[upgrades_start]) : 0;
 	// Load old next exp, default to self.exp_next if missing
 	self.exp_oldnext = (upgrades_start + 1 < total_lines) ? stof(file_contents[upgrades_start + 1]) : self.exp_next;
-	// Load hatchet durability, default to 100 if missing (or whatever your default is)
+	// Load hatchet durability, default to 100 if missing
 	self.hatchet_durability = (upgrades_start + 2 < total_lines) ? stof(file_contents[upgrades_start + 2]) : 100;
+	// Load hatchet durability, default to 100 if missing
+	self.pick_durability = (upgrades_start + 3 < total_lines) ? stof(file_contents[upgrades_start + 3]) : 100;
 
     // --- Step 7: Finalize player ---
     setorigin(self, self.origin);
