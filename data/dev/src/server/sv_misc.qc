@@ -37,26 +37,28 @@ void() set_prop =
 // set_dlight - set a dynamic light
 //
 
-string autocvar_tremor_lighting;
+float(entity ePVEnt, float flChanged) Dlight_SendEntity =
+{
+	WriteByte(MSG_ENTITY, ENT_DLIGHT);
+	WriteCoord(MSG_ENTITY, self.origin_x);
+	WriteCoord(MSG_ENTITY, self.origin_y);
+	WriteCoord(MSG_ENTITY, self.origin_z);
+
+	WriteCoord(MSG_ENTITY, self.color_x);
+	WriteCoord(MSG_ENTITY, self.color_y);
+	WriteCoord(MSG_ENTITY, self.color_z);
+
+	WriteShort(MSG_ENTITY, self.pflags);
+	WriteShort(MSG_ENTITY, self.light_lev);
+	WriteShort(MSG_ENTITY, self.spawnflags);
+	WriteByte(MSG_ENTITY, self.style);
+	return TRUE;
+};
+
 void() set_dlight =
 {
-	if (autocvar_tremor_lighting == "simple")
-	{
-		self.pflags = PFLAGS_FULLDYNAMIC;
-		self.pflags |= PFLAGS_NOSHADOW;
-		self.light_lev /= 1.5;
-	}
-	else
-	{
-		self.pflags = PFLAGS_FULLDYNAMIC;
-		if (self.spawnflags & 1)
-		{
-			self.pflags |= PFLAGS_NOSHADOW;
-			self.light_lev /= 1.5;
-		}
-	}
-	if (self.spawnflags & 2)
-		self.pflags |= PFLAGS_CORONA;
+	self.SendEntity = Dlight_SendEntity;
+	self.SendFlags = 1;
 };
 
 //

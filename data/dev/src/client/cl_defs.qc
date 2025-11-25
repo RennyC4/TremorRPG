@@ -2373,6 +2373,7 @@ float LockOn_CycleToggle; // same
 .float dodgedir;
 .float stepdodge_counter;
 .string armorname;
+.float spawnflags;
 
 // Animation States
 .float anistate;

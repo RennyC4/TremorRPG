@@ -765,7 +765,6 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.drawmask = MASK_ENGINE;
 			setmodel(self, "models/walltorch1.glb");
 		}
-		//self.modelindex = readshort();
 		self.origin_x = readcoord();
 		self.origin_y = readcoord();
 		self.origin_z = readcoord();
@@ -787,13 +786,38 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.drawmask = MASK_ENGINE;
 			setmodel(self, "models/walltorch2.glb");
 		}
-		//self.modelindex = readshort();
 		self.origin_x = readcoord();
 		self.origin_y = readcoord();
 		self.origin_z = readcoord();
 		self.angles_x = readcoord();
 		self.angles_y = readcoord();
 		self.angles_z = readcoord();
+	}
+
+	//
+	// Dynamic Light
+	//
+	if (flEntType == ENT_DLIGHT)
+	{
+		if (flIsNew == TRUE)
+		{
+			self.classname = "dlight";
+			self.solid = SOLID_NOT;
+			self.predraw = Dlight_PreDraw;
+			self.drawmask = MASK_ENGINE;
+		}
+		self.origin_x = readcoord();
+		self.origin_y = readcoord();
+		self.origin_z = readcoord();
+
+		self.color_x = readcoord();
+		self.color_y = readcoord();
+		self.color_z = readcoord();
+
+		self.pflags = readshort();
+		self.light_lev = readshort();
+		self.spawnflags = readshort();
+		self.style = readbyte();
 	}
 };
 

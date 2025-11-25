@@ -264,7 +264,6 @@ void() settings_menu =
 		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Simple", MENU_TEXT_1, 1, 0);
 	else
 		sui_text([xpos+85, ypos+6], MENU_TEXT_SMALL, "Full", MENU_TEXT_1, 1, 0);
-	sui_text([xpos+110, ypos+6], MENU_TEXT_SMALL, "- (Requires Restart)", MENU_TEXT_1, 1, 0);
 
 	ypos = 32;
 	xpos = 8 + width + 8 + 8;

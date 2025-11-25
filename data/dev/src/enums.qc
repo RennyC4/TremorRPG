@@ -7,3 +7,4 @@
 #define ENT_FOUNTAIN 3
 #define ENT_WALLTORCH1 4
 #define ENT_WALLTORCH2 5
+#define ENT_DLIGHT 6

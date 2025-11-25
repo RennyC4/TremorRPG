@@ -70,3 +70,42 @@ float(void) WallTorch2_PreDraw =
     addentity(self);
     return PREDRAW_NEXT;
 };
+
+
+//
+// Dlight - Dynamic Light
+//
+
+float(void) Dlight_PreDraw =
+{
+    float lev = self.light_lev;
+
+    // Handle no-shadow flag
+    if (autocvar_tremor_lighting == "simple")
+    {
+        self.pflags |= PFLAGS_NOSHADOW;
+        lev /= 1.5;
+    }
+    else
+    {
+        // Only keep NOSHADOW if spawnflag 1 explicitly requests it
+        if (self.spawnflags & 1)
+        {
+            self.pflags |= PFLAGS_NOSHADOW;
+            lev /= 1.5;
+        }
+        else
+            self.pflags &= ~PFLAGS_NOSHADOW; // wipe it
+    }
+
+    // Corona flag
+    if (self.spawnflags & 2)
+        self.pflags |= PFLAGS_CORONA;
+    else
+        self.pflags &= ~PFLAGS_CORONA;
+
+    dynamiclight_add(self.origin, lev, [self.color_x, self.color_y, self.color_z], self.style, "", self.pflags);
+
+    addentity(self);
+    return PREDRAW_NEXT;
+};
