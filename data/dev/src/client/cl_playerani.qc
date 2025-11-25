@@ -242,6 +242,8 @@ void() OtherPlayer_Anistate =
 			self.frame1time = 0;
 			self.frame = frameforname(self.modelindex, "Parry");
 			self.anim_state = ANIM_PARRY;
+			makevectors(self.angles);
+			pointparticles(PART_PARRY, self.origin + v_forward * 32 + v_up * self.view_ofs_z);
 		}
 		speed = 1.25;
 	}
@@ -529,6 +531,9 @@ void() Player_Animate =
 			self.frame = frameforname(self.modelindex, "Parry");
 			self.anim_state = ANIM_PARRY;
 			self.anim_attacking = FALSE; // turn off attack animation flag
+
+			makevectors(self.angles);
+			pointparticles(PART_PARRY, self.origin + v_forward * 32 + v_up * self.view_ofs_z);
 		}
 		speed = 1.25;
 		speed *= frametime;

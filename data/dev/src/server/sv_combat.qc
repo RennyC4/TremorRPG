@@ -112,8 +112,6 @@ void() DoAttack_ShieldBash =
 			trace_ent.anistate = ANISTATE_PARRY;
 			trace_ent.melee_finished = time + 0.5;
 
-			pointparticles(PART_PARRY, trace_ent.origin + v_forward * 32 + v_up * trace_ent.view_ofs_z);
-
 			// apply effects
 			self.anistate = ANISTATE_IMPACT;
 			self.stagger_finished = time + 3.5;
@@ -321,8 +319,6 @@ void(vector ang) CSEv_DoAttack_Melee_v =
             targ.melee_finished = time + 0.75;
             targ.anistate = ANISTATE_PARRY;
 
-            pointparticles(PART_PARRY, targ.origin + v_forward * 32 + v_up * targ.view_ofs_z);
-
             // apply stagger to attacker
             self.stagger_finished = self.lockview_finished = time + 3.5;
         }
@@ -481,7 +477,6 @@ void() arrow_touch =
 				eventlog_print = "^2Successful parry!";
 				stuffcmd(other, sprintf("conecho event %s\n", eventlog_print));
 				
-				pointparticles(PART_PARRY, other.origin + v_forward * 32 + v_up * other.view_ofs_z);
 				other.melee_finished = time + 0.75;
 				other.anistate = ANISTATE_PARRY;
 			}
@@ -876,8 +871,6 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
 
                 targ.melee_finished = time + 0.75;
                 targ.anistate = ANISTATE_PARRY;
-
-                pointparticles(PART_PARRY, targ.origin + v_forward * 32 + v_up * targ.view_ofs_z);
 
                 attacker.stagger_finished = attacker.lockview_finished = time + 3.5;
             }
