@@ -1709,12 +1709,6 @@ entity activator; // entity for cause of a trigger activation
 .float wait;
 .float delay;
 
-// Enums
-#define ENT_PLAYER 1
-#define ENT_MONSTER 2
-#define ENT_FOUNTAIN 3
-//
-
 // CGAMEPACKET Events
 const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;

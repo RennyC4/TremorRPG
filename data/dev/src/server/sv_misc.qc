@@ -1,6 +1,6 @@
-/*
-setprop - put down buildings on terrain
-*/
+//
+//setprop - put down buildings / bsps on terrain
+//
 
 void() set_prop =
 {
@@ -65,10 +65,10 @@ void() set_dlight =
 
 float(entity ePVEnt, float flChanged) Fountain_SendEntity =
 {
-	WriteByte(MSG_ENTITY, ENT_FOUNTAIN); // Unique identifier
-	WriteCoord(MSG_ENTITY, self.origin_x); // Position X
-	WriteCoord(MSG_ENTITY, self.origin_y); // Position Y
-	WriteCoord(MSG_ENTITY, self.origin_z); // Position Z
+	WriteByte(MSG_ENTITY, ENT_FOUNTAIN);
+	WriteCoord(MSG_ENTITY, self.origin_x);
+	WriteCoord(MSG_ENTITY, self.origin_y);
+	WriteCoord(MSG_ENTITY, self.origin_z);
 	return TRUE;
 };
 
@@ -85,42 +85,53 @@ void() part_fountain =
 // misc_walltorch1 - particle effect for fancy wall torch
 //
 
-void() misc_walltorch1_think =
+float(entity ePVEnt, float flChanged) WallTorch1_SendEntity =
 {
-	makevectors(self.angles);
-	pointparticles(PART_WTORCH1, self.origin + v_forward * 18 + v_up * 22);
-	self.nextthink = time + 0.1;
+	WriteByte(MSG_ENTITY, ENT_WALLTORCH1);
+	WriteCoord(MSG_ENTITY, self.origin_x);
+	WriteCoord(MSG_ENTITY, self.origin_y);
+	WriteCoord(MSG_ENTITY, self.origin_z);
+	WriteCoord(MSG_ENTITY, self.angles_x);
+	WriteCoord(MSG_ENTITY, self.angles_y);
+	WriteCoord(MSG_ENTITY, self.angles_z);
+	return TRUE;
 };
 
 void() misc_walltorch1 =
 {
+	self.SendEntity = WallTorch1_SendEntity;
+	self.SendFlags = 1;
+
 	precache_model("models/walltorch1.glb");
 	setmodel(self, "models/walltorch1.glb");
-
-	self.think = misc_walltorch1_think;
-	self.nextthink = time + 0.1 + random()*1;
+	setorigin (self, self.origin);
 };
 
 //
 // misc_walltorch2 - wall torch 2, same as above w/ different design
 //
 
-void() misc_walltorch2_think =
+float(entity ePVEnt, float flChanged) WallTorch2_SendEntity =
 {
-	makevectors(self.angles);
-	pointparticles(PART_WTORCH2, self.origin + v_forward * 2 + v_up * 38);
-	self.nextthink = time + 0.1;
+	WriteByte(MSG_ENTITY, ENT_WALLTORCH2);
+	WriteCoord(MSG_ENTITY, self.origin_x);
+	WriteCoord(MSG_ENTITY, self.origin_y);
+	WriteCoord(MSG_ENTITY, self.origin_z);
+	WriteCoord(MSG_ENTITY, self.angles_x);
+	WriteCoord(MSG_ENTITY, self.angles_y);
+	WriteCoord(MSG_ENTITY, self.angles_z);
+	return TRUE;
 };
 
 void() misc_walltorch2 =
 {
+	self.SendEntity = WallTorch2_SendEntity;
+	self.SendFlags = 1;
+
 	precache_model("models/walltorch2.glb");
 	setmodel(self, "models/walltorch2.glb");
-
-	self.think = misc_walltorch2_think;
-	self.nextthink = time + 0.1 + random()*1;
+	setorigin (self, self.origin);
 };
-
 
 //
 // misc_barrel - decor object

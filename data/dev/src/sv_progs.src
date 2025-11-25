@@ -3,6 +3,7 @@
 server/sv_defs.qc
 sh_customdefs.qc
 math.qc
+enums.qc
 server/sv_customdefs.qc
 server/sv_main.qc
 server/sv_expsys.qc

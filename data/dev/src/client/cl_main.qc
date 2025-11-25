@@ -600,6 +600,9 @@ void(float flIsNew) CSQC_Ent_Update =
 {
     float flEntType = readbyte();
 
+	//
+	// Players
+	//
     if (flEntType == ENT_PLAYER)
     {
 		float deltaFlags1 = readbyte(); // first 8 flags
@@ -747,6 +750,50 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.origin_x = readcoord();
 		self.origin_y = readcoord();
 		self.origin_z = readcoord();
+	}
+	
+	//
+	// Wall Torch 1
+	//
+	if (flEntType == ENT_WALLTORCH1)
+	{
+		if (flIsNew == TRUE)
+		{
+			self.classname = "walltorch1";
+			self.solid = SOLID_NOT;
+			self.predraw = WallTorch1_PreDraw;
+			self.drawmask = MASK_ENGINE;
+			setmodel(self, "models/walltorch1.glb");
+		}
+		//self.modelindex = readshort();
+		self.origin_x = readcoord();
+		self.origin_y = readcoord();
+		self.origin_z = readcoord();
+		self.angles_x = readcoord();
+		self.angles_y = readcoord();
+		self.angles_z = readcoord();
+	}
+
+	//
+	// Wall Torch 2
+	//
+	if (flEntType == ENT_WALLTORCH2)
+	{
+		if (flIsNew == TRUE)
+		{
+			self.classname = "walltorch2";
+			self.solid = SOLID_NOT;
+			self.predraw = WallTorch2_PreDraw;
+			self.drawmask = MASK_ENGINE;
+			setmodel(self, "models/walltorch2.glb");
+		}
+		//self.modelindex = readshort();
+		self.origin_x = readcoord();
+		self.origin_y = readcoord();
+		self.origin_z = readcoord();
+		self.angles_x = readcoord();
+		self.angles_y = readcoord();
+		self.angles_z = readcoord();
 	}
 };
 

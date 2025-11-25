@@ -2163,12 +2163,6 @@ accessor filestream : float
 #endif
 #pragma noref 0
 
-// Enums
-#define ENT_PLAYER 1
-#define ENT_MONSTER 2
-#define ENT_FOUNTAIN 3
-//
-
 // Particle defs
 var float PART_LEVELUP;
 var float PART_FOUNTAIN;
