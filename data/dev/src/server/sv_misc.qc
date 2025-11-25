@@ -63,35 +63,22 @@ void() set_dlight =
 // part_foundain - particle effect for water fountains
 //
 
-void() part_fountain_think =
+float(entity ePVEnt, float flChanged) Fountain_SendEntity =
 {
-	if (timeofday != TIME_NIGHT)
-	{
-		pointparticles(PART_FOUNTAIN, self.origin);
-		if (self.cnt < time)
-		{
-			sound(self, CHAN_VOICE, "ambience/fountain.wav", 1, ATTN_IDLE);
-			self.cnt = time + 9.8;
-		}
-	}
-	else // shut off at night
-	{
-		if (self.cnt > time)
-		{
-			sound(self, CHAN_VOICE, __NULL__, 1, ATTN_IDLE);
-			self.cnt = time;
-		}
-	}
-	self.nextthink = time + 0.1;
+	WriteByte(MSG_ENTITY, ENT_FOUNTAIN); // Unique identifier
+	WriteCoord(MSG_ENTITY, self.origin_x); // Position X
+	WriteCoord(MSG_ENTITY, self.origin_y); // Position Y
+	WriteCoord(MSG_ENTITY, self.origin_z); // Position Z
+	return TRUE;
 };
 
 void() part_fountain =
 {
-	precache_sound ("ambience/fountain.wav");
-	setmodel(self, string_null);
+	self.SendEntity = Fountain_SendEntity;
+	self.SendFlags = 1;
 
-	self.think = part_fountain_think;
-	self.nextthink = time + 0.1 + random()*1;
+	setmodel(self, __NULL__);
+	setorigin (self, self.origin);
 };
 
 //

@@ -2166,8 +2166,28 @@ accessor filestream : float
 // Enums
 #define ENT_PLAYER 1
 #define ENT_MONSTER 2
+#define ENT_FOUNTAIN 3
 //
 
+// Particle defs
+var float PART_LEVELUP;
+var float PART_FOUNTAIN;
+var float PART_BONFIRE;
+var float PART_WTORCH1;
+var float PART_WTORCH2;
+var float PART_MAGIC_CASTING;
+var float PART_MAGIC_CASTING_ORB;
+var float PART_MAGIC_THORN1; // Hit target
+var float PART_MAGIC_THORN2; // Hit wall
+var float PART_MAGIC_LIGHTHEAL;
+var float PART_HEALTHPOTION;
+var float PART_MANAPOTION;
+var float PART_BLOCK;
+var float PART_PARRY;
+var float PART_TREEHIT;
+var float PART_TREEFALL;
+
+// RennyC String Parms
 string sparm1, sparm2, sparm3, sparm4, sparm5;
 
 float framecount;

@@ -40,6 +40,8 @@ void() CSQC_Precache =
 	precache_model("models/bow0.glb");
 	precache_model("models/armor0.glb");
 	precache_model("models/arrow2.glb");
+	
+	precache_sound ("ambience/fountain.wav");
 };
 
 void() CSQC_Ent_Remove =
@@ -96,6 +98,23 @@ noref void() CSQC_WorldLoaded =
 
 	CSQC_Precache();
 	last_input_time = time + 15; // reset idle cam on map change
+	
+	//
+	// Setup Particles
+	//
+	PART_LEVELUP = particleeffectnum("levelup");
+	PART_FOUNTAIN = particleeffectnum("fountain");
+	PART_BONFIRE = particleeffectnum("bonfire");
+	PART_WTORCH1 = particleeffectnum("wtorch1");
+	PART_WTORCH2 = particleeffectnum("wtorch2");
+	PART_HEALTHPOTION = particleeffectnum("healthpotion");
+	PART_MANAPOTION = particleeffectnum("manapotion");
+	PART_BLOCK = particleeffectnum("block");
+	PART_PARRY = particleeffectnum("parry");
+	PART_MAGIC_CASTING = particleeffectnum("magiccast");
+	PART_MAGIC_CASTING_ORB = particleeffectnum("magiccast_orb");
+	PART_TREEHIT = particleeffectnum("treehit");
+	PART_TREEFALL = particleeffectnum("treefall");
 };
 
 void(string rendererdescription) CSQC_RendererRestarted =
@@ -711,6 +730,23 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.anistate = readbyte();
 		self.ai_mode = readbyte();
 		self.attack_speed = readbyte();
+	}
+
+	//
+	// Water fountain
+	//
+	if (flEntType == ENT_FOUNTAIN)
+	{
+		if (flIsNew == TRUE)
+		{
+			self.classname = "fountain";
+			self.solid = SOLID_NOT;
+			self.predraw = Fountain_PreDraw;
+			self.drawmask = MASK_ENGINE;
+		}
+		self.origin_x = readcoord();
+		self.origin_y = readcoord();
+		self.origin_z = readcoord();
 	}
 };
 

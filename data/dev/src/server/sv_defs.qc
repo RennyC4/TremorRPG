@@ -1712,6 +1712,7 @@ entity activator; // entity for cause of a trigger activation
 // Enums
 #define ENT_PLAYER 1
 #define ENT_MONSTER 2
+#define ENT_FOUNTAIN 3
 //
 
 // CGAMEPACKET Events
