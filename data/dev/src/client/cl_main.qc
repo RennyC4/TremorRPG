@@ -268,15 +268,21 @@ float(string strCommand) CSQC_ConsoleCommand =
 	if (cvar("developer") > 0) // terrain editor
 		return editor_brushes_command();
 
-	// Tremor Jump / Dodge / Climb
-	if (argv(0) == "+t_jump")
-		User_DoJump = TRUE;
-	if (argv(0) == "-t_jump")
-		User_DoJump = FALSE;
+	float player_menu = getstatf(STAT_MENU);
+	float atbonfire = getstatf(STAT_BONFIRE);
 
-	 // Tremor Attack
-	if (argv(0) == "t_attack")
-		User_DoAttack = TRUE;
+	if (!player_menu && !atbonfire)
+	{
+		// Tremor Jump / Dodge / Climb
+		if (argv(0) == "+t_jump")
+			User_DoJump = TRUE;
+		if (argv(0) == "-t_jump")
+			User_DoJump = FALSE;
+
+		 // Tremor Attack
+		if (argv(0) == "t_attack")
+			User_DoAttack = TRUE;
+	}
 
 	if (argv(0) == "toggle_crouch")
 		sendevent("PlayerCrouch", "");
@@ -299,8 +305,6 @@ float(string strCommand) CSQC_ConsoleCommand =
 		sendevent("PlayerShowMagic", "");
 	if (argv(0) == "toggle_camera") // send camera mode to SSQC for various reasons
 	{
-		float player_menu = getstatf(STAT_MENU);
-		float atbonfire = getstatf(STAT_BONFIRE);
 		if (!player_menu && !atbonfire)
 		{
 			if (!camera_mode)
