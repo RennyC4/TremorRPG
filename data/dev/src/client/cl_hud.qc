@@ -5,97 +5,77 @@
 //
 // Player name tags + chat bubble
 //
+void(entity e) Draw_FloatingText =
+{
+    if (!e || e.floattext_time <= time || e.floattext_msg == "")
+        return;
+
+    vector top = e.origin + [0,0,e.maxs_z] + [0,0,24]; // position above head
+    vector screen = project(top);
+    if (screen_z <= 0)
+        return;
+
+    float fade = (e.floattext_time - time) / 3;
+    fade = bound(0, fade, 1);
+
+    vector scale = [11,11];
+
+    // Split message into lines if needed (wrapped)
+    string msg = e.floattext_msg;
+    float msg_w = stringwidth(msg, TRUE, scale);
+    float msg_h = scale_y;
+
+    vector pos = screen - [msg_w * 0.5, 0, 0];
+
+    // Background
+    vector pad = [6,2,0];
+    vector bg_pos = pos - [pad_x, pad_y, 0];
+    vector bg_size = [msg_w + pad_x*2, msg_h + pad_y*2, 0];
+    drawfill(bg_pos, bg_size, '0 0 0', fade * 0.45);
+
+    // Gold border (1px)
+    float t = 1;
+    drawfill(bg_pos + [0,bg_size_y,0], [bg_size_x,t,0], '1 0.84 0', fade); // top
+    drawfill(bg_pos - [0,t,0], [bg_size_x,t,0], '1 0.84 0', fade);          // bottom
+    drawfill(bg_pos - [t,0,0], [t,bg_size_y,0], '1 0.84 0', fade);          // left
+    drawfill(bg_pos + [bg_size_x,0,0], [t,bg_size_y,0], '1 0.84 0', fade);  // right
+
+    // Text
+    drawstring(pos + [1,1,0], msg, scale, '0 0 0', fade, 0); // shadow
+    drawstring(pos, msg, scale, '1 1 1', fade, 0);           // white
+};
+
 void() Draw_NameTag =
 {
     entity b;
 
     for (b = world; (b = find(b, classname, "player")); )
     {
-        // Skip distant players (>1250 units)
+        // Skip distant players
         if (vlen(b.origin - vPlayerOrigin) > 1250)
             continue;
-
         if (b.modelindex == 0 || b.netname == "")
             continue;
 
-        vector top = b.origin + [0,0,b.maxs_z] + [0,0,10];
-        vector screenpos = project(top);
-        if (screenpos_z <= 0)
-            continue;
-
-        // =========
         // NAME TAG
-        // =========
         if (b.entnum != player_localentnum)
         {
-            vector name_scale = [10,10];
-            float name_w = stringwidth(b.netname, TRUE, name_scale);
-            vector name_pos = screenpos - [name_w * 0.5, 0, 0];
+            vector top = b.origin + [0,0,b.maxs_z] + [0,0,10];
+            vector scale = [10,10];
+            float w = stringwidth(b.netname, TRUE, scale);
+            vector pos = project(top) - [w*0.5,0,0];
 
-            drawstring(name_pos + [1,1,0], b.netname, name_scale, '0 0 0', 1, 0);
-
+            drawstring(pos + [1,1,0], b.netname, scale, '0 0 0', 1, 0);
             if (b.pvp != 1)
-                drawstring(name_pos, b.netname, name_scale, '.5 .5 1', 1, 0);
+                drawstring(pos, b.netname, scale, '.5 .5 1', 1, 0);
             else
-                drawstring(name_pos, b.netname, name_scale, '1 .25 .25', 1, 0);
+                drawstring(pos, b.netname, scale, '1 .25 .25', 1, 0);
         }
 
-        // ==========================================
         // FLOATING CHAT TEXT
-        // ==========================================
-        if (b.floattext_time > time && b.floattext_msg != "")
-        {
-            vector chat_top = top + [0,0,14];
-            vector chat_screen = project(chat_top);
-            if (chat_screen_z <= 0)
-                continue;
-
-            float fade = (b.floattext_time - time) / 3;
-            fade = bound(0, fade, 1);
-
-            vector chat_scale = [11,11];
-            float chat_w = stringwidth(b.floattext_msg, TRUE, chat_scale);
-            float chat_h = chat_scale_y;
-
-            vector chat_pos = chat_screen - [chat_w * 0.5, 0, 0];
-
-            // Background padding
-            vector bg_pad = [6, 2, 0];
-            vector bg_pos = chat_pos - [bg_pad_x, bg_pad_y, 0];
-            vector bg_size = [chat_w + bg_pad_x*2, chat_h + bg_pad_y*2, 0];
-
-            // =======================
-            // Draw Dark Chat Background
-            // =======================
-            drawfill(bg_pos, bg_size, '0 0 0', fade * 0.45);
-
-            // =======================
-            // Draw Thin Gold Border Outside Only
-            // =======================
-            float border_thick = 1; // 1 pixel thickness
-            vector top_line_pos = bg_pos + [0, bg_size_y, 0];
-            vector bottom_line_pos = bg_pos - [0, border_thick, 0];
-            vector left_line_pos = bg_pos - [border_thick, 0, 0];
-            vector right_line_pos = bg_pos + [bg_size_x, 0, 0];
-
-            // Top
-            drawfill(top_line_pos, [bg_size_x, border_thick, 0], '1 0.84 0', fade);
-            // Bottom
-            drawfill(bottom_line_pos, [bg_size_x, border_thick, 0], '1 0.84 0', fade);
-            // Left
-            drawfill(left_line_pos, [border_thick, bg_size_y, 0], '1 0.84 0', fade);
-            // Right
-            drawfill(right_line_pos, [border_thick, bg_size_y, 0], '1 0.84 0', fade);
-
-            // =======================
-            // Draw Text (shadow + white)
-            // =======================
-            drawstring(chat_pos + [1,1,0], b.floattext_msg, chat_scale, '0 0 0', fade, 0); // shadow
-            drawstring(chat_pos, b.floattext_msg, chat_scale, '1 1 1', fade, 0);           // white text
-        }
+        Draw_FloatingText(b);
     }
 };
-
 
 void() Draw_ToolTip =
 {
