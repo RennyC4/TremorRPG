@@ -327,7 +327,6 @@ float(string strCommand) CSQC_ConsoleCommand =
 	return FALSE;
 };
 
-//float (float event, float parama, float paramb) wrap_InputEvent;
 float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 {
 	if (cvar("developer") > 0) // Terrain editor
@@ -353,6 +352,13 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 			case IE_KEYDOWN:
 			{
 				string bind = getkeybind(scanx);
+
+				// Escape closes existing menus
+				if (bind == "togglemenu" && player_menu > 0)
+				{
+					sendevent("ShutDownMenus", "");
+					return TRUE;
+				}
 
 				if (bind == "+jump") // block jump
 					return TRUE;
