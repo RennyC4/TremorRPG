@@ -1,36 +1,92 @@
 //
 // Player HUD
 //
+string(string s) StripColors;
 
 //
 // Player name tags + chat bubble
 //
+
+#define FLOATTEXT_MAX_WIDTH 400        // maximum bubble width in pixels
+#define FLOATTEXT_VERTICAL_OFFSET 24   // pixels above head
+
 void(entity e) Draw_FloatingText =
 {
     if (!e || e.floattext_time <= time || e.floattext_msg == "")
         return;
 
-    vector top = e.origin + [0,0,e.maxs_z] + [0,0,24]; // position above head
+    // =========================
+    // 0. Truncate message to 255 characters
+    // =========================
+    if (strlen(e.floattext_msg) > 255)
+    {
+        e.floattext_msg = substring(e.floattext_msg, 0, 252); // first 252 chars
+        e.floattext_msg = strcat(e.floattext_msg, " ...");     // append ellipsis
+    }
+
+    // 1. Project top of head + vertical offset
+    vector top = e.origin + [0,0,e.maxs_z] + [0,0,FLOATTEXT_VERTICAL_OFFSET];
     vector screen = project(top);
     if (screen_z <= 0)
         return;
 
-    float fade = (e.floattext_time - time) / 3;
-    fade = bound(0, fade, 1);
-
+    float fade = bound(0, (e.floattext_time - time)/3, 1);
     vector scale = [11,11];
+    float line_height = scale_y + 2;
+    vector pad = [6,2,0]; // padding inside bubble
 
-    // Split message into lines if needed (wrapped)
-    string msg = e.floattext_msg;
-    float msg_w = stringwidth(msg, TRUE, scale);
-    float msg_h = scale_y;
+    // ======================
+    // 2. Word wrap text into lines
+    // ======================
+    string clean = StripColors(e.floattext_msg);
+    float msg_len = strlen(clean);
 
-    vector pos = screen - [msg_w * 0.5, 0, 0];
+    string lines[64];
+    float line_count = 0;
+    float bubble_width = 0;
 
-    // Background
-    vector pad = [6,2,0];
-    vector bg_pos = pos - [pad_x, pad_y, 0];
-    vector bg_size = [msg_w + pad_x*2, msg_h + pad_y*2, 0];
+    float start_index = 0;
+    while (start_index < msg_len && line_count < 64)
+    {
+        float end_index = start_index;
+        string line = "";
+        float line_width = 0;
+
+        while (end_index < msg_len)
+        {
+            float word_end = end_index;
+            while (word_end < msg_len && substring(clean, word_end, 1) != " ")
+                word_end++;
+
+            string word = substring(e.floattext_msg, end_index, word_end - end_index);
+            string next_line = (line == "" ? word : strcat(line, " ", word));
+            float w = stringwidth(next_line, TRUE, scale);
+
+            if (w > FLOATTEXT_MAX_WIDTH && line != "")
+                break;
+
+            line = next_line;
+            line_width = w;
+
+            end_index = word_end + 1; // skip space
+        }
+
+        if (line_count < 64)
+        {
+            lines[line_count++] = line;
+            bubble_width = max(bubble_width, line_width);
+        }
+
+        start_index = end_index;
+    }
+
+    float bubble_height = line_count * line_height;
+
+    // ======================
+    // 3. Draw background rectangle
+    // ======================
+    vector bg_pos = screen - [bubble_width/2 + pad_x, 0, 0]; // top-left corner
+    vector bg_size = [bubble_width + pad_x*2, bubble_height + pad_y*2, 0];
     drawfill(bg_pos, bg_size, '0 0 0', fade * 0.45);
 
     // Gold border (1px)
@@ -40,9 +96,24 @@ void(entity e) Draw_FloatingText =
     drawfill(bg_pos - [t,0,0], [t,bg_size_y,0], '1 0.84 0', fade);          // left
     drawfill(bg_pos + [bg_size_x,0,0], [t,bg_size_y,0], '1 0.84 0', fade);  // right
 
-    // Text
-    drawstring(pos + [1,1,0], msg, scale, '0 0 0', fade, 0); // shadow
-    drawstring(pos, msg, scale, '1 1 1', fade, 0);           // white
+    // ======================
+    // 4. Draw each line stacked top-to-bottom inside bubble
+    // ======================
+    vector line_pos = bg_pos + [pad_x, pad_y, 0]; // start top-left inside bubble
+
+    for (float i = 0; i < line_count; i++)
+    {
+        string msg = lines[i];
+        float w = stringwidth(msg, TRUE, scale);
+
+        // horizontally center each line inside bubble
+        vector draw_pos = line_pos + [bubble_width/2 - w/2, 0, 0];
+
+        drawstring(draw_pos + [1,1,0], msg, scale, '0 0 0', fade, 0); // shadow
+        drawstring(draw_pos, msg, scale, '1 1 1', fade, 0);           // white
+
+        line_pos_y += line_height; // move down for next line
+    }
 };
 
 void() Draw_NameTag =
