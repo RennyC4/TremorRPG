@@ -1014,22 +1014,6 @@ void() Anistate_Handler =
 // Ran before physics
 void() PlayerPreThink =
 {
-	/*
-	if (self.button2)
-	{
-		if (self.dodge_finished < time)
-		{
-			PlayerJump();
-			self.button2 = TRUE;
-		}
-	}
-	else
-	{
-		self.climbing = FALSE;
-		self.flags |= FL_JUMPRELEASED;
-	}
-	*/
-
 	// use button
 	if (self.button3)
 	{

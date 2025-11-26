@@ -69,3 +69,39 @@ void(string input) CSEv_User_BankWithdraw_s =
 	stuffcmd (self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
 	sprint(self, PRINT_HIGH, sprintf("Withdrew %g gold.\n", amount));
 };
+
+// Deposit all carried gold
+void(string input) CSEv_User_BankDepositAll_s =
+{
+	if (self.gold <= 0)
+	{
+		sprint(self, PRINT_HIGH, "You have no gold to deposit!\n");
+		return;
+	}
+
+	float amount = self.gold;
+
+	self.gold = 0;
+	self.gold_bank += amount;
+
+	stuffcmd(self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
+	sprint(self, PRINT_HIGH, sprintf("Deposited all gold: %g\n", amount));
+};
+
+// Withdraw all bank gold
+void(string input) CSEv_User_BankWithdrawAll_s =
+{
+	if (self.gold_bank <= 0)
+	{
+		sprint(self, PRINT_HIGH, "You have no gold in the bank!\n");
+		return;
+	}
+
+	float amount = self.gold_bank;
+
+	self.gold_bank = 0;
+	self.gold += amount;
+
+	stuffcmd(self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
+	sprint(self, PRINT_HIGH, sprintf("Withdrew all bank gold: %g\n", amount));
+};

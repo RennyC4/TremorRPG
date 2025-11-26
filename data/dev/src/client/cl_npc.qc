@@ -247,6 +247,14 @@ void() User_NPCBanking =
 	my_button("bank_deposit", [pos_x, pos_y], [240 / 2, 20], "Deposit") ? sendevent("User_BankDeposit", "s", BANK_AMOUNT) : 0;
 	my_button("bank_withdraw", [pos_x+120, pos_y], [240 / 2, 20], "Withdraw") ? sendevent("User_BankWithdraw", "s", BANK_AMOUNT) : 0;
 
+	// all buttons
+	pos_y += 20;
+	
+	my_button("bank_deposit_all", [pos_x, pos_y], [240 / 2, 20], "Desposit All") ? sendevent("User_BankDepositAll", "s", BANK_AMOUNT) : 0;
+	my_button("bank_withdraw_all", [pos_x+120, pos_y], [240 / 2, 20], "Withdraw All") ? sendevent("User_BankWithdrawAll", "s", BANK_AMOUNT) : 0;
+
+	pos_y += 25;
+
 	// Leave button & X button
 	pos = [0,0];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
@@ -256,5 +264,5 @@ void() User_NPCBanking =
 
 	// Dialogue button
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-	my_button("npc_talk", pos, [85, 22.5], "Dialogue") ? sendevent("PlayerShowDialogue", "") : 0;
+	my_button("npc_talk", pos, [50, 22.5], "Dialogue") ? sendevent("PlayerShowDialogue", "") : 0;
 };
