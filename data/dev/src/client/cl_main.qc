@@ -636,7 +636,7 @@ void() CSQC_Parse_Event =
 		
 		entity speaker = findfloat(world, entnum, entread);
 
-		print("Received nearby msg from ent:", entnum, " text:", msg, "\n"); // DEBUG
+		//print("Received nearby msg from ent:", entnum, " text:", msg, "\n"); // DEBUG
 
 		if (speaker)
 			FloatingText_Add(speaker, msg);
