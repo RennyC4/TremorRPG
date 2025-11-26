@@ -79,33 +79,35 @@ float(void) WallTorch2_PreDraw =
 float(void) Dlight_PreDraw =
 {
     float lev = self.light_lev;
+    float want_noshadow = 0;
 
-    // Handle no-shadow flag
     if (autocvar_tremor_lighting == "simple")
     {
-        self.pflags |= PFLAGS_NOSHADOW;
+        want_noshadow = 1;
         lev /= 1.5;
     }
-    else
+    else if (self.spawnflags & 1)
     {
-        // Only keep NOSHADOW if spawnflag 1 explicitly requests it
-        if (self.spawnflags & 1)
-        {
-            self.pflags |= PFLAGS_NOSHADOW;
-            lev /= 1.5;
-        }
-        else
-            self.pflags &= ~PFLAGS_NOSHADOW; // wipe it
+        want_noshadow = 1;
+        lev /= 1.5;
     }
 
-    // Corona flag
+    if (want_noshadow)
+        self.pflags |= PFLAGS_NOSHADOW;
+    else
+        self.pflags &= ~PFLAGS_NOSHADOW;
+
     if (self.spawnflags & 2)
         self.pflags |= PFLAGS_CORONA;
     else
         self.pflags &= ~PFLAGS_CORONA;
 
+    if (lev < 5) lev = 5; // stop dlight culling flicker
+
     dynamiclight_add(self.origin, lev, [self.color_x, self.color_y, self.color_z], self.style, "", self.pflags);
 
-    addentity(self);
+    // Only use addentity if this has a visible model
+    // addentity(self);
+
     return PREDRAW_NEXT;
 };
