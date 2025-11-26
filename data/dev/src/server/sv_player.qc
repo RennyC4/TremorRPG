@@ -766,6 +766,8 @@ void() FootstepThink =
         return;
 	if (self.deadflag == DEAD_DEAD)
 		return;
+	if (self.anistate == ANISTATE_STEPCOUNTER || self.anistate == ANISTATE_DODGE)
+		return;
 
 	string s;
     vector vel = self.velocity;

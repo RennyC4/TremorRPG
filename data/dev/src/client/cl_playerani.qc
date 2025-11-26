@@ -257,39 +257,32 @@ void() OtherPlayer_Anistate =
     self.frame2time = self.frame1time;
 };
 
+//
+// These 'animations' are done through rotations of the skeleton itself
+//
+
 void() Skeleton_Animate =
 {
+	//vector ang = getproperty(VF_ANGLES);
     skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
 
-	if (self.dodgedir > 0)
-	{
-		float yaw_offset = 0;
-		switch (self.dodgedir)
-		{
-			case 1: yaw_offset = -90; break;  // left
-			case 2: yaw_offset =  90; break;  // right
-			case 3: yaw_offset = -180; break; // back
-			case 4: yaw_offset = -135; break;
-			case 5: yaw_offset =  -45; break;
-			case 6: yaw_offset =  135; break;
-			case 7: yaw_offset =   45; break;
-			default: yaw_offset = 0; break;
-		}
-		
-		yaw_offset *= -1;
+    float yaw = 0;
 
-		float rad = yaw_offset * M_PI / 180;
+    if (self.dodgedir > 0) // dodge rotation
+    {
+        if (self.dodgedir == 1) yaw = -90;   // left
+        else if (self.dodgedir == 2) yaw = 90;   // right
+        else if (self.dodgedir == 3) yaw = -180; // back
+        else if (self.dodgedir == 4) yaw = -135; // back-left
+        else if (self.dodgedir == 5) yaw = -45;  // front-left
+        else if (self.dodgedir == 6) yaw = 135;  // back-right
+        else if (self.dodgedir == 7) yaw = 45;   // front-right
+    }
+	else // no dodge
+		yaw = 0;
 
-		vector root_forward = v_forward * cos(rad) - v_right * sin(rad);
-		vector root_right   = cross([0,0,1], root_forward);
-		vector root_up      = [0,0,1];
-
-		int root_bone = skel_find_bone(self.skeletonindex, "root");
-		skel_premul_bone(self.skeletonindex, root_bone, '0 0 0', root_forward, root_right, root_up);
-
-		self.angles[1] += yaw_offset; // keep player facing consistent
-		makevectors(self.angles);
-	}
+	makevectors([0, yaw, 0]);
+	skel_premul_bone(self.skeletonindex, skel_find_bone(self.skeletonindex, "mixamorig:Hips"), '0 0 0', v_forward, v_right, v_up);
 };
 
 //

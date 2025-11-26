@@ -36,9 +36,6 @@ void() Skeleton_ObjectDraw =
 	skel_build(self.skeletonindex, self, self.modelindex, 0, 0, 0, 1);
 	Skeleton_Animate();
 
-	//makevectors([0, time*360, 0]);
-	//skel_premul_bone(self.skeletonindex, skel_find_bone(self.skeletonindex, "mixamorig:Hips"), '0 0 0', v_forward, v_right, v_up);
-
 	// draw lantern
 	if (self.effects == EF_BRIGHTLIGHT)
 	{
