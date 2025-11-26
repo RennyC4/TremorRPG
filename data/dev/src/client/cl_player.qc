@@ -6,6 +6,7 @@ void() Draw_NameTag;
 void() OtherPlayer_Anistate;
 void() Skeleton_Animate;
 void() CSQC_DayNight_Update;
+void(entity pl) DrawFloatingText;
 
 .float attack_released;
 .float anim_attacking;

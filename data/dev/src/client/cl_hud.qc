@@ -4,34 +4,59 @@
 
 void() Draw_NameTag =
 {
-    for (entity b = world; (b = find(b, classname, "player"));)
+    entity b;
+    for (b = world; (b = find(b, classname, "player"));)
     {
-        if (vlen(b.origin - vPlayerOrigin) <= 1250)
+        // Skip distant players (>1250 units)
+        if (vlen(b.origin - vPlayerOrigin) > 1250)
+            continue;
+
+        // Skip invalid models or empty names
+        if (b.modelindex == 0 || b.netname == "")
+            continue;
+
+        // --- Project top of model ---
+        vector top = b.origin + [0,0,b.maxs_z] + [0,0,10]; // 10 units above head
+        vector screenpos = project(top);
+        if (screenpos_z <= 0)
+            continue;
+
+        // --- Center name tag ---
+        float name_w = stringwidth(b.netname, TRUE, [10,10]);
+        vector name_pos = screenpos - [name_w * 0.5, 0, 0];
+
+        // --- Draw shadow ---
+        drawstring(name_pos + [1,1,0], b.netname, [10,10], '0 0 0', 1, 0);
+
+        // --- Draw name with PvP coloring ---
+        if (b.pvp != 1)
+            drawstring(name_pos, b.netname, [10,10], '.5 .5 1', 1, 0);
+        else
+            drawstring(name_pos, b.netname, [10,10], '1 .25 .25', 1, 0);
+
+        // --- Draw floating chat text if present ---
+        if (b.floattext_time > time && b.floattext_msg != "")
         {
-			if (b.entnum != player_localentnum && b.modelindex != 0 && b != lock_on_target && b.netname != "")
-            {
-                // Use world-space top of model
-                vector top = b.origin + [0,0,b.maxs_z] + [0,0,10]; // 10 units above head
+            vector chat_top = top + [0,0,12]; // slightly above name
+            vector chat_screen = project(chat_top);
+            if (chat_screen_z <= 0)
+                continue;
 
-                // Project to screen
-                vector nametag_org = project(top);
+            float fade = (b.floattext_time - time) / 3;
+            if (fade > 1) fade = 1;
+            if (fade < 0) fade = 0;
 
-                if (nametag_org_z > 0)
-                {
-                    // Center the text
-                    float w = stringwidth(b.netname, TRUE, [10,10]);
-                    vector draw_pos = nametag_org - [w, 0, 0];
+            float chat_w = stringwidth(b.floattext_msg, TRUE, [8,8]);
+            vector chat_pos = chat_screen - [chat_w * 0.5, 0, 0];
 
-                    // Draw shadow
-                    drawstring(draw_pos + [1,1,0], b.netname, [10,10], '0 0 0', 1, 0);
+            // Shadow
+            drawstring(chat_pos + [1,1,0], b.floattext_msg, [8,8], '0 0 0', fade, 0);
 
-                    // Draw actual text
-                    if (b.pvp != 1)
-                        drawstring(draw_pos, b.netname, [10,10], '.5 .5 1', 1, 0);
-                    else
-                        drawstring(draw_pos, b.netname, [10,10], '1 .25 .25', 1, 0);
-                }
-            }
+            // Text (self text brighter)
+            if (b.entnum == player_localnum)
+                drawstring(chat_pos, b.floattext_msg, [8,8], '1 1 0', fade, 0);
+            else
+                drawstring(chat_pos, b.floattext_msg, [8,8], '0.9 0.9 0', fade, 0);
         }
     }
 };

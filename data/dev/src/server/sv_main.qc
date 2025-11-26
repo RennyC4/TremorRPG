@@ -336,14 +336,16 @@ void(entity to, string msg) SendChat_Message =
     multicast(self.origin, MULTICAST_ONE_R);
 };
 
-void(entity to, string msg) SendChat_Message_Nearby =
+void(entity to, entity speaker, string msg) SendChat_Message_Nearby =
 {
     msg_entity = to;
-	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
-    WriteByte(MSG_MULTICAST, CSQC_SAY_NEARBY); // nearby chat packet
+
+    WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+    WriteByte(MSG_MULTICAST, CSQC_SAY_NEARBY);
+    WriteEntity(MSG_MULTICAST, speaker);
     WriteString(MSG_MULTICAST, msg);
-    //WriteShort(MSG_MULTICAST, num); // send entity number
-    multicast(self.origin, MULTICAST_ONE_R);
+
+    multicast(to.origin, MULTICAST_ONE_R);
 };
 
 #define CHAT_MAX_CHARS 90
@@ -372,9 +374,10 @@ void(string str) SV_ParseClientCommand =
 		for (entity e = world; (e = find(e, classname, "player")) ;)
 			SendChat_Message(e, msg);
 
-		print (msg, "\n");
+		print (msg, "\n"); // print to server console
 		return;
 	}
+
 	// Nearby chat
 	if (argv(0) == "say_team")
 	{
@@ -394,9 +397,12 @@ void(string str) SV_ParseClientCommand =
 		for (entity e = world; (e = find(e, classname, "player")) ;)
 		{
 			if (vlen(e.origin - self.origin) <= 1250)
-				SendChat_Message_Nearby(e, msg);
+			{
+				SendChat_Message_Nearby(e, self, msg); // Chat 'bubble'
+				SendChat_Message(e, msg); // Chat text box
+			}
 		}
-		print (msg, "\n");
+		print (msg, "\n"); // print to server console
 		return;
 	}
 

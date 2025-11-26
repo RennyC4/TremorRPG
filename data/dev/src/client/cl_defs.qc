@@ -2376,6 +2376,8 @@ float LockOn_CycleToggle; // same
 .float stepdodge_counter;
 .string armorname;
 .float spawnflags;
+.float floattext_time;
+.string floattext_msg;
 
 // Animation States
 .float anistate;

@@ -387,7 +387,7 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 			}
 			case IE_KEYUP:
 			{
-				string bind = getkeybind(scanx);
+				bind = getkeybind(scanx);
 
 				if (bind == "+moveleft")
 					button_left = FALSE;
@@ -525,6 +525,32 @@ void(string msg) CSQC_WrapAndAddChat =
     }
 };
 
+void(entity speaker, string msg) FloatingText_Add =
+{
+    if (!speaker)
+        return;
+
+    speaker.floattext_msg = msg;
+    speaker.floattext_time = time + 6;
+};
+
+void DrawFloatingText(entity pl)
+{
+	if (pl.floattext_time <= time)
+		return;
+
+    vector org = pl.origin;
+    org_z += 48; // height above head
+
+    vector screenpos;
+    screenpos = project(org);
+
+    if (screenpos_z <= 0)
+        return;
+
+	drawstring(screenpos, pl.floattext_msg, '0.8 0.8 0', '1 1 0', 1, 0);
+};
+
 // CGAMEPACKET events
 const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
@@ -604,10 +630,18 @@ void() CSQC_Parse_Event =
 	}
 	if (event == CSQC_SAY_NEARBY)
 	{
+		float entread = readentitynum();
 		string msg = readstring();
-		CSQC_WrapAndAddChat(msg); // add to chat box
-		// TODO: Speech bubble crap
+		//entity speaker = edict_num(entnum);
+		
+		entity speaker = findfloat(world, entnum, entread);
+
+		print("Received nearby msg from ent:", entnum, " text:", msg, "\n"); // DEBUG
+
+		if (speaker)
+			FloatingText_Add(speaker, msg);
 	}
+
 };
 
 void(float flIsNew) CSQC_Ent_Update =
