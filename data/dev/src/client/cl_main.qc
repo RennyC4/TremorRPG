@@ -534,23 +534,6 @@ void(entity speaker, string msg) FloatingText_Add =
     speaker.floattext_time = time + 6;
 };
 
-void DrawFloatingText(entity pl)
-{
-	if (pl.floattext_time <= time)
-		return;
-
-    vector org = pl.origin;
-    org_z += 48; // height above head
-
-    vector screenpos;
-    screenpos = project(org);
-
-    if (screenpos_z <= 0)
-        return;
-
-	drawstring(screenpos, pl.floattext_msg, '0.8 0.8 0', '1 1 0', 1, 0);
-};
-
 // CGAMEPACKET events
 const float CSQC_INVENTORY = 1;
 const float CSQC_NPCINFO = 2;
@@ -632,11 +615,9 @@ void() CSQC_Parse_Event =
 	{
 		float entread = readentitynum();
 		string msg = readstring();
-		//entity speaker = edict_num(entnum);
-		
 		entity speaker = findfloat(world, entnum, entread);
 
-		//print("Received nearby msg from ent:", entnum, " text:", msg, "\n"); // DEBUG
+		//print("Received nearby msg from ent:", ftos(entnum), " text:", msg, "\n"); // DEBUG
 
 		if (speaker)
 			FloatingText_Add(speaker, msg);

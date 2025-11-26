@@ -388,6 +388,16 @@ void(string str) SV_ParseClientCommand =
 		}
 
 		string raw = substring(str, 9, strlen(str));
+		string bubble_msg = raw; // only the spoken text
+
+		// Remove starting quote
+		if (substring(bubble_msg, 0, 1) == "\"")
+			bubble_msg = substring(bubble_msg, 1, strlen(bubble_msg));
+
+		// Remove ending quote
+		if (substring(bubble_msg, strlen(bubble_msg)-1, 1) == "\"")
+			bubble_msg = substring(bubble_msg, 0, strlen(bubble_msg)-1);
+		
 
 		if (strlen(raw) > CHAT_MAX_CHARS)
 			raw = substring(raw, 0, CHAT_MAX_CHARS);
@@ -398,7 +408,7 @@ void(string str) SV_ParseClientCommand =
 		{
 			if (vlen(e.origin - self.origin) <= 1250)
 			{
-				SendChat_Message_Nearby(e, self, msg); // Chat 'bubble'
+				SendChat_Message_Nearby(e, self, bubble_msg); // Chat 'bubble'
 				SendChat_Message(e, msg); // Chat text box
 			}
 		}

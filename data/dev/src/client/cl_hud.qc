@@ -2,64 +2,100 @@
 // Player HUD
 //
 
+//
+// Player name tags + chat bubble
+//
 void() Draw_NameTag =
 {
     entity b;
-    for (b = world; (b = find(b, classname, "player"));)
+
+    for (b = world; (b = find(b, classname, "player")); )
     {
         // Skip distant players (>1250 units)
         if (vlen(b.origin - vPlayerOrigin) > 1250)
             continue;
 
-        // Skip invalid models or empty names
         if (b.modelindex == 0 || b.netname == "")
             continue;
 
-        // --- Project top of model ---
-        vector top = b.origin + [0,0,b.maxs_z] + [0,0,10]; // 10 units above head
+        vector top = b.origin + [0,0,b.maxs_z] + [0,0,10];
         vector screenpos = project(top);
         if (screenpos_z <= 0)
             continue;
 
-        // --- Center name tag ---
-        float name_w = stringwidth(b.netname, TRUE, [10,10]);
-        vector name_pos = screenpos - [name_w * 0.5, 0, 0];
+        // =========
+        // NAME TAG
+        // =========
+        if (b.entnum != player_localentnum)
+        {
+            vector name_scale = [10,10];
+            float name_w = stringwidth(b.netname, TRUE, name_scale);
+            vector name_pos = screenpos - [name_w * 0.5, 0, 0];
 
-        // --- Draw shadow ---
-        drawstring(name_pos + [1,1,0], b.netname, [10,10], '0 0 0', 1, 0);
+            drawstring(name_pos + [1,1,0], b.netname, name_scale, '0 0 0', 1, 0);
 
-        // --- Draw name with PvP coloring ---
-        if (b.pvp != 1)
-            drawstring(name_pos, b.netname, [10,10], '.5 .5 1', 1, 0);
-        else
-            drawstring(name_pos, b.netname, [10,10], '1 .25 .25', 1, 0);
+            if (b.pvp != 1)
+                drawstring(name_pos, b.netname, name_scale, '.5 .5 1', 1, 0);
+            else
+                drawstring(name_pos, b.netname, name_scale, '1 .25 .25', 1, 0);
+        }
 
-        // --- Draw floating chat text if present ---
+        // ==========================================
+        // FLOATING CHAT TEXT
+        // ==========================================
         if (b.floattext_time > time && b.floattext_msg != "")
         {
-            vector chat_top = top + [0,0,12]; // slightly above name
+            vector chat_top = top + [0,0,14];
             vector chat_screen = project(chat_top);
             if (chat_screen_z <= 0)
                 continue;
 
             float fade = (b.floattext_time - time) / 3;
-            if (fade > 1) fade = 1;
-            if (fade < 0) fade = 0;
+            fade = bound(0, fade, 1);
 
-            float chat_w = stringwidth(b.floattext_msg, TRUE, [8,8]);
+            vector chat_scale = [11,11];
+            float chat_w = stringwidth(b.floattext_msg, TRUE, chat_scale);
+            float chat_h = chat_scale_y;
+
             vector chat_pos = chat_screen - [chat_w * 0.5, 0, 0];
 
-            // Shadow
-            drawstring(chat_pos + [1,1,0], b.floattext_msg, [8,8], '0 0 0', fade, 0);
+            // Background padding
+            vector bg_pad = [6, 2, 0];
+            vector bg_pos = chat_pos - [bg_pad_x, bg_pad_y, 0];
+            vector bg_size = [chat_w + bg_pad_x*2, chat_h + bg_pad_y*2, 0];
 
-            // Text (self text brighter)
-            if (b.entnum == player_localnum)
-                drawstring(chat_pos, b.floattext_msg, [8,8], '1 1 0', fade, 0);
-            else
-                drawstring(chat_pos, b.floattext_msg, [8,8], '0.9 0.9 0', fade, 0);
+            // =======================
+            // Draw Dark Chat Background
+            // =======================
+            drawfill(bg_pos, bg_size, '0 0 0', fade * 0.45);
+
+            // =======================
+            // Draw Thin Gold Border Outside Only
+            // =======================
+            float border_thick = 1; // 1 pixel thickness
+            vector top_line_pos = bg_pos + [0, bg_size_y, 0];
+            vector bottom_line_pos = bg_pos - [0, border_thick, 0];
+            vector left_line_pos = bg_pos - [border_thick, 0, 0];
+            vector right_line_pos = bg_pos + [bg_size_x, 0, 0];
+
+            // Top
+            drawfill(top_line_pos, [bg_size_x, border_thick, 0], '1 0.84 0', fade);
+            // Bottom
+            drawfill(bottom_line_pos, [bg_size_x, border_thick, 0], '1 0.84 0', fade);
+            // Left
+            drawfill(left_line_pos, [border_thick, bg_size_y, 0], '1 0.84 0', fade);
+            // Right
+            drawfill(right_line_pos, [border_thick, bg_size_y, 0], '1 0.84 0', fade);
+
+            // =======================
+            // Draw Text (shadow + white)
+            // =======================
+            drawstring(chat_pos + [1,1,0], b.floattext_msg, chat_scale, '0 0 0', fade, 0); // shadow
+            drawstring(chat_pos, b.floattext_msg, chat_scale, '1 1 1', fade, 0);           // white text
         }
     }
 };
+
 
 void() Draw_ToolTip =
 {
