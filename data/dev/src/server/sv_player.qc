@@ -271,7 +271,7 @@ void() CSEv_PlayerJump =
         // Perform jump
         self.velocity_z = (270 + jumpcalc);
         self.weaponframe = 0;
-        self.pressedJump = TRUE;
+        self.pressedJump = TRUE; // Air melee check
         self.stamina -= staminaCost;
         sound(self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
     }

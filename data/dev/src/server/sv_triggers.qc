@@ -70,6 +70,8 @@ void() trigger_changeleveel_touch =
 
 void() trigger_changelevel =
 {
+	return;
+
 	self.modelindex = 0;
 	self.solid = SOLID_TRIGGER;
 	self.touch = trigger_changeleveel_touch;
