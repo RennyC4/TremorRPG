@@ -54,6 +54,7 @@ void(entity e) Draw_FloatingText =
 
         while (end_index < msg_len)
         {
+            // Find next word (or remaining text if no space)
             float word_end = end_index;
             while (word_end < msg_len && substring(clean, word_end, 1) != " ")
                 word_end++;
@@ -62,22 +63,44 @@ void(entity e) Draw_FloatingText =
             string next_line = (line == "" ? word : strcat(line, " ", word));
             float w = stringwidth(next_line, TRUE, scale);
 
-            if (w > FLOATTEXT_MAX_WIDTH && line != "")
+            if (w > FLOATTEXT_MAX_WIDTH)
+            {
+                if (line != "")
+                    break; // line already has content, break here
+
+                // Word itself too long, split by character
+                float split_index = 0;
+                while (split_index < strlen(word))
+                {
+                    float char_w = stringwidth(substring(word, 0, split_index + 1), TRUE, scale);
+                    if (char_w > FLOATTEXT_MAX_WIDTH)
+                        break;
+                    split_index++;
+                }
+
+                string part = substring(word, 0, split_index);
+                line = part;
+
+                // Advance start_index by the split length
+                start_index += split_index;
                 break;
+            }
 
             line = next_line;
             line_width = w;
-
             end_index = word_end + 1; // skip space
         }
 
+        // Save line
         if (line_count < 64)
         {
             lines[line_count++] = line;
-            bubble_width = max(bubble_width, line_width);
+            bubble_width = max(bubble_width, stringwidth(line, TRUE, scale));
         }
 
-        start_index = end_index;
+        // Advance start_index if not already moved
+        if (start_index < end_index)
+            start_index = end_index;
     }
 
     float bubble_height = line_count * line_height;
@@ -112,7 +135,7 @@ void(entity e) Draw_FloatingText =
         drawstring(draw_pos + [1,1,0], msg, scale, '0 0 0', fade, 0); // shadow
         drawstring(draw_pos, msg, scale, '1 1 1', fade, 0);           // white
 
-        line_pos_y += line_height; // move down for next line
+        line_pos_y += line_height; // move down for next line (Y increases downward)
     }
 };
 
