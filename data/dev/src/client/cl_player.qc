@@ -7,6 +7,11 @@ void() OtherPlayer_Anistate;
 void() Skeleton_Animate;
 void() CSQC_DayNight_Update;
 
+.float attack_released;
+.float anim_attacking;
+.float attack_finished;
+.float respawn_finished;
+
 .entity lantern_vfx;
 .entity weapon_vfx;
 .entity offhand_vfx;
@@ -840,18 +845,14 @@ float(void) Player_PreDraw =
     return PREDRAW_NEXT;
 };
 
-.float attack_released;
-.float anim_attacking;
-.float attack_finished;
-.float respawn_finished;
-void() Player_Think =
+void() Player_DoAttack =
 {
 	float player_menu = getstatf(STAT_MENU);
 	float atbonfire = getstatf(STAT_BONFIRE);
 
 	if (!player_menu)
 	{
-		if (input_buttons & 1) // attack button, or que'd up
+		if (User_DoAttack) // attack button, or que'd up
 		{
 			if (self.health <= 0)
 			{
@@ -906,27 +907,16 @@ void() Player_Think =
 		}
 		else
 			self.attack_released = TRUE;
+
+		User_DoAttack = FALSE;
 	}
 
-	if (self.health <= 0)
-		return;
+};
 
-	if (deathcam_dist != 45)
-		deathcam_dist = 45; // initial z start org for death camera
-
-	if (LockOn_Toggle) // binding stuff work around
-	{
-		CSQC_LockOn_Toggle();
-		LockOn_Toggle = FALSE;
-	}
-	if (LockOn_CycleToggle)
-	{
-		CSQC_LockOn_Cycle();
-		LockOn_CycleToggle = FALSE;
-	}
-	
-	// dodge inputs
-	if (input_buttons & 2)
+float JumpPress;
+void() Player_DoJump =
+{
+	if (User_DoJump)
 	{
 		// step dodge
 		if (!button_left && !button_right && !button_down && !button_up)
@@ -964,10 +954,40 @@ void() Player_Think =
 			sendevent("PlayerDodge", "f", 2);
 		if (button_down)
 			sendevent("PlayerDodge", "f", 3);
-	}
 
+		// jump
+		if (button_up)
+			sendevent("PlayerJump", "", 0);
+	}
+};
+
+void() Player_Think =
+{
 	if (self.flags & FL_ONGROUND)
 		PlayerOnGround = TRUE;
 	else
 		PlayerOnGround = FALSE;
+
+	Player_DoAttack();
+
+	if (self.health <= 0)
+		return;
+
+	Player_DoJump();
+
+	if (deathcam_dist != 45)
+		deathcam_dist = 45; // initial z start org for death camera
+
+	if (LockOn_Toggle) // binding stuff work around
+	{
+		CSQC_LockOn_Toggle();
+		LockOn_Toggle = FALSE;
+	}
+	if (LockOn_CycleToggle)
+	{
+		CSQC_LockOn_Cycle();
+		LockOn_CycleToggle = FALSE;
+	}
+	
+
 };

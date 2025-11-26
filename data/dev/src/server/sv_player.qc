@@ -217,7 +217,7 @@ void() Player_RemoveCrouch =
 	}
 };
 
-void() PlayerJump =
+void() CSEv_PlayerJump =
 {
     if (self.bonfire)
         return;
@@ -227,19 +227,15 @@ void() PlayerJump =
         return;
 
     PlayerClimb();
+
     if (self.climbing)
         return;
-
     if (self.melee_finished > time)
         return;
     if (self.cast_finished > time)
         return;
-
     if (!(self.flags & FL_ONGROUND))
         return;
-    if (!(self.flags & FL_JUMPRELEASED))
-        return;
-
     if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || 
         self.menu == MENU_MAGIC || self.menu == MENU_BANKING)
         return;
@@ -273,13 +269,10 @@ void() PlayerJump =
 		}
 
         // Perform jump
-        self.velocity_z += (270 + jumpcalc);
+        self.velocity_z = (270 + jumpcalc);
         self.weaponframe = 0;
         self.pressedJump = TRUE;
-        self.flags &= ~FL_JUMPRELEASED;
-        self.button2 = 0;
         self.stamina -= staminaCost;
-
         sound(self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
     }
 };
@@ -303,8 +296,6 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		return;
 	if (!(self.flags & FL_ONGROUND))
 		return;
-	if (!(self.flags & FL_JUMPRELEASED))
-		return;
 	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_BANKING)
 		return;
 
@@ -319,8 +310,6 @@ void(float whichdir) CSEv_PlayerDodge_f =
 			self.potion_use_finished = time;
 		}
 
-		self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
-		self.button2 = 0;
 		self.stamina -= 25;
 
 		self.dodgedir = whichdir;
@@ -1025,7 +1014,7 @@ void() Anistate_Handler =
 // Ran before physics
 void() PlayerPreThink =
 {
-	// Button1 we ignore
+	/*
 	if (self.button2)
 	{
 		if (self.dodge_finished < time)
@@ -1039,6 +1028,7 @@ void() PlayerPreThink =
 		self.climbing = FALSE;
 		self.flags |= FL_JUMPRELEASED;
 	}
+	*/
 
 	// use button
 	if (self.button3)

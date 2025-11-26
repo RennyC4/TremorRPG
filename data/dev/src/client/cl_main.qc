@@ -268,6 +268,16 @@ float(string strCommand) CSQC_ConsoleCommand =
 	if (cvar("developer") > 0) // terrain editor
 		return editor_brushes_command();
 
+	// Tremor Jump / Dodge / Climb
+	if (argv(0) == "+t_jump")
+		User_DoJump = TRUE;
+	if (argv(0) == "-t_jump")
+		User_DoJump = FALSE;
+
+	 // Tremor Attack
+	if (argv(0) == "t_attack")
+		User_DoAttack = TRUE;
+
 	if (argv(0) == "toggle_crouch")
 		sendevent("PlayerCrouch", "");
 	if (argv(0) == "target")
@@ -310,17 +320,6 @@ float(string strCommand) CSQC_ConsoleCommand =
 	else if (argv(0) == "-showscores")
 		showscores = FALSE;
 
-	//
-	// Blocked console commands
-	//
-	if (argv(0) == "r_shadow_realtime_world_lightmaps")		return TRUE;
-	if (argv(0) == "r_skybox")		return TRUE;
-	if (argv(0) == "r_skyfog")		return TRUE;
-	if (argv(0) == "fog")		return TRUE;
-	//
-	//
-	//
-
 	return FALSE;
 };
 
@@ -351,9 +350,14 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 			{
 				string bind = getkeybind(scanx);
 
+				if (bind == "+jump") // block jump
+					return TRUE;
+				if (bind == "+attack") // block attack
+					return TRUE;
+
 				if (atbonfire || player_menu > 0) // Disable movement keys at bonfire/menu stuff
 				{
-					if (bind == "+forward" || bind == "+back" || bind == "+moveleft" || bind == "+moveright" || bind == "+jump")
+					if (bind == "+forward" || bind == "+back" || bind == "+moveleft" || bind == "+moveright")
 						return TRUE; // block movement
 				}
 

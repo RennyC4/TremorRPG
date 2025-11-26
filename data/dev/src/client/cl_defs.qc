@@ -2218,6 +2218,8 @@ float PlayerOnGround;
 .vector prev_origin;
 .vector last_origin;
 .float last_update_time;
+float User_DoAttack;
+float User_DoJump;
 
 // buttons
 float button4;
