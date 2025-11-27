@@ -623,7 +623,7 @@ void(entity targ, entity attacker) DoDeath =
     // MONSTER DEATH (shared rewards)
     if (targ.flags & FL_MONSTER)
     {
-		if (attacker.classname == "player") // Only reward players, ignore monsters killing each other
+		if (attacker.classname == "player") // Only reward players
 			MonsterReward(targ, attacker);
     }
 

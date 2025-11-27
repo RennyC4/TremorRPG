@@ -140,6 +140,13 @@ void(entity self, entity killer) MonsterReward =
         GiveExperience(p, self, xp_each, xp_each);
         GiveGold(p, self, gold_each, gold_each);
     }
+
+    // IMPORTANT: wipe attacker tracking after rewards
+    for (float i = 0; i < 8; i++)
+    {
+        self.attackers[i] = world;
+        self.attacker_damage[i] = 0;
+    }
 };
 
 // ==================
