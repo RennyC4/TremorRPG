@@ -645,93 +645,47 @@ void(float flIsNew) CSQC_Ent_Update =
             self.worldlight = TRUE;
             setsize(self, [-16, -16, 0], [16, 16, 56]);
 
-            // Initialize prediction smoothing fields
             self.prediction_error = '0 0 0';
             self.prediction_error_time = 0;
-            vPlayerOrigin = self.origin;
-            vPlayerOriginOld_z = self.origin_z;
-            vPlayerVelocity = self.velocity;
         }
 
+        vector oldOrigin = self.origin;
+
+        // --- Update origin if flagged ---
         if (deltaFlags & PSF_ORIGIN)
         {
-            vector oldOrigin = self.origin;
-
             self.origin_x = readcoord();
             self.origin_y = readcoord();
             self.origin_z = readcoord();
 
-            // Store interpolation fields
             self.prev_origin = self.last_origin;
             self.last_origin = self.origin;
             self.last_update_time = time;
 
-            // --- Local player correction ---
+            // --- Local player auto-resync ---
             if (self.entnum == player_localentnum)
             {
-                self.prediction_error = self.origin - vPlayerOrigin;
+                vPlayerOrigin = self.origin;
+                vPlayerOriginOld = self.origin;
+                vPlayerOriginOld_z = self.origin_z;
+                vPlayerVelocity = self.velocity;
                 self.prediction_error_time = time;
             }
         }
 
-        if (deltaFlags & PSF_ANGLES)
-        {
-            self.angles_x = readcoord();
-            self.angles_y = readcoord();
-            self.angles_z = readcoord();
-        }
-
-        if (deltaFlags & PSF_VELOCITY)
-        {
-            self.velocity_x = readshort();
-            self.velocity_y = readshort();
-            self.velocity_z = readshort();
-        }
-
-        if (deltaFlags & PSF_FLAGS)
-            self.flags = readfloat();
-        if (deltaFlags & PSF_EFFECTS)
-            self.effects = readfloat();
-
-        if (deltaFlags & PSF_MODEL)
-            self.modelindex = readshort();
-        if (deltaFlags & PSF_NAME)
-            self.netname = readstring();
-
-        if (deltaFlags & PSF_HEALTH)
-        {
-            self.health = readshort();
-            self.max_health = readshort();
-        }
-
-        if (deltaFlags & PSF_LEVEL)
-            self.level = readbyte();
-        if (deltaFlags & PSF_PVP)
-            self.pvp = readbyte();
-
-        if (deltaFlags & PSF_EQUIPMENT)
-        {
-            self.main_hand = readstring();
-            self.off_hand = readstring();
-            self.armorname = readstring();
-        }
-
-        if (deltaFlags & PSF_ANIMATION)
-        {
-            self.anistate = readbyte();
-            self.cast_finished = readbyte();
-            self.attack_type = readbyte();
-            self.blocking = readbyte();
-        }
-
-        if (deltaFlags & PSF_MISC)
-        {
-            self.climbing = readbyte();
-            self.bonfire = readbyte();
-            self.crouch = readbyte();
-            self.dodgedir = readbyte();
-            self.stepdodge_counter = readbyte();
-        }
+        // --- Update other fields as usual ---
+        if (deltaFlags & PSF_ANGLES) { self.angles_x = readcoord(); self.angles_y = readcoord(); self.angles_z = readcoord(); }
+        if (deltaFlags & PSF_VELOCITY) { self.velocity_x = readshort(); self.velocity_y = readshort(); self.velocity_z = readshort(); }
+        if (deltaFlags & PSF_FLAGS) self.flags = readfloat();
+        if (deltaFlags & PSF_EFFECTS) self.effects = readfloat();
+        if (deltaFlags & PSF_MODEL) self.modelindex = readshort();
+        if (deltaFlags & PSF_NAME) self.netname = readstring();
+        if (deltaFlags & PSF_HEALTH) { self.health = readshort(); self.max_health = readshort(); }
+        if (deltaFlags & PSF_LEVEL) self.level = readbyte();
+        if (deltaFlags & PSF_PVP) self.pvp = readbyte();
+        if (deltaFlags & PSF_EQUIPMENT) { self.main_hand = readstring(); self.off_hand = readstring(); self.armorname = readstring(); }
+        if (deltaFlags & PSF_ANIMATION) { self.anistate = readbyte(); self.cast_finished = readbyte(); self.attack_type = readbyte(); self.blocking = readbyte(); }
+        if (deltaFlags & PSF_MISC) { self.climbing = readbyte(); self.bonfire = readbyte(); self.crouch = readbyte(); self.dodgedir = readbyte(); self.stepdodge_counter = readbyte(); }
 
         if (flIsNew)
             setorigin(self, self.origin);

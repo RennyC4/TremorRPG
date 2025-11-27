@@ -2190,6 +2190,7 @@ float pauseframe;
 vector vPlayerOrigin;
 vector vPlayerOriginOld;
 vector vPlayerVelocity;
+float vPlayerOrigin_time;
 
 string LOGIN_NAME; // users login name
 string LOGIN_GENDER; // create gender
