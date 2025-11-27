@@ -265,6 +265,15 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
     self.skill_woodcutting = (total_lines > 59) ? stof(file_contents[59]) : 0;
 
 	// --- Step 4: Load inventory safely ---
+
+	// Clear inventory before loading
+	self.inv_count = 0;
+	for (float i = 0; i < MAX_INVENTORY; i++)
+	{
+		self.inventory[i] = "";
+		self.inventory_count[i] = 0;
+	}
+
 	self.read_inv_count = (inv_count_line < total_lines) ? stof(file_contents[inv_count_line]) : 0;
 	if (self.read_inv_count > 64) 
 	{
