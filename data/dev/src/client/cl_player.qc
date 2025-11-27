@@ -776,13 +776,13 @@ float(void) Player_PreDraw =
         Player_Animate();
         self.movetype = MOVETYPE_WALK;
 
-        // Save logic state
+        // Save logic state for physics
         vector vOldOrigin = self.origin;
         vector vOldVelocity = self.velocity;
         float  fOldPMoveFlags = self.pmove_flags;
 
         // -------------------------------
-        // Prediction loop
+        // Client-side prediction
         // -------------------------------
         for (int i = servercommandframe + 1; i <= clientcommandframe; i++)
         {
@@ -824,10 +824,16 @@ float(void) Player_PreDraw =
         vPlayerOrigin_z = vPlayerOriginOld_z;
 
         // -------------------------------
-        // Update origin for engine (draw once after network entities)
+        // Apply predicted origin for drawing
         // -------------------------------
         self.origin = vPlayerOrigin;
         setorigin(self, self.origin);
+
+        // -------------------------------
+        // Draw the local player once
+        // -------------------------------
+        Skeleton_ObjectDraw();
+        addentity(self);
 
         // -------------------------------
         // Restore logic state for physics
@@ -839,18 +845,11 @@ float(void) Player_PreDraw =
         self.renderflags = RF_EXTERNALMODEL;
 
         Player_Think();
-
-        // -------------------------------
-        // Optional: manually draw skeleton once after network entities
-        // Only if engine doesn’t draw local player
-        // -------------------------------
-        Skeleton_ObjectDraw();
-        addentity(self);
     }
     else
     {
         // -------------------------------
-        // Other players: interpolation
+        // Other players: interpolate normally
         // -------------------------------
         self.angles_x = 0;
         if (self.anistate) OtherPlayer_Anistate(); else Player_Animate();
@@ -860,7 +859,9 @@ float(void) Player_PreDraw =
 
         vector vInterpolated;
         if (flTimeSinceUpdate > SERVER_FRAME_INTERVAL * 2)
+        {
             vInterpolated = self.last_origin;
+        }
         else
         {
             float flInterpFactor = flTimeSinceUpdate / SERVER_FRAME_INTERVAL;
@@ -872,6 +873,7 @@ float(void) Player_PreDraw =
 
         self.origin = vInterpolated;
         setorigin(self, self.origin);
+
         Skeleton_ObjectDraw();
         addentity(self);
     }
