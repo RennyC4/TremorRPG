@@ -3,41 +3,64 @@
 //
 string(string s) StripColors;
 
-//
-// Player name tags + chat bubble
-//
+// ============================
+// Floating Text + Name Tags
+// ============================
 
-#define FLOATTEXT_MAX_WIDTH 400        // maximum bubble width in pixels
-#define FLOATTEXT_VERTICAL_OFFSET 24   // pixels above head
+#define FLOATTEXT_MAX_WIDTH 400
+#define FLOATTEXT_VERTICAL_OFFSET 24
 
+// Scale
+vector FLOATTEXT_SCALE = [11,11];
+float FLOATTEXT_SCALE_X = 11;
+float FLOATTEXT_SCALE_Y = 11;
+
+// Padding
+vector FLOATTEXT_PADDING = [6,2,0];
+float FLOATTEXT_PADDING_X = 6;
+float FLOATTEXT_PADDING_Y = 2;
+
+#define FLOATTEXT_LINEHEIGHT (FLOATTEXT_SCALE_Y + 2)
+
+// ---------------------------
+// Draw a floating text bubble
+// ---------------------------
 void(entity e) Draw_FloatingText =
 {
     if (!e || e.floattext_time <= time || e.floattext_msg == "")
         return;
 
-    // =========================
-    // 0. Truncate message to 255 characters
-    // =========================
+    // ----------------------
+    // 0. Truncate message
+    // ----------------------
     if (strlen(e.floattext_msg) > 255)
     {
-        e.floattext_msg = substring(e.floattext_msg, 0, 252); // first 252 chars
-        e.floattext_msg = strcat(e.floattext_msg, " ...");     // append ellipsis
+        e.floattext_msg = substring(e.floattext_msg, 0, 252);
+        e.floattext_msg = strcat(e.floattext_msg, " ...");
     }
 
-    // 1. Project top of head + vertical offset
-    vector top = e.origin + [0,0,e.maxs_z] + [0,0,FLOATTEXT_VERTICAL_OFFSET];
+    // ----------------------
+    // 1. Smoothed draw position
+    // ----------------------
+    vector drawPos;
+    if (e.entnum == player_localentnum)
+        drawPos = vPlayerOrigin;
+    else
+        drawPos = e.origin; // other players already interpolated
+
+    vector top = drawPos + [0,0,e.maxs_z] + [0,0,FLOATTEXT_VERTICAL_OFFSET];
     vector screen = project(top);
     if (screen_z <= 0)
         return;
 
+    // ----------------------
+    // 2. Fade factor
+    // ----------------------
     float fade = bound(0, (e.floattext_time - time)/3, 1);
-    vector scale = [11,11];
-    float line_height = scale_y + 2;
-    vector pad = [6,2,0]; // padding inside bubble
 
-    // ======================
-    // 2. Word wrap text into lines
-    // ======================
+    // ----------------------
+    // 3. Word wrap
+    // ----------------------
     string clean = StripColors(e.floattext_msg);
     float msg_len = strlen(clean);
 
@@ -54,119 +77,121 @@ void(entity e) Draw_FloatingText =
 
         while (end_index < msg_len)
         {
-            // Find next word (or remaining text if no space)
+            // Find next word
             float word_end = end_index;
             while (word_end < msg_len && substring(clean, word_end, 1) != " ")
                 word_end++;
 
             string word = substring(e.floattext_msg, end_index, word_end - end_index);
             string next_line = (line == "" ? word : strcat(line, " ", word));
-            float w = stringwidth(next_line, TRUE, scale);
+            float w = stringwidth(next_line, TRUE, FLOATTEXT_SCALE);
 
             if (w > FLOATTEXT_MAX_WIDTH)
             {
-                if (line != "")
-                    break; // line already has content, break here
+                if (line != "") break;
 
-                // Word itself too long, split by character
+                // Word too long: split by char
                 float split_index = 0;
                 while (split_index < strlen(word))
                 {
-                    float char_w = stringwidth(substring(word, 0, split_index + 1), TRUE, scale);
-                    if (char_w > FLOATTEXT_MAX_WIDTH)
-                        break;
+                    float char_w = stringwidth(substring(word,0,split_index+1),TRUE,FLOATTEXT_SCALE);
+                    if (char_w > FLOATTEXT_MAX_WIDTH) break;
                     split_index++;
                 }
 
-                string part = substring(word, 0, split_index);
-                line = part;
-
-                // Advance start_index by the split length
+                line = substring(word,0,split_index);
                 start_index += split_index;
                 break;
             }
 
             line = next_line;
             line_width = w;
-            end_index = word_end + 1; // skip space
+            end_index = word_end + 1;
         }
 
-        // Save line
         if (line_count < 64)
         {
             lines[line_count++] = line;
-            bubble_width = max(bubble_width, stringwidth(line, TRUE, scale));
+            bubble_width = max(bubble_width, stringwidth(line,TRUE,FLOATTEXT_SCALE));
         }
 
-        // Advance start_index if not already moved
-        if (start_index < end_index)
-            start_index = end_index;
+        if (start_index < end_index) start_index = end_index;
     }
 
-    float bubble_height = line_count * line_height;
+    float bubble_height = line_count * FLOATTEXT_LINEHEIGHT;
 
-    // ======================
-    // 3. Draw background rectangle
-    // ======================
-    vector bg_pos = screen - [bubble_width/2 + pad_x, 0, 0]; // top-left corner
-    vector bg_size = [bubble_width + pad_x*2, bubble_height + pad_y*2, 0];
-    drawfill(bg_pos, bg_size, '0 0 0', fade * 0.45);
+    // ----------------------
+    // 4. Draw bubble background
+    // ----------------------
+    vector bg_pos = screen - [bubble_width/2 + FLOATTEXT_PADDING_X,0,0];
+    vector bg_size = [bubble_width + FLOATTEXT_PADDING_X*2, bubble_height + FLOATTEXT_PADDING_Y*2,0];
 
-    // Gold border (1px)
+    drawfill(bg_pos,bg_size,'0 0 0',fade*0.45);
+
+    // Gold border
     float t = 1;
-    drawfill(bg_pos + [0,bg_size_y,0], [bg_size_x,t,0], '1 0.84 0', fade); // top
-    drawfill(bg_pos - [0,t,0], [bg_size_x,t,0], '1 0.84 0', fade);          // bottom
-    drawfill(bg_pos - [t,0,0], [t,bg_size_y,0], '1 0.84 0', fade);          // left
-    drawfill(bg_pos + [bg_size_x,0,0], [t,bg_size_y,0], '1 0.84 0', fade);  // right
+    drawfill(bg_pos + [0,bg_size_y,0],[bg_size_x,t,0],'1 0.84 0',fade); // top
+    drawfill(bg_pos - [0,t,0],[bg_size_x,t,0],'1 0.84 0',fade);          // bottom
+    drawfill(bg_pos - [t,0,0],[t,bg_size_y,0],'1 0.84 0',fade);          // left
+    drawfill(bg_pos + [bg_size_x,0,0],[t,bg_size_y,0],'1 0.84 0',fade);  // right
 
-    // ======================
-    // 4. Draw each line stacked top-to-bottom inside bubble
-    // ======================
-    vector line_pos = bg_pos + [pad_x, pad_y, 0]; // start top-left inside bubble
+    // ----------------------
+    // 5. Draw each line
+    // ----------------------
+    vector line_pos = bg_pos + [FLOATTEXT_PADDING_X,FLOATTEXT_PADDING_Y,0];
 
     for (float i = 0; i < line_count; i++)
     {
         string msg = lines[i];
-        float w = stringwidth(msg, TRUE, scale);
+        float w = stringwidth(msg, TRUE, FLOATTEXT_SCALE);
+        vector draw_pos = line_pos + [bubble_width/2 - w/2,0,0];
 
-        // horizontally center each line inside bubble
-        vector draw_pos = line_pos + [bubble_width/2 - w/2, 0, 0];
+        drawstring(draw_pos + [1,1,0], msg, FLOATTEXT_SCALE,'0 0 0',fade,0); // shadow
+        drawstring(draw_pos, msg, FLOATTEXT_SCALE,'1 1 1',fade,0);
 
-        drawstring(draw_pos + [1,1,0], msg, scale, '0 0 0', fade, 0); // shadow
-        drawstring(draw_pos, msg, scale, '1 1 1', fade, 0);           // white
-
-        line_pos_y += line_height; // move down for next line (Y increases downward)
+        line_pos_y += FLOATTEXT_LINEHEIGHT;
     }
 };
 
-void() Draw_NameTag =
+// ----------------------
+// Draw all name tags + chat bubbles
+// ----------------------
+void() Draw_NameTag_ChatBubble =
 {
     entity b;
-
-    for (b = world; (b = find(b, classname, "player")); )
+    for (b = world; (b = find(b, classname,"player")); )
     {
-        // Skip distant players
-        if (vlen(b.origin - vPlayerOrigin) > 1250)
-            continue;
-        if (b.modelindex == 0 || b.netname == "")
-            continue;
+        if (vlen(b.origin - vPlayerOrigin) > 1250) continue;
+        if (b.modelindex == 0 || b.netname == "") continue;
 
-        // NAME TAG
-        if (b.entnum != player_localentnum)
-        {
-            vector top = b.origin + [0,0,b.maxs_z] + [0,0,10];
-            vector scale = [10,10];
-            float w = stringwidth(b.netname, TRUE, scale);
-            vector pos = project(top) - [w*0.5,0,0];
+        // Smoothed draw position
+        vector drawPos;
+        if (b.entnum == player_localentnum)
+            drawPos = vPlayerOrigin;
+        else
+            drawPos = b.origin;
 
-            drawstring(pos + [1,1,0], b.netname, scale, '0 0 0', 1, 0);
-            if (b.pvp != 1)
-                drawstring(pos, b.netname, scale, '.5 .5 1', 1, 0);
-            else
-                drawstring(pos, b.netname, scale, '1 .25 .25', 1, 0);
-        }
+        // ----------------------
+        // Name tag
+        // ----------------------
+        vector top = drawPos + [0,0,b.maxs_z] + [0,0,10];
+        vector scale = [10,10];
+        float w = stringwidth(b.netname,TRUE,scale);
+        vector pos = project(top) - [w*0.5,0,0];
 
-        // FLOATING CHAT TEXT
+		// Don't draw local players name tag
+		if (b.entnum != player_localentnum)
+		{
+			drawstring(pos + [1,1,0], b.netname, scale,'0 0 0',1,0); // shadow
+			if (b.pvp != 1)
+				drawstring(pos,b.netname,scale,'.5 .5 1',1,0);
+			else
+				drawstring(pos,b.netname,scale,'1 .25 .25',1,0);
+		}
+
+        // ----------------------
+        // Floating chat
+        // ----------------------
         Draw_FloatingText(b);
     }
 };

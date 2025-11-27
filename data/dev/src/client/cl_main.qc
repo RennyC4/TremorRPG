@@ -629,14 +629,11 @@ void(float flIsNew) CSQC_Ent_Update =
 {
     float flEntType = readbyte();
 
-	//
-	// Players
-	//
     if (flEntType == ENT_PLAYER)
     {
-		float deltaFlags1 = readbyte(); // first 8 flags
-		float deltaFlags2 = readbyte(); // next 8 flags
-		float deltaFlags = deltaFlags1 + (deltaFlags2 * 256);
+        float deltaFlags1 = readbyte();
+        float deltaFlags2 = readbyte();
+        float deltaFlags = deltaFlags1 + (deltaFlags2 * 256);
 
         if (flIsNew)
         {
@@ -647,19 +644,35 @@ void(float flIsNew) CSQC_Ent_Update =
             self.view_ofs = '0 0 48';
             self.worldlight = TRUE;
             setsize(self, [-16, -16, 0], [16, 16, 56]);
+
+            // Initialize prediction smoothing fields
+            self.prediction_error = '0 0 0';
+            self.prediction_error_time = 0;
+            vPlayerOrigin = self.origin;
+            vPlayerOriginOld_z = self.origin_z;
+            vPlayerVelocity = self.velocity;
         }
 
-		if (deltaFlags & PSF_ORIGIN)
-		{
-			self.origin_x = readcoord();
-			self.origin_y = readcoord();
-			self.origin_z = readcoord();
+        if (deltaFlags & PSF_ORIGIN)
+        {
+            vector oldOrigin = self.origin;
 
-			// Update interpolation fields AFTER origin is updated
-			self.prev_origin = self.last_origin;
-			self.last_origin = self.origin;
-			self.last_update_time = time;
-		}
+            self.origin_x = readcoord();
+            self.origin_y = readcoord();
+            self.origin_z = readcoord();
+
+            // Store interpolation fields
+            self.prev_origin = self.last_origin;
+            self.last_origin = self.origin;
+            self.last_update_time = time;
+
+            // --- Local player correction ---
+            if (self.entnum == player_localentnum)
+            {
+                self.prediction_error = self.origin - vPlayerOrigin;
+                self.prediction_error_time = time;
+            }
+        }
 
         if (deltaFlags & PSF_ANGLES)
         {
@@ -668,12 +681,12 @@ void(float flIsNew) CSQC_Ent_Update =
             self.angles_z = readcoord();
         }
 
-		if (deltaFlags & PSF_VELOCITY)
-		{
-			self.velocity_x = readshort();
-			self.velocity_y = readshort();
-			self.velocity_z = readshort();
-		}
+        if (deltaFlags & PSF_VELOCITY)
+        {
+            self.velocity_x = readshort();
+            self.velocity_y = readshort();
+            self.velocity_z = readshort();
+        }
 
         if (deltaFlags & PSF_FLAGS)
             self.flags = readfloat();

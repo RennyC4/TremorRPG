@@ -2,11 +2,11 @@ void() Camera_IdleOrbit;
 void() Compass_Draw;
 void() Coords_Draw;
 void() Player_Animate;
-void() Draw_NameTag;
 void() OtherPlayer_Anistate;
 void() Skeleton_Animate;
 void() CSQC_DayNight_Update;
 void(entity pl) DrawFloatingText;
+void() Player_Think;
 
 .float attack_released;
 .float anim_attacking;
@@ -710,7 +710,7 @@ void() Player_Screen =
 		else
 			ZoneName_alpha.doalpha = 0;
 
-		Draw_NameTag();
+		Draw_NameTag_ChatBubble();
 		if (!player_idle && health > 0)
 		{
 			Draw_EventLog();
@@ -751,97 +751,174 @@ void() Player_Screen =
 	}
 };
 
-void() Player_Think;
 float SERVER_FRAME_INTERVAL = 0.05;
+.float prediction_error_time;
+.vector prediction_error;
 float(void) Player_PreDraw =
 {
     if (self.entnum == player_localentnum)
-	{
-		Player_Animate();
+    {
+        // -------------------------------
+        // Prevent prediction buffer from growing too large
+        // -------------------------------
+        if (clientcommandframe - servercommandframe > 8)
+            servercommandframe = clientcommandframe - 8;
 
-		self.movetype = MOVETYPE_WALK;
+        Player_Animate();
+        self.movetype = MOVETYPE_WALK;
 
-		// prepare rollback
-		vector vOldOrigin = self.origin;
-		vector vOldVelocity = self.velocity;
-		float fOldPMoveFlags = self.pmove_flags;
+        // -------------------------------
+        // Save real logic state
+        // -------------------------------
+        vector vOldOrigin = self.origin;
+        vector vOldVelocity = self.velocity;
+        float  fOldPMoveFlags = self.pmove_flags;
 
-		// apply physics for every single input-frame that has not yet been
-		// acknowledged by the server (servercommandframe = last acknowledged frame)
-		for (int i = servercommandframe + 1; i <= clientcommandframe; i++)
-		{
-			float flSuccess = getinputstate(i);
+        // -------------------------------
+        // Client-side prediction loop
+        // -------------------------------
+        for (int i = servercommandframe + 1; i <= clientcommandframe; i++)
+        {
+            float flSuccess = getinputstate(i);
+            if (!flSuccess) continue;
+            if (input_timelength == 0) break;
 
-			if (flSuccess == FALSE)
-				continue;
+            runstandardplayerphysics(self);
+        }
 
-			if (input_timelength == 0) // Partial frames are the worst
-				break;
+        // -------------------------------
+        // Small velocity damping for jitter
+        // -------------------------------
+        if (fabs(self.velocity_x) < 20) self.velocity_x *= 0.9;
+        if (fabs(self.velocity_y) < 20) self.velocity_y *= 0.9;
 
-			runstandardplayerphysics(self);
-		}
-		Skeleton_ObjectDraw(); // draw objects on bones (armor, lantern, swords, etc)
+        // -------------------------------
+        // Stair smoothing (vertical)
+        // -------------------------------
+        if (self.prediction_error_time == 0) // First frame after spawn
+        {
+            vPlayerOrigin = self.origin;
+            vPlayerOriginOld = self.origin;
+            vPlayerOriginOld_z = self.origin_z;
+            vPlayerVelocity = self.velocity;
 
-		vPlayerOriginOld = vPlayerOrigin; // smooth stair stepping, this has to be done manually!
+            self.prediction_error_time = time; // mark initialized
+        }
 
-		if ((self.flags & FL_ONGROUND) && (self.origin_z - vPlayerOriginOld_z > 0))
-		{
-			vPlayerOriginOld_z += frametime * 150;
+        vPlayerOriginOld = vPlayerOrigin;
 
-			if (vPlayerOriginOld_z > self.origin_z)
-				vPlayerOriginOld_z = self.origin_z;
-			if (self.origin_z - vPlayerOriginOld_z > 18)
-				vPlayerOriginOld_z = self.origin_z - 18;
+        if ((self.flags & FL_ONGROUND) && (self.origin_z - vPlayerOriginOld_z > 0))
+        {
+            vPlayerOriginOld_z += frametime * 150;
 
-			vPlayerOrigin_z += vPlayerOriginOld_z - self.origin_z;
-		}
-		else
-			vPlayerOriginOld_z = self.origin_z;
+            if (vPlayerOriginOld_z > self.origin_z)
+                vPlayerOriginOld_z = self.origin_z;
+            if (self.origin_z - vPlayerOriginOld_z > 18)
+                vPlayerOriginOld_z = self.origin_z - 18;
+        }
+        else
+        {
+            vPlayerOriginOld_z = self.origin_z;
+        }
 
-		vPlayerOrigin = [self.origin_x, self.origin_y, vPlayerOriginOld_z];
-		vPlayerVelocity = self.velocity;
-		addentity(self);
+        vPlayerOrigin = [vPlayerOrigin_x, vPlayerOrigin_y, vPlayerOriginOld_z];
+        vPlayerVelocity = self.velocity;
 
-		// time to roll back
-		self.origin = vOldOrigin;
-		setorigin(self, self.origin);
-		self.velocity = vOldVelocity;
-		self.pmove_flags = fOldPMoveFlags;
-		self.movetype = MOVETYPE_NONE;
+        // -------------------------------
+        // Prediction error smoothing
+        // -------------------------------
+        vector drawOrigin = vPlayerOrigin;
 
-		self.renderflags = RF_EXTERNALMODEL; // set renderflag for mirrors!
+        float flSmoothTime = time - self.prediction_error_time;
 
-		Player_Think();
-	}
-	else // other players
-	{
-		// Remove pitch so other players don't look weird
-		self.angles_x = 0;
+        if (flSmoothTime < 0.1)
+        {
+            float flAlpha = 0.15; // horizontal low-pass factor
 
-		// Update animation
-		if (self.anistate)
-			OtherPlayer_Anistate();
-		else
-			Player_Animate();
+            // Smooth horizontal (X/Y)
+            vPlayerOrigin_x = vPlayerOrigin_x * (1 - flAlpha) + (self.origin_x + self.prediction_error_x) * flAlpha;
+            vPlayerOrigin_y = vPlayerOrigin_y * (1 - flAlpha) + (self.origin_y + self.prediction_error_y) * flAlpha;
 
-		// --- Smooth position interpolation ---
-		float flTimeSinceUpdate = time - self.last_update_time;
-		float flInterpFactor = flTimeSinceUpdate / (SERVER_FRAME_INTERVAL); // server_frame_interval = time between server updates
-		if (flInterpFactor > 1) flInterpFactor = 1; // clamp
+            // Vertical Z: for local player, just use real origin (no screen shake)
+            vPlayerOrigin_z = self.origin_z;
 
-		vector vInterpolated = self.prev_origin + (self.last_origin - self.prev_origin) * flInterpFactor;
+            drawOrigin = vPlayerOrigin;
+        }
+        else if (self.prediction_error_time != 0)
+        {
+            self.prediction_error = '0 0 0';
+            drawOrigin = vPlayerOrigin;
+        }
 
-		// Optional tiny extrapolation using velocity
-		float flExtrapTime = 0.05; // 50 ms extrapolation
-		vInterpolated += self.velocity * flExtrapTime;
+        // -------------------------------
+        // Draw entity at smooth position
+        // -------------------------------
+        vector realOrigin = self.origin;
+        self.origin = drawOrigin;
 
-		self.origin = vInterpolated;
-		setorigin(self, self.origin);
+        Skeleton_ObjectDraw(); // attachments drawn after final origin
+        addentity(self);
 
-		// Draw skeleton and attached objects
-		Skeleton_ObjectDraw();
-		addentity(self);
-	}
+        // -------------------------------
+        // Restore real logic state
+        // -------------------------------
+        self.origin = vOldOrigin;
+        setorigin(self, self.origin);
+
+        self.velocity = vOldVelocity;
+        self.pmove_flags = fOldPMoveFlags;
+        self.movetype = MOVETYPE_NONE;
+        self.renderflags = RF_EXTERNALMODEL;
+
+        Player_Think();
+    }
+    else // Other players
+    {
+        // -------------------------------
+        // Remove pitch so other players don't look weird
+        // -------------------------------
+        self.angles_x = 0;
+
+        // -------------------------------
+        // Update animation
+        // -------------------------------
+        if (self.anistate)
+            OtherPlayer_Anistate();
+        else
+            Player_Animate();
+
+        // -------------------------------
+        // Interpolation
+        // -------------------------------
+        float flTimeSinceUpdate = time - self.last_update_time;
+        if (flTimeSinceUpdate < 0) flTimeSinceUpdate = 0;
+
+        if (flTimeSinceUpdate > SERVER_FRAME_INTERVAL * 2)
+        {
+            self.origin = self.last_origin;
+            setorigin(self, self.origin);
+        }
+        else
+        {
+            float flInterpFactor = flTimeSinceUpdate / SERVER_FRAME_INTERVAL;
+            if (flInterpFactor > 1) flInterpFactor = 1;
+
+            vector vInterpolated = self.prev_origin + (self.last_origin - self.prev_origin) * flInterpFactor;
+
+            // Tiny extrapolation using velocity
+            float flExtrapTime = flTimeSinceUpdate - SERVER_FRAME_INTERVAL;
+            if (flExtrapTime < 0) flExtrapTime = 0;
+            if (flExtrapTime > SERVER_FRAME_INTERVAL) flExtrapTime = SERVER_FRAME_INTERVAL;
+
+            vInterpolated += self.velocity * flExtrapTime;
+
+            self.origin = vInterpolated;
+            setorigin(self, self.origin);
+        }
+
+        Skeleton_ObjectDraw(); // attachments after interpolation
+        addentity(self);
+    }
 
     return PREDRAW_NEXT;
 };
