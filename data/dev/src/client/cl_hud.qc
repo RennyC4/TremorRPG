@@ -6,104 +6,120 @@ string(string s) StripColors;
 // ===============
 // Monster Plaques
 // ===============
+
 .float plaque_alpha;
 .float plaque_scale;
 .float reticle_scale;
+float MONSTER_PLAQUE_FADE_SPEED = 6;
+float MONSTER_PLAQUE_DIST = 2000;
+
+float(entity targ) Monster_Visible =
+{
+    vector start = vPlayerOrigin + self.view_ofs;
+    vector end   = targ.origin + targ.view_ofs;
+
+    traceline(start, end, TRUE, world);
+
+    if (trace_fraction == 1 || trace_ent == targ)
+        return TRUE;
+
+    return FALSE;
+};
+
 void() CSQC_DrawMonsterPlaques =
 {
     entity mon;
     float plyr_level = getstatf(STAT_LEVEL);
-    float fade_speed = 5;    // fade in/out speed
-    float pop_speed  = 8;    // plaque pop speed
-    float reticle_speed = 8; // reticle shrink speed
 
     for (mon = world; (mon = find(mon, classname, "monster")); )
     {
+        if (!mon || mon.health <= 0)
+            continue;
+
         float dist = vlen(mon.origin - vPlayerOrigin);
+        if (dist > MONSTER_PLAQUE_DIST)
+            continue;
 
-        // ----------------------
-        // Initialize properties
-        // ----------------------
-        if (!mon.plaque_alpha) mon.plaque_alpha = 0;
-        if (!mon.plaque_scale) mon.plaque_scale = 1;
-        if (!mon.reticle_scale) mon.reticle_scale = 1;
+        // Sight check
+        float visible = Monster_Visible(mon);
 
-        // ----------------------
-        // Update alpha (fade)
-        // ----------------------
-        float target_alpha = (dist <= 2000 && mon.health > 0) ? 1 : 0;
-        mon.plaque_alpha += (target_alpha - mon.plaque_alpha) * min(1, fade_speed * frametime);
+        // Allocate alpha storage if missing
+        if (!mon.plaque_alpha)
+            mon.plaque_alpha = 0;
 
-        // Skip if fully invisible
-        if (mon.plaque_alpha <= 0) continue;
+        // Target alpha based on visibility
+        float target_alpha = visible ? 1 : 0;
 
-        // ----------------------
-        // Pop effect for plaque
-        // ----------------------
-        float target_scale = (mon.plaque_alpha < 0.1) ? 1.3 : 1; // slightly bigger at start
-        mon.plaque_scale += (target_scale - mon.plaque_scale) * min(1, pop_speed * frametime);
+        // Fade smoothing
+        mon.plaque_alpha += (target_alpha - mon.plaque_alpha) *
+                            min(1, MONSTER_PLAQUE_FADE_SPEED * frametime);
 
-        // ----------------------
-        // Distance-scaled vertical offset
-        // ----------------------
-        float baseHeight = (mon.maxs_z > 0) ? mon.maxs_z : 50;
-        float minOffset = baseHeight + 10;
-        float verticalOffset = max(minOffset, minOffset + dist * 0.02);
-        vector top = mon.origin + [0,0,verticalOffset];
-        vector screen = project(top);
-        if (screen_z <= 0) continue;
+        if (mon.plaque_alpha <= 0.02)
+            continue;
 
-        vector scale = [10,10] * mon.plaque_scale;
+        // ALWAYS draw above head
+        vector head_pos = mon.origin + [0,0, mon.maxs_z + 12];
+        vector plaque_coord = project(head_pos);
 
-        // ----------------------
-        // Draw name
-        // ----------------------
-        vector name_coord = screen + [0,-5,0];
-        float w = stringwidth(mon.displayname, TRUE, scale);
-        name_coord_x -= w * 0.5;
-        drawstring(name_coord + [1,1,0], mon.displayname, scale, [0,0,0], mon.plaque_alpha, 0);
-        drawstring(name_coord, mon.displayname, scale, [1,1,1], mon.plaque_alpha, 0);
+        if (plaque_coord_z <= 0)
+            continue;
 
-        // ----------------------
-        // Draw health bar
-        // ----------------------
-        vector hbar_coord = screen + [-20,5,0];
-        vector hbar_size = '40 4 0' * mon.plaque_scale;
-        float filled = (mon.health / mon.max_health) * hbar_size_x;
-        drawfill(hbar_coord + [1,3,0], hbar_size, [0,0,0], mon.plaque_alpha, 0);
-        drawfill(hbar_coord + [0,2,0], [filled,hbar_size_y,0], [0.5,0,0], mon.plaque_alpha, 0);
+        // Centering
+        plaque_coord_x -= 25;
+        plaque_coord_y -= 10;
 
-        // ----------------------
-        // Draw level (fixed beside full bar)
-        // ----------------------
-        vector lvl_coord = hbar_coord + [hbar_size_x + 5,0,0];
+        float a = mon.plaque_alpha;
+
+        // --------------------------
+        // NAME
+        // --------------------------
+        vector name_offset = [0, -8, 0]; // raise the display name
+        drawstring(plaque_coord + name_offset + [1,1,0],
+                   mon.displayname, [10,10], '0 0 0', a, 0);
+        drawstring(plaque_coord + name_offset,
+                   mon.displayname, [10,10], '1 1 1', a, 0);
+
+        // --------------------------
+        // HEALTH BAR
+        // --------------------------
+        vector hbar_size = '42 4 0';  // shorter bar
+        float hp_frac = bound(0, mon.health / mon.max_health, 1);
+        hbar_size_x *= hp_frac;
+
+        vector hbar_pos = plaque_coord + [4, 6, 0];
+
+        drawfill(hbar_pos + [1,1], '42 4 0', '0 0 0', a, 0);
+        drawfill(hbar_pos, hbar_size, '0.6 0 0', a, 0);
+
+        // --------------------------
+        // LEVEL (fixed position)
+        // --------------------------
         string lvl_display = (mon.level >= plyr_level + 6) ? "?" : ftos(mon.level);
-        drawstring(lvl_coord + [1,1,0], lvl_display, scale, [0,0,0], mon.plaque_alpha, 0);
-        drawstring(lvl_coord, lvl_display, scale, [1,.8,0], mon.plaque_alpha, 0);
 
-        // ----------------------
-        // Lock-on reticle
-        // ----------------------
+        vector level_pos = plaque_coord + [46, 4, 0];
+
+        drawstring(level_pos + [1,1,0], lvl_display, [10,10], '0 0 0', a, 0);
+        drawstring(level_pos, lvl_display, [10,10], '1 .8 0', a, 0);
+
+        // --------------------------
+        // LOCK-ON RETICLE
+        // --------------------------
         if (lock_on_active && lock_on_target == mon)
         {
-            float target_reticle_scale = 1.5; // start big if just locked-on
-            if (mon.reticle_scale < target_reticle_scale)
-                mon.reticle_scale += (target_reticle_scale - mon.reticle_scale) * min(1, reticle_speed * frametime);
-            else
-                mon.reticle_scale += (1.0 - mon.reticle_scale) * min(1, reticle_speed * frametime);
+            vector target_coord = project(mon.origin + [0,0, mon.maxs_z * 0.6]);
 
-            vector target_coord = project(mon.origin);
-            target_coord_x -= 32 * mon.reticle_scale;
-            target_coord_y -= 32 * mon.reticle_scale;
+            target_coord_x -= 32;
+            target_coord_y -= 32;
+
             if (target_coord_y > g_height / 1.75)
                 target_coord_y = g_height / 1.75;
 
-            vector size = [64,64] * mon.reticle_scale;
-            drawpic(target_coord, "progs/targetdot.spr_0", size, [1,1,1], mon.plaque_alpha, 0);
-        }
-        else
-        {
-            mon.reticle_scale = 1.0; // reset when not locked-on
+            drawpic(target_coord,
+                    "progs/targetdot.spr_0",
+                    [64,64],
+                    '1 1 1',
+                    a,
+                    0);
         }
     }
 };
