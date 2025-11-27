@@ -824,24 +824,28 @@ float(void) Player_PreDraw =
         vPlayerOrigin_z = vPlayerOriginOld_z;
 
         // -------------------------------
-        // Draw the local player once at smooth position
+        // Update origin for engine (draw once after network entities)
         // -------------------------------
-        vector drawOrigin = vPlayerOrigin;
-        self.origin = drawOrigin;
-        Skeleton_ObjectDraw();
-        addentity(self);
+        self.origin = vPlayerOrigin;
+        setorigin(self, self.origin);
 
         // -------------------------------
-        // Restore real logic state for physics
+        // Restore logic state for physics
         // -------------------------------
         self.origin = vOldOrigin;
-        setorigin(self, self.origin);
         self.velocity = vOldVelocity;
         self.pmove_flags = fOldPMoveFlags;
         self.movetype = MOVETYPE_NONE;
         self.renderflags = RF_EXTERNALMODEL;
 
         Player_Think();
+
+        // -------------------------------
+        // Optional: manually draw skeleton once after network entities
+        // Only if engine doesn’t draw local player
+        // -------------------------------
+        Skeleton_ObjectDraw();
+        addentity(self);
     }
     else
     {
