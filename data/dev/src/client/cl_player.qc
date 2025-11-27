@@ -756,91 +756,98 @@ float SERVER_FRAME_INTERVAL = 0.05;
 .vector prediction_error;
 float(void) Player_PreDraw =
 {
-	if (self.entnum == player_localentnum)
-	{
-		// Initialize smoothing variables if not done yet
-		if (vPlayerOrigin_time == 0)
-		{
-			vPlayerOrigin = self.origin;
-			vPlayerOriginOld = self.origin;
-			vPlayerOriginOld_z = self.origin_z;
-			vPlayerVelocity = self.velocity;
-			vPlayerOrigin_time = time;
-		}
+    if (self.entnum == player_localentnum)
+    {
+        // -------------------------------
+        // Initialize smoothing variables
+        // -------------------------------
+        if (vPlayerOrigin_time == 0)
+        {
+            vPlayerOrigin = self.origin;
+            vPlayerOriginOld = self.origin;
+            vPlayerOriginOld_z = self.origin_z;
+            vPlayerVelocity = self.velocity;
+            vPlayerOrigin_time = time;
+        }
 
-		// -------------------------------
-		// Animate player BEFORE physics
-		// -------------------------------
-		Player_Animate();
-		self.movetype = MOVETYPE_WALK;
+        // -------------------------------
+        // Animate player BEFORE physics
+        // -------------------------------
+        Player_Animate();
+        self.movetype = MOVETYPE_WALK;
 
-		// Save logic state
-		vector vOldOrigin = self.origin;
-		vector vOldVelocity = self.velocity;
-		float  fOldPMoveFlags = self.pmove_flags;
+        // Save logic state
+        vector vOldOrigin = self.origin;
+        vector vOldVelocity = self.velocity;
+        float  fOldPMoveFlags = self.pmove_flags;
 
-		// -------------------------------
-		// Prediction loop
-		// -------------------------------
-		for (int i = servercommandframe + 1; i <= clientcommandframe; i++)
-		{
-			if (!getinputstate(i)) continue;
-			if (input_timelength == 0) break;
-			runstandardplayerphysics(self);
-		}
+        // -------------------------------
+        // Prediction loop
+        // -------------------------------
+        for (int i = servercommandframe + 1; i <= clientcommandframe; i++)
+        {
+            if (!getinputstate(i)) continue;
+            if (input_timelength == 0) break;
+            runstandardplayerphysics(self);
+        }
 
-		// Small velocity damping
-		if (fabs(self.velocity_x) < 20) self.velocity_x *= 0.9;
-		if (fabs(self.velocity_y) < 20) self.velocity_y *= 0.9;
+        // -------------------------------
+        // Small velocity damping
+        // -------------------------------
+        if (fabs(self.velocity_x) < 20) self.velocity_x *= 0.9;
+        if (fabs(self.velocity_y) < 20) self.velocity_y *= 0.9;
 
-		// Stair smoothing (vertical)
-		if ((self.flags & FL_ONGROUND) && (self.origin_z - vPlayerOriginOld_z > 0))
-		{
-			vPlayerOriginOld_z += frametime * 150;
-			if (vPlayerOriginOld_z > self.origin_z) vPlayerOriginOld_z = self.origin_z;
-			if (self.origin_z - vPlayerOriginOld_z > 18) vPlayerOriginOld_z = self.origin_z - 18;
-		}
-		else
-		{
-			vPlayerOriginOld_z = self.origin_z;
-		}
+        // -------------------------------
+        // Stair smoothing (vertical)
+        // -------------------------------
+        if ((self.flags & FL_ONGROUND) && (self.origin_z - vPlayerOriginOld_z > 0))
+        {
+            vPlayerOriginOld_z += frametime * 150;
+            if (vPlayerOriginOld_z > self.origin_z) vPlayerOriginOld_z = self.origin_z;
+            if (self.origin_z - vPlayerOriginOld_z > 18) vPlayerOriginOld_z = self.origin_z - 18;
+        }
+        else
+        {
+            vPlayerOriginOld_z = self.origin_z;
+        }
 
-		// -------------------------------
-		// Horizontal smoothing
-		// -------------------------------
-		float flSmoothTime = time - self.prediction_error_time;
-		if (flSmoothTime < 0.1)
-		{
-			float flAlpha = 0.15;
-			vPlayerOrigin_x = vPlayerOrigin_x * (1 - flAlpha) + (self.origin_x + self.prediction_error_x) * flAlpha;
-			vPlayerOrigin_y = vPlayerOrigin_y * (1 - flAlpha) + (self.origin_y + self.prediction_error_y) * flAlpha;
-		}
+        // -------------------------------
+        // Horizontal smoothing (prediction error)
+        // -------------------------------
+        float flSmoothTime = time - self.prediction_error_time;
+        if (flSmoothTime < 0.1)
+        {
+            float flAlpha = 0.15;
+            vPlayerOrigin_x = vPlayerOrigin_x * (1 - flAlpha) + (self.origin_x + self.prediction_error_x) * flAlpha;
+            vPlayerOrigin_y = vPlayerOrigin_y * (1 - flAlpha) + (self.origin_y + self.prediction_error_y) * flAlpha;
+        }
+        vPlayerOrigin_z = vPlayerOriginOld_z;
 
-		vPlayerOrigin_z = self.origin_z;
-		vector drawOrigin = vPlayerOrigin;
+        // -------------------------------
+        // Draw the local player once at smooth position
+        // -------------------------------
+        vector drawOrigin = vPlayerOrigin;
+        self.origin = drawOrigin;
+        Skeleton_ObjectDraw();
+        addentity(self);
 
-		// -------------------------------
-		// Draw entity at smooth position
-		// -------------------------------
-		self.origin = drawOrigin;
-		Skeleton_ObjectDraw();
-		addentity(self);
+        // -------------------------------
+        // Restore real logic state for physics
+        // -------------------------------
+        self.origin = vOldOrigin;
+        setorigin(self, self.origin);
+        self.velocity = vOldVelocity;
+        self.pmove_flags = fOldPMoveFlags;
+        self.movetype = MOVETYPE_NONE;
+        self.renderflags = RF_EXTERNALMODEL;
 
-		// -------------------------------
-		// Restore real logic state
-		// -------------------------------
-		self.origin = vOldOrigin;
-		setorigin(self, self.origin);
-		self.velocity = vOldVelocity;
-		self.pmove_flags = fOldPMoveFlags;
-		self.movetype = MOVETYPE_NONE;
-		self.renderflags = RF_EXTERNALMODEL;
-
-		Player_Think();
-	}
+        Player_Think();
+    }
     else
     {
-        // Interpolation for other players (unchanged)
+        // -------------------------------
+        // Other players: interpolation
+        // -------------------------------
         self.angles_x = 0;
         if (self.anistate) OtherPlayer_Anistate(); else Player_Animate();
 
