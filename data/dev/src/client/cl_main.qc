@@ -2,6 +2,8 @@
 // CSQC - Main file
 //
 
+void() CSQC_DrawMonsterPlaques;
+
 // ========================
 // Player Send Flags (PSF)
 // ========================
@@ -236,8 +238,10 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 
 	renderscene(); // does what you think it does
 
-	if (lock_on_active)
-		CSQC_LockOn_Plaques(lock_on_target.origin);
+//	if (lock_on_active)
+//		CSQC_LockOn_Plaques(lock_on_target.origin);
+
+	CSQC_DrawMonsterPlaques();
 
 	// Insert your own sui code here, make sure to uncomment sui_input_event as well
 	sui_begin(g_width, g_height);

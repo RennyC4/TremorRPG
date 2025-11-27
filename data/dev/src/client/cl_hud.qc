@@ -3,6 +3,63 @@
 //
 string(string s) StripColors;
 
+// ===============
+// Monster Plaques
+// ===============
+void() CSQC_DrawMonsterPlaques =
+{
+    entity mon;
+    float plyr_level = getstatf(STAT_LEVEL);
+
+    for (mon = world; (mon = find(mon, classname, "monster")); )
+    {
+        float dist = vlen(mon.origin - vPlayerOrigin);
+        if (dist > 2000) continue;
+
+        // Distance-scaled vertical offset with minimum height
+        float baseHeight = (mon.maxs_z > 0) ? mon.maxs_z : 50;  // fallback
+        float minOffset = baseHeight + 10;                     // min offset above head
+        float verticalOffset = max(minOffset, minOffset + dist * 0.02);
+
+        vector top = mon.origin + [0,0,verticalOffset];
+        vector screen = project(top);
+        if (screen_z <= 0) continue;
+
+        vector scale = [10,10];
+
+        // --- Draw name ---
+        vector name_coord = screen + [0,-5,0]; // slightly higher
+        float w = stringwidth(mon.displayname, TRUE, scale);
+        name_coord_x -= w * 0.5;
+        drawstring(name_coord + [1,1,0], mon.displayname, scale, [0,0,0], 1, 0);
+        drawstring(name_coord, mon.displayname, scale, [1,1,1], 1, 0);
+
+        // --- Draw health bar ---
+        vector hbar_coord = screen + [-20,5,0];
+        vector hbar_size = '40 4 0';  // shortened
+        float filled = (mon.health / mon.max_health) * hbar_size_x;
+        drawfill(hbar_coord + [1,3,0], hbar_size, [0,0,0], 1, 0);
+        drawfill(hbar_coord + [0,2,0], [filled,hbar_size_y,0], [0.5,0,0], 1, 0);
+
+        // --- Draw level (fixed beside full bar) ---
+        vector lvl_coord = hbar_coord + [hbar_size_x + 5, 0, 0];
+        string lvl_display = (mon.level >= plyr_level + 6) ? "?" : ftos(mon.level);
+        drawstring(lvl_coord + [1,1,0], lvl_display, scale, [0,0,0], 1, 0);
+        drawstring(lvl_coord, lvl_display, scale, [1,.8,0], 1, 0);
+
+        // --- Draw targeting reticle if this monster is locked-on ---
+        if (lock_on_active && lock_on_target == mon)
+        {
+            vector target_coord = project(mon.origin);
+            target_coord_x -= 32;
+            target_coord_y -= 32;
+            if (target_coord_y > g_height / 1.75)
+                target_coord_y = g_height / 1.75;
+            drawpic(target_coord, "progs/targetdot.spr_0", [64,64], '1 1 1', 1, 0);
+        }
+    }
+};
+
 // ============================
 // Floating Text + Name Tags
 // ============================

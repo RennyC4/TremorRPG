@@ -41,62 +41,6 @@ float(entity targ) LockOn_Visible =
 	return FALSE;
 };
 
-// ============================
-// LOCK-ON UI DRAWING
-// ============================
-void(vector where) CSQC_LockOn_Plaques =
-{
-    float plyr_level = getstatf(STAT_LEVEL);
-    vector plaque_coord = project(where);
-
-    if (plaque_coord_y > g_height / 2)
-        plaque_coord_y = g_height / 2;
-
-    plaque_coord_x -= 16;
-    plaque_coord_y -= 16;
-
-    if (plaque_coord_z > 0)
-    {
-        string name = (lock_on_target.classname == "player") ?
-            lock_on_target.netname : lock_on_target.displayname;
-
-        drawstring(plaque_coord + [1,1], name, [10,10], [0,0,0], 1, 0);
-        drawstring(plaque_coord, name, [10,10], [1,1,1], 1, 0);
-    }
-
-    // health bar
-    plaque_coord_x -= 12;
-    plaque_coord_y += 8;
-    vector hbar_size = '50 4 0';
-    hbar_size_x = (lock_on_target.health / lock_on_target.max_health) * hbar_size_x;
-
-    if (plaque_coord_z > 0)
-    {
-        drawfill(plaque_coord + [1,3], hbar_size, '0 0 0', 1, 0);
-        drawfill(plaque_coord + [0,2], hbar_size, '0.5 0 0', 1, 0);
-    }
-
-    // level
-    plaque_coord_x += 28;
-    string lvl_display = (lock_on_target.level >= plyr_level + 6) ? "?" : ftos(lock_on_target.level);
-
-    if (plaque_coord_z > 0)
-    {
-        drawstring(plaque_coord + [25,-1], lvl_display, [10,10], [0,0,0], 1, 0);
-        drawstring(plaque_coord + [24,-2], lvl_display, [10,10], [1,.8,0], 1, 0);
-    }
-
-    // crosshair
-    vector target_coord = project(where);
-    target_coord_x -= 32;
-    target_coord_y -= 32;
-    if (target_coord_y > g_height / 1.75)
-        target_coord_y = g_height / 1.75;
-
-    if (target_coord_z > 0)
-        drawpic(target_coord, "progs/targetdot.spr_0", [64,64], '1 1 1', 1, 0);
-};
-
 // =======================================
 // LOCKON FOCUS FOLLOW ENTITY
 // =======================================
