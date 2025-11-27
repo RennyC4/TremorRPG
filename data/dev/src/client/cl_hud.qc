@@ -7,16 +7,17 @@ string(string s) StripColors;
 // Monster Plaques
 // ===============
 
-.float plaque_alpha;
-.float plaque_scale;
-.float reticle_scale;
-float MONSTER_PLAQUE_FADE_SPEED = 6;
 float MONSTER_PLAQUE_DIST = 2000;
+float MONSTER_FADE_SPEED  = 6;
+float LOCKON_SCALE_SPEED  = 8;
+
+.float plaque_alpha;
+.float lockon_reticle_scale;
 
 float(entity targ) Monster_Visible =
 {
     vector start = vPlayerOrigin + self.view_ofs;
-    vector end   = targ.origin + targ.view_ofs;
+    vector end   = targ.origin + [0,0,targ.maxs_z * 0.9];
 
     traceline(start, end, TRUE, world);
 
@@ -40,89 +41,112 @@ void() CSQC_DrawMonsterPlaques =
         if (dist > MONSTER_PLAQUE_DIST)
             continue;
 
-        // Sight check
+        // ---- Visibility test (from camera to head)
         float visible = Monster_Visible(mon);
 
-        // Allocate alpha storage if missing
         if (!mon.plaque_alpha)
             mon.plaque_alpha = 0;
 
-        // Target alpha based on visibility
         float target_alpha = visible ? 1 : 0;
 
-        // Fade smoothing
         mon.plaque_alpha += (target_alpha - mon.plaque_alpha) *
-                            min(1, MONSTER_PLAQUE_FADE_SPEED * frametime);
+                            min(1, MONSTER_FADE_SPEED * frametime);
 
-        if (mon.plaque_alpha <= 0.02)
+        if (mon.plaque_alpha < 0.02)
             continue;
 
-        // ALWAYS draw above head
-        vector head_pos = mon.origin + [0,0, mon.maxs_z + 12];
-        vector plaque_coord = project(head_pos);
+        float alpha = mon.plaque_alpha;
 
+        // ---- TRUE HEAD POSITION (prevents sinking into body)
+        vector head_pos;
+        head_pos = mon.origin;
+        head_pos_z += mon.maxs_z + 48;
+
+        vector plaque_coord = project(head_pos);
         if (plaque_coord_z <= 0)
             continue;
 
         // Centering
         plaque_coord_x -= 25;
-        plaque_coord_y -= 10;
+        plaque_coord_y -= 14;
 
-        float a = mon.plaque_alpha;
-
-        // --------------------------
+        // -------------------
         // NAME
-        // --------------------------
-        vector name_offset = [0, -8, 0]; // raise the display name
-        drawstring(plaque_coord + name_offset + [1,1,0],
-                   mon.displayname, [10,10], '0 0 0', a, 0);
-        drawstring(plaque_coord + name_offset,
-                   mon.displayname, [10,10], '1 1 1', a, 0);
+        // -------------------
+        drawstring(plaque_coord + [1,-7,0], mon.displayname,
+                   [10,10], '0 0 0', alpha, 0);
+        drawstring(plaque_coord + [0,-8,0], mon.displayname,
+                   [10,10], '1 1 1', alpha, 0);
 
-        // --------------------------
-        // HEALTH BAR
-        // --------------------------
-        vector hbar_size = '42 4 0';  // shorter bar
+        // -------------------
+        // HEALTH BAR (shorter)
+        // -------------------
+        vector hbar_bg_size = '42 4 0';
+        vector hbar_size    = '42 4 0';
+
         float hp_frac = bound(0, mon.health / mon.max_health, 1);
         hbar_size_x *= hp_frac;
 
-        vector hbar_pos = plaque_coord + [4, 6, 0];
+        vector hbar_pos = plaque_coord + [4, 8, 0];
 
-        drawfill(hbar_pos + [1,1], '42 4 0', '0 0 0', a, 0);
-        drawfill(hbar_pos, hbar_size, '0.6 0 0', a, 0);
+        drawfill(hbar_pos + [1,1], hbar_bg_size, '0 0 0', alpha, 0);
+        drawfill(hbar_pos, hbar_size,    '0.6 0 0', alpha, 0);
 
-        // --------------------------
+        // -------------------
         // LEVEL (fixed position)
-        // --------------------------
+        // -------------------
         string lvl_display = (mon.level >= plyr_level + 6) ? "?" : ftos(mon.level);
 
-        vector level_pos = plaque_coord + [46, 4, 0];
+        vector level_pos = plaque_coord + [48, 6, 0];
 
-        drawstring(level_pos + [1,1,0], lvl_display, [10,10], '0 0 0', a, 0);
-        drawstring(level_pos, lvl_display, [10,10], '1 .8 0', a, 0);
+        drawstring(level_pos + [1,1,0], lvl_display,
+                   [10,10], '0 0 0', alpha, 0);
+        drawstring(level_pos, lvl_display,
+                   [10,10], '1 .8 0', alpha, 0);
 
-        // --------------------------
-        // LOCK-ON RETICLE
-        // --------------------------
+        // -------------------
+        // LOCK-ON RETICLE WITH SCALE
+        // -------------------
         if (lock_on_active && lock_on_target == mon)
         {
+            if (!mon.lockon_reticle_scale || mon.lockon_reticle_scale > 2.5)
+                mon.lockon_reticle_scale = 2.5;
+
+            float target_scale = 1.0;
+
+            mon.lockon_reticle_scale +=
+                (target_scale - mon.lockon_reticle_scale) *
+                min(1, LOCKON_SCALE_SPEED * frametime);
+
             vector target_coord = project(mon.origin + [0,0, mon.maxs_z * 0.6]);
+            if (target_coord_z > 0)
+            {
+                float s = mon.lockon_reticle_scale;
 
-            target_coord_x -= 32;
-            target_coord_y -= 32;
+                vector draw_size = [64 * s, 64 * s];
 
-            if (target_coord_y > g_height / 1.75)
-                target_coord_y = g_height / 1.75;
+                target_coord_x -= draw_size_x * 0.5;
+                target_coord_y -= draw_size_y * 0.5;
 
-            drawpic(target_coord,
-                    "progs/targetdot.spr_0",
-                    [64,64],
-                    '1 1 1',
-                    a,
-                    0);
+                if (target_coord_y > g_height / 1.75)
+                    target_coord_y = g_height / 1.75;
+
+                drawpic(target_coord,
+                        "progs/targetdot.spr_0",
+                        draw_size,
+                        '1 1 1',
+                        alpha,
+                        0);
+            }
+        }
+        else
+        {
+            // Reset scale if not locked onto
+            mon.lockon_reticle_scale = 2.5;
         }
     }
 };
+
 
 // ============================
 // Floating Text + Name Tags
