@@ -180,7 +180,7 @@ void() Draw_NameTag_ChatBubble =
         vector pos = project(top) - [w*0.5,0,0];
 
 		// Don't draw local players name tag
-		if (b.entnum != player_localentnum)
+		if (b.entnum != player_localentnum && pos_z > 0)
 		{
 			drawstring(pos + [1,1,0], b.netname, scale,'0 0 0',1,0); // shadow
 			if (b.pvp != 1)
