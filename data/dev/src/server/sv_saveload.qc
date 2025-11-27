@@ -264,19 +264,38 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
     self.skill_fishing = (total_lines > 58) ? stof(file_contents[58]) : 0;
     self.skill_woodcutting = (total_lines > 59) ? stof(file_contents[59]) : 0;
 
-    // --- Step 4: Load inventory safely ---
-    self.read_inv_count = (inv_count_line < total_lines) ? stof(file_contents[inv_count_line]) : 0;
-    if (self.read_inv_count > 64) { self.read_inv_count = 64; sprint(self, PRINT_HIGH, "Inventory truncated to 64 items\n"); }
+	// --- Step 4: Load inventory safely ---
+	self.read_inv_count = (inv_count_line < total_lines) ? stof(file_contents[inv_count_line]) : 0;
+	if (self.read_inv_count > 64) 
+	{
+		self.read_inv_count = 64; 
+		sprint(self, PRINT_HIGH, "Inventory truncated to 64 items\n");
+	}
 
-    string what = "";
-    float i;
-    for (i = 0; i < self.read_inv_count && (inv_count_line + 1 + (i*2)) < total_lines && i < 64; i++)
-    {
-        what = file_contents[inv_count_line + 1 + (i * 2)];
-        AddToInventory(self, what, 0);
-        if (inv_count_line + 2 + (i*2) < total_lines)
-            AddToInventory(self, what, stof(file_contents[inv_count_line + 2 + (i * 2)]));
-    }
+	string what = "";
+	float i;
+	for (i = 0; i < self.read_inv_count && (inv_count_line + 1 + (i*2)) < total_lines && i < 64; i++)
+	{
+		what = file_contents[inv_count_line + 1 + (i * 2)];
+		float qty = (inv_count_line + 2 + (i*2) < total_lines) ? stof(file_contents[inv_count_line + 2 + (i * 2)]) : 0;
+		if (qty > 0)  // Only add real quantities
+			AddToInventory(self, what, qty);
+	}
+
+	// --- Step 4b: Assign equipped items AFTER inventory is restored ---
+	self.main_hand = (total_lines > 26) ? file_contents[26] : "";
+	self.off_hand = (total_lines > 27) ? file_contents[27] : "";
+	self.armorname = (total_lines > 28) ? file_contents[28] : "";
+	self.armorvalue = (total_lines > 29) ? stof(file_contents[29]) : 0;
+	self.pvp = (total_lines > 30) ? stof(file_contents[30]) : 0;
+	self.pvpenable_count = (total_lines > 31) ? stof(file_contents[31]) : 0;
+	self.pvp_autoflagged = (total_lines > 32) ? stof(file_contents[32]) : 0;
+	self.blockvalue = (total_lines > 33) ? stof(file_contents[33]) : 0;
+	self.spell_equipped = (total_lines > 34) ? file_contents[34] : "";
+	self.spell_power_min = (total_lines > 35) ? stof(file_contents[35]) : 0;
+	self.spell_power_max = (total_lines > 36) ? stof(file_contents[36]) : 0;
+	self.projectile_power_min = (total_lines > 37) ? stof(file_contents[37]) : 0;
+	self.projectile_power_max = (total_lines > 38) ? stof(file_contents[38]) : 0;
 
     // --- Step 5: Load spells safely ---
     self.spell_count = (spell_count_line < total_lines) ? stof(file_contents[spell_count_line]) : 0;
