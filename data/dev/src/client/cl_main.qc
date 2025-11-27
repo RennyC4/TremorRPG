@@ -186,7 +186,14 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		setproperty(VF_DRAWCROSSHAIR, 0);
 
-	setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
+	//setproperty(VF_ORIGIN, vPlayerOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)]);
+	// Update smooth camera origin
+	CSQC_UpdateCameraZ(vPlayerOrigin);
+
+	// Apply smoothed camera origin instead of raw player origin
+	vector camOrigin = vCameraSmoothOrigin + [0, 0, getstatf(STAT_VIEWHEIGHT)];
+	setproperty(VF_ORIGIN, camOrigin);
+
 	setproperty(VF_ANGLES, view_angles);
 
 	addentities(MASK_VIEWMODEL | MASK_ENGINE);
@@ -237,9 +244,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 		Camera_DeathCam();
 
 	renderscene(); // does what you think it does
-
-//	if (lock_on_active)
-//		CSQC_LockOn_Plaques(lock_on_target.origin);
 
 	CSQC_DrawMonsterPlaques();
 

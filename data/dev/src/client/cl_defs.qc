@@ -2191,6 +2191,8 @@ vector vPlayerOrigin;
 vector vPlayerOriginOld;
 vector vPlayerVelocity;
 float vPlayerOrigin_time;
+vector vCameraSmoothOrigin;
+float  vCameraZVelocity;
 
 string LOGIN_NAME; // users login name
 string LOGIN_GENDER; // create gender
@@ -2379,7 +2381,6 @@ float LockOn_CycleToggle; // same
 .float spawnflags;
 .float floattext_time;
 .string floattext_msg;
-
 // Animation States
 .float anistate;
 const float ANISTATE_NONE = 0;

@@ -108,3 +108,44 @@ void() Camera_Third =
 
 	camera_gdist = dist;
 };
+
+void(vector targetOrigin) CSQC_UpdateCameraZ =
+{
+    if (vCameraSmoothOrigin == '0 0 0')
+        vCameraSmoothOrigin = targetOrigin;
+
+    float zDiff = targetOrigin_z - vCameraSmoothOrigin_z;
+
+    // Always instantly sync when airborne
+    if (!(self.flags & FL_ONGROUND))
+    {
+        vCameraSmoothOrigin = targetOrigin;
+        vCameraZVelocity = 0;
+        return;
+    }
+
+    // If camera falls far behind, force faster catch-up
+    if (zDiff > 8)
+    {
+        vCameraSmoothOrigin_z += zDiff * min(1, frametime * 10);
+        vCameraZVelocity = 0;
+    }
+    else if (fabs(zDiff) < 0.25)
+    {
+        vCameraSmoothOrigin_z = targetOrigin_z;
+        vCameraZVelocity = 0;
+    }
+    else
+    {
+        float stiffness = 1.8;  // MUCH faster response
+        float damping   = 0.85;
+
+        vCameraZVelocity += zDiff * stiffness * frametime;
+        vCameraZVelocity *= damping;
+
+        vCameraSmoothOrigin_z += vCameraZVelocity;
+    }
+
+    vCameraSmoothOrigin_x = targetOrigin_x;
+    vCameraSmoothOrigin_y = targetOrigin_y;
+};

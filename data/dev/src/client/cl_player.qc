@@ -946,7 +946,6 @@ void() Player_DoAttack =
 
 		User_DoAttack = FALSE;
 	}
-
 };
 
 float JumpPress;
@@ -1004,7 +1003,7 @@ void() Player_Think =
 	else
 		PlayerOnGround = FALSE;
 
-	Player_DoAttack();
+	Player_DoAttack(); // attack goes before health check for respawning
 
 	if (self.health <= 0)
 		return;
@@ -1024,6 +1023,4 @@ void() Player_Think =
 		CSQC_LockOn_Cycle();
 		LockOn_CycleToggle = FALSE;
 	}
-	
-
 };
