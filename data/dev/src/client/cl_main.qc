@@ -195,7 +195,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	setproperty(VF_ORIGIN, camOrigin);
 
 	setproperty(VF_ANGLES, view_angles);
-
+	
+	Camera_Smooth();
 	addentities(MASK_VIEWMODEL | MASK_ENGINE);
 
 	CSQC_LockOn_Update();
