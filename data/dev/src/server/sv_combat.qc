@@ -337,8 +337,18 @@ void(vector ang) CSEv_DoAttack_Melee_v =
         targ.jumpattack_hit_finished = time + 2;
     }
 
-    if (targ.cast_finished > time)
-        targ.cast_finished += 0.8;
+	// Hit player / monster executing a charging up spell
+	float max_cast = 5.0; // maximum time the cast can be extended
+	if (targ.cast_finished > time)
+	{
+		float remaining = targ.cast_finished - time;
+		float add = 0.8 / (1 + remaining * 0.5); // diminishing return factor
+		targ.cast_finished += add;
+
+		// enforce maximum
+		if ((targ.cast_finished - time) > max_cast)
+			targ.cast_finished = time + max_cast;
+	}
 
     damage -= targ.armorvalue;
     damage += bs_damage;
