@@ -2,6 +2,45 @@
 // CSQC - Main file
 //
 
+float(void) DrawDynamicLights =
+{
+    for (entity e = world; (e = find(e, classname, "dlight")); )
+	{
+		float dist = vlen(vPlayerOrigin - e.origin);
+
+		if (vlen(e.origin - vPlayerOrigin) > 2000)
+			continue;
+
+		float lev = e.light_lev;
+		float want_noshadow = 0;
+
+		if (autocvar_tremor_lighting == "simple")
+		{
+			want_noshadow = 1;
+			lev /= 1.5;
+		}
+		else if (e.spawnflags & 1)
+		{
+			want_noshadow = 1;
+			lev /= 1.5;
+		}
+
+		if (want_noshadow)
+			e.pflags |= PFLAGS_NOSHADOW;
+		else
+			e.pflags &= ~PFLAGS_NOSHADOW;
+
+		if (e.spawnflags & 2)
+			e.pflags |= PFLAGS_CORONA;
+		else
+			e.pflags &= ~PFLAGS_CORONA;
+
+		if (lev < 5) lev = 5; // stop dlight culling flicker
+
+		dynamiclight_add(e.origin, lev, [e.color_x, e.color_y, e.color_z], e.style, "", e.pflags);
+	}
+};
+
 void() CSQC_DrawMonsterPlaques;
 
 // ========================
@@ -239,6 +278,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		Camera_DeathCam();
 
+	DrawDynamicLights();
 	renderscene(); // does what you think it does
 
 	CSQC_DrawMonsterPlaques();
@@ -805,7 +845,6 @@ void(float flIsNew) CSQC_Ent_Update =
 		{
 			self.classname = "dlight";
 			self.solid = SOLID_NOT;
-			self.predraw = Dlight_PreDraw;
 			self.drawmask = MASK_ENGINE;
 		}
 		self.origin_x = readcoord();
