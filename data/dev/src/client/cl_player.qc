@@ -794,55 +794,14 @@ float(void) Player_PreDraw =
 {
     if (self.entnum == player_localentnum)
     {
-        // -------------------------------
-        // Animate player BEFORE physics
-        // -------------------------------
+		self.angles_x = 0;
+		vPlayerOrigin = self.origin;
+		self.renderflags = RF_EXTERNALMODEL;
+
+		Skeleton_ObjectDraw();
         Player_Animate();
-        self.movetype = MOVETYPE_WALK;
-
-        // Save logic state for physics
-        vector vOldOrigin = self.origin;
-        vector vOldVelocity = self.velocity;
-        float  fOldPMoveFlags = self.pmove_flags;
-
-        // -------------------------------
-        // Client-side prediction
-        // -------------------------------
-        for (int i = servercommandframe + 1; i <= clientcommandframe; i++)
-        {
-            if (!getinputstate(i)) continue;
-            if (input_timelength == 0) break;
-            runstandardplayerphysics(self);
-        }
-
-        // -------------------------------
-        // Small velocity damping
-        // -------------------------------
-        if (fabs(self.velocity_x) < 20) self.velocity_x *= 0.9;
-        if (fabs(self.velocity_y) < 20) self.velocity_y *= 0.9;
-
-        // -------------------------------
-        // Apply predicted origin directly (no smoothing)
-        // -------------------------------
-        self.origin_z = (self.flags & FL_ONGROUND) ? self.origin_z : self.origin_z; // keep stair logic if needed
-        setorigin(self, self.origin);
-
-        // -------------------------------
-        // Draw the local player once
-        // -------------------------------
-        Skeleton_ObjectDraw();
-        addentity(self);
-
-        // -------------------------------
-        // Restore logic state for physics
-        // -------------------------------
-        self.origin = vOldOrigin;
-        self.velocity = vOldVelocity;
-        self.pmove_flags = fOldPMoveFlags;
-        self.movetype = MOVETYPE_NONE;
-        self.renderflags = RF_EXTERNALMODEL;
-
         Player_Think();
+		addentity(self);
     }
     else
     {

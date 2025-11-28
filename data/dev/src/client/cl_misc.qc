@@ -97,3 +97,13 @@ float(void) Bonfire_PreDraw =
     addentity(self);
     return PREDRAW_NEXT;
 };
+
+//
+// Dynamic Light
+//
+
+float(void) Dlight_PreDraw =
+{
+    addentity(self);
+    return PREDRAW_NEXT;
+};

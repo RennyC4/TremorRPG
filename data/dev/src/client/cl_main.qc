@@ -221,6 +221,8 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	float atbonfire = getstatf(STAT_BONFIRE);
 
 	clearscene(); // clear and update our global screen resolution vars
+	DrawDynamicLights();
+
 	setproperty(VF_DRAWENGINESBAR, 0); // disable quake status bar
 
 	if (!player_idle && health > 0 && !lock_on_active && !atbonfire)
@@ -278,7 +280,6 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	else
 		Camera_DeathCam();
 
-	DrawDynamicLights();
 	renderscene(); // does what you think it does
 
 	CSQC_DrawMonsterPlaques();
@@ -845,6 +846,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		{
 			self.classname = "dlight";
 			self.solid = SOLID_NOT;
+			self.predraw = Dlight_PreDraw;
 			self.drawmask = MASK_ENGINE;
 		}
 		self.origin_x = readcoord();
@@ -860,7 +862,6 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.spawnflags = readshort();
 		self.style = readbyte();
 	}
-	
 	
 	//
 	// Bonfire
