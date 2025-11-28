@@ -752,24 +752,10 @@ void() Player_Screen =
 };
 
 float SERVER_FRAME_INTERVAL = 0.05;
-.float prediction_error_time;
-.vector prediction_error;
 float(void) Player_PreDraw =
 {
     if (self.entnum == player_localentnum)
     {
-        // -------------------------------
-        // Initialize smoothing variables
-        // -------------------------------
-        if (vPlayerOrigin_time == 0)
-        {
-            vPlayerOrigin = self.origin;
-            vPlayerOriginOld = self.origin;
-            vPlayerOriginOld_z = self.origin_z;
-            vPlayerVelocity = self.velocity;
-            vPlayerOrigin_time = time;
-        }
-
         // -------------------------------
         // Animate player BEFORE physics
         // -------------------------------
@@ -798,35 +784,9 @@ float(void) Player_PreDraw =
         if (fabs(self.velocity_y) < 20) self.velocity_y *= 0.9;
 
         // -------------------------------
-        // Stair smoothing (vertical)
+        // Apply predicted origin directly (no smoothing)
         // -------------------------------
-        if ((self.flags & FL_ONGROUND) && (self.origin_z - vPlayerOriginOld_z > 0))
-        {
-            vPlayerOriginOld_z += frametime * 150;
-            if (vPlayerOriginOld_z > self.origin_z) vPlayerOriginOld_z = self.origin_z;
-            if (self.origin_z - vPlayerOriginOld_z > 18) vPlayerOriginOld_z = self.origin_z - 18;
-        }
-        else
-        {
-            vPlayerOriginOld_z = self.origin_z;
-        }
-
-        // -------------------------------
-        // Horizontal smoothing (prediction error)
-        // -------------------------------
-        float flSmoothTime = time - self.prediction_error_time;
-        if (flSmoothTime < 0.1)
-        {
-            float flAlpha = 0.15;
-            vPlayerOrigin_x = vPlayerOrigin_x * (1 - flAlpha) + (self.origin_x + self.prediction_error_x) * flAlpha;
-            vPlayerOrigin_y = vPlayerOrigin_y * (1 - flAlpha) + (self.origin_y + self.prediction_error_y) * flAlpha;
-        }
-        vPlayerOrigin_z = vPlayerOriginOld_z;
-
-        // -------------------------------
-        // Apply predicted origin for drawing
-        // -------------------------------
-        self.origin = vPlayerOrigin;
+        self.origin_z = (self.flags & FL_ONGROUND) ? self.origin_z : self.origin_z; // keep stair logic if needed
         setorigin(self, self.origin);
 
         // -------------------------------

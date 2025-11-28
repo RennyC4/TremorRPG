@@ -2,6 +2,20 @@
 
 #define printf(x, ...) print(sprintf(x, __VA_ARGS__))
 
+
+// Returns the shortest signed difference from start to end: result range: -180 to +180
+float(float start, float end) angle_diff =
+{
+    float D;
+
+    D = anglemod(end) - anglemod(start);
+
+    if (D >  180) D -= 360;
+    if (D < -180) D += 360;
+
+    return D;
+};
+
 void(entity targ) movetofloor =
 {
 	vector start = targ.origin;
