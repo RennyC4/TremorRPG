@@ -42,8 +42,11 @@ void() CSQC_Precache =
 	precache_model("models/bow0.glb");
 	precache_model("models/armor0.glb");
 	precache_model("models/arrow2.glb");
+	precache_model("models/bonfire.glb");
 	
 	precache_sound ("ambience/fountain.wav");
+	precache_sound("bonfire1.wav");
+	precache_sound("bonfire2.wav");
 };
 
 void() CSQC_Ent_Remove =
@@ -106,7 +109,7 @@ noref void() CSQC_WorldLoaded =
 	//
 	PART_LEVELUP = particleeffectnum("levelup");
 	PART_FOUNTAIN = particleeffectnum("fountain");
-	PART_BONFIRE = particleeffectnum("bonfire");
+	PART_BONFIRE = particleeffectnum("cu_flame");
 	PART_WTORCH1 = particleeffectnum("wtorch1");
 	PART_WTORCH2 = particleeffectnum("wtorch2");
 	PART_HEALTHPOTION = particleeffectnum("healthpotion");
@@ -817,6 +820,28 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.light_lev = readshort();
 		self.spawnflags = readshort();
 		self.style = readbyte();
+	}
+	
+	
+	//
+	// Bonfire
+	//
+	if (flEntType == ENT_BONFIRE)
+	{
+		if (flIsNew == TRUE)
+		{
+			self.classname = "bonfire";
+			self.solid = SOLID_SLIDEBOX;;
+			self.predraw = Bonfire_PreDraw;
+			self.drawmask = MASK_ENGINE;
+			setmodel(self, "models/bonfire.glb");
+			setsize(self, [-16, -16, 0], [16, 16, 80]);
+		}
+		self.origin_x = readcoord();
+		self.origin_y = readcoord();
+		self.origin_z = readcoord();
+		setorigin(self, self.origin);
+		ambientsound(self.origin, "bonfire2.wav", 1, ATTN_STATIC);
 	}
 };
 

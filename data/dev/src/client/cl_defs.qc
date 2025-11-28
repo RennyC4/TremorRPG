@@ -2223,6 +2223,7 @@ float PlayerOnGround;
 .float last_update_time;
 float User_DoAttack;
 float User_DoJump;
+float Draw_BonFireUse;
 
 // buttons
 float button4;

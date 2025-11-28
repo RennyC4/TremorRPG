@@ -111,3 +111,30 @@ float(void) Dlight_PreDraw =
 
     return PREDRAW_NEXT;
 };
+
+//
+// Bonfire
+//
+
+float(void) Bonfire_PreDraw =
+{
+    if (self.last_update_time < time)
+    {
+        pointparticles(PART_BONFIRE, self.origin);
+        self.last_update_time = time + 0.2;
+    }
+
+    self.pflags |= PFLAGS_CORONA;
+    dynamiclight_add(self.origin, 300, [1, .5, 0], 1, "", self.pflags);
+
+    // Only for local player
+    for (entity e = world; (e = find(e, classname,"player")); )
+	{
+		float dist = vlen(e.origin - self.origin);
+		if (dist <= 125)
+			Draw_BonFireUse = TRUE;
+	}
+
+    addentity(self);
+    return PREDRAW_NEXT;
+};

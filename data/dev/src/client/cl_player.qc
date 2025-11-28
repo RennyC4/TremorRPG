@@ -732,16 +732,54 @@ void() Player_Screen =
 		}
 
 		// bonfire SP reminder text
-		if (atbonfire && skillpoints > 0)
+		if (atbonfire)
 		{
-			string msg1 = "You possess skill points!";
-			float tw = (stringwidth(msg1, 0, [12,12]) / 2);
-			vector txtpos = [(g_width * 0.5) - tw, g_height - 25];
-			float fade = 0.5 + 0.5 * sin(time * 2);
-			vector colour = [fade, 0, 0];
+			if (skillpoints > 0)
+			{
+				string msg1 = "You possess skill points!";
+				float tw = (stringwidth(msg1, 0, [12,12]) / 2);
+				vector txtpos = [(g_width * 0.5) - tw, g_height - 25];
+				float fade = 0.5 + 0.5 * sin(time * 2);
+				vector colour = [fade, 0, 0];
 
-			drawstring (txtpos + [1,1], msg1, [12, 12], '0 0 0', 1, 0);
-			drawstring (txtpos, msg1, [12, 12], colour, 1, 0);
+				drawstring (txtpos + [1,1], msg1, [12, 12], '0 0 0', 1, 0);
+				drawstring (txtpos, msg1, [12, 12], colour, 1, 0);
+			}
+			Draw_BonFireUse = FALSE;
+		}
+		else if (Draw_BonFireUse)
+		{
+			// Fetch actual key bound to +use
+			string keyName = "USE";
+
+			// Build message parts
+			string preText  = "Press ";
+			string keyText  = strcat("<", keyName, ">");
+			string postText = " to rest at the bonfire ...";
+
+			// Compute widths for centering
+			float twTotal = stringwidth(strcat(preText, keyText, postText), 0, [12,12]);
+			float twPre   = stringwidth(preText, 0, [12,12]);
+			float twKey   = stringwidth(keyText, 0, [14,14]); // key slightly bigger
+			float twPost  = stringwidth(postText, 0, [12,12]);
+
+			vector txtpos = [(g_width * 0.5) - (twTotal / 2), g_height * 0.65];
+
+			// Pulsing yellow for key
+			float pulse = 0.5 + 0.5 * sin(time * 3);
+			vector keyColour = [1, 1, 0] * pulse;
+
+			// Draw shadow
+			drawstring(txtpos + [1,1], preText, [12,12], '0 0 0', 1, 0);
+			drawstring(txtpos + [1 + twPre, -1], keyText, [14,14], '0 0 0', 1, 0);
+			drawstring(txtpos + [1 + twPre + twKey,1], postText, [12,12], '0 0 0', 1, 0);
+
+			// Draw main text
+			drawstring(txtpos, preText, [12,12], [1,1,1], 1, 0);
+			drawstring(txtpos + [twPre, -2], keyText, [14,14], keyColour, 1, 0);
+			drawstring(txtpos + [twPre + twKey,0], postText, [12,12], [1,1,1], 1, 0);
+
+			Draw_BonFireUse = FALSE;
 		}
 
 		if (time - last_input_time > idle_threshold)

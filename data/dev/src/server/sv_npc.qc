@@ -168,6 +168,16 @@ void() set_npc =
 	droptofloor();
 };
 
+
+float(entity ePVEnt, float flChanged) Bonfire_SendEntity =
+{
+	WriteByte(MSG_ENTITY, ENT_BONFIRE);
+	WriteCoord(MSG_ENTITY, self.origin_x);
+	WriteCoord(MSG_ENTITY, self.origin_y);
+	WriteCoord(MSG_ENTITY, self.origin_z);
+	return TRUE;
+};
+
 void() bonfire_use =
 {
 	if (self.user && self.user.bonfire_finished < time)
@@ -212,22 +222,11 @@ void() bonfire_use =
 
 void() set_bonfire =
 {
-	precache_model("models/bonfire.glb");
-	precache_sound("bonfire1.wav");
-	precache_sound("bonfire2.wav");
-
+	self.SendEntity = Bonfire_SendEntity;
 	self.solid = SOLID_SLIDEBOX;
-	self.movetype = MOVETYPE_NONE;
-	self.takedamage = DAMAGE_NO;
-	self.classname = "bonfire";
-	self.radius_candamage = FALSE;
 	self.th_use = bonfire_use;
-	self.effects = EF_DIMLIGHT;
-
-	setmodel(self, "models/bonfire.glb");
 	setsize(self, [-16, -16, 0], [16, 16, 80]);
-	setorigin(self, self.origin);
 	droptofloor();
 
-	ambientsound(self.origin, "bonfire2.wav", 1, ATTN_STATIC);
+	self.SendFlags = 1;
 };
