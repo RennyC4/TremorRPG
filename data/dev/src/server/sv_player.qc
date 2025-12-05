@@ -800,6 +800,10 @@ void() FootstepThink =
 
 void(float speed) Player_VelocityPush =
 {
+	// Extra check to ensure that players dodgedir doesn't hang
+	if (self.dodge_finished < time && self.dodgedir != 0)
+		self.dodgedir = 0;
+
     if (self.velocitypush_finished < time)
         return;
     if (!(self.flags & FL_ONGROUND))
