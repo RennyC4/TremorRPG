@@ -1230,17 +1230,18 @@ void() PlayerPostThink =
 				self.health = self.max_health;
 			self.healthregen_finished = time + calc;
 		}
-		// Non-combat mana regeneration
-		if (self.manaregen_finished < time)
-		{
-			calc = 60 - (self.skill_manaregen * 0.25);
-			if (self.mana < self.max_mana)
-				self.mana += 1;
-			else
-				self.mana = self.max_mana;
-			self.manaregen_finished = time + calc;
-		}
 	}
+	// Mana regeneration
+	if (self.manaregen_finished < time)
+	{
+		calc = 60 - (self.skill_manaregen * 0.25);
+		if (self.mana < self.max_mana)
+			self.mana += 1;
+		else
+			self.mana = self.max_mana;
+		self.manaregen_finished = time + calc;
+	}
+
 	// Stamina regeneration
 	if (self.staminaregen_finished < time)
 	{
