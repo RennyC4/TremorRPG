@@ -3,43 +3,8 @@
 // -----------------
 
 .float ani_death;
-.float anim_state;       // 0=idle, 1=run, 2=attack, 3=climb, 4=death, etc.
 .float attack_triggered; // ensures one attack event per animation
 .float air_walk_timer; // counts down after leaving the ground
-
-// constants for clarity, these are strictly CSQC
-#define ANIM_IDLE   		0
-#define ANIM_RUN    		1
-#define ANIM_SLASH  		2
-#define ANIM_CLIMB  		3
-#define ANIM_DEATH  		4
-#define ANIM_JUMP			5
-#define ANIM_SIT			6
-#define ANIM_CASTING		7
-#define ANIM_CASTAOE		8
-#define ANIM_CASTTARGET		9
-#define ANIM_CASTSELF		10
-#define ANIM_STUNNED		11
-#define ANIM_STAB			12
-#define ANIM_PUNCH			13
-#define ANIM_BLOCKWALK		14
-#define ANIM_BLOCKIDLE		15
-#define ANIM_CROUCHWALK		16
-#define ANIM_CROUCHIDLE		17
-#define ANIM_BASH			18
-#define ANIM_PARRY			19
-#define ANIM_DRINK			20
-#define ANIM_SMASH			21
-#define ANIM_ARCHERY		22
-#define ANIM_BLOCK			23
-#define ANIM_AIRMELEE		24
-#define ANIM_DODGE			25
-#define ANIM_STRAFELEFT 	26
-#define ANIM_STRAFERIGHT 	28
-#define ANIM_BACKPEDAL		29
-#define ANIM_STEPDODGE		30
-#define ANIM_STEPCOUNTER	31
-#define ANIM_IMPACT			32
 
 //
 // Special animations sent from SSQC

@@ -152,6 +152,5 @@ float(void) Monster_PreDraw =
     Monster_Animate();
     Skeleton_ObjectDraw();
     addentity(self);
-
     return PREDRAW_NEXT;
 };

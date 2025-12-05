@@ -2382,7 +2382,8 @@ float LockOn_CycleToggle; // same
 .float spawnflags;
 .float floattext_time;
 .string floattext_msg;
-// Animation States
+
+// Animation States, typically used for other players server -> client stuff
 .float anistate;
 const float ANISTATE_NONE = 0;
 const float ANISTATE_SLASH = 1;
@@ -2407,6 +2408,42 @@ const float ANISTATE_DODGE = 19;
 const float ANISTATE_STEPDODGE = 20;
 const float ANISTATE_STEPCOUNTER = 21;
 const float ANISTATE_IMPACT = 22;
+
+.float anim_state;
+// constants for clarity, these are strictly CSQC
+#define ANIM_IDLE   		0
+#define ANIM_RUN    		1
+#define ANIM_SLASH  		2
+#define ANIM_CLIMB  		3
+#define ANIM_DEATH  		4
+#define ANIM_JUMP			5
+#define ANIM_SIT			6
+#define ANIM_CASTING		7
+#define ANIM_CASTAOE		8
+#define ANIM_CASTTARGET		9
+#define ANIM_CASTSELF		10
+#define ANIM_STUNNED		11
+#define ANIM_STAB			12
+#define ANIM_PUNCH			13
+#define ANIM_BLOCKWALK		14
+#define ANIM_BLOCKIDLE		15
+#define ANIM_CROUCHWALK		16
+#define ANIM_CROUCHIDLE		17
+#define ANIM_BASH			18
+#define ANIM_PARRY			19
+#define ANIM_DRINK			20
+#define ANIM_SMASH			21
+#define ANIM_ARCHERY		22
+#define ANIM_BLOCK			23
+#define ANIM_AIRMELEE		24
+#define ANIM_DODGE			25
+#define ANIM_STRAFELEFT 	26
+#define ANIM_STRAFERIGHT 	28
+#define ANIM_BACKPEDAL		29
+#define ANIM_STEPDODGE		30
+#define ANIM_STEPCOUNTER	31
+#define ANIM_IMPACT			32
+
 
 // Chat setup
 #define CHAT_LINE_CHARS 68

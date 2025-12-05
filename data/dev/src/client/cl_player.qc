@@ -54,6 +54,16 @@ void() Skeleton_ObjectDraw =
 			self.lantern_vfx.drawmask = MASK_VIEWMODEL;
 			self.lantern_vfx.worldlight = TRUE;
 
+			// draw lantern light, this works but doesn't update fast enough for moving ents
+			/*
+			self.lantern_vfx.classname = "dlight"; // allow light drawing to react
+			self.lantern_vfx.light_lev = 600;
+			self.lantern_vfx.color = [1, .6, .6];
+			self.lantern_vfx.pflags |= PFLAGS_CORONA;
+			self.lantern_vfx.style = 1;
+			*/
+			//
+
 			setmodel(self.lantern_vfx, "models/lantern.glb");
 		}
 		else
@@ -75,9 +85,7 @@ void() Skeleton_ObjectDraw =
 			ang_z += (-1 * ang_z); // flip
 			self.lantern_vfx.angles = ang;
 
-			if (camera_mode)
-				pointparticles(PART_LANTERN, org, [0, 0, 0]);
-
+			pointparticles(PART_LANTERN, org, [0, 0, 0]);
 			dynamiclight_add(org, 600, [1, .6, .6], 1, "", PFLAGS_CORONA);
 		}
 	}
@@ -794,13 +802,14 @@ float(void) Player_PreDraw =
 {
     if (self.entnum == player_localentnum)
     {
+		Skeleton_ObjectDraw();
+        Player_Animate();
+        Player_Think();
+
 		self.angles_x = 0;
 		vPlayerOrigin = self.origin;
 		self.renderflags = RF_EXTERNALMODEL;
 
-		Skeleton_ObjectDraw();
-        Player_Animate();
-        Player_Think();
 		addentity(self);
     }
     else
@@ -914,6 +923,7 @@ void() Player_DoJump =
 		if (!button_left && !button_right && !button_down && !button_up)
 		{
 			sendevent("PlayerDodge", "f", 8);
+			self.anim_state = ANIM_STEPDODGE;
 			return;
 		}
 
@@ -921,35 +931,51 @@ void() Player_DoJump =
 		if (button_left && button_down)
 		{
 			sendevent("PlayerDodge", "f", 4);
+			self.anim_state = ANIM_DODGE;
 			return;
 		}
 		if (button_left && button_up)
 		{
 			sendevent("PlayerDodge", "f", 5);
+			self.anim_state = ANIM_DODGE;
 			return;
 		}
 		if (button_right && button_down)
 		{
 			sendevent("PlayerDodge", "f", 6);
+			self.anim_state = ANIM_DODGE;
 			return;
 		}
 		if (button_right && button_up)
 		{
 			sendevent("PlayerDodge", "f", 7);
+			self.anim_state = ANIM_DODGE;
 			return;
 		}
 
 		// finish with direct angle roll checks
 		if (button_left)
+		{
 			sendevent("PlayerDodge", "f", 1);
+			self.anim_state = ANIM_DODGE;
+		}
 		if (button_right)
+		{
 			sendevent("PlayerDodge", "f", 2);
+			self.anim_state = ANIM_DODGE;
+		}
 		if (button_down)
+		{
 			sendevent("PlayerDodge", "f", 3);
+			self.anim_state = ANIM_DODGE;
+		}
 
 		// jump
 		if (button_up)
+		{
 			sendevent("PlayerJump", "", 0);
+			//self.anim_state = ANIM_JUMP;
+		}
 	}
 };
 

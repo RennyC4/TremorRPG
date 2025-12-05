@@ -4,7 +4,7 @@
 
 float(void) DrawDynamicLights =
 {
-    for (entity e = world; (e = find(e, classname, "dlight")); )
+    for (entity e = world; (e = find(e, classname, "dlight"));)
 	{
 		float dist = vlen(vPlayerOrigin - e.origin);
 
