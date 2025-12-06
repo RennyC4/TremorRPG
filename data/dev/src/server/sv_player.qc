@@ -232,8 +232,6 @@ void() CSEv_PlayerJump =
         return;
     if (self.melee_finished > time)
         return;
-    if (self.cast_finished > time)
-        return;
     if (!(self.flags & FL_ONGROUND))
         return;
     if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || 
@@ -259,6 +257,14 @@ void() CSEv_PlayerJump =
     if (self.stamina >= staminaCost)
     {
         Player_RemoveCrouch();
+		// You should be able to jump out of spell casting
+		if (self.cast_finished > time)
+		{
+			self.cast_finished = time;
+			self.cast_finished_spell = ""; // important: always clear this after the spell is fired, or else it'll refire
+			self.anistate = ANISTATE_NONE;
+			sprint (self, PRINT_HIGH, "^1Spell cancelled!\n");
+		}
 		if (self.potion_use_finished > time) // cancel potion use
 		{
 			self.healthpot_heal_rate = self.healthpot_heal_remaining = 0;
@@ -283,8 +289,6 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		return;
 	if (self.climbing)
 		return;
-	if (self.cast_finished > time)
-		return;
 
 // You should be able to dodge out of stagger
 //	if (self.stagger_finished > time)
@@ -301,6 +305,15 @@ void(float whichdir) CSEv_PlayerDodge_f =
 
 	if (self.stamina >= 25)
 	{
+		// You should be able to dodge out of spell casting
+		if (self.cast_finished > time)
+		{
+			self.cast_finished = time;
+			self.cast_finished_spell = ""; // important: always clear this after the spell is fired, or else it'll refire
+			self.anistate = ANISTATE_NONE;
+			sprint (self, PRINT_HIGH, "^1Spell cancelled!\n");
+		}
+
 		if (self.potion_use_finished > time) // cancel potion use
 		{
 			self.healthpot_heal_rate = self.healthpot_heal_remaining = 0;
