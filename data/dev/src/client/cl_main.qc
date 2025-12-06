@@ -159,6 +159,7 @@ noref void() CSQC_WorldLoaded =
 	PART_MAGIC_CASTING_ORB = particleeffectnum("magiccast_orb");
 	PART_TREEHIT = particleeffectnum("treehit");
 	PART_TREEFALL = particleeffectnum("treefall");
+	PART_WIZARD_F = particleeffectnum("wizard_f");
 };
 
 void(string rendererdescription) CSQC_RendererRestarted =
@@ -882,6 +883,31 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.origin_z = readcoord();
 		setorigin(self, self.origin);
 		ambientsound(self.origin, "bonfire2.wav", 1, ATTN_STATIC);
+	}
+	
+	//
+	// NPCS
+	//
+	if (flEntType == ENT_NPC)
+	{
+		if (flIsNew == TRUE)
+		{
+			self.classname = "npc";
+			self.solid = SOLID_SLIDEBOX;;
+			self.predraw = NPC_PreDraw;
+			self.drawmask = MASK_ENGINE;
+			self.view_ofs = '0 0 48';
+		}
+		self.modelindex = readshort();
+
+		self.origin_x = readcoord();
+		self.origin_y = readcoord();
+		self.origin_z = readcoord();
+		self.idealangles_x = readcoord();
+		self.idealangles_y = readcoord();
+		self.idealangles_z = readcoord();
+
+		setorigin(self, self.origin);
 	}
 };
 

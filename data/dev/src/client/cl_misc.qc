@@ -53,7 +53,6 @@ float(void) WallTorch1_PreDraw =
     return PREDRAW_NEXT;
 };
 
-
 //
 // Wall Torch 2
 //
@@ -90,8 +89,8 @@ float(void) Bonfire_PreDraw =
     for (entity e = world; (e = find(e, classname,"player")); )
 	{
 		float dist = vlen(e.origin - self.origin);
-		if (dist <= 125)
-			Draw_BonFireUse = TRUE;
+		if (dist <= 125 && e.entnum == player_localentnum)
+			Draw_BonfireUse = TRUE;
 	}
 
     addentity(self);
@@ -104,6 +103,44 @@ float(void) Bonfire_PreDraw =
 
 float(void) Dlight_PreDraw =
 {
+    addentity(self);
+    return PREDRAW_NEXT;
+};
+
+//
+// NPCs
+//
+
+float(void) NPC_PreDraw =
+{
+	for (entity b = world; (b = find(b, classname, "player"));) 
+	{
+		float dist = vlen(b.origin - self.origin);
+		if (dist <= 125 && visible_ofs(b))
+		{
+			self.goalentity = b;
+			TurnToTarget(0.75);
+		}
+		else
+		{
+			self.goalentity = world;
+			TurnToTarget(0.35);
+		}
+	}
+
+    // Only for local player
+    for (entity e = world; (e = find(e, classname,"player")); )
+	{
+		float dist = vlen(e.origin - self.origin);
+		if (dist <= 125 && e.entnum == player_localentnum)
+			Draw_NPCUse = TRUE;
+	}
+
+	// animate
+	float speed = 1;
+	speed *= frametime;
+    self.frame1time += speed;
+
     addentity(self);
     return PREDRAW_NEXT;
 };

@@ -2,8 +2,6 @@
 // NPCs, most are defined in the maps themselves (hmp / bsp)
 //
 
-$frame climb death stand jump move slash
-
 void(entity targ, entity client) SendNPCInventory;
 void(entity player) DeleteInventory;
 void() npc_ai_think;
@@ -94,43 +92,21 @@ void() npc_use =
 	self.nextthink = time + 0.1;
 };
 
-void() npc_ai_think =
+float(entity ePVEnt, float flChanged) NPC_SendEntity =
 {
-	entity best = world;
-	float best_dist = self.sight_range; // maximum distance NPC can "see"
+	WriteByte(MSG_ENTITY, ENT_NPC);
 
-	for (entity b = world; (b = find(b, classname, "player"));) 
-	{
-		vector diff = (b.origin + b.view_ofs) - (self.origin + self.view_ofs);
-		float dist = vlen(diff);
+	WriteShort(MSG_ENTITY, self.modelindex);
 
-		if (dist <= self.sight_range && visible_ofs(b)) // check if within sight range and visible
-		{
-			if (dist < best_dist)
-			{
-				best = b;
-				best_dist = dist;
-			}
-		}
-	}
+	WriteCoord(MSG_ENTITY, self.origin_x);
+	WriteCoord(MSG_ENTITY, self.origin_y);
+	WriteCoord(MSG_ENTITY, self.origin_z);
 
-	// --- Assign the closest visible player (if any) ---
-	if (best)
-		self.goalentity = best;
-	else
-		self.goalentity = world;
+	WriteCoord(MSG_ENTITY, self.angles_x);
+	WriteCoord(MSG_ENTITY, self.angles_y);
+	WriteCoord(MSG_ENTITY, self.angles_z);
 
-	// --- Basic sanity check ---
-	if (!self.netname)
-	{
-		print("Error: NPC without a netname defined!\n");
-		self.netname = "error";
-	}
-
-	// --- Turn smoothly toward target ---
-	TurnToTarget(10);
-
-	self.nextthink = time + 0.1;
+	return TRUE;
 };
 
 void() set_npc =
@@ -145,29 +121,20 @@ void() set_npc =
 		self.health = self.max_health;
 	self.takedamage = DAMAGE_NO;
 	self.classname = "npc";
-	self.view_ofs = '0 0 48';
-	self.radius_candamage = FALSE;
-	self.idealangles = self.angles;
 	self.th_use = npc_use;
-	self.frame = $stand;
-	self.worldlight = TRUE;
-
-	if (!self.sight_range)
-		self.sight_range = 100;
-
-	self.saveorigin = self.origin + v_up * 5; // stash initial spawn spot
 
 	setmodel(self, self.model);
 	setsize(self, [-16, -16, 0], [16, 16, 56]);
 
-	self.flags |= FL_FINDABLE_NONSOLID;
-
-	self.think = npc_ai_think;
-	self.nextthink = time + 0.1;
-
 	droptofloor();
+
+	self.SendEntity = NPC_SendEntity;
+	self.SendFlags = 1;
 };
 
+//
+// Bonfire NPC
+//
 
 float(entity ePVEnt, float flChanged) Bonfire_SendEntity =
 {

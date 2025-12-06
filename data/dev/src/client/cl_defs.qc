@@ -2180,6 +2180,7 @@ var float PART_BLOCK;
 var float PART_PARRY;
 var float PART_TREEHIT;
 var float PART_TREEFALL;
+var float PART_WIZARD_F;
 
 // RennyC String Parms
 string sparm1, sparm2, sparm3, sparm4, sparm5;
@@ -2223,7 +2224,8 @@ float PlayerOnGround;
 .float last_update_time;
 float User_DoAttack;
 float User_DoJump;
-float Draw_BonFireUse;
+float Draw_BonfireUse;
+float Draw_NPCUse;
 
 // buttons
 float button4;
@@ -2382,7 +2384,8 @@ float LockOn_CycleToggle; // same
 .float spawnflags;
 .float floattext_time;
 .string floattext_msg;
-.float islantern;
+.entity goalentity;
+.vector idealangles;
 
 // Animation States, typically used for other players server -> client stuff
 .float anistate;

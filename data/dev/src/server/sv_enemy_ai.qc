@@ -46,34 +46,6 @@ void() monster_death =
 	self.nextthink = time + self.respawn_finished;
 };
 
-void(float speed) TurnToTarget =
-{
-	vector dir, target_angles;
-	float turn_speed, diff;
-
-	if (self.goalentity)
-	{
-		dir = normalize(self.goalentity.origin - self.origin);
-		target_angles = vectoangles(dir);
-	}
-	else
-		target_angles = self.idealangles;
-
-    diff = anglemod(target_angles_y - self.angles_y);
-
-    if (diff > 180)		diff -= 360;
-    if (diff < -180)	diff += 360;
-
-    turn_speed = speed;
-
-    if (diff > turn_speed)
-        self.angles_y = anglemod(self.angles_y + turn_speed);
-    else if (diff < -turn_speed)
-        self.angles_y = anglemod(self.angles_y - turn_speed);
-    else
-        self.angles_y = anglemod(self.angles_y + diff); // snap final tiny difference
-};
-
 void() PitchToTarget =
 {
 	if (!self.enemy)
@@ -157,17 +129,6 @@ float(entity targ) range =
 float (entity targ) visible =
 {
  	traceline (self.origin, targ.origin, TRUE, self); // "true", see through other monsters
-
-	if (trace_fraction == 1)
- 		return TRUE;
-	else
-	 	return FALSE;
-};
-
-// this visible function returns TRUE even if sight line crossed contents (above and below water), takes view_ofs into account
-float (entity targ) visible_ofs =
-{
- 	traceline (self.origin + self.view_ofs, targ.origin + targ.view_ofs, TRUE, self); // "true", see through other monsters
 
 	if (trace_fraction == 1)
  		return TRUE;

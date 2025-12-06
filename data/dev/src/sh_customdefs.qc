@@ -2,6 +2,44 @@
 
 #define printf(x, ...) print(sprintf(x, __VA_ARGS__))
 
+void(float speed) TurnToTarget =
+{
+	vector dir, target_angles;
+	float turn_speed, diff;
+
+	if (self.goalentity)
+	{
+		dir = normalize(self.goalentity.origin - self.origin);
+		target_angles = vectoangles(dir);
+	}
+	else
+		target_angles = self.idealangles;
+
+    diff = anglemod(target_angles_y - self.angles_y);
+
+    if (diff > 180)		diff -= 360;
+    if (diff < -180)	diff += 360;
+
+    turn_speed = speed;
+
+    if (diff > turn_speed)
+        self.angles_y = anglemod(self.angles_y + turn_speed);
+    else if (diff < -turn_speed)
+        self.angles_y = anglemod(self.angles_y - turn_speed);
+    else
+        self.angles_y = anglemod(self.angles_y + diff); // snap final tiny difference
+};
+
+// this visible function returns TRUE even if sight line crossed contents (above and below water), takes view_ofs into account
+float (entity targ) visible_ofs =
+{
+ 	traceline (self.origin + self.view_ofs, targ.origin + targ.view_ofs, TRUE, self); // "true", see through other monsters
+
+	if (trace_fraction == 1)
+ 		return TRUE;
+	else
+	 	return FALSE;
+};
 
 // Returns the shortest signed difference from start to end: result range: -180 to +180
 float(float start, float end) angle_diff =

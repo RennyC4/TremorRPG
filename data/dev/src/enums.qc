@@ -9,3 +9,4 @@
 #define ENT_WALLTORCH2 5
 #define ENT_DLIGHT 6
 #define ENT_BONFIRE 7
+#define ENT_NPC 8
