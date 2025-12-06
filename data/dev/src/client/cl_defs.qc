@@ -2382,6 +2382,7 @@ float LockOn_CycleToggle; // same
 .float spawnflags;
 .float floattext_time;
 .string floattext_msg;
+.float islantern;
 
 // Animation States, typically used for other players server -> client stuff
 .float anistate;

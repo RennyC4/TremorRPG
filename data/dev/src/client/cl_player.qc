@@ -53,17 +53,6 @@ void() Skeleton_ObjectDraw =
 			self.lantern_vfx.owner = self;
 			self.lantern_vfx.drawmask = MASK_VIEWMODEL;
 			self.lantern_vfx.worldlight = TRUE;
-
-			// draw lantern light, this works but doesn't update fast enough for moving ents
-			/*
-			self.lantern_vfx.classname = "dlight"; // allow light drawing to react
-			self.lantern_vfx.light_lev = 600;
-			self.lantern_vfx.color = [1, .6, .6];
-			self.lantern_vfx.pflags |= PFLAGS_CORONA;
-			self.lantern_vfx.style = 1;
-			*/
-			//
-
 			setmodel(self.lantern_vfx, "models/lantern.glb");
 		}
 		else
@@ -86,7 +75,6 @@ void() Skeleton_ObjectDraw =
 			self.lantern_vfx.angles = ang;
 
 			pointparticles(PART_LANTERN, org, [0, 0, 0]);
-			dynamiclight_add(org, 600, [1, .6, .6], 1, "", PFLAGS_CORONA);
 		}
 	}
 	else if (self.lantern_vfx)
@@ -802,13 +790,13 @@ float(void) Player_PreDraw =
 {
     if (self.entnum == player_localentnum)
     {
-		Skeleton_ObjectDraw();
-        Player_Animate();
-        Player_Think();
-
 		self.angles_x = 0;
 		vPlayerOrigin = self.origin;
 		self.renderflags = RF_EXTERNALMODEL;
+
+		Skeleton_ObjectDraw();
+        Player_Animate();
+        Player_Think();
 
 		addentity(self);
     }

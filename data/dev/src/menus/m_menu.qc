@@ -342,12 +342,13 @@ void() credits_menu =
 
     sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
     string lines[] = {
-        "^1haze^7 - particles, textures, general help, server hosting",
+        "^1haze^7 - Particles, textures, general help, server hosting",
         "^1spoike^7 - FTEQW help, programming help",
         "^1shpuld^7 - SUI base",
         "^1Ilya.Anchouz.Danilov^7 - Female player model",
-        "^1MMC Works^7 - low poly trees, flowers and grass",
+        "^1MMC Works^7 - Low poly trees, flowers and grass pack",
         "^1WispCorp^7 - Play testing & bug reports"
+		"^1terra_32^7 - Play testing & suggestions"
     };
 
 	int numLines = 6;
