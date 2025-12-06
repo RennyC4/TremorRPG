@@ -897,6 +897,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.predraw = NPC_PreDraw;
 			self.drawmask = MASK_ENGINE;
 			self.view_ofs = '0 0 48';
+			self.worldlight = TRUE;
 		}
 		self.modelindex = readshort();
 
