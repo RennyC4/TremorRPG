@@ -1003,6 +1003,56 @@ void() Player_DoJump =
 	}
 };
 
+//
+// Footstep sound handler
+//
+
+.float nextfootstep_finished;
+void() FootstepThink =
+{
+    if (!(self.flags & FL_ONGROUND))
+        return;
+	if (self.anistate == ANISTATE_STEPCOUNTER || self.anistate == ANISTATE_DODGE)
+		return;
+
+	string s;
+    vector vel = self.velocity;
+    float speed = vlen(vel);
+
+	if (speed < 5)
+		return;
+
+    if (time >= self.nextfootstep_finished)
+    {
+        if (self.waterlevel >= 1)
+            s = strcat("move_wade", ftos(floor(random()*2)), ".wav");
+        else
+            s = strcat("move_step", ftos(floor(random()*2)), ".wav");
+
+		if (!self.waterlevel)
+		{
+			if (!self.crouch)
+			{
+				if (!self.blocking)
+					self.nextfootstep_finished = time + 0.35;
+				else
+					self.nextfootstep_finished = time + 0.5;
+				sound(self, CHAN_BODY, s, 0.25, ATTN_NORM);
+			}
+			else
+			{
+				self.nextfootstep_finished = time + 0.5;
+				sound(self, CHAN_BODY, s, 0.1, ATTN_NORM);
+			}
+		}
+		else
+		{
+			sound(self, CHAN_AUTO, s, 0.25, ATTN_NORM); // water sounds need CHAN_AUTO
+			self.nextfootstep_finished = time + 0.35;
+		}
+    }
+};
+
 void() Player_Think =
 {
 	if (self.flags & FL_ONGROUND)
@@ -1016,6 +1066,7 @@ void() Player_Think =
 		return;
 
 	Player_DoJump();
+	FootstepThink();
 
 	if (deathcam_dist != 45)
 		deathcam_dist = 45; // initial z start org for death camera

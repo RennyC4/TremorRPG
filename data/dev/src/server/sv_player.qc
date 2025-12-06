@@ -757,60 +757,6 @@ void() WaterUpdate =
 	}
 };
 
-//
-// Footstep sound handler
-//
-
-.float nextfootstep_finished;
-void() FootstepThink =
-{
-    if (!(self.flags & FL_ONGROUND))
-        return;
-	if (self.deadflag == DEAD_DEAD)
-		return;
-	if (self.anistate == ANISTATE_STEPCOUNTER || self.anistate == ANISTATE_DODGE)
-		return;
-
-	string s;
-    vector vel = self.velocity;
-    float speed = vlen(vel);
-
-	if (speed < 5)
-		return;
-
-    if (time >= self.nextfootstep_finished)
-    {
-        if (self.waterlevel >= 1)
-            s = strcat("move_wade", ftos(floor(random()*2)), ".wav");
-        else
-            s = strcat("move_step", ftos(floor(random()*2)), ".wav");
-
-		if (!self.waterlevel)
-		{
-			if (!self.crouch)
-			{
-				if (self.potion_use_finished > time)
-					self.nextfootstep_finished = time + 0.5;
-				if (!self.blocking)
-					self.nextfootstep_finished = time + 0.35;
-				else
-					self.nextfootstep_finished = time + 0.5;
-				sound(self, CHAN_BODY, s, 0.25, ATTN_NORM);
-			}
-			else
-			{
-				self.nextfootstep_finished = time + 0.5;
-				sound(self, CHAN_BODY, s, 0.1, ATTN_NORM);
-			}
-		}
-		else
-		{
-			sound(self, CHAN_AUTO, s, 0.25, ATTN_NORM); // water sounds need CHAN_AUTO
-			self.nextfootstep_finished = time + 0.35;
-		}
-    }
-};
-
 void(float speed) Player_VelocityPush =
 {
 	// Extra check to ensure that players dodgedir doesn't hang
@@ -1156,7 +1102,8 @@ void(float flIsNew) Player_SendFlags =
             self.bonfire != self.last_bonfire ||
             self.crouch != self.last_crouch ||
             self.dodgedir != self.last_dodgedir ||
-            self.stepdodge_counter != self.last_stepdodge)
+            self.stepdodge_counter != self.last_stepdodge ||
+			self.waterlevel != self.last_waterlevel)
             flChanged |= PSF_MISC;
 
         // MODEL & NAME
@@ -1184,7 +1131,6 @@ void() PlayerPostThink =
 	float calc;
 
 	WaterUpdate();
-	FootstepThink();
 	FallDamage_Update();
 	Anistate_Handler();
 
@@ -1599,6 +1545,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
         WriteByte(MSG_ENTITY, self.crouch);
         WriteByte(MSG_ENTITY, self.dodgedir);
         WriteByte(MSG_ENTITY, self.stepdodge_counter);
+        WriteByte(MSG_ENTITY, self.waterlevel);
     }
 
     // --- Update last sent values ---
@@ -1636,6 +1583,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
         self.last_crouch = self.crouch;
         self.last_dodgedir = self.dodgedir;
         self.last_stepdodge = self.stepdodge_counter;
+        self.last_waterlevel = self.waterlevel;
     }
 
     return TRUE;

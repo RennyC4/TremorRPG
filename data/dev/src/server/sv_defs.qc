@@ -2135,6 +2135,7 @@ const float TIME_NIGHT = 3;
 .float last_crouch;
 .float last_dodgedir;
 .float last_stepdodge;
+.float last_waterlevel;
 .float last_angles;
 .float last_attack_speed;
 .string last_equipment;

@@ -2219,6 +2219,7 @@ float thirdcam_distz;
 float camera_gdist; // 3rd person camera position in world
 float PlayerOnGround;
 .float worldlight;
+.float waterlevel;
 .vector prev_origin;
 .vector last_origin;
 .float last_update_time;
