@@ -139,6 +139,8 @@ noref void() CSQC_WorldLoaded =
 	registercommand("toggle_crouch", "Crouching & sneaking\n");
 	registercommand("toggle_camera", "3rd person camera toggle\n");
 	registercommand("+use", "Use what is in front of player\n");
+	registercommand("quick_health", "Use a health potion\n");
+	registercommand("quick_mana", "Use a mana potion\n");
 
 	CSQC_Precache();
 	last_input_time = time + 15; // reset idle cam on map change
@@ -328,6 +330,11 @@ float(string strCommand) CSQC_ConsoleCommand =
 		 // Tremor Attack
 		if (argv(0) == "t_attack")
 			User_DoAttack = TRUE;
+
+		if (argv(0) == "quick_health")
+			sendevent("Player_UseItem", "fs", 0, "Health Potion");
+		if (argv(0) == "quick_mana")
+			sendevent("Player_UseItem", "fs", 2, "Mana Potion");
 	}
 
 	if (argv(0) == "toggle_crouch")

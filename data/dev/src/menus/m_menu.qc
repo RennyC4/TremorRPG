@@ -138,6 +138,8 @@ name_command bindlist[] =
 	{ "Player List", "+showscores" },
 	{ "Chat (Zone)", "messagemode" },
 	{ "Chat (Nearby)", "messagemode2" },
+	{ "Quick Health Potion", "quick_health" },
+	{ "Quick Mana Potion", "quick_mana" },
 };
 
 void(string id, vector pos, vector size, string name, string command) bind_button =

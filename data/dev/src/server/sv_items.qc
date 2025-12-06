@@ -128,25 +128,31 @@ void(string itemname, float id) Player_EquipItem =
 	sprint(self, PRINT_HIGH, strcat(itemname, " equipped\n"));
 };
 
-void(float id, string itemname) Player_UseItem =
+void(float id, string itemname) CSEv_Player_UseItem_fs =
 {
 	if (id == 0) // health potion
 	{
-		Player_RemoveCrouch(); // remove crouch
-		self.alpha = 1;
+		if (HasItem(self, "Health Potion"))
+		{
+			self.velocity_x = self.velocity_y = 0;
+			Player_RemoveCrouch(); // remove crouch
+			self.alpha = 1;
 
-		self.healthpot_heal_rate = self.max_health * 0.01; // heal 1% of max health
-		self.healthpot_heal_remaining += ceil(self.max_health * 0.25); // add heal 25% per health potion
-		self.potion_use_finished = time + 3; // slow player movement
-		if (self.healthpot_finished < time)
-			self.healthpot_finished = time + 3; // delay before first tick (drink time)
+			self.healthpot_heal_rate = self.max_health * 0.01; // heal 1% of max health
+			self.healthpot_heal_remaining += ceil(self.max_health * 0.25); // add heal 25% per health potion
+			self.potion_use_finished = time + 3; // slow player movement
+			if (self.healthpot_finished < time)
+				self.healthpot_finished = time + 3; // delay before first tick (drink time)
 
-		self.anistate = ANISTATE_DRINK;
-		pointparticles(PART_HEALTHPOTION, self.origin);
+			self.anistate = ANISTATE_DRINK;
+			pointparticles(PART_HEALTHPOTION, self.origin);
 
-		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
-		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
-		RemoveFromInventory(self, itemname, 1);		
+			stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
+			sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
+			RemoveFromInventory(self, itemname, 1);
+		}
+		else
+			sprint(self, PRINT_HIGH, "You do not posses ", strcat(itemname, " \n"));
 	}
 	else if (id == 1) // lantern
 	{
@@ -170,21 +176,27 @@ void(float id, string itemname) Player_UseItem =
 	}
 	else if (id == 2) // mana potion
 	{
-		Player_RemoveCrouch(); // remove crouch
-		self.alpha = 1;
+		if (HasItem(self, "Mana Potion"))
+		{
+			self.velocity_x = self.velocity_y = 0;
+			Player_RemoveCrouch(); // remove crouch
+			self.alpha = 1;
 
-		self.manapot_heal_rate = self.max_mana * 0.01; // heal 1% of max mana
-		self.manapot_heal_remaining += ceil(self.max_mana * 0.5); // add 50% per mana potion
-		self.potion_use_finished = time + 3; // slow player movement
-		if (self.manapot_finished < time)
-			self.manapot_finished = time + 3; // delay before first tick (drink time)
+			self.manapot_heal_rate = self.max_mana * 0.01; // heal 1% of max mana
+			self.manapot_heal_remaining += ceil(self.max_mana * 0.5); // add 50% per mana potion
+			self.potion_use_finished = time + 3; // slow player movement
+			if (self.manapot_finished < time)
+				self.manapot_finished = time + 3; // delay before first tick (drink time)
 
-		self.anistate = ANISTATE_DRINK;
-		pointparticles(PART_MANAPOTION, self.origin);
+			self.anistate = ANISTATE_DRINK;
+			pointparticles(PART_MANAPOTION, self.origin);
 
-		stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
-		sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
-		RemoveFromInventory(self, itemname, 1);		
+			stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
+			sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
+			RemoveFromInventory(self, itemname, 1);	
+		}
+		else
+			sprint(self, PRINT_HIGH, "You do not posses ", strcat(itemname, " \n"));
 	}
 	else if (id == 3) // Add magic spell to magic screen
 	{

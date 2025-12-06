@@ -362,15 +362,15 @@ void(string itemname) CSEv_UseItem_s =
 
 	// Consumables
     if (itemname == "Health Potion")
-		Player_UseItem(0, itemname);
+		CSEv_Player_UseItem_fs(0, itemname);
     if (itemname == "Lantern")
-		Player_UseItem(1, itemname);
+		CSEv_Player_UseItem_fs(1, itemname);
     if (itemname == "Mana Potion")
-		Player_UseItem(2, itemname);
+		CSEv_Player_UseItem_fs(2, itemname);
 
 	// Magic spells
 	if (itemname == "Spell - Thorn" || itemname == "Spell - Light Heal")
-		Player_UseItem(3, itemname);
+		CSEv_Player_UseItem_fs(3, itemname);
 
 	// Main hand equippables (weapons)
 	if (itemname == "Hatchet")
