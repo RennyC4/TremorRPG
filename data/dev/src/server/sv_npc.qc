@@ -106,6 +106,8 @@ float(entity ePVEnt, float flChanged) NPC_SendEntity =
 	WriteCoord(MSG_ENTITY, self.angles_y);
 	WriteCoord(MSG_ENTITY, self.angles_z);
 
+	WriteByte(MSG_ENTITY, self.part_vfx);
+
 	return TRUE;
 };
 

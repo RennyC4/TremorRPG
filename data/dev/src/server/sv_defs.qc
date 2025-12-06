@@ -1900,6 +1900,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float block_finished;
 .float hatchet_durability;
 .float pick_durability;
+.float part_vfx; // Used for particle effects on NPCs via CSQC
 
 // Animation States
 .float anistate;

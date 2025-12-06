@@ -136,6 +136,16 @@ float(void) NPC_PreDraw =
 			Draw_NPCUse = TRUE;
 	}
 
+	// Wizard particles
+	if (self.part_vfx == 1)
+	{
+		if (self.last_update_time < time)
+		{
+			pointparticles(PART_WIZARD_F, self.origin);
+			self.last_update_time = time + 0.1;
+		}
+	}
+
 	// animate
 	float speed = 1;
 	speed *= frametime;

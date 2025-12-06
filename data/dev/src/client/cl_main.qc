@@ -900,13 +900,13 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.worldlight = TRUE;
 		}
 		self.modelindex = readshort();
-
 		self.origin_x = readcoord();
 		self.origin_y = readcoord();
 		self.origin_z = readcoord();
 		self.idealangles_x = readcoord();
 		self.idealangles_y = readcoord();
 		self.idealangles_z = readcoord();
+		self.part_vfx = readbyte();
 
 		setorigin(self, self.origin);
 	}

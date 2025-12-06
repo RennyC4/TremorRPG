@@ -5592,6 +5592,7 @@
 "angle" "210"
 "model" "models/wizard_f.glb"
 "netname" "Sarzac"
+"part_vfx" "1"
 }
 // entity 141
 {
