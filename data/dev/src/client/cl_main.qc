@@ -2,42 +2,59 @@
 // CSQC - Main file
 //
 
+float DrawDynamicLights_Once;
 float(void) DrawDynamicLights =
 {
-    for (entity e = world; (e = find(e, classname, "dlight"));)
+	if (!DrawDynamicLights_Once)
 	{
-		float dist = vlen(vPlayerOrigin - e.origin);
-
-		if (vlen(e.origin - vPlayerOrigin) > 2000)
-			continue;
-
-		float lev = e.light_lev;
-		float want_noshadow = 0;
-
-		if (autocvar_tremor_lighting == "simple")
+		for (entity e = world; (e = find(e, classname, "dlight"));)
 		{
-			want_noshadow = 1;
-			lev /= 1.5;
+			float l;
+			float lev = e.light_lev;
+
+			l = dynamiclight_spawnstatic(e.origin + e.view_ofs, lev, [e.color_x, e.color_y, e.color_z]);
+			dynamiclight_set(l, LFIELD_STYLE, e.style);
+			dynamiclight_set(l, LFIELD_CORONA, 0); // No corona please
 		}
-		else if (e.spawnflags & 1)
+		DrawDynamicLights_Once = TRUE;
+	}
+	else // dlight2 uses dynamiclight_add
+	{
+		for (entity f = world; (f = find(f, classname, "dlight2"));)
 		{
-			want_noshadow = 1;
-			lev /= 1.5;
+			float lev = f.light_lev;
+			float dist = vlen(vPlayerOrigin - f.origin);
+
+			if (vlen(f.origin - vPlayerOrigin) > 2000)
+				continue;
+
+			float want_noshadow = 0;
+
+			if (autocvar_tremor_lighting == "simple")
+			{
+				want_noshadow = 1;
+				lev /= 1.5;
+			}
+			else if (f.spawnflags & 1)
+			{
+				want_noshadow = 1;
+				lev /= 1.5;
+			}
+
+			if (want_noshadow)
+				f.pflags |= PFLAGS_NOSHADOW;
+			else
+				f.pflags &= ~PFLAGS_NOSHADOW;
+
+			if (f.spawnflags & 2)
+				f.pflags |= PFLAGS_CORONA;
+			else
+				f.pflags &= ~PFLAGS_CORONA;
+
+			if (lev < 5) lev = 5; // stop dlight culling flicker
+			
+			dynamiclight_add(f.origin + f.view_ofs, lev, [f.color_x, f.color_y, f.color_z], f.style, "", f.pflags);
 		}
-
-		if (want_noshadow)
-			e.pflags |= PFLAGS_NOSHADOW;
-		else
-			e.pflags &= ~PFLAGS_NOSHADOW;
-
-		if (e.spawnflags & 2)
-			e.pflags |= PFLAGS_CORONA;
-		else
-			e.pflags &= ~PFLAGS_CORONA;
-
-		if (lev < 5) lev = 5; // stop dlight culling flicker
-
-		dynamiclight_add(e.origin + e.view_ofs, lev, [e.color_x, e.color_y, e.color_z], e.style, "", e.pflags);
 	}
 };
 
@@ -224,6 +241,7 @@ void(float width, float height, float menushown) CSQC_UpdateView =
 	float atbonfire = getstatf(STAT_BONFIRE);
 
 	clearscene(); // clear and update our global screen resolution vars
+	
 	DrawDynamicLights();
 
 	setproperty(VF_DRAWENGINESBAR, 0); // disable quake status bar
@@ -878,7 +896,7 @@ void(float flIsNew) CSQC_Ent_Update =
 	{
 		if (flIsNew == TRUE)
 		{
-			self.classname = "dlight";
+			self.classname = "dlight2";
 			self.solid = SOLID_SLIDEBOX;;
 			self.predraw = Bonfire_PreDraw;
 			self.drawmask = MASK_ENGINE;
