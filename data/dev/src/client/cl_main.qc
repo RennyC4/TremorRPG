@@ -37,7 +37,7 @@ float(void) DrawDynamicLights =
 
 		if (lev < 5) lev = 5; // stop dlight culling flicker
 
-		dynamiclight_add(e.origin, lev, [e.color_x, e.color_y, e.color_z], e.style, "", e.pflags);
+		dynamiclight_add(e.origin + e.view_ofs, lev, [e.color_x, e.color_y, e.color_z], e.style, "", e.pflags);
 	}
 };
 
@@ -878,7 +878,7 @@ void(float flIsNew) CSQC_Ent_Update =
 	{
 		if (flIsNew == TRUE)
 		{
-			self.classname = "bonfire";
+			self.classname = "dlight";
 			self.solid = SOLID_SLIDEBOX;;
 			self.predraw = Bonfire_PreDraw;
 			self.drawmask = MASK_ENGINE;

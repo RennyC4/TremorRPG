@@ -82,8 +82,11 @@ float(void) Bonfire_PreDraw =
         self.last_update_time = time + 0.2;
     }
 
-    self.pflags |= PFLAGS_CORONA;
-    dynamiclight_add(self.origin, 300, [1, .5, 0], 1, "", self.pflags);
+    self.pflags = PFLAGS_CORONA;
+	self.light_lev = 450;
+	self.color = [1, .25, 0];
+	self.style = 6;
+	self.view_ofs = [0, 0, 46];
 
     // Only for local player
     for (entity e = world; (e = find(e, classname,"player")); )

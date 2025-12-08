@@ -1025,13 +1025,16 @@ void() PlayerPreThink =
 
 		self.maxspeed = 1; // staggered speed
 	}
-	if (self.loggedin) // enforce name
+	if (cvar("sv_cheats") == 0) // allow name changes with sv_cheats on, also removes console spam in developer mode
 	{
-		if (self.loginname != self.netname)
-			forceinfokey(self, "name", self.loginname);
+		if (self.loggedin) // enforce name
+		{
+			if (self.loginname != self.netname)
+				forceinfokey(self, "name", self.loginname);
+		}
+		else
+				forceinfokey(self, "name", "");
 	}
-	else
-			forceinfokey(self, "name", "");
 
 	if (self.menu == MENU_INVENTORY || self.menu == MENU_BUYSELL)
 		SendPlayerInventory(self); // send inventory to CSQC
