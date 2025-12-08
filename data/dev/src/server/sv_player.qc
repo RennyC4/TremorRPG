@@ -65,7 +65,7 @@ void() WipeParms =
 void() SetChangeParms =
 {
 	CSEv_Player_SaveChar(self, 1); // map transfer save user character before map change (saves inventory/spells properly etc)
-	
+
 	// write updated client string parms
 	msg_entity = self;
 	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);

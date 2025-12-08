@@ -175,6 +175,8 @@ void() bonfire_use =
 			self.user.velocity = '0 0 0';
 			self.user.anistate = ANISTATE_SIT;
 
+			CSEv_Player_SaveChar(self.user, 0); // full save
+
 			string eventlog_print = "^5You rest at the bonfire ...\n";
 			stuffcmd (self.user, sprintf("conecho event %s\nwf\n", eventlog_print));
 
