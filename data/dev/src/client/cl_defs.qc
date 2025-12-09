@@ -2225,6 +2225,7 @@ float PlayerOnGround;
 .vector prev_origin;
 .vector last_origin;
 .float last_update_time;
+.float prev_update_time;
 float User_DoAttack;
 float User_DoJump;
 float Draw_BonfireUse;
@@ -2362,6 +2363,7 @@ string motd;
 .float loggedin;
 .float pvp;
 .float last_update;
+
 .string main_hand; // string for main hand
 .string off_hand; // string for off hand
 .float max_health;
@@ -2458,3 +2460,75 @@ const float ANISTATE_IMPACT = 22;
 #define MAX_CHAT_LINES 8
 string chat_lines[MAX_CHAT_LINES];
 float chat_times[MAX_CHAT_LINES];
+
+.vector prev_angles;
+.vector last_angles;
+.vector prev_velocity;
+.vector last_velocity;
+
+float LerpAngle(float a1, float a2, float t)
+{
+    float d;
+    
+    d = a2 - a1;
+
+    // Wrap difference to -180..180 range
+    d = anglemod(d + 180) - 180;
+
+    return a1 + d * t;
+}
+
+
+void(entity target,vector neworg,vector newangles,vector newvelocity, float newtime) entity_state_update =
+{
+            target.prev_origin = target.last_origin;
+            target.last_origin = neworg;
+            
+            target.prev_angles = target.last_angles;
+            target.last_angles = newangles;
+            
+            target.prev_velocity = target.last_velocity;
+            target.last_velocity = newvelocity;
+            
+            target.prev_update_time = self.last_update_time;
+            target.last_update_time = newtime;
+}
+void(entity target) entity_interpolate = 
+{
+	local float frac = (time - target.last_update_time) / (target.last_update_time - target.prev_update_time);
+	frac = bound(0, frac, 1);
+	target.origin = target.prev_origin + (target.last_origin-target.prev_origin) * frac;
+	
+	target.angles_x = LerpAngle(target.prev_angles_x,target.last_angles_x,frac);
+	target.angles_y = LerpAngle(target.prev_angles_y,target.last_angles_y,frac);
+	
+};
+
+
+float(entity target,vector i_move, vector i_angles,float i_buttons,float i_impulse, float delta,float sequence,float sequence_max) predict_callback = 
+{
+
+
+
+	return FALSE;
+};
+
+void(entity target, float(entity targ_p,vector i_move, vector i_angles,float i_buttons,float i_impulse, float delta,float sequence,float sequence_max) callback) entity_predict =
+{
+	target.origin = target.last_origin;
+	target.velocity = target.last_velocity;
+	//target.angles = target.last_angles;
+
+	for (float i = servercommandframe+1; i <= clientcommandframe; i+=1)
+	{
+		if (!getinputstate(i))
+			continue;		//that input frame is too old.
+			
+		callback(target,input_movevalues,input_angles,input_buttons,input_impulse,input_timelength,servercommandframe+1,clientcommandframe);
+		
+	input_buttons &= ~2; // taking over +jump
+	runstandardplayerphysics(target);
+	vPlayerOrigin = target.origin;
+	}
+};
+

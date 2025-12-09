@@ -149,8 +149,15 @@ void() Monster_Animate =
 
 float(void) Monster_PreDraw =
 {
-    Monster_Animate();
-    Skeleton_ObjectDraw();
-    addentity(self);
-    return PREDRAW_NEXT;
+	// interpolate stuff first to get proper angles/origin
+	entity_interpolate(self);
+	// animate and set objects after to get correct bone origins/angles
+	Monster_Animate();
+	Skeleton_ObjectDraw();
+
+	addentity(self);
+	
+	return PREDRAW_NEXT;
 };
+
+

@@ -733,17 +733,18 @@ void(float flIsNew) CSQC_Ent_Update =
             self.origin_y = readcoord();
             self.origin_z = readcoord();
 
-            self.prev_origin = self.last_origin;
-            self.last_origin = self.origin;
-            self.last_update_time = time;
+
+
 
             // --- Local player auto-resync ---
             if (self.entnum == player_localentnum)
             {
+		/*
                 vPlayerOrigin = self.origin;
                 vPlayerOriginOld = self.origin;
                 vPlayerOriginOld_z = self.origin_z;
                 vPlayerVelocity = self.velocity;
+                */
                 self.prediction_error_time = time;
             }
         }
@@ -764,6 +765,9 @@ void(float flIsNew) CSQC_Ent_Update =
 
         if (flIsNew)
             setorigin(self, self.origin);
+            
+            
+	entity_state_update(self,self.origin,self.angles,self.velocity,time);
     }
 
 	//
@@ -804,6 +808,8 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.anistate = readbyte();
 		self.ai_mode = readbyte();
 		self.attack_speed = readbyte();
+		// void(entity target,vector neworg,float newtime) entity_state_update
+		entity_state_update(self,self.origin,self.angles,self.velocity,time);
 	}
 
 	//

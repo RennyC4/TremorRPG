@@ -827,12 +827,12 @@ float(void) Player_PreDraw =
     if (self.entnum == player_localentnum)
     {
 		self.angles_x = 0;
-		vPlayerOrigin = self.origin;
+		// vPlayerOrigin = self.origin;
 		self.renderflags = RF_EXTERNALMODEL;
-
+		entity_predict(self,predict_callback);
 		Skeleton_ObjectDraw();
-        Player_Animate();
-        Player_Think();
+		Player_Animate();
+		Player_Think();
 
 		addentity(self);
     }
