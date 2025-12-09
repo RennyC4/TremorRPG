@@ -3,23 +3,28 @@
 //
 
 float DrawDynamicLights_Once;
+.float LightDrawn;
 float(void) DrawDynamicLights =
 {
-	if (!DrawDynamicLights_Once)
-	{
+//	if (!DrawDynamicLights_Once)
+//	{
 		for (entity e = world; (e = find(e, classname, "dlight"));)
 		{
+			if (e.LightDrawn)
+				continue;
+
 			float l;
 			float lev = e.light_lev;
 
 			l = dynamiclight_spawnstatic(e.origin + e.view_ofs, lev, [e.color_x, e.color_y, e.color_z]);
 			dynamiclight_set(l, LFIELD_STYLE, e.style);
 			dynamiclight_set(l, LFIELD_CORONA, 0); // No corona please
+			e.LightDrawn = TRUE; // only spawn 1!
 		}
-		DrawDynamicLights_Once = TRUE;
-	}
-	else // dlight2 uses dynamiclight_add
-	{
+//		DrawDynamicLights_Once = TRUE;
+//	}
+//	else // dlight2 uses dynamiclight_add
+//	{
 		for (entity f = world; (f = find(f, classname, "dlight2"));)
 		{
 			float lev = f.light_lev;
@@ -55,7 +60,7 @@ float(void) DrawDynamicLights =
 			
 			dynamiclight_add(f.origin + f.view_ofs, lev, [f.color_x, f.color_y, f.color_z], f.style, "", f.pflags);
 		}
-	}
+//	}
 };
 
 void() CSQC_DrawMonsterPlaques;
