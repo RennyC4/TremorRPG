@@ -2181,6 +2181,8 @@ var float PART_PARRY;
 var float PART_TREEHIT;
 var float PART_TREEFALL;
 var float PART_WIZARD_F;
+var float PART_MELEE_HITWALL;
+var float PART_ARROW_HITWALL;
 
 // RennyC String Parms
 string sparm1, sparm2, sparm3, sparm4, sparm5;

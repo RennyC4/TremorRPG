@@ -179,6 +179,8 @@ noref void() CSQC_WorldLoaded =
 	PART_TREEHIT = particleeffectnum("treehit");
 	PART_TREEFALL = particleeffectnum("treefall");
 	PART_WIZARD_F = particleeffectnum("wizard_f");
+	PART_MELEE_HITWALL = particleeffectnum("melee_wallhit");
+	PART_ARROW_HITWALL = particleeffectnum("arrow_wallhit");
 };
 
 void(string rendererdescription) CSQC_RendererRestarted =

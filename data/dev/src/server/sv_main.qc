@@ -124,6 +124,9 @@ void() worldspawn =
 	PART_PARRY = particleeffectnum("parry");
 	PART_MAGIC_CASTING = particleeffectnum("magiccast");
 	PART_MAGIC_CASTING_ORB = particleeffectnum("magiccast_orb");
+	PART_MELEE_HITWALL = particleeffectnum("melee_wallhit");
+	PART_ARROW_HITWALL = particleeffectnum("arrow_wallhit");
+
 	//
 	PART_TREEHIT = particleeffectnum("treehit");
 	PART_TREEFALL = particleeffectnum("treefall");

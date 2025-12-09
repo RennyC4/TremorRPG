@@ -2056,6 +2056,8 @@ var float PART_TREEHIT;
 var float PART_TREEFALL;
 var float PART_OREHIT;
 var float PART_OREDIE;
+var float PART_MELEE_HITWALL;
+var float PART_ARROW_HITWALL;
 
 // Inventory
 #define MAX_INVENTORY 32 // how many slots allowed

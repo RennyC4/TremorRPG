@@ -191,7 +191,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
     else
         makevectors(self.angles);
 
-    vector source = self.origin + '0 0 16';
+    vector source = self.origin + '0 0 32';
     traceline(source, source + v_forward * self.attack_length, MOVE_TRIGGERS, self);
 
     // Play swing SFX (only once per air-swing)
@@ -208,6 +208,16 @@ void(vector ang) CSEv_DoAttack_Melee_v =
     }
     if (!(self.flags & FL_ONGROUND))
         self.inair_swing_sfx = TRUE;
+
+	if (trace_fraction == 1.0) // hit nothing
+		return;
+
+	// Particle on object hit
+	if (!(trace_ent.takedamage))
+	{
+		vector partorg = trace_endpos - v_forward * 4;
+		pointparticles(PART_MELEE_HITWALL, partorg);
+	}
 
     // ===========================
     // RADIUS DAMAGE FOR SLASH
@@ -535,6 +545,9 @@ void() arrow_touch =
 		self.touch = info_null;
 		self.think = sub_remove;
 		self.nextthink = time + 6;
+		
+		// Particle on object hit
+		pointparticles(PART_ARROW_HITWALL, self.origin);
 	}
 };
 
