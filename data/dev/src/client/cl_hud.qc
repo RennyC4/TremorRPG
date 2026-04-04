@@ -189,7 +189,7 @@ void(entity e) Draw_FloatingText =
     // ----------------------
     vector drawPos;
     if (e.entnum == player_localentnum)
-        drawPos = vPlayerOrigin;
+        drawPos = vPlayerOrigin + [0, 0, -16]; // Move down a bit
     else
         drawPos = e.origin; // other players already interpolated
 
@@ -268,8 +268,8 @@ void(entity e) Draw_FloatingText =
     // ----------------------
     // 4. Draw bubble background
     // ----------------------
-    vector bg_pos = screen - [bubble_width/2 + FLOATTEXT_PADDING_X,0,0];
-    vector bg_size = [bubble_width + FLOATTEXT_PADDING_X*2, bubble_height + FLOATTEXT_PADDING_Y*2,0];
+    vector bg_pos = screen - [bubble_width / 2 + FLOATTEXT_PADDING_X, 0, 0];
+    vector bg_size = [bubble_width + FLOATTEXT_PADDING_X*2, bubble_height + FLOATTEXT_PADDING_Y * 2,0];
 
     drawfill(bg_pos,bg_size,'0 0 0',fade*0.45);
 

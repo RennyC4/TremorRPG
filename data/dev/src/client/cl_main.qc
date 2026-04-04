@@ -677,7 +677,10 @@ void() CSQC_Parse_Event =
 		//print("Received nearby msg from ent:", ftos(entnum), " text:", msg, "\n"); // DEBUG
 
 		if (speaker)
+		{
 			FloatingText_Add(speaker, msg);
+			localsound("misc/talk.wav");
+		}
 	}
 
 };
@@ -717,13 +720,10 @@ void(float flIsNew) CSQC_Ent_Update =
             self.origin_y = readcoord();
             self.origin_z = readcoord();
 
-
-
-
             // --- Local player auto-resync ---
             if (self.entnum == player_localentnum)
             {
-		/*
+				/*
                 vPlayerOrigin = self.origin;
                 vPlayerOriginOld = self.origin;
                 vPlayerOriginOld_z = self.origin_z;
