@@ -223,6 +223,8 @@ void() CSEv_PlayerJump =
         return;
     if (self.dodge_finished > time)
         return;
+	if (self.spellani_finished > time)
+		return;
     if (self.stagger_finished > time)
         return;
 
@@ -286,6 +288,8 @@ void() CSEv_PlayerJump =
 void(float whichdir) CSEv_PlayerDodge_f =
 {
 	if (self.bonfire)
+		return;
+	if (self.spellani_finished > time)
 		return;
 	if (self.climbing)
 		return;

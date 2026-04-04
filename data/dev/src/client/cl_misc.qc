@@ -152,6 +152,10 @@ float(void) NPC_PreDraw =
 	// animate
 	float speed = 1;
 	speed *= frametime;
+
+    if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+        speed /= 2; // fix minimap on animation speed
+
     self.frame1time += speed;
 
     addentity(self);

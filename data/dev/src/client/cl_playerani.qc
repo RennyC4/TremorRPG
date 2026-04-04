@@ -698,7 +698,7 @@ void() Player_Animate =
     {
         // Start or continue air-walk grace period
         if (self.air_walk_timer <= 0)
-            self.air_walk_timer = 1.0; // 1 second grace
+            self.air_walk_timer = 1; // 1 second grace
 
         self.air_walk_timer -= frametime;
 
@@ -713,7 +713,11 @@ void() Player_Animate =
                 self.anim_attacking = FALSE;
             }
         }
-		speed = 1.5; // jump animation speed is faster
+
+        if (self.frame1time >= duration - 0.1) // Hold final frame at end
+            self.frame1time = duration - 0.1;
+		else
+			speed = 1.5; // jump animation speed is faster
     }
     else
         self.air_walk_timer = 0; // reset when grounded
@@ -917,7 +921,7 @@ void() Player_Animate =
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
-        speed /= 2; // fix minimap slowdown
+        speed /= 2; // fix minimap on animation speed
 
     // -----------------------------
     // Advance animation time
