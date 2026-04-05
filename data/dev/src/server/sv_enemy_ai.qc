@@ -264,6 +264,7 @@ float() monster_ai_move =
 
     self.last_origin = self.origin; // store current position
     setorigin(self, self.origin);
+	touchtriggers(self, self.origin);
 
     return 1; // move successful
 };
@@ -397,10 +398,14 @@ void() monster_ai_think =
     float b = vlen(self.origin - self.saveorigin);
     float ai_move_dist_check = (self.ai_move_dist <= 1) ? 2000 : self.ai_move_dist;
 
+	if (self.enemy && self.enemy != world)
+		ai_move_dist_check *= 2; // double leash range when in combat
+
     if (self.ai_mode != AI_RUNBACK && b >= ai_move_dist_check)
     {
         self.goalentity = self.ai_runback_temp;
-        if (!self.goalentity) print("error in monster ai\n");
+        if (!self.goalentity)
+			print("error in monster ai\n");
         self.enemy = world;
         self.ai_mode = AI_RUNBACK;
         self.anistate = ANISTATE_RUN;
@@ -628,7 +633,7 @@ void() monster_ai_think =
 	}
 
     // ---------------------------
-    // Handle dead / bonfire
+    // Handle dead target / bonfire
     // ---------------------------
     if (self.enemy && (self.enemy.health <= 0 || self.enemy.bonfire == TRUE))
     {
