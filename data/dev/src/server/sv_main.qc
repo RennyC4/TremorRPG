@@ -376,7 +376,7 @@ void(string str) SV_ParseClientCommand =
 		for (entity e = world; (e = find(e, classname, "player")); )
 		{
 			if (self == e)
-				msg = strcat("[^2Zone^7]^3", self.netname, "^3: ", raw);
+				msg = strcat("[^2Zone^7]^3", self.netname, "^7: ", raw);
 			else
 				msg = strcat("[^2Zone^7]^5", self.netname, "^7: ", raw);
 
@@ -419,7 +419,7 @@ void(string str) SV_ParseClientCommand =
 			string msg;
 
 			if (self == e) // local player colour coded text
-				msg = strcat("[^1Nearby^7]^3", self.netname, "^3: ", raw);
+				msg = strcat("[^1Nearby^7]^3", self.netname, "^7: ", raw);
 			else
 				msg = strcat("[^1Nearby^7]^5", self.netname, "^7: ", raw);
 
