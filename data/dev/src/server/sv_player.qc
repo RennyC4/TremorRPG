@@ -945,12 +945,18 @@ void() Anistate_Handler =
 		if (self.anistate == ANISTATE_AIRMELEE)
 		{
 			if (self.melee_finished < time && self.flags & FL_ONGROUND)
+			{
+				Player_RemoveCrouch();
 				self.anistate = ANISTATE_NONE;
+			}
 		}
 		else
 		{
 			if (self.melee_finished < time)
+			{
+				Player_RemoveCrouch();
 				self.anistate = ANISTATE_NONE;
+			}
 		}
 	}
 
