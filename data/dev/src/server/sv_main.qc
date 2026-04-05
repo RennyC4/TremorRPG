@@ -372,12 +372,21 @@ void(string str) SV_ParseClientCommand =
 		if (strlen(raw) > CHAT_MAX_CHARS)
 			raw = substring(raw, 0, CHAT_MAX_CHARS);
 
-		string msg = strcat("[^2Zone^7]^5", self.netname, "^7: ", raw);
+		string msg;
+		for (entity e = world; (e = find(e, classname, "player")); )
+		{
+			if (self == e)
+				msg = strcat("[^2Zone^7]^3", self.netname, "^3: ", raw);
+			else
+				msg = strcat("[^2Zone^7]^5", self.netname, "^7: ", raw);
 
-		for (entity e = world; (e = find(e, classname, "player")) ;)
 			SendChat_Message(e, msg);
 
-		print (msg, "\n"); // print to server console
+			// print each message to server console
+			print(msg, "\n");
+		}
+
+		//print (msg, "\n"); // print to server console
 		return;
 	}
 
@@ -401,14 +410,19 @@ void(string str) SV_ParseClientCommand =
 		if (substring(bubble_msg, strlen(bubble_msg)-1, 1) == "\"")
 			bubble_msg = substring(bubble_msg, 0, strlen(bubble_msg)-1);
 		
-
 		if (strlen(raw) > CHAT_MAX_CHARS)
 			raw = substring(raw, 0, CHAT_MAX_CHARS);
 
-		string msg = strcat("[^1Nearby^7]^5", self.netname, "^7: ", raw);
-
+		// For Nearby chat
 		for (entity e = world; (e = find(e, classname, "player")) ;)
 		{
+			string msg;
+
+			if (self == e) // local player colour coded text
+				msg = strcat("[^1Nearby^7]^3", self.netname, "^3: ", raw);
+			else
+				msg = strcat("[^1Nearby^7]^5", self.netname, "^7: ", raw);
+
 			if (vlen(e.origin - self.origin) <= 1250)
 			{
 				SendChat_Message_Nearby(e, self, bubble_msg); // Chat 'bubble'
