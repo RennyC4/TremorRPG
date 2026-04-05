@@ -213,6 +213,17 @@ void() OtherPlayer_Anistate =
 		speed = 1.25;
 	}
 
+	if (self.anistate == ANISTATE_JUMP)
+	{
+		if (self.frame != frameforname(self.modelindex, "Jump"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "Jump");
+			self.anim_state = ANIM_JUMP;
+		}
+		speed = 1.5;
+	}
+
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
@@ -748,7 +759,7 @@ void() Player_Animate =
         self.air_walk_timer -= frametime;
 
         // Trigger jump animation
-        if (self.velocity_z >= 200 || self.air_walk_timer <= 0)
+        if (self.velocity_z >= 200 || self.air_walk_timer <= 0 || self.anistate == ANISTATE_JUMP)
         {
             if (self.anim_state != ANIM_JUMP)
             {

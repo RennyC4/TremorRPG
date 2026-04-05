@@ -1927,6 +1927,7 @@ const float ANISTATE_DODGE = 19;
 const float ANISTATE_STEPDODGE = 20;
 const float ANISTATE_STEPCOUNTER = 21;
 const float ANISTATE_IMPACT = 22;
+const float ANISTATE_JUMP = 23;
 
 //.float armorvalue; (this is already defined)
 

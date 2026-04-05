@@ -281,6 +281,7 @@ void() CSEv_PlayerJump =
         self.weaponframe = 0;
         self.pressedJump = TRUE; // Air melee check
         self.stamina -= staminaCost;
+		self.anistate = ANISTATE_JUMP;
         sound(self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
     }
 };
@@ -987,7 +988,11 @@ void() Anistate_Handler =
 	}
 
 	if (self.flags & FL_ONGROUND)
+	{
+		if (self.anistate == ANISTATE_JUMP)
+			self.anistate = ANISTATE_NONE;
 		self.climbing = FALSE;
+	}
 };
 
 // Ran before physics
