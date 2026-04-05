@@ -2198,6 +2198,7 @@ vector vCameraSmoothOrigin;
 float  vCameraZVelocity;
 
 string LOGIN_NAME; // users login name
+string LOGIN_PASSWORD; // users password
 string LOGIN_GENDER; // create gender
 float cursor;
 entity csqcplayerent;

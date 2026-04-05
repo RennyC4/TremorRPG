@@ -28,42 +28,55 @@ float(string id, vector pos, vector size, string text) my_button =
 	return sui_is_clicked(id);
 };
 
-void(string id, vector pos, vector size, float maxlen, __inout string text, __inout float cursor) text_input_control =
+void(string id, vector pos, vector size, float maxlen, __inout string text, __inout float cursor, float mask) text_input_control =
 {
-	vector textsize = [size_y - 4, size_y - 4];
-	sui_push_frame(pos, size);
-	vector basecolor = sui_is_hovered(id) ? MENU_BG_DARK + MENU_HIGHLIGHT * 0.08 : MENU_BG_DARK; 
-	sui_fill([0, 0], size, basecolor, 0.6, 0);
-	
-	sui_text_input(id, [0, 0], size, text, cursor);
-	
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	float focused = sui_is_last_clicked(id);
-	// Under focus
-	focused ? sui_border_box([0, 0], size, 1, MENU_BORDER, 0.6, 0) : 0;	
-	
-	sui_push_frame([2, 0], [size_x - 4, size_y - 4]);
-	
-	float cursorx;
-	if (stringwidth(text, 1, textsize) > size_x - 4)
-	{
-		sui_clip_to_frame();
-		cursorx = 0;
-		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_CENTER]);
-		sui_text([0, 0], textsize, text, MENU_TEXT_1, 1, 0);
-	}
-	else
-	{
-		cursorx = stringwidth(substring(text, 0, cursor), 1, textsize);
-		sui_text([0, 0], textsize, text, MENU_TEXT_1, 1, 0);
-	}
-	if (focused) 
-	{
-		sui_fill([cursorx, 0], [2, textsize_y], MENU_TEXT_1, fabs(sin(time * 4)), 0);
-	}
-	sui_reset_clip();
-	sui_pop_frame();
-	sui_pop_frame();
+    vector textsize = [size_y - 4, size_y - 4];
+    sui_push_frame(pos, size);
+    
+    vector basecolor = sui_is_hovered(id) ? MENU_BG_DARK + MENU_HIGHLIGHT * 0.08 : MENU_BG_DARK; 
+    sui_fill([0, 0], size, basecolor, 0.6, 0);
+    
+    sui_text_input(id, [0, 0], size, text, cursor);
+    
+    sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+    float focused = sui_is_last_clicked(id);
+    focused ? sui_border_box([0, 0], size, 1, MENU_BORDER, 0.6, 0) : 0;    
+    
+    sui_push_frame([2, 0], [size_x - 4, size_y - 4]);
+    
+    // Masked or real text
+    string display_text;
+    if (mask)
+    {
+        display_text = "";
+        for (float i = 0; i < strlen(text); i++)
+            display_text = strcat(display_text, "*");
+    }
+    else
+    {
+        display_text = text;
+    }
+    
+    float cursorx;
+    if (stringwidth(display_text, 1, textsize) > size_x - 4)
+    {
+        sui_clip_to_frame();
+        cursorx = 0;
+        sui_set_align([SUI_ALIGN_END, SUI_ALIGN_CENTER]);
+        sui_text([0, 0], textsize, display_text, MENU_TEXT_1, 1, 0);
+    }
+    else
+    {
+        cursorx = stringwidth(substring(text, 0, cursor), 1, textsize);
+        sui_text([0, 0], textsize, display_text, MENU_TEXT_1, 1, 0);
+    }
+    
+    if (focused) 
+        sui_fill([cursorx, 0], [2, textsize_y], MENU_TEXT_1, fabs(sin(time * 4)), 0);
+    
+    sui_reset_clip();
+    sui_pop_frame();
+    sui_pop_frame();
 };
 
 float tt_clear_finished;

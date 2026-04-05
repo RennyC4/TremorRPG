@@ -239,7 +239,7 @@ void() User_NPCBanking =
 	pos = [75,0];
 	// input box for numbers
 	sui_fill(pos, '240 25 0', MENU_BG_DARK, 0.75, 0);
-	text_input_control("gold_deposit", pos, [240, 25], 31, BANK_AMOUNT, cursor);
+	text_input_control("gold_deposit", pos, [240, 25], 31, BANK_AMOUNT, cursor, FALSE);
 	sui_border_box(pos, '240 25 0', 2, MENU_BORDER, 0.3, 0);
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);

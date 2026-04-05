@@ -133,22 +133,33 @@ void() User_LoginScreen =
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 	sui_pic(pos+[0,-90], [214,115.5], "textures/logo2.png", [1,1,1], 1, 0); // logo
-	sui_text([0, 32.5], MENU_TEXT_SMALL, "Desired Name", MENU_TEXT_MEDIUM, 1, 0);
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text([10, 50], MENU_TEXT_SMALL, "Name", MENU_TEXT_MEDIUM, 1, 0);
+	sui_text([10, 75], MENU_TEXT_SMALL, "Password", MENU_TEXT_MEDIUM, 1, 0);
+
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 
 	// Login / New character buttons
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	my_button("login_login", [0, size_y - 90], [size_x / 2, 40], "Login") ? User_ResumeCharacter(FALSE) : 0;
-	my_button("login_lastlogin", [size_x / 2, size_y - 90], [size_x / 2, 40], "Use Last Login") ? User_ResumeCharacter(TRUE) : 0;
+	my_button("login_login", [0, size_y - 65], [size_x / 2, 20], "Login") ? User_ResumeCharacter(FALSE) : 0;
+	my_button("login_lastlogin", [size_x / 2, size_y - 65], [size_x / 2, 20], "Use Last Login") ? User_ResumeCharacter(TRUE) : 0;
 	my_button("login_newchar", [0, size_y], [size_x, 40], "New Character") ? User_NewCharacter(LOGIN_GENDER) : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	my_button("login_quit", [g_width / 2.18, g_height / 2.25], [40, 40], "Disconnect") ? localcmd("disconnect\n") : 0;
 
 	// Name Entry
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_fill([0, -25], '240 25 0', MENU_BG_DARK, 0.75, 0);
-	text_input_control("name_entry", [0, -25], [240, 25], 31, LOGIN_NAME, cursor);
-	sui_border_box([0, -25], '240 25 0', 2, MENU_BORDER, 0.3, 0);
 
+	sui_fill([-15, -25], '240 25 0', MENU_BG_DARK, 0.75, 0);
+	text_input_control("name_entry", [-15, -25], [240, 25], 31, LOGIN_NAME, cursor, FALSE);
+	sui_border_box([-15, -25], '240 25 0', 2, MENU_BORDER, 0.3, 0);
+
+	// Password Entry
+	sui_fill([-15, 0], '240 25 0', MENU_BG_DARK, 0.75, 0);
+	text_input_control("password_entry", [-15, 0], [240, 25], 31, LOGIN_PASSWORD, cursor, TRUE);
+	sui_border_box([-15, 0], '240 25 0', 2, MENU_BORDER, 0.3, 0);
+
+	// New character text
 	sui_text([0, 45], MENU_TEXT_SMALL, "New Character", MENU_TEXT_MEDIUM, 1, 0);
 
 	// Gender entry
