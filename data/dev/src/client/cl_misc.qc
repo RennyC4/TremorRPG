@@ -4,6 +4,23 @@
 
 .float cnt;
 
+// check if player is looking at target | direction from viewer → target
+float(entity viewer, entity target) is_facing =
+{
+    vector dir = target.origin - viewer.origin;
+    dir_z = 0; // ignore vertical difference
+    dir = normalize(dir);
+
+    makevectors([0, viewer.angles_y, 0]); // yaw only
+
+    float dot = dir * v_forward;
+
+    if (dot > 0.925) // strict small cone
+        return TRUE;
+
+    return FALSE;
+};
+
 //
 // Water Fountain
 //
@@ -92,7 +109,7 @@ float(void) Bonfire_PreDraw =
     for (entity e = world; (e = find(e, classname,"player")); )
 	{
 		float dist = vlen(e.origin - self.origin);
-		if (dist <= 125 && e.entnum == player_localentnum)
+		if (dist <= (USEDISTANCE * 1.13) && e.entnum == player_localentnum && visible_ofs(e) && is_facing(e, self))
 			Draw_BonfireUse = TRUE;
 	}
 
@@ -135,7 +152,7 @@ float(void) NPC_PreDraw =
     for (entity e = world; (e = find(e, classname,"player")); )
 	{
 		float dist = vlen(e.origin - self.origin);
-		if (dist <= 125 && e.entnum == player_localentnum)
+		if (dist <= (USEDISTANCE * 1.13) && e.entnum == player_localentnum && visible_ofs(e) && is_facing(e, self))
 			Draw_NPCUse = TRUE;
 	}
 

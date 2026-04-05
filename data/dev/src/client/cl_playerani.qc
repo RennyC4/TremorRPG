@@ -306,7 +306,10 @@ void() Player_Animate =
 
 		speed = 1;
 		speed *= frametime;
-		
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
 		float frame_interval = 10 / 60; // 0.16s (60fps)
 
 		if (self.frame1time >= self.next_attack_time)
@@ -361,6 +364,9 @@ void() Player_Animate =
 			}
 
 		}
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
 
 		// Hold final frame at end
 		if (self.frame1time >= duration - 0.1)
@@ -427,6 +433,9 @@ void() Player_Animate =
 		speed = 1.5;
 		speed *= frametime;
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = duration - 0.1;
 		else
@@ -449,6 +458,9 @@ void() Player_Animate =
 		speed = 1.5;
 		speed *= frametime;
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = duration - 0.1;
 		else
@@ -470,6 +482,9 @@ void() Player_Animate =
 		}
 		speed = 1.5;
 		speed *= frametime;
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
 
         if (self.frame1time >= duration - 0.1) // Hold final frame at end
             self.frame1time = duration - 0.1;
@@ -496,6 +511,9 @@ void() Player_Animate =
 		speed = 1.25;
 		speed *= frametime;
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
         if (self.frame1time >= duration - 0.1) // Hold final frame at end
             self.frame1time = duration - 0.1;
         else
@@ -518,6 +536,9 @@ void() Player_Animate =
 		speed = 1;
 		speed *= frametime;
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
         if (self.frame1time >= duration - 0.1) // Hold final frame at end
             self.frame1time = duration - 0.1;
         else
@@ -539,6 +560,9 @@ void() Player_Animate =
 		}
 		speed = 1.5;
 		speed *= frametime;
+		
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
 
         if (self.frame1time >= duration - 0.1) // Hold final frame at end
             self.frame1time = duration - 0.1;
@@ -560,6 +584,9 @@ void() Player_Animate =
 			self.anim_attacking = FALSE; // turn off attack animation flag
 		}
 		speed *= frametime;
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
 
 		self.frame1time += speed;
 		self.frame2time = self.frame1time;
@@ -583,6 +610,9 @@ void() Player_Animate =
         if (self.frame1time >= duration - 0.1) // Switch frame at the end
             self.frame1time = duration - 0.1;
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
 		self.frame1time += speed;
 		self.frame2time = self.frame1time;
 		return;
@@ -601,6 +631,9 @@ void() Player_Animate =
 			self.anim_attacking = FALSE; // turn off attack animation flag
         }
 		speed *= frametime;
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
 
 		self.frame1time += speed;
 		self.frame2time = self.frame1time;
@@ -621,6 +654,9 @@ void() Player_Animate =
         }
 		speed *= frametime;
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
 		self.frame1time += speed;
 		self.frame2time = self.frame1time;
 		return;
@@ -639,6 +675,9 @@ void() Player_Animate =
 			self.anim_attacking = FALSE; // turn off attack animation flag
         }
 		speed *= frametime;
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
 
         if (self.frame1time >= duration - 0.1) // Hold final frame at end
             self.frame1time = duration - 0.1;
@@ -661,6 +700,9 @@ void() Player_Animate =
         }
 		speed *= frametime;
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
         if (self.frame1time >= duration - 0.1) // Hold final frame at end
             self.frame1time = duration - 0.1;
         else
@@ -682,6 +724,9 @@ void() Player_Animate =
         }
 		speed = 1.5;
 		speed *= frametime;
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
 
         if (self.frame1time >= duration - 0.1) // Hold final frame at end
             self.frame1time = duration - 0.1;

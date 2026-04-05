@@ -1010,8 +1010,12 @@ void() Player_DoJump =
 .float nextfootstep_finished;
 void() FootstepThink =
 {
+	float player_menu = getstatf(STAT_MENU);
+
     if (!(self.flags & FL_ONGROUND))
         return;
+	if (player_menu == MENU_LOGIN)
+		return;
 	if (self.anistate == ANISTATE_STEPCOUNTER || self.anistate == ANISTATE_DODGE)
 		return;
 

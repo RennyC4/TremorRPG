@@ -13,10 +13,13 @@ void() Monster_Animate =
 			self.frame1time = 0; // reset timestamp
 		self.frame = frameforname(self.modelindex, "Death");
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
 		else
-			self.frame1time += frametime;
+			self.frame1time += frametime * speed;
 		return;
 	}
 
@@ -37,6 +40,9 @@ void() Monster_Animate =
 			self.frame1time = 0; // reset timestamp
 		self.frame = frameforname(self.modelindex, "Block");
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
 		else
@@ -49,6 +55,9 @@ void() Monster_Animate =
 		if (self.frame != (self.frame = frameforname(self.modelindex, "Punch")))
 			self.frame1time = 0; // reset timestamp
 		self.frame = frameforname(self.modelindex, "Punch");
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
 
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
@@ -63,6 +72,9 @@ void() Monster_Animate =
 			self.frame1time = 0; // reset timestamp
 		self.frame = frameforname(self.modelindex, "Slash");
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
 		else
@@ -75,6 +87,9 @@ void() Monster_Animate =
 		if (self.frame != (self.frame = frameforname(self.modelindex, "Stab")))
 			self.frame1time = 0; // reset timestamp
 		self.frame = frameforname(self.modelindex, "Stab");
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
 
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
@@ -89,6 +104,9 @@ void() Monster_Animate =
 			self.frame1time = 0; // reset timestamp
 		self.frame = frameforname(self.modelindex, "Smash");
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
 		else
@@ -101,6 +119,9 @@ void() Monster_Animate =
 		if (self.frame != (self.frame = frameforname(self.modelindex, "Archery")))
 			self.frame1time = 0; // reset timestamp
 		self.frame = frameforname(self.modelindex, "Archery");
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
 
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
@@ -123,6 +144,9 @@ void() Monster_Animate =
 		}
 		speed *= frametime;
 
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
         if (self.frame1time >= duration - 0.1) // Switch frame at the end
             self.frame1time = duration - 0.1;
 
@@ -130,17 +154,16 @@ void() Monster_Animate =
 		self.frame2time = self.frame1time;
 		return;
 	}
-	
-	
+
+	if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+		speed /= 2; // fix minimap on animation speed
+
 	if (self.anistate == ANISTATE_NONE)
 		self.frame = frameforname(self.modelindex, "Idle");
 	if (self.anistate == ANISTATE_RUN)
 		self.frame = frameforname(self.modelindex, "Run");
 
 	speed = (speed * frametime);
-
-//	if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp") // mini-map only on over world, full mini-map affects player animation speed for some reason
-//		speed /= 2;
 
 	self.frame1time += speed;
 	self.frame2time += speed;

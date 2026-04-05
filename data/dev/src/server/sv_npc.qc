@@ -124,6 +124,7 @@ void() set_npc =
 	self.takedamage = DAMAGE_NO;
 	self.classname = "npc";
 	self.th_use = npc_use;
+	self.view_ofs = '0 0 48';
 
 	setmodel(self, self.model);
 	setsize(self, [-16, -16, 0], [16, 16, 56]);

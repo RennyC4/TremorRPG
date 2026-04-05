@@ -603,10 +603,13 @@ void() Player_Use =
 		return;
 	}
 
+	if (self.menu)
+		return;
+
 	makevectors (self.angles);
 	vector source = self.origin;
 	source = self.origin + self.view_ofs;
-	traceline (source, source + v_forward * 72, MOVE_ENTCHAIN, self);
+	traceline (source, source + v_forward * USEDISTANCE, MOVE_ENTCHAIN, self);
 
 	if (trace_ent.th_use)
 	{
@@ -614,6 +617,9 @@ void() Player_Use =
 		trace_ent.think = trace_ent.th_use;
 		trace_ent.nextthink = time + 0.1;
 	}
+	else
+		sprint(self, PRINT_HIGH, "There's nothing there ...\n");
+
 	self.button3_pressed = TRUE;
 };
 

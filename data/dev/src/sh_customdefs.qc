@@ -1,5 +1,6 @@
 //shared definitions
 
+#define USEDISTANCE 72 // Use button distance, used for flavour text and actual distance to trigger NPC
 #define printf(x, ...) print(sprintf(x, __VA_ARGS__))
 
 void(float speed) TurnToTarget =
