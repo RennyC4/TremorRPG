@@ -168,6 +168,8 @@ void() worldspawn =
 	precache_sound ("shield2.wav");
 	precache_sound ("shield3.wav");
 	precache_sound ("parry.wav");
+	precache_sound ("hitw_tink.wav");
+	precache_sound ("hitw_bash.wav");
 	precache_sound ("land1.wav");
 	precache_sound ("land2.wav");
 	precache_sound ("jump.wav");

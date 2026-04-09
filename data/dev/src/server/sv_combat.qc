@@ -217,6 +217,10 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 	{
 		vector partorg = trace_endpos - v_forward * 4;
 		pointparticles(PART_MELEE_HITWALL, partorg);
+		if (self.attack_type != 3)
+			sound(self, CHAN_AUTO, "hitw_tink.wav", 1, ATTN_NORM);
+		else
+			sound(self, CHAN_AUTO, "hitw_bash.wav", 1, ATTN_NORM);
 	}
 
     // ===========================
