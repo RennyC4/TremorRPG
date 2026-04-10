@@ -1236,17 +1236,21 @@ void() PlayerPostThink =
 		if (self.climbing || self.waterlevel > 1)
 			calc = -1;
 
-		//string calc_disp = ftos(calc);
-		//print (calc_disp, "\n");
+		// Check if standing still
 		if (calc != -1)
 		{
+			if (vlen(self.velocity) < 1) // basically not moving
+				calc *= 0.6667; // faster regen (1.5x)
+
 			if (self.stamina < 99)
 				self.stamina += 1;
 			else
 				self.stamina = 100;
 		}
+
 		self.staminaregen_finished = time + calc;
 	}
+
 	// PVP
 	if (self.pvp == 2)
 	{
