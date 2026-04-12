@@ -8,6 +8,23 @@ void(float type) PlayerSpawn;
 #define inventory_start 44
 #define spells_start 45
 
+string EncodePassword(string s)
+{
+    string out;
+    float i, c;
+
+    out = "";
+
+    for (i = 0; i < strlen(s); i++)
+    {
+        c = s[i];
+        c = c ^ 0x5A;
+        out = strcat(out, ftos(c), ";");
+    }
+
+    return out;
+};
+
 // ============================================================
 // SAVE CHARACTER (Corrected)
 // ============================================================
@@ -19,9 +36,10 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     string filename = strcat(targ.loginname, ".chr");
     string old_music;
     string old_origin[6];
+	string old_password;
     float f, i;
 
-    // --- Step 0: Preserve old file data for backward compatibility ---
+    // --- Step 1: Preserve old file data for backward compatibility ---
     f = fopen(filename, FILE_READ);
     if (f >= 0)
     {
@@ -38,7 +56,27 @@ void(entity targ, float type) CSEv_Player_SaveChar =
         fclose(f);
     }
 
-    // --- Step 1: Open file for writing ---
+	// Read entire file to capture last line (password)
+	string line;
+	string last_line;
+
+	f = fopen(filename, FILE_READ);
+	if (f >= 0)
+	{
+		while (1)
+		{
+			line = fgets(f);
+			if (line == __NULL__)
+				break;
+
+			last_line = line; // keep updating until last valid line
+		}
+
+		fclose(f);
+		old_password = last_line;
+	} 
+
+	// --- Step 2: Open file for writing ---
     f = fopen(filename, FILE_WRITE);
     if (f < 0) return;
 
@@ -122,6 +160,12 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     fputs(f, ftos(targ.hatchet_durability), "\n");
     fputs(f, ftos(targ.pick_durability), "\n");
 
+    // --- PASSWORD (LAST LINE ALWAYS) ---
+	if (targ.password != "" && targ.password != __NULL__)
+		fputs(f, EncodePassword(targ.password), "\n");
+	else
+		fputs(f, EncodePassword(old_password), "\n");
+
     fclose(f);
     sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
 };
@@ -129,7 +173,7 @@ void(entity targ, float type) CSEv_Player_SaveChar =
 // ============================================================
 // RESUME/LOAD CHARACTER
 // ============================================================
-void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
+void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
 {
     if (cvar("developer") > 0)
         return;
@@ -137,22 +181,24 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
     string add_ext = strcat(LOGIN_NAME, ".chr");
     string line;
 
-    // --- Step 0: Check GUID ---
-    float f = fopen(add_ext, FILE_READ);
-    if (f >= 0)
-    {
-        self.guid = infokey(self, INFOKEY_P_GUID);
-        if (line = fgets(f))
-            if (line != "" && line != self.guid)
-            {
-                sprint(self, PRINT_HIGH, "Server GUID does not match clients\n");
-                fclose(f);
-                return;
-            }
-        fclose(f);
-    }
+    // --- Step 1: Check GUID ---
+	string file_guid;
 
-    // --- Step 1: Prevent multiple logins ---
+	float f = fopen(add_ext, FILE_READ);
+	if (f >= 0)
+	{
+		self.guid = infokey(self, INFOKEY_P_GUID);
+		file_guid = fgets(f); // store it only
+		fclose(f);
+	}
+
+	float guid_missing;
+	if (file_guid == "" || file_guid == __NULL__)
+		guid_missing = 1;
+	else
+		guid_missing = 0;
+
+    // --- Step 2: Prevent multiple logins ---
     if (cvar("sv_multilogin") == 0)
     {
         for (entity targ = world; (targ = find(targ, classname, "player")); )
@@ -165,7 +211,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
         }
     }
 
-    // --- Step 2: Read the entire file dynamically ---
+    // --- Step 3: Read the entire file dynamically ---
     float v = fopen(add_ext, FILE_READ);
     if (v < 0)
     {
@@ -195,6 +241,64 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
     if (inv_count_line < 0) inv_count_line = total_lines;       // points to end of file
     if (spell_count_line < 0) spell_count_line = total_lines;   // points to end of file
 
+    // ======================================================
+    // PASSWORD VALIDATION (FAIL FAST BEFORE APPLYING STATE)
+    // ======================================================
+    float upgrades_start = spell_count_line + 1; // base assumption
+
+    // We derive password line safely from file end structure
+    // (password is always last line in your save format)
+	string file_password = "";
+
+	for (float i = total_lines - 1; i >= 0; i--)
+	{
+		if (file_contents[i] != "")
+		{
+			file_password = file_contents[i];
+			break;
+		}
+	}
+
+	if (file_password != "")
+	{
+		string encoded_input;
+		encoded_input = EncodePassword(LOGIN_PASSWORD);
+
+		// CASE 1: correct password
+		if (file_password == encoded_input)
+		{
+			self.password = LOGIN_PASSWORD;
+		}
+		else
+		{
+			// CASE 2: GUID fallback OR missing GUID (legacy file)
+			if ((file_guid == self.guid) || guid_missing)
+			{
+				if (LOGIN_PASSWORD != "" && LOGIN_PASSWORD != __NULL__)
+				{
+					sprint(self, PRINT_HIGH, "^3Password accepted - updating account security\n");
+
+					self.password = LOGIN_PASSWORD;
+
+					// IMPORTANT: bind GUID if missing
+					if (guid_missing)
+						file_guid = self.guid;
+
+					CSEv_Player_SaveChar(self, 1);
+				}
+				else
+				{
+					sprint(self, PRINT_HIGH, "^1Cannot set empty password\n");
+					return;
+				}
+			}
+			else
+			{
+				sprint(self, PRINT_HIGH, "^1Incorrect password\n");
+				return;
+			}
+		}
+	}
     // --- Step 3: Parse stats & skills (fixed lines) ---
     self.netname = self.loginname = (total_lines > 1) ? file_contents[1] : LOGIN_NAME;
     self.gender = (total_lines > 2) ? file_contents[2] : "Male";
@@ -321,7 +425,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacter_s =
 	self.exp_oldnext = (upgrades_start + 1 < total_lines) ? stof(file_contents[upgrades_start + 1]) : self.exp_next;
 	// Load hatchet durability, default to 100 if missing
 	self.hatchet_durability = (upgrades_start + 2 < total_lines) ? stof(file_contents[upgrades_start + 2]) : 100;
-	// Load hatchet durability, default to 100 if missing
+	// Load mining pick durability, default to 100 if missing
 	self.pick_durability = (upgrades_start + 3 < total_lines) ? stof(file_contents[upgrades_start + 3]) : 100;
 
     // --- Step 7: Finalize player ---
@@ -394,11 +498,18 @@ void(entity targ) SaveInventory =
     fputs(b, ftos(targ.gold_bank), "\n");
     fputs(b, ftos(targ.exp_oldnext), "\n");
     fputs(b, ftos(targ.hatchet_durability), "\n");
+	fputs(b, ftos(targ.pick_durability), "\n");
 
-    // Write remaining lines after upgrades (future-proof)
-    for (i = upgrades_start + 3; i < total_lines; i++)
-        if (strlen(file_contents[i]) > 0)
-            fputs(b, file_contents[i], "\n");
+	// Write remaining lines EXCEPT last line (password)
+	for (i = upgrades_start + 3; i < total_lines - 1; i++)
+	{
+		if (strlen(file_contents[i]) > 0)
+			fputs(b, file_contents[i], "\n");
+	}
+
+	// ALWAYS re-append original password as final line
+	if (total_lines > 0)
+		fputs(b, file_contents[total_lines - 1], "\n");
 
     fclose(b);
 };

@@ -4,10 +4,9 @@
 
 float(entity ePVEnt, float flChanged) Player_SendEntity;
 
-
 void() ClientConnect = {};
 void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;};
-void(entity targ, float type) CSEv_Player_SaveChar
+void(entity targ, float type) CSEv_Player_SaveChar;
 void(entity player) SendPlayerInventory;
 void(entity player) SendMagicSpells;
 void() ClientKill = {};
@@ -1367,6 +1366,7 @@ void(float type) PlayerSpawn =
 		self.fixangle = TRUE;
 		setsize(self, [-16, -16, 0], [16, 16, 56]);
 		self.view_ofs = [0, 0, 48];
+		self.velocity = '0 0 0';
 
 		self.menu = MENU_LOGIN;
 		self.loggedin = FALSE;
@@ -1449,6 +1449,8 @@ void(float type) PlayerSpawn =
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
 		self.fixangle = TRUE;
+		self.velocity = '0 0 0';
+
 		stuffcmd (self, sprintf("stopmusic\n")); // stop music
 	}
 	else // respawning from death
@@ -1749,10 +1751,11 @@ void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s =
 		self.effects |= EF_BRIGHTLIGHT;
 };
 
-void(string LOGIN_NAME, string LOGIN_GENDER) CSEv_CreateNewCharacter_ss =
+void(string LOGIN_NAME, string LOGIN_GENDER, string LOGIN_PASSWORD) CSEv_CreateNewCharacter_sss =
 {
 	self.loginname = LOGIN_NAME; // Grab login name from CSQC
 	self.gender = LOGIN_GENDER; // Grab gender from CSQC
+	self.password = LOGIN_PASSWORD; // Grab password from CSQC
 	
 	string add_ext = strcat(self.loginname, ".chr");
 	float v = fopen(add_ext, FILE_READ);

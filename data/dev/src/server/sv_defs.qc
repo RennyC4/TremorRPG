@@ -1778,6 +1778,8 @@ const float MENU_BANKING = 7; // user banking screen
 .string guid; // guid security
 .float loggedin; // user successfully logged in
 .string loginname; // enforce this on the player
+.string password; // users password
+.string input_password;
 .float spawnloc; // read on player map transfers, stored in info_player_start entity
 .string gender;
 .float menu; // menu float, send to CSQC
