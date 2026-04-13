@@ -347,9 +347,13 @@ void(vector ang) CSEv_DoAttack_Melee_v =
     // -------------------------------
     if (jumpattack)
     {
-        damage += damage * 1.20;
+        damage *= 1.75;
         targ.jumpattack_hit_finished = time + 2;
     }
+
+	// Step-Dodge counter attack damage addition
+	if (self.anistate >= ANISTATE_STEPCOUNTER)
+		damage *= 1.50;
 
 	// Hit player / monster executing a charging up spell
 	float max_cast = 5.0; // maximum time the cast can be extended
@@ -823,9 +827,13 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
         // Apply jump attack bonus
         if (jumpattack)
         {
-            dmg += dmg * 1.20;
+            dmg *= 1.75;
             targ.jumpattack_hit_finished = time + 2;
         }
+
+		// Step-Dodge counter attack damage addition
+		if (self.anistate >= ANISTATE_STEPCOUNTER)
+			dmg *= 1.50;
 
 		// -------------------------------
 		// Backstab check
