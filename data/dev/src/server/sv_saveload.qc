@@ -8,22 +8,16 @@ void(float type) PlayerSpawn;
 #define inventory_start 44
 #define spells_start 45
 
-string EncodePassword(string s)
+string EncodePassword(string username, string password)
 {
-    string out;
-    float i, c;
+	string salt = strcat(username, ":TremorSalt_v1:"); // Build a user salt
+	string hash = digest_hex("SHA2-256", salt, password); // Initial hash
 
-    out = "";
+	for (float i = 0; i < 1000; i++) // Iterate to slow down brute force
+		hash = digest_hex("SHA2-256", salt, hash);
 
-    for (i = 0; i < strlen(s); i++)
-    {
-        c = s[i];
-        c = c ^ 0x5A;
-        out = strcat(out, ftos(c), ";");
-    }
-
-    return out;
-};
+	return hash;
+}
 
 // ============================================================
 // SAVE CHARACTER (Corrected)
@@ -162,9 +156,9 @@ void(entity targ, float type) CSEv_Player_SaveChar =
 
     // --- PASSWORD (LAST LINE ALWAYS) ---
 	if (targ.password != "" && targ.password != __NULL__)
-		fputs(f, EncodePassword(targ.password), "\n");
+		fputs(f, EncodePassword(targ.loginname, targ.password), "\n");
 	else
-		fputs(f, EncodePassword(old_password), "\n");
+		fputs(f, EncodePassword(targ.loginname, old_password), "\n");
 
     fclose(f);
     sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
@@ -262,7 +256,7 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
 	if (file_password != "")
 	{
 		string encoded_input;
-		encoded_input = EncodePassword(LOGIN_PASSWORD);
+		encoded_input = EncodePassword(LOGIN_NAME, LOGIN_PASSWORD);
 
 		// CASE 1: correct password
 		if (file_password == encoded_input)
