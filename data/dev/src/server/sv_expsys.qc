@@ -35,43 +35,58 @@ void(entity targ, entity monster, float expmin, float expmax) GiveExperience =
 {
     float amount = ceil(random_range(expmin, expmax));
 
-	// diminishing returns: starts at 3+ levels above
-	float p_lvl = targ.level;
-	float m_lvl = monster.level;
-	float lvl_diff = p_lvl - m_lvl;
-	float lvl_mod;
+    float p_lvl = targ.level;
+    float m_lvl = monster.level;
+    float lvl_diff = p_lvl - m_lvl;
+    float lvl_mod;
 
-	// If monster is higher level → bonus XP
-	if (lvl_diff <= 0)
-		lvl_mod = 1.0 + (-lvl_diff * 0.05);
+    // -----------------------------
+    // Level Difference Modifier
+    // -----------------------------
 
-	// If monster is only up to 2 levels lower → no penalty
-	else if (lvl_diff <= 2)
-		lvl_mod = 1.0;
+    // Monster is same or higher level → bonus XP
+    if (lvl_diff <= 0)
+    {
+        lvl_mod = 1.0 + (-lvl_diff * 0.05);
+    }
+    // Monster is slightly lower (≤ 2 levels) → no penalty
+    else if (lvl_diff <= 2)
+    {
+        lvl_mod = 1.0;
+    }
+    // Monster is much lower → harsher diminishing returns
+    else
+    {
+        float extra_lvls = lvl_diff - 2;
 
-	// 3+ levels above → soft diminishing returns
-	else
-	{
-		float extra_lvls = lvl_diff - 2;
-		lvl_mod = 1.0 - (extra_lvls * 0.05); // -5% XP per extra level above 2
+        // diminishing curve
+        lvl_mod = 1.0 / (1.0 + (extra_lvls * 0.6));
 
-		// Never go below 15%
-		if (lvl_mod < 0.15)
-			lvl_mod = 0.15;
-	}
+        // Minimum 10% XP
+        if (lvl_mod < 0.05)
+            lvl_mod = 0.05;
+    }
 
     amount *= lvl_mod;
 
-    exp_multiplier = cvar("sv_expmultiplier");
+    // -----------------------------
+    // Server EXP Multiplier
+    // -----------------------------
+    float exp_multiplier = cvar("sv_expmultiplier");
     if (exp_multiplier > 0)
         amount *= exp_multiplier;
 
+    // Final rounding
     amount = ceil(amount);
+
+    // Apply EXP
     targ.exp += amount;
 
+    // Feedback
     string eventlog_print = strcat("^2", ftos(amount), "^7 exp received!\n");
     stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
 
+    // Level up check
     Player_CheckLevelUp(targ);
 };
 

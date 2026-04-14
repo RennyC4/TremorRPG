@@ -83,6 +83,7 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_PROJ_MIN, EV_FLOAT, projectile_power_min);
 	clientstat(STAT_PROJ_MAX, EV_FLOAT, projectile_power_max);
 	clientstat(STAT_GOLD_BANK, EV_FLOAT, gold_bank);
+	clientstat(STAT_LEVITATE, EV_FLOAT, levitate_finished);
 
 	// Job Skills
 	clientstat(STAT_MINING, EV_FLOAT, skill_mining);
@@ -138,6 +139,7 @@ void() worldspawn =
 	PART_MAGIC_THORN1 = particleeffectnum("thornhit");
 	PART_MAGIC_THORN2 = particleeffectnum("thornwall");
 	PART_MAGIC_LIGHTHEAL = particleeffectnum("lightheal");
+	PART_MAGIC_LEVITATE = particleeffectnum("levitate");
 	//
 
 	precache_model("models/player_m.glb");
@@ -187,6 +189,8 @@ void() worldspawn =
 	precache_sound ("magic/thorn_misc.wav");
 	precache_sound ("magic/thorn_cast.wav");
 	precache_sound ("magic/lightheal.wav");
+	precache_sound ("magic/levitate.wav");
+	precache_sound ("magic/levitateend.wav");
 	precache_sound ("magic/casting.wav");
 
 	SSQC_SendValuesToCSQC();

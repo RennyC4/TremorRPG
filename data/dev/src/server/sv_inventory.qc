@@ -369,7 +369,7 @@ void(string itemname) CSEv_UseItem_s =
 		CSEv_Player_UseItem_fs(2, itemname);
 
 	// Magic spells
-	if (itemname == "Spell - Thorn" || itemname == "Spell - Light Heal")
+	if (itemname == "Spell - Thorn" || itemname == "Spell - Light Heal" || itemname == "Spell - Levitate")
 		CSEv_Player_UseItem_fs(3, itemname);
 
 	// Main hand equippables (weapons)

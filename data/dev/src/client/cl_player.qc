@@ -1069,7 +1069,10 @@ void() Player_Think =
 	if (self.health <= 0)
 		return;
 
-	Player_DoJump();
+	float levitating = (self.levitate_finished > time);
+	if (!levitating)
+		Player_DoJump();
+
 	FootstepThink();
 
 	if (deathcam_dist != 45)

@@ -2024,11 +2024,12 @@ const float ANISTATE_JUMP = 23;
 #define STAT_PROJ_MIN 91
 #define STAT_PROJ_MAX 92
 #define STAT_GOLD_BANK 93
+#define STAT_LEVITATE 94
 
 // Job skills
-#define STAT_MINING 94
-#define STAT_FISHING 95
-#define STAT_WOODCUTTING 96
+#define STAT_MINING 95
+#define STAT_FISHING 96
+#define STAT_WOODCUTTING 97
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001
@@ -2051,6 +2052,7 @@ var float PART_MAGIC_CASTING_ORB;
 var float PART_MAGIC_THORN1; // Hit target
 var float PART_MAGIC_THORN2; // Hit wall
 var float PART_MAGIC_LIGHTHEAL;
+var float PART_MAGIC_LEVITATE;
 var float PART_HEALTHPOTION;
 var float PART_MANAPOTION;
 var float PART_BLOCK;
@@ -2076,6 +2078,7 @@ var float PART_ARROW_HITWALL;
 .float spell_count;
 .string spell[MAX_SPELLS];
 .float cancast_finished; // similar to quake's attack_finished
+.float levitate_finished;
 
 // Day/Night
 float timeofday;
@@ -2116,7 +2119,9 @@ const float TIME_NIGHT = 3;
 #define PSF_ANIMATION     2048    // 0b0000100000000000
 #define PSF_MISC          4096    // 0b0001000000000000
 
+//
 // Last sent values for network delta
+//
 .vector last_origin;
 .vector last_v_angle;
 .vector last_velocity;
@@ -2143,6 +2148,7 @@ const float TIME_NIGHT = 3;
 .float last_waterlevel;
 .float last_angles;
 .float last_attack_speed;
+.float last_levitate_finished;
 .string last_equipment;
 .string last_main_hand;
 .string last_off_hand;

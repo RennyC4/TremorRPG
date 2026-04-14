@@ -68,6 +68,11 @@ void(string spellname) CSEv_EquipSpell_s =
 		self.spell_power_min = 25;
 		self.spell_power_max = 50;
 	}
+	else if (spellname == "Levitate")
+	{
+		self.spell_power_min = 0;
+		self.spell_power_max = 0;
+	}
 
 	stuffcmd (self, sprintf("play %s\n", "equipspell.wav")); // sound
 	sprint(self, PRINT_HIGH, strcat("Magic spell: ", spellname, " memorized\n"));
@@ -198,6 +203,20 @@ void(float amount) Cast_LightHeal =
 	pointparticles(PART_MAGIC_LIGHTHEAL, self.origin);
 };
 
+void() Cast_Levitate =
+{
+	float amount = self.skill_neutralmagic * 0.1;
+	float lev_time = 3 + amount;
+
+	self.levitate_finished = time + lev_time;
+
+	string eventlog_print = strcat("^6Levitate Time: ^2", ftos(lev_time), " sec\n");
+	stuffcmd(self, sprintf("conecho event %s\n", eventlog_print));
+
+	sound(self, CHAN_AUTO, "magic/levitate.wav", 1, ATTN_NORM);
+	pointparticles(PART_MAGIC_LEVITATE, self.origin);
+};
+
 .float casting_loop;
 void() Player_CastMagic = // called from player postthink
 {
@@ -226,6 +245,13 @@ void() Player_CastMagic = // called from player postthink
 			self.spellani_finished = time + 2; // Delay movement so animation can play
 			Cast_LightHeal(spellpower);
 			self.mana -= 20;
+		}
+		if (self.cast_finished_spell == "Levitate")
+		{
+			self.anistate = ANISTATE_CASTSELF;
+			self.spellani_finished = time + 2; // Delay movement so animation can play
+			Cast_Levitate();
+			self.mana -= 50;
 		}
 		Player_RemoveCrouch();
 		self.cast_finished_spell = ""; // important: always clear this after the spell is fired, or else it'll refire
@@ -283,6 +309,16 @@ void(vector ang) CSEv_DoAttack_Magic_v = // CSQC
 		{
 			self.cast_finished_spell = self.spell_equipped; // this is cleared once the spell is done casting
 			self.cast_finished = time + 3; // casting time	
+		}
+		else
+			sprint (self, PRINT_HIGH, "^1Not enough mana!\n");
+	}
+	else if (self.spell_equipped == "Levitate")
+	{
+		if (self.mana >= 50)
+		{
+			self.cast_finished_spell = self.spell_equipped; // this is cleared once the spell is done casting
+			self.cast_finished = time + 6; // casting time	
 		}
 		else
 			sprint (self, PRINT_HIGH, "^1Not enough mana!\n");

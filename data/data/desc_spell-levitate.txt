@@ -1,0 +1,9 @@
+^6Magic Spell:^2 Levitate^7
+
+^5Power:^7 0
+^5Type:^7 Neutral
+^5Cast Time:^7 6s
+^5Mana Use:^7 50
+^5Distance:^7 Self
+
+Allows temporary flight while draining mana

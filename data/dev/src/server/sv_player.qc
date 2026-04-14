@@ -280,7 +280,8 @@ void() CSEv_PlayerJump =
         self.weaponframe = 0;
         self.pressedJump = TRUE; // Air melee check
         self.stamina -= staminaCost;
-		self.anistate = ANISTATE_JUMP;
+		if (self.levitate_finished < time) // do not overwrite levitation state
+			self.anistate = ANISTATE_JUMP;
         sound(self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
     }
 };
@@ -678,7 +679,7 @@ void() FallDamage_Update =
     if (!(self.flags & FL_ONGROUND) && !self.climbing)
     {
 		self.inair_count += 1;
-		if (self.inair_count >= 12 && !self.waterlevel && !self.climbing)
+		if (self.inair_count >= 12 && !self.waterlevel && !self.climbing && self.levitate_finished < time)
 			self.lockview_finished = time + 0.1; // lock view when leaving ground, but not over small inclines (climbing is fine)
         float down = - self.velocity_z; // positive when falling
         if (down > self.fall_maxspeed)
@@ -981,12 +982,13 @@ void() Anistate_Handler =
 		{
 			self.anistate = ANISTATE_NONE;
 			self.dodgedir = 0;
-			self.velocity_x = self.velocity_y = 0; // remove velocity from roll
+			if (self.flags & FL_ONGROUND)
+				self.velocity_x = self.velocity_y = 0; // remove velocity from roll
 			self.melee_finished = time;
 		}
 	}
 
-	if (self.flags & FL_ONGROUND)
+	if (self.flags & FL_ONGROUND || self.levitate_finished > time)
 	{
 		if (self.anistate == ANISTATE_JUMP)
 			self.anistate = ANISTATE_NONE;
@@ -1126,7 +1128,8 @@ void(float flIsNew) Player_SendFlags =
             self.crouch != self.last_crouch ||
             self.dodgedir != self.last_dodgedir ||
             self.stepdodge_counter != self.last_stepdodge ||
-			self.waterlevel != self.last_waterlevel)
+			self.waterlevel != self.last_waterlevel ||
+			self.levitate_finished != self.last_levitate_finished)
             flChanged |= PSF_MISC;
 
         // MODEL & NAME
@@ -1314,6 +1317,22 @@ void() PlayerPostThink =
 		if (self.pressedJump)
 			self.pressedJump = FALSE;
 	}
+	
+	// levitate handler
+	if (self.levitate_finished > time)
+	{
+		if (self.movetype != MOVETYPE_FLY)
+			self.movetype = MOVETYPE_FLY;
+	}
+	else
+	{
+		// Only revert if we were actually levitating
+		if (self.movetype == MOVETYPE_FLY)
+		{
+			self.movetype = MOVETYPE_WALK;
+			sound(self, CHAN_AUTO, "magic/levitateend.wav", 1, ATTN_NORM);
+		}
+	}
 
 	Player_CastMagic();
 };
@@ -1334,7 +1353,7 @@ void() PlayerDeath =
 	self.incombat = FALSE;
 	self.deadflag = DEAD_DEAD;
 	self.radius_candamage = FALSE;
-	self.movetype = MOVETYPE_NONE;
+	self.movetype = MOVETYPE_TOSS;
 	self.view_ofs = [0, 0, 4];
 	self.healthpot_heal_remaining = 0;
 	self.healthpot_heal_rate = 0;
@@ -1576,6 +1595,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
         WriteByte(MSG_ENTITY, self.dodgedir);
         WriteByte(MSG_ENTITY, self.stepdodge_counter);
         WriteByte(MSG_ENTITY, self.waterlevel);
+        WriteByte(MSG_ENTITY, self.levitate_finished);
     }
 
     // --- Update last sent values ---
@@ -1614,6 +1634,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
         self.last_dodgedir = self.dodgedir;
         self.last_stepdodge = self.stepdodge_counter;
         self.last_waterlevel = self.waterlevel;
+        self.last_levitate_finished = self.levitate_finished;
     }
 
     return TRUE;

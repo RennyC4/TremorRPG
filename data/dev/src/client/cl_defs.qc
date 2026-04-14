@@ -2174,6 +2174,7 @@ var float PART_MAGIC_CASTING_ORB;
 var float PART_MAGIC_THORN1; // Hit target
 var float PART_MAGIC_THORN2; // Hit wall
 var float PART_MAGIC_LIGHTHEAL;
+var float PART_MAGIC_LEVITATE;
 var float PART_HEALTHPOTION;
 var float PART_MANAPOTION;
 var float PART_BLOCK;
@@ -2314,11 +2315,12 @@ const float MENU_BANKING = 7; // user banking screen
 #define STAT_PROJ_MIN 91
 #define STAT_PROJ_MAX 92
 #define STAT_GOLD_BANK 93
+#define STAT_LEVITATE 94
 
 // Job skills
-#define STAT_MINING 94
-#define STAT_FISHING 95
-#define STAT_WOODCUTTING 96
+#define STAT_MINING 95
+#define STAT_FISHING 96
+#define STAT_WOODCUTTING 97
 
 // Inventory - Player
 #define MAX_INVENTORY 32
@@ -2386,6 +2388,7 @@ float LockOn_CycleToggle; // same
 .float next_attack_time;
 .float dodgedir;
 .float stepdodge_counter;
+.float levitate_finished;
 .string armorname;
 .float spawnflags;
 .float floattext_time;
@@ -2480,7 +2483,6 @@ float LerpAngle(float a1, float a2, float t)
     return a1 + d * t;
 }
 
-
 void(entity target,vector neworg,vector newangles,vector newvelocity, float newtime) entity_state_update =
 {
             target.prev_origin = target.last_origin;
@@ -2495,6 +2497,7 @@ void(entity target,vector neworg,vector newangles,vector newvelocity, float newt
             target.prev_update_time = self.last_update_time;
             target.last_update_time = newtime;
 }
+
 void(entity target) entity_interpolate = 
 {
 	local float frac = (time - target.last_update_time) / (target.last_update_time - target.prev_update_time);
@@ -2503,15 +2506,10 @@ void(entity target) entity_interpolate =
 	
 	target.angles_x = LerpAngle(target.prev_angles_x,target.last_angles_x,frac);
 	target.angles_y = LerpAngle(target.prev_angles_y,target.last_angles_y,frac);
-	
 };
-
 
 float(entity target,vector i_move, vector i_angles,float i_buttons,float i_impulse, float delta,float sequence,float sequence_max) predict_callback = 
 {
-
-
-
 	return FALSE;
 };
 

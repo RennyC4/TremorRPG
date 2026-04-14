@@ -5,6 +5,7 @@
 .float ani_death;
 .float attack_triggered; // ensures one attack event per animation
 .float air_walk_timer; // counts down after leaving the ground
+.float ground_grace_timer;
 
 //
 // Special animations sent from SSQC
@@ -749,7 +750,17 @@ void() Player_Animate =
     // -----------------------------
     // Jump / Air-Walk Grace Animation
     // -----------------------------
-    int inAir = !(self.flags & FL_ONGROUND) && !self.climbing;
+
+	// int inAir = !(self.flags & FL_ONGROUND) && !self.climbing && !levitating;
+
+	float levitating = (self.levitate_finished > time);
+
+	if (self.flags & FL_ONGROUND)
+		self.ground_grace_timer = 0.1; // 100ms forgiveness
+	else
+		self.ground_grace_timer -= frametime;
+
+	int inAir = (self.ground_grace_timer <= 0) && !self.climbing && !levitating;
     if (inAir)
     {
         // Start or continue air-walk grace period
@@ -895,8 +906,15 @@ void() Player_Animate =
 	// -----------------------------
     else if (!(inAir || self.anim_attacking))
     {
+		float move_speed_scale = 1;
         vector vel = self.velocity;
         float velspeed = vlen(vel);
+
+		if (levitating)
+			move_speed_scale = 0.5;
+
+		if (levitating)
+			velspeed *= 0.75;
 
         // Idle / Crouch / Block Idle
         if (velspeed < 5)
@@ -969,6 +987,7 @@ void() Player_Animate =
                 }
             }
         }
+		speed *= move_speed_scale;
     }
 
     // -----------------------------

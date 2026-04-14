@@ -21,6 +21,8 @@ void() trigger_zone_touch =
 
 	if (other.classname != "player")
 		return;
+	if (!other.loggedin)
+		return;
 
 	if (other.pvp != self.pvp)
 	{
@@ -77,6 +79,8 @@ void() trigger_changeleveel_touch =
 {
 	if (other.classname != "player")
 		return;
+	if (!other.loggedin)
+		return;
 
 	other.spawnloc = self.spawnloc;
 	string newmap = strcat(":", self.map);
@@ -85,7 +89,7 @@ void() trigger_changeleveel_touch =
 
 void() trigger_changelevel =
 {
-	return;
+	return; // Remove when map cluster on Linux is fixed
 
 	self.modelindex = 0;
 	self.solid = SOLID_TRIGGER;
@@ -173,6 +177,8 @@ void() trigger_multi_touch =
 {
     if (other.classname != "player")
         return;
+	if (!other.loggedin)
+		return;
 
     SUB_UseTargets(self, other);
 
@@ -229,6 +235,8 @@ void() trigger_once_touch =
 {
     if (other.classname != "player")
         return;
+	if (!other.loggedin)
+		return;
 
     SUB_UseTargets(self, other);
     remove(self);
