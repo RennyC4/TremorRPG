@@ -60,7 +60,7 @@ void(entity targ, entity monster, float expmin, float expmax) GiveExperience =
         float extra_lvls = lvl_diff - 2;
 
         // diminishing curve
-        lvl_mod = 1.0 / (1.0 + (extra_lvls * 0.6));
+        lvl_mod = 1.0 / (1.0 + (extra_lvls * 0.5));
 
         // Minimum 10% XP
         if (lvl_mod < 0.05)
