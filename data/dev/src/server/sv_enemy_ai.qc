@@ -300,6 +300,9 @@ void() monster_ai_think =
         self.goalentity = self.ai_runback_temp;
         self.enemy = world;
         self.ai_mode = AI_RUNBACK;
+        self.ai_mode = AI_RUNBACK;
+		self.avoid_dir = 0;
+		self.avoid_time = 0;
         self.anistate = ANISTATE_RUN;
         self.nextthink = time + 0.1;
         return;
@@ -408,6 +411,8 @@ void() monster_ai_think =
 			print("error in monster ai\n");
         self.enemy = world;
         self.ai_mode = AI_RUNBACK;
+		self.avoid_dir = 0;
+		self.avoid_time = 0;
         self.anistate = ANISTATE_RUN;
     }
 
@@ -416,6 +421,7 @@ void() monster_ai_think =
     // ---------------------------
     if (self.ai_mode == AI_RUNBACK)
     {
+		self.enemy = world;
         vector target = self.ai_runback_temp.origin;
         float dist = vlen(self.origin - target);
 
@@ -424,7 +430,12 @@ void() monster_ai_think =
             vector flat_target = [target_x, target_y, self.origin_z];
             vector dir = normalize(flat_target - self.origin);
 
-            self.velocity = dir * self.speed;
+			// Face target
+			vector ang = vectoangles(dir);
+			self.angles_y = ang_y;
+
+            //self.velocity = dir * self.speed;
+			self.origin += dir * self.speed;
 
             // smooth vertical alignment
             float dz = target_z - self.origin_z;
@@ -448,6 +459,7 @@ void() monster_ai_think =
                     self.origin_z = ground_z;
             }
 
+			// Relink properly
             setorigin(self, self.origin);
 
             // cosmetics
@@ -487,6 +499,8 @@ void() monster_ai_think =
             self.velocity = '0 0 0';
             movetofloor(self);
         }
+		self.nextthink = time + 0.1;
+		return;
     }
 
 	// ---------------------------
@@ -629,7 +643,8 @@ void() monster_ai_think =
 		// ---------------------------
 		// Movement
 		// ---------------------------
-		monster_ai_move();
+		if (self.ai_mode != AI_RUNBACK)
+			monster_ai_move();
 	}
 
     // ---------------------------
@@ -645,6 +660,8 @@ void() monster_ai_think =
 
         self.enemy = world;
         self.ai_mode = AI_RUNBACK;
+		self.avoid_dir = 0;
+		self.avoid_time = 0;
         self.anistate = ANISTATE_RUN;
     }
 
