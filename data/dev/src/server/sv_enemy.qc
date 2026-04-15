@@ -144,7 +144,7 @@ void() monster_respawn =
 	self.think = monster_ai_think;
 	self.nextthink = time + 0.1;
 	
-	Monster_SendFlags(FALSE); // Send delta snapshot
+	Monster_SendFlags(TRUE); // Send full delta snapshot
 };
 
 void() monster_ai_spawnrunback =
