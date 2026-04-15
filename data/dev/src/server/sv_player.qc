@@ -992,7 +992,7 @@ void() Anistate_Handler =
 
 	if (self.flags & FL_ONGROUND || self.levitate_finished > time)
 	{
-		if (self.anistate != ANISTATE_NONE)
+		if (self.anistate == ANISTATE_JUMP)
 			self.anistate = ANISTATE_NONE;
 		self.climbing = FALSE;
 	}
@@ -1524,9 +1524,10 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
 {
     // Unique identifier for player entity
     WriteByte(MSG_ENTITY, ENT_PLAYER);
+	WriteShort(MSG_ENTITY, flChanged);
 
-	WriteByte(MSG_ENTITY, flChanged & 255);           // lower 8 bits
-	WriteByte(MSG_ENTITY, (flChanged >> 8) & 255);   // upper 8 bits
+	//WriteByte(MSG_ENTITY, flChanged & 255);           // lower 8 bits
+	//WriteByte(MSG_ENTITY, (flChanged >> 8) & 255);   // upper 8 bits
 
     // --- ORIGIN ---
     if (flChanged & PSF_ORIGIN)

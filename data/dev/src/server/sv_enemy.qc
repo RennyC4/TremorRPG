@@ -2,7 +2,6 @@
 // Monsters: Most are defined in the maps themselves (hmp / bsp)
 //
 
-
 #define MSF_ORIGIN       1
 #define MSF_ANGLES       2
 #define MSF_VELOCITY     4
@@ -39,34 +38,85 @@ void(float flIsNew) Monster_SendFlags =
     self.SendFlags = flChanged;
 };
 
+void(entity e) Monster_CommitState =
+{
+    e.last_origin = e.origin;
+    e.last_angles = e.angles;
+    e.last_velocity = e.velocity;
+    e.last_flags = e.flags;
+    e.last_effects = e.effects;
+    e.last_health = e.health;
+    e.last_max_health = e.max_health;
+    e.last_modelindex = e.modelindex;
+    e.last_main_hand = e.main_hand;
+    e.last_off_hand = e.off_hand;
+    e.last_anistate = e.anistate;
+    e.last_attack_speed = e.attack_speed;
+};
+
 float(entity ePVEnt, float flChanged) Monster_SendEntity =
 {
-	WriteByte(MSG_ENTITY, ENT_MONSTER); // Unique identifier
-	WriteCoord(MSG_ENTITY, self.origin_x); // Position X
-	WriteCoord(MSG_ENTITY, self.origin_y); // Position Y
-	WriteCoord(MSG_ENTITY, self.origin_z); // Position Z
-	WriteCoord(MSG_ENTITY, self.angles_x); // Angle X
-	WriteCoord(MSG_ENTITY, self.angles_y); // Angle Y
-	WriteCoord(MSG_ENTITY, self.angles_z); // Angle Z
-	WriteShort(MSG_ENTITY, self.velocity_x); // Velocity X
-	WriteShort(MSG_ENTITY, self.velocity_y); // Velocity X
-	WriteShort(MSG_ENTITY, self.velocity_z); // Velocity X
-	WriteFloat(MSG_ENTITY, self.flags); // Flags, important for physics
-	WriteFloat(MSG_ENTITY, self.effects);
-	WriteByte(MSG_ENTITY, self.alpha);
-	WriteShort(MSG_ENTITY, self.modelindex);
-	WriteShort(MSG_ENTITY, self.health);
-	WriteShort(MSG_ENTITY, self.max_health);
-	WriteString(MSG_ENTITY, self.displayname);
-	WriteByte(MSG_ENTITY, self.speed);
-	WriteString(MSG_ENTITY, self.main_hand);
-	WriteString(MSG_ENTITY, self.off_hand);
-	WriteByte(MSG_ENTITY, self.level);
-	WriteByte(MSG_ENTITY, self.anistate);
-	WriteByte(MSG_ENTITY, self.ai_mode);
-	WriteByte(MSG_ENTITY, self.attack_speed);
+    WriteByte(MSG_ENTITY, ENT_MONSTER);
+	WriteShort(MSG_ENTITY, flChanged);
 
-	return TRUE;
+    if (flChanged & MSF_ORIGIN)
+    {
+        WriteCoord(MSG_ENTITY, self.origin_x);
+        WriteCoord(MSG_ENTITY, self.origin_y);
+        WriteCoord(MSG_ENTITY, self.origin_z);
+    }
+
+    if (flChanged & MSF_ANGLES)
+    {
+        WriteCoord(MSG_ENTITY, self.angles_x);
+        WriteCoord(MSG_ENTITY, self.angles_y);
+        WriteCoord(MSG_ENTITY, self.angles_z);
+    }
+
+    if (flChanged & MSF_VELOCITY)
+    {
+        WriteShort(MSG_ENTITY, self.velocity_x);
+        WriteShort(MSG_ENTITY, self.velocity_y);
+        WriteShort(MSG_ENTITY, self.velocity_z);
+    }
+
+    if (flChanged & MSF_FLAGS)
+        WriteFloat(MSG_ENTITY, self.flags);
+
+    if (flChanged & MSF_EFFECTS)
+        WriteFloat(MSG_ENTITY, self.effects);
+
+    if (flChanged & MSF_MODEL)
+        WriteShort(MSG_ENTITY, self.modelindex);
+
+    if (flChanged & MSF_HEALTH)
+    {
+        WriteShort(MSG_ENTITY, self.health);
+        WriteShort(MSG_ENTITY, self.max_health);
+    }
+
+    if (flChanged & MSF_MISC)
+    {
+        WriteByte(MSG_ENTITY, self.alpha);
+        WriteString(MSG_ENTITY, self.displayname);
+        WriteByte(MSG_ENTITY, self.speed);
+        WriteByte(MSG_ENTITY, self.level);
+        WriteByte(MSG_ENTITY, self.ai_mode);
+    }
+
+    if (flChanged & MSF_EQUIPMENT)
+    {
+        WriteString(MSG_ENTITY, self.main_hand);
+        WriteString(MSG_ENTITY, self.off_hand);
+    }
+
+    if (flChanged & MSF_ANIMATION)
+    {
+        WriteByte(MSG_ENTITY, self.anistate);
+        WriteByte(MSG_ENTITY, self.attack_speed);
+    }
+
+    return TRUE;
 };
 
 void() monster_respawn =
@@ -93,6 +143,8 @@ void() monster_respawn =
 
 	self.think = monster_ai_think;
 	self.nextthink = time + 0.1;
+	
+	Monster_SendFlags(TRUE); // Send full snapshot
 };
 
 void() monster_ai_spawnrunback =
@@ -110,8 +162,6 @@ void() monster_ai_spawnrunback =
 
 void() set_monster =
 {
-	self.SendEntity = Monster_SendEntity;
-
 	if (self.model)
 		precache_model(self.model); // model
 	if (self.noise)
@@ -162,4 +212,7 @@ void() set_monster =
 
 	self.think = monster_ai_think;
 	self.nextthink = time + 0.1 + random()*1; // stagger start think
+	
+	self.SendEntity = Monster_SendEntity;
+	Monster_CommitState(self);
 };

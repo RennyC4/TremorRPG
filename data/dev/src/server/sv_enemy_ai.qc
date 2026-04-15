@@ -22,6 +22,7 @@ void() monster_ai_think;
 void() monster_respawn;
 void(vector ang) CSEv_DoAttack_Melee_v;
 void(vector ang) CSEv_DoAttack_Arrow_v;
+void(entity e) Monster_CommitState;
 
 // range values
 float	RANGE_CLOSE				= 0;
@@ -32,7 +33,6 @@ float	RANGE_FAR				= 4;
 
 void() monster_death =
 {
-	self.SendFlags = 1;
 	self.angles_x = 0;
 	self.goalentity = self.enemy = world; // reset targets
 	self.velocity = '0 0 0'; // slide fix
@@ -44,6 +44,7 @@ void() monster_death =
 
 	self.think = monster_respawn;
 	self.nextthink = time + self.respawn_finished;
+	Monster_SendFlags(FALSE); // Send full snapshot
 };
 
 void() PitchToTarget =
@@ -262,7 +263,6 @@ float() monster_ai_move =
     else
         self.stuck_time = 0; // reset counter if moving
 
-    self.last_origin = self.origin; // store current position
     setorigin(self, self.origin);
 	touchtriggers(self, self.origin);
 
@@ -271,10 +271,9 @@ float() monster_ai_move =
 
 // main monster ai execution function
 .float impact_frame;
-void() monster_ai_think =
+void() monster_ai_update_state =
 {
-    Monster_SendFlags(FALSE);
-    makevectors(self.angles);
+	makevectors(self.angles);
 
     // ---------------------------
     // Manual waterlevel check
@@ -664,6 +663,15 @@ void() monster_ai_think =
 		self.avoid_time = 0;
         self.anistate = ANISTATE_RUN;
     }
+
+    self.nextthink = time + 0.1;
+};
+
+void() monster_ai_think =
+{
+    monster_ai_update_state();   // ALL logic + movement
+    Monster_SendFlags(FALSE);    // delta compare
+    Monster_CommitState(self);   // snapshot
 
     self.nextthink = time + 0.1;
 };

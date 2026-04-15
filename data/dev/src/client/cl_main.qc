@@ -45,7 +45,7 @@ float(void) DrawDynamicLights =
 void() CSQC_DrawMonsterPlaques;
 
 // ========================
-// Player Send Flags (PSF)
+// Player / Monster Send Flags (PSF)
 // ========================
 
 // Bit positions (max 16 for two bytes)
@@ -64,6 +64,20 @@ void() CSQC_DrawMonsterPlaques;
 #define PSF_EQUIPMENT     1024    // 0b0000010000000000
 #define PSF_ANIMATION     2048    // 0b0000100000000000
 #define PSF_MISC          4096    // 0b0001000000000000
+
+// Bit positions (max 16 for two bytes)
+#define MSF_ORIGIN       1
+#define MSF_ANGLES       2
+#define MSF_VELOCITY     4
+#define MSF_FLAGS        8
+#define MSF_EFFECTS      16
+#define MSF_HEALTH       32
+#define MSF_MODEL        64
+#define MSF_EQUIPMENT    128
+
+// Second byte (shifted by 8)
+#define MSF_ANIMATION    256
+#define MSF_MISC         512
 
 void() Hud_UpdateScores;
 void(vector virtmin, vector virtsize) Hud_Scoreboard;
@@ -693,9 +707,7 @@ void(float flIsNew) CSQC_Ent_Update =
 
     if (flEntType == ENT_PLAYER)
     {
-        float deltaFlags1 = readbyte();
-        float deltaFlags2 = readbyte();
-        float deltaFlags = deltaFlags1 + (deltaFlags2 * 256);
+		float deltaFlags = readshort();
 
         if (flIsNew)
         {
@@ -758,7 +770,9 @@ void(float flIsNew) CSQC_Ent_Update =
 	//
 	if (flEntType == ENT_MONSTER)
 	{
-		if (flIsNew == TRUE)
+        float deltaFlags = readshort();
+
+		if (flIsNew)
 		{
 			self.classname = "monster";
 			self.solid = SOLID_SLIDEBOX;
@@ -768,29 +782,62 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.worldlight = TRUE;
 		}
 
-		self.origin_x = readcoord();
-		self.origin_y = readcoord();
-		self.origin_z = readcoord();
-		self.angles_x = readcoord();
-		self.angles_y = readcoord();
-		self.angles_z = readcoord();
-		self.velocity_x = readshort();
-		self.velocity_y = readshort();
-		self.velocity_z = readshort();
-		self.flags = readfloat();
-		self.effects = readfloat();
-		self.alpha = readbyte();
-		self.modelindex = readshort();
-		self.health = readshort();
-		self.max_health = readshort();
-		self.displayname = readstring();
-		self.speed = readbyte();
-		self.main_hand = readstring();
-		self.off_hand = readstring();
-		self.level = readbyte();
-		self.anistate = readbyte();
-		self.ai_mode = readbyte();
-		self.attack_speed = readbyte();
+		if (deltaFlags & MSF_ORIGIN)
+		{
+			self.origin_x = readcoord();
+			self.origin_y = readcoord();
+			self.origin_z = readcoord();
+		}
+
+		if (deltaFlags & MSF_ANGLES)
+		{
+			self.angles_x = readcoord();
+			self.angles_y = readcoord();
+			self.angles_z = readcoord();
+		}
+
+		if (deltaFlags & MSF_VELOCITY)
+		{
+			self.velocity_x = readshort();
+			self.velocity_y = readshort();
+			self.velocity_z = readshort();
+		}
+
+		if (deltaFlags & MSF_FLAGS)
+			self.flags = readfloat();
+
+		if (deltaFlags & MSF_EFFECTS)
+			self.effects = readfloat();
+
+		if (deltaFlags & MSF_MODEL)
+			self.modelindex = readshort();
+
+		if (deltaFlags & MSF_HEALTH)
+		{
+			self.health = readshort();
+			self.max_health = readshort();
+		}
+
+		if (deltaFlags & MSF_MISC)
+		{
+			self.alpha = readbyte();
+			self.displayname = readstring();
+			self.speed = readbyte();
+			self.level = readbyte();
+			self.ai_mode = readbyte();
+		}
+
+		if (deltaFlags & MSF_EQUIPMENT)
+		{
+			self.main_hand = readstring();
+			self.off_hand = readstring();
+		}
+
+		if (deltaFlags & MSF_ANIMATION)
+		{
+			self.anistate = readbyte();
+			self.attack_speed = readbyte();
+		}
 
 		// void(entity target,vector neworg,float newtime) entity_state_update
 		entity_state_update(self, self.origin, self.angles, self.velocity, time);
