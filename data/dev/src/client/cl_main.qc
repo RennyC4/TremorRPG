@@ -749,9 +749,8 @@ void(float flIsNew) CSQC_Ent_Update =
 
         if (flIsNew)
             setorigin(self, self.origin);
-            
-            
-	entity_state_update(self,self.origin,self.angles,self.velocity,time);
+
+		entity_state_update(self, self.origin, self.angles, self.velocity, time);
     }
 
 	//
@@ -792,8 +791,9 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.anistate = readbyte();
 		self.ai_mode = readbyte();
 		self.attack_speed = readbyte();
+
 		// void(entity target,vector neworg,float newtime) entity_state_update
-		entity_state_update(self,self.origin,self.angles,self.velocity,time);
+		entity_state_update(self, self.origin, self.angles, self.velocity, time);
 	}
 
 	//

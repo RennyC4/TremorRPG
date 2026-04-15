@@ -2485,18 +2485,18 @@ float LerpAngle(float a1, float a2, float t)
 
 void(entity target,vector neworg,vector newangles,vector newvelocity, float newtime) entity_state_update =
 {
-            target.prev_origin = target.last_origin;
-            target.last_origin = neworg;
-            
-            target.prev_angles = target.last_angles;
-            target.last_angles = newangles;
-            
-            target.prev_velocity = target.last_velocity;
-            target.last_velocity = newvelocity;
-            
-            target.prev_update_time = self.last_update_time;
-            target.last_update_time = newtime;
-}
+		target.prev_origin = target.last_origin;
+		target.last_origin = neworg;
+
+		target.prev_angles = target.last_angles;
+		target.last_angles = newangles;
+
+		target.prev_velocity = target.last_velocity;
+		target.last_velocity = newvelocity;
+
+		target.prev_update_time = self.last_update_time;
+		target.last_update_time = newtime;
+};
 
 void(entity target) entity_interpolate = 
 {
@@ -2522,13 +2522,12 @@ void(entity target, float(entity targ_p,vector i_move, vector i_angles,float i_b
 	for (float i = servercommandframe+1; i <= clientcommandframe; i+=1)
 	{
 		if (!getinputstate(i))
-			continue;		//that input frame is too old.
+			continue; //that input frame is too old
 			
-		callback(target,input_movevalues,input_angles,input_buttons,input_impulse,input_timelength,servercommandframe+1,clientcommandframe);
+		callback(target, input_movevalues, input_angles, input_buttons, input_impulse, input_timelength, servercommandframe+1, clientcommandframe);
 
 		input_buttons &= ~2; // taking over +jump
 		runstandardplayerphysics(target);
 		vPlayerOrigin = target.origin;
 	}
 };
-
