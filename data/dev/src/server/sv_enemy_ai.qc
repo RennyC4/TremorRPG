@@ -44,7 +44,7 @@ void() monster_death =
 
 	self.think = monster_respawn;
 	self.nextthink = time + self.respawn_finished;
-	Monster_SendFlags(FALSE); // Send full snapshot
+	Monster_SendFlags(FALSE); // Send delta snapshot
 };
 
 void() PitchToTarget =

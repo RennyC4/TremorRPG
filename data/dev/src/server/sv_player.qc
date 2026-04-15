@@ -1150,7 +1150,6 @@ void() PlayerPostThink =
 	if (cvar("developer") > 0)
 		return;
 
-	//self.SendFlags = 1;
 	Player_SendFlags(FALSE);
 
 	if (!self.loggedin)
