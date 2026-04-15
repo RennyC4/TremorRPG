@@ -151,6 +151,8 @@ void() PlayerClimb =
 		return;
 	if (self.climb_finished > time)
 		return;
+	if (self.levitate_finished > time)
+		return;
 
 	float climbcalc = 50 + (self.skill_climb * 0.35); // speed calculation
 	float stamcalc = 0.01 + (self.skill_climb * 0.0005); // stamina calculation
@@ -990,7 +992,7 @@ void() Anistate_Handler =
 
 	if (self.flags & FL_ONGROUND || self.levitate_finished > time)
 	{
-		if (self.anistate == ANISTATE_JUMP)
+		if (self.anistate != ANISTATE_NONE)
 			self.anistate = ANISTATE_NONE;
 		self.climbing = FALSE;
 	}

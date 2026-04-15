@@ -751,8 +751,6 @@ void() Player_Animate =
     // Jump / Air-Walk Grace Animation
     // -----------------------------
 
-	// int inAir = !(self.flags & FL_ONGROUND) && !self.climbing && !levitating;
-
 	float levitating = (self.levitate_finished > time);
 
 	if (self.flags & FL_ONGROUND)

@@ -996,10 +996,7 @@ void() Player_DoJump =
 
 		// jump
 		if (button_up)
-		{
 			sendevent("PlayerJump", "", 0);
-			//self.anim_state = ANIM_JUMP;
-		}
 	}
 };
 
@@ -1071,7 +1068,21 @@ void() Player_Think =
 
 	float levitating = (self.levitate_finished > time);
 	if (!levitating)
+	{
+		if (self.health <= 0)
+			self.movetype = MOVETYPE_TOSS;
+		else
+			self.movetype = MOVETYPE_WALK;
 		Player_DoJump();
+	}
+	else // levitation movetype handler
+	{
+		if (self.movetype != MOVETYPE_FLY)
+			self.movetype = MOVETYPE_FLY;
+
+		self.gravity = 0;
+		self.velocity_z = 0;
+	}
 
 	FootstepThink();
 

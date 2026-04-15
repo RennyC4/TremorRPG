@@ -2525,10 +2525,10 @@ void(entity target, float(entity targ_p,vector i_move, vector i_angles,float i_b
 			continue;		//that input frame is too old.
 			
 		callback(target,input_movevalues,input_angles,input_buttons,input_impulse,input_timelength,servercommandframe+1,clientcommandframe);
-		
-	input_buttons &= ~2; // taking over +jump
-	runstandardplayerphysics(target);
-	vPlayerOrigin = target.origin;
+
+		input_buttons &= ~2; // taking over +jump
+		runstandardplayerphysics(target);
+		vPlayerOrigin = target.origin;
 	}
 };
 
