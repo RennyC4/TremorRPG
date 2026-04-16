@@ -1,4 +1,4 @@
-11
+12
 Short Sword
 200
 Health Potion
@@ -21,3 +21,5 @@ Hatchet
 25
 Mining Pick
 40
+Fishing Rod
+100

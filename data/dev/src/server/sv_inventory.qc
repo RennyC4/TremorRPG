@@ -377,6 +377,8 @@ void(string itemname) CSEv_UseItem_s =
 		Player_EquipItem(itemname, 0);
 	if (itemname == "Mining Pick")
 		Player_EquipItem(itemname, 0);
+	if (itemname == "Fishing Rod")
+		Player_EquipItem(itemname, 0);
 	if (itemname == "Broken Sword")
 		Player_EquipItem(itemname, 0);
 	else if (itemname == "Short Sword")
