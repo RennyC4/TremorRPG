@@ -27,6 +27,71 @@ void(float flIsNew) Ally_SendFlags =
     self.SendFlags = flChanged;
 };
 
+float(entity ePVEnt, float flChanged) Ally_SendEntity =
+{
+    WriteByte(MSG_ENTITY, ENT_ALLY);
+	WriteShort(MSG_ENTITY, flChanged);
+
+    if (flChanged & ESF_ORIGIN)
+    {
+        WriteCoord(MSG_ENTITY, self.origin_x);
+        WriteCoord(MSG_ENTITY, self.origin_y);
+        WriteCoord(MSG_ENTITY, self.origin_z);
+    }
+
+    if (flChanged & ESF_ANGLES)
+    {
+        WriteCoord(MSG_ENTITY, self.angles_x);
+        WriteCoord(MSG_ENTITY, self.angles_y);
+        WriteCoord(MSG_ENTITY, self.angles_z);
+    }
+
+    if (flChanged & ESF_VELOCITY)
+    {
+        WriteShort(MSG_ENTITY, self.velocity_x);
+        WriteShort(MSG_ENTITY, self.velocity_y);
+        WriteShort(MSG_ENTITY, self.velocity_z);
+    }
+
+    if (flChanged & ESF_FLAGS)
+        WriteFloat(MSG_ENTITY, self.flags);
+
+    if (flChanged & ESF_EFFECTS)
+        WriteFloat(MSG_ENTITY, self.effects);
+
+    if (flChanged & ESF_MODEL)
+        WriteShort(MSG_ENTITY, self.modelindex);
+
+    if (flChanged & ESF_HEALTH)
+    {
+        WriteShort(MSG_ENTITY, self.health);
+        WriteShort(MSG_ENTITY, self.max_health);
+    }
+
+    if (flChanged & ESF_MISC)
+    {
+        WriteByte(MSG_ENTITY, self.alpha);
+        WriteString(MSG_ENTITY, self.displayname);
+        WriteByte(MSG_ENTITY, self.speed);
+        WriteByte(MSG_ENTITY, self.level);
+        WriteByte(MSG_ENTITY, self.ai_mode);
+    }
+
+    if (flChanged & ESF_EQUIPMENT)
+    {
+        WriteString(MSG_ENTITY, self.main_hand);
+        WriteString(MSG_ENTITY, self.off_hand);
+    }
+
+    if (flChanged & ESF_ANIMATION)
+    {
+        WriteByte(MSG_ENTITY, self.anistate);
+        WriteByte(MSG_ENTITY, self.attack_speed);
+    }
+
+    return TRUE;
+};
+
 void() ally_respawn =
 {
 	self.solid = SOLID_SLIDEBOX;
@@ -66,6 +131,7 @@ void() set_ally =
 	self.takedamage = DAMAGE_NO; // Change later?
 	self.classname = "ally";
 	self.radius_candamage = TRUE; // can be affected by radius damage
+	self.idealangles = self.angles;
 	self.worldlight = TRUE;
 
 	self.flags |= FL_ALLY;
@@ -75,8 +141,8 @@ void() set_ally =
 		self.sight_range = 500;
 	if (!self.exp)
 		self.exp = 1;
-//	if (!self.noise)
-//		self.noise = "monsters/sight1.wav";
+	if (!self.noise)
+		self.noise = "monsters/sight1.wav";
 	if (!self.ai_move_dist)
 		self.ai_move_dist = 2000;
 
@@ -93,5 +159,6 @@ void() set_ally =
 	self.think = ally_ai_think;
 	self.nextthink = time + 0.1 + random()*1; // stagger start think
 
-	//self.SendEntity = Ally_SendFlags;
+	self.SendEntity = Ally_SendEntity;
+	NPC_CommitState(self);
 };

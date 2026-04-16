@@ -7,6 +7,26 @@ void(entity player) DeleteInventory;
 void() npc_ai_think;
 .string npc_dialog; // reference npc file scripts
 
+//
+// NPC_CommitState - Networking, mostly used for monsters / npcs
+//
+
+void(entity e) NPC_CommitState =
+{
+    e.last_origin = e.origin;
+    e.last_angles = e.angles;
+    e.last_velocity = e.velocity;
+    e.last_flags = e.flags;
+    e.last_effects = e.effects;
+    e.last_health = e.health;
+    e.last_max_health = e.max_health;
+    e.last_modelindex = e.modelindex;
+    e.last_main_hand = e.main_hand;
+    e.last_off_hand = e.off_hand;
+    e.last_anistate = e.anistate;
+    e.last_attack_speed = e.attack_speed;
+};
+
 void() npc_use =
 {
 	if (!self.user)

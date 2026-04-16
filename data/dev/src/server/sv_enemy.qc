@@ -1,6 +1,7 @@
 //
 // Monsters: Most are defined in the maps themselves (hmp / bsp)
 //
+void(entity e) NPC_CommitState;
 
 void(float flIsNew) Monster_SendFlags =
 {
@@ -25,22 +26,6 @@ void(float flIsNew) Monster_SendFlags =
     }
 
     self.SendFlags = flChanged;
-};
-
-void(entity e) Monster_CommitState =
-{
-    e.last_origin = e.origin;
-    e.last_angles = e.angles;
-    e.last_velocity = e.velocity;
-    e.last_flags = e.flags;
-    e.last_effects = e.effects;
-    e.last_health = e.health;
-    e.last_max_health = e.max_health;
-    e.last_modelindex = e.modelindex;
-    e.last_main_hand = e.main_hand;
-    e.last_off_hand = e.off_hand;
-    e.last_anistate = e.anistate;
-    e.last_attack_speed = e.attack_speed;
 };
 
 float(entity ePVEnt, float flChanged) Monster_SendEntity =
@@ -203,5 +188,5 @@ void() set_monster =
 	self.nextthink = time + 0.1 + random()*1; // stagger start think
 	
 	self.SendEntity = Monster_SendEntity;
-	Monster_CommitState(self);
+	NPC_CommitState(self);
 };

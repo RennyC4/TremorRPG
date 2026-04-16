@@ -27,6 +27,7 @@ client/cl_npc.qc
 client/cl_player.qc
 client/cl_playerani.qc
 client/cl_enemy.qc
+client/cl_ally.qc
 client/cl_camera.qc
 client/cl_misc.qc
 client/cl_main.qc

@@ -957,6 +957,84 @@ void(float flIsNew) CSQC_Ent_Update =
 
 		setorigin(self, self.origin);
 	}
+	
+	//
+	// Allies (Guards, special NPCs)
+	//
+	if (flEntType == ENT_ALLY)
+	{
+        float deltaFlags = readshort();
+
+		if (flIsNew)
+		{
+			self.classname = "ally";
+			self.solid = SOLID_SLIDEBOX;
+			self.predraw = Ally_PreDraw;
+			self.drawmask = MASK_ENGINE;
+			self.view_ofs = '0 0 48';
+			self.worldlight = TRUE;
+		}
+
+		if (deltaFlags & ESF_ORIGIN)
+		{
+			self.origin_x = readcoord();
+			self.origin_y = readcoord();
+			self.origin_z = readcoord();
+		}
+
+		if (deltaFlags & ESF_ANGLES)
+		{
+			self.angles_x = readcoord();
+			self.angles_y = readcoord();
+			self.angles_z = readcoord();
+		}
+
+		if (deltaFlags & ESF_VELOCITY)
+		{
+			self.velocity_x = readshort();
+			self.velocity_y = readshort();
+			self.velocity_z = readshort();
+		}
+
+		if (deltaFlags & ESF_FLAGS)
+			self.flags = readfloat();
+
+		if (deltaFlags & ESF_EFFECTS)
+			self.effects = readfloat();
+
+		if (deltaFlags & ESF_MODEL)
+			self.modelindex = readshort();
+
+		if (deltaFlags & ESF_HEALTH)
+		{
+			self.health = readshort();
+			self.max_health = readshort();
+		}
+
+		if (deltaFlags & ESF_MISC)
+		{
+			self.alpha = readbyte();
+			self.displayname = readstring();
+			self.speed = readbyte();
+			self.level = readbyte();
+			self.ai_mode = readbyte();
+		}
+
+		if (deltaFlags & ESF_EQUIPMENT)
+		{
+			self.main_hand = readstring();
+			self.off_hand = readstring();
+		}
+
+		if (deltaFlags & ESF_ANIMATION)
+		{
+			self.anistate = readbyte();
+			self.attack_speed = readbyte();
+		}
+
+		// void(entity target,vector neworg,float newtime) entity_state_update
+		entity_state_update(self, self.origin, self.angles, self.velocity, time);
+	}
 };
 
 noref void CSQC_Shutdown() =

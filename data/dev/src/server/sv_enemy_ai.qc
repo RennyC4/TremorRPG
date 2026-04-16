@@ -22,7 +22,7 @@ void() monster_ai_think;
 void() monster_respawn;
 void(vector ang) CSEv_DoAttack_Melee_v;
 void(vector ang) CSEv_DoAttack_Arrow_v;
-void(entity e) Monster_CommitState;
+void(entity e) NPC_CommitState;
 
 // range values
 float	RANGE_CLOSE				= 0;
@@ -663,15 +663,14 @@ void() monster_ai_update_state =
 		self.avoid_time = 0;
         self.anistate = ANISTATE_RUN;
     }
-
-    self.nextthink = time + 0.1;
+    //self.nextthink = time + 0.1;
 };
 
 void() monster_ai_think =
 {
     monster_ai_update_state();   // ALL logic + movement
     Monster_SendFlags(FALSE);    // delta compare
-    Monster_CommitState(self);   // snapshot
+    NPC_CommitState(self);   // snapshot
 
     self.nextthink = time + 0.1;
 };
