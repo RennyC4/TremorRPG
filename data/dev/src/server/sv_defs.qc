@@ -1755,7 +1755,9 @@ const float TEREDIT_ENT_GET = 26;
 const float TEREDIT_ENT_SET = 27;
 const float TEREDIT_ENT_ADD = 28;
 const float TEREDIT_ENT_COUNT = 29;
+//
 
+const float FL_ALLY	  = 8192;
 const float	DEAD_NO	  = 0;
 const float	DEAD_DEAD = 1;
 
@@ -2099,25 +2101,22 @@ const float TIME_NIGHT = 3;
 #define CHAT_FLOOD_RESET  4   // Time before flood counter resets
 
 // ========================
-// Player Send Flags (PSF) / Delta
+// Entity Send Flags (ESF) / Delta
 // ========================
 
-// Bit positions (max 16 for two bytes)
-#define PSF_ORIGIN        1       // 0b0000000000000001
-#define PSF_ANGLES        2       // 0b0000000000000010
-#define PSF_VELOCITY      4       // 0b0000000000000100
-#define PSF_FLAGS         8       // 0b0000000000001000
-#define PSF_EFFECTS       16      // 0b0000000000010000
-#define PSF_MODEL         32      // 0b0000000000100000
-#define PSF_NAME          64      // 0b0000000001000000
-#define PSF_HEALTH        128     // 0b0000000010000000
-
-// Second byte (shifted by 8)
-#define PSF_LEVEL         256     // 0b0000000100000000
-#define PSF_PVP           512     // 0b0000001000000000
-#define PSF_EQUIPMENT     1024    // 0b0000010000000000
-#define PSF_ANIMATION     2048    // 0b0000100000000000
-#define PSF_MISC          4096    // 0b0001000000000000
+#define ESF_ORIGIN        1       // 0b0000000000000001
+#define ESF_ANGLES        2       // 0b0000000000000010
+#define ESF_VELOCITY      4       // 0b0000000000000100
+#define ESF_FLAGS         8       // 0b0000000000001000
+#define ESF_EFFECTS       16      // 0b0000000000010000
+#define ESF_MODEL         32      // 0b0000000000100000
+#define ESF_NAME          64      // 0b0000000001000000
+#define ESF_HEALTH        128     // 0b0000000010000000
+#define ESF_LEVEL         256     // 0b0000000100000000
+#define ESF_PVP           512     // 0b0000001000000000
+#define ESF_EQUIPMENT     1024    // 0b0000010000000000
+#define ESF_ANIMATION     2048    // 0b0000100000000000
+#define ESF_MISC          4096    // 0b0001000000000000
 
 //
 // Last sent values for network delta

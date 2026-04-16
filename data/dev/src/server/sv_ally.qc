@@ -2,12 +2,37 @@
 // Allies: Most are defined in the maps themselves (hmp / bsp), allies are town guards etc and are special characters
 //
 
+void(float flIsNew) Ally_SendFlags =
+{
+    float flChanged = 0;
+
+    if (flIsNew)
+    {
+        flChanged = ESF_ORIGIN | ESF_ANGLES | ESF_VELOCITY | ESF_FLAGS | ESF_EFFECTS |
+                    ESF_HEALTH | ESF_MODEL | ESF_EQUIPMENT | ESF_ANIMATION | ESF_MISC;
+    }
+    else
+    {
+        if (self.origin != self.last_origin) flChanged |= ESF_ORIGIN;
+        if (self.angles != self.last_angles) flChanged |= ESF_ANGLES;
+        if (self.velocity != self.last_velocity) flChanged |= ESF_VELOCITY;
+        if (self.flags != self.last_flags) flChanged |= ESF_FLAGS;
+        if (self.effects != self.last_effects) flChanged |= ESF_EFFECTS;
+        if (self.health != self.last_health || self.max_health != self.last_max_health) flChanged |= ESF_HEALTH;
+        if (self.modelindex != self.last_modelindex) flChanged |= ESF_MODEL;
+        if (self.main_hand != self.last_main_hand || self.off_hand != self.last_off_hand) flChanged |= ESF_EQUIPMENT;
+        if (self.anistate != self.last_anistate || self.attack_speed != self.last_attack_speed) flChanged |= ESF_ANIMATION;
+    }
+
+    self.SendFlags = flChanged;
+};
+
 void() ally_respawn =
 {
 	self.solid = SOLID_SLIDEBOX;
 	self.deadflag = DEAD_NO;
 	self.takedamage = DAMAGE_AIM;
-	self.alpha = 1; // removeme when we have animations + proper model
+	self.alpha = 1; // remove me when we have animations + proper model
 	self.health = self.max_health;
 	self.radius_candamage = TRUE;
 	self.ai_mode = AI_IDLE; // return to idling
@@ -43,7 +68,7 @@ void() set_ally =
 	self.radius_candamage = TRUE; // can be affected by radius damage
 	self.worldlight = TRUE;
 
-	//self.flags |= FL_MONSTER;
+	self.flags |= FL_ALLY;
 	self.th_die = ally_death;
 
 	if (!self.sight_range)
@@ -68,5 +93,5 @@ void() set_ally =
 	self.think = ally_ai_think;
 	self.nextthink = time + 0.1 + random()*1; // stagger start think
 
-	//self.SendEntity = Monster_SendEntity;
+	//self.SendEntity = Ally_SendFlags;
 };

@@ -45,39 +45,22 @@ float(void) DrawDynamicLights =
 void() CSQC_DrawMonsterPlaques;
 
 // ========================
-// Player / Monster Send Flags (PSF)
+// Entity (Player, monsters, allies, etc) send flags
 // ========================
 
-// Bit positions (max 16 for two bytes)
-#define PSF_ORIGIN        1       // 0b0000000000000001
-#define PSF_ANGLES        2       // 0b0000000000000010
-#define PSF_VELOCITY      4       // 0b0000000000000100
-#define PSF_FLAGS         8       // 0b0000000000001000
-#define PSF_EFFECTS       16      // 0b0000000000010000
-#define PSF_MODEL         32      // 0b0000000000100000
-#define PSF_NAME          64      // 0b0000000001000000
-#define PSF_HEALTH        128     // 0b0000000010000000
-
-// Second byte (shifted by 8)
-#define PSF_LEVEL         256     // 0b0000000100000000
-#define PSF_PVP           512     // 0b0000001000000000
-#define PSF_EQUIPMENT     1024    // 0b0000010000000000
-#define PSF_ANIMATION     2048    // 0b0000100000000000
-#define PSF_MISC          4096    // 0b0001000000000000
-
-// Bit positions (max 16 for two bytes)
-#define MSF_ORIGIN       1
-#define MSF_ANGLES       2
-#define MSF_VELOCITY     4
-#define MSF_FLAGS        8
-#define MSF_EFFECTS      16
-#define MSF_HEALTH       32
-#define MSF_MODEL        64
-#define MSF_EQUIPMENT    128
-
-// Second byte (shifted by 8)
-#define MSF_ANIMATION    256
-#define MSF_MISC         512
+#define ESF_ORIGIN        1       // 0b0000000000000001
+#define ESF_ANGLES        2       // 0b0000000000000010
+#define ESF_VELOCITY      4       // 0b0000000000000100
+#define ESF_FLAGS         8       // 0b0000000000001000
+#define ESF_EFFECTS       16      // 0b0000000000010000
+#define ESF_MODEL         32      // 0b0000000000100000
+#define ESF_NAME          64      // 0b0000000001000000
+#define ESF_HEALTH        128     // 0b0000000010000000
+#define ESF_LEVEL         256     // 0b0000000100000000
+#define ESF_PVP           512     // 0b0000001000000000
+#define ESF_EQUIPMENT     1024    // 0b0000010000000000
+#define ESF_ANIMATION     2048    // 0b0000100000000000
+#define ESF_MISC          4096    // 0b0001000000000000
 
 void() Hud_UpdateScores;
 void(vector virtmin, vector virtsize) Hud_Scoreboard;
@@ -726,7 +709,7 @@ void(float flIsNew) CSQC_Ent_Update =
         vector oldOrigin = self.origin;
 
         // --- Update origin if flagged ---
-        if (deltaFlags & PSF_ORIGIN)
+        if (deltaFlags & ESF_ORIGIN)
         {
             self.origin_x = readcoord();
             self.origin_y = readcoord();
@@ -746,18 +729,18 @@ void(float flIsNew) CSQC_Ent_Update =
         }
 
         // --- Update other fields as usual ---
-        if (deltaFlags & PSF_ANGLES) { self.angles_x = readcoord(); self.angles_y = readcoord(); self.angles_z = readcoord(); }
-        if (deltaFlags & PSF_VELOCITY) { self.velocity_x = readshort(); self.velocity_y = readshort(); self.velocity_z = readshort(); }
-        if (deltaFlags & PSF_FLAGS) self.flags = readfloat();
-        if (deltaFlags & PSF_EFFECTS) self.effects = readfloat();
-        if (deltaFlags & PSF_MODEL) self.modelindex = readshort();
-        if (deltaFlags & PSF_NAME) self.netname = readstring();
-        if (deltaFlags & PSF_HEALTH) { self.health = readshort(); self.max_health = readshort(); }
-        if (deltaFlags & PSF_LEVEL) self.level = readbyte();
-        if (deltaFlags & PSF_PVP) self.pvp = readbyte();
-        if (deltaFlags & PSF_EQUIPMENT) { self.main_hand = readstring(); self.off_hand = readstring(); self.armorname = readstring(); }
-        if (deltaFlags & PSF_ANIMATION) { self.anistate = readbyte(); self.cast_finished = readbyte(); self.attack_type = readbyte(); self.blocking = readbyte(); }
-        if (deltaFlags & PSF_MISC) { self.climbing = readbyte(); self.bonfire = readbyte(); self.crouch = readbyte(); self.dodgedir = readbyte(); self.stepdodge_counter = readbyte(); self.waterlevel = readbyte(); self.levitate_finished = readbyte();}
+        if (deltaFlags & ESF_ANGLES) { self.angles_x = readcoord(); self.angles_y = readcoord(); self.angles_z = readcoord(); }
+        if (deltaFlags & ESF_VELOCITY) { self.velocity_x = readshort(); self.velocity_y = readshort(); self.velocity_z = readshort(); }
+        if (deltaFlags & ESF_FLAGS) self.flags = readfloat();
+        if (deltaFlags & ESF_EFFECTS) self.effects = readfloat();
+        if (deltaFlags & ESF_MODEL) self.modelindex = readshort();
+        if (deltaFlags & ESF_NAME) self.netname = readstring();
+        if (deltaFlags & ESF_HEALTH) { self.health = readshort(); self.max_health = readshort(); }
+        if (deltaFlags & ESF_LEVEL) self.level = readbyte();
+        if (deltaFlags & ESF_PVP) self.pvp = readbyte();
+        if (deltaFlags & ESF_EQUIPMENT) { self.main_hand = readstring(); self.off_hand = readstring(); self.armorname = readstring(); }
+        if (deltaFlags & ESF_ANIMATION) { self.anistate = readbyte(); self.cast_finished = readbyte(); self.attack_type = readbyte(); self.blocking = readbyte(); }
+        if (deltaFlags & ESF_MISC) { self.climbing = readbyte(); self.bonfire = readbyte(); self.crouch = readbyte(); self.dodgedir = readbyte(); self.stepdodge_counter = readbyte(); self.waterlevel = readbyte(); self.levitate_finished = readbyte();}
 
         if (flIsNew)
             setorigin(self, self.origin);
@@ -782,43 +765,43 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.worldlight = TRUE;
 		}
 
-		if (deltaFlags & MSF_ORIGIN)
+		if (deltaFlags & ESF_ORIGIN)
 		{
 			self.origin_x = readcoord();
 			self.origin_y = readcoord();
 			self.origin_z = readcoord();
 		}
 
-		if (deltaFlags & MSF_ANGLES)
+		if (deltaFlags & ESF_ANGLES)
 		{
 			self.angles_x = readcoord();
 			self.angles_y = readcoord();
 			self.angles_z = readcoord();
 		}
 
-		if (deltaFlags & MSF_VELOCITY)
+		if (deltaFlags & ESF_VELOCITY)
 		{
 			self.velocity_x = readshort();
 			self.velocity_y = readshort();
 			self.velocity_z = readshort();
 		}
 
-		if (deltaFlags & MSF_FLAGS)
+		if (deltaFlags & ESF_FLAGS)
 			self.flags = readfloat();
 
-		if (deltaFlags & MSF_EFFECTS)
+		if (deltaFlags & ESF_EFFECTS)
 			self.effects = readfloat();
 
-		if (deltaFlags & MSF_MODEL)
+		if (deltaFlags & ESF_MODEL)
 			self.modelindex = readshort();
 
-		if (deltaFlags & MSF_HEALTH)
+		if (deltaFlags & ESF_HEALTH)
 		{
 			self.health = readshort();
 			self.max_health = readshort();
 		}
 
-		if (deltaFlags & MSF_MISC)
+		if (deltaFlags & ESF_MISC)
 		{
 			self.alpha = readbyte();
 			self.displayname = readstring();
@@ -827,13 +810,13 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.ai_mode = readbyte();
 		}
 
-		if (deltaFlags & MSF_EQUIPMENT)
+		if (deltaFlags & ESF_EQUIPMENT)
 		{
 			self.main_hand = readstring();
 			self.off_hand = readstring();
 		}
 
-		if (deltaFlags & MSF_ANIMATION)
+		if (deltaFlags & ESF_ANIMATION)
 		{
 			self.anistate = readbyte();
 			self.attack_speed = readbyte();

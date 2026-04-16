@@ -1075,54 +1075,54 @@ void(float flIsNew) Player_SendFlags =
     // On first spawn, send all fields
     if (flIsNew)
     {
-        flChanged = PSF_ORIGIN | PSF_ANGLES | PSF_VELOCITY | PSF_FLAGS | PSF_EFFECTS |
-                    PSF_HEALTH | PSF_LEVEL | PSF_PVP | PSF_EQUIPMENT | PSF_ANIMATION |
-                    PSF_MISC | PSF_MODEL | PSF_NAME;
+        flChanged = ESF_ORIGIN | ESF_ANGLES | ESF_VELOCITY | ESF_FLAGS | ESF_EFFECTS |
+                    ESF_HEALTH | ESF_LEVEL | ESF_PVP | ESF_EQUIPMENT | ESF_ANIMATION |
+                    ESF_MISC | ESF_MODEL | ESF_NAME;
     }
     else
     {
         // ORIGIN
         if (self.origin != self.last_origin)
-            flChanged |= PSF_ORIGIN;
+            flChanged |= ESF_ORIGIN;
 
         // ANGLES
         if (self.v_angle != self.last_v_angle)
-            flChanged |= PSF_ANGLES;
+            flChanged |= ESF_ANGLES;
 
         // VELOCITY
         if (self.velocity != self.last_velocity)
-            flChanged |= PSF_VELOCITY;
+            flChanged |= ESF_VELOCITY;
 
         // FLAGS / EFFECTS
         if (self.flags != self.last_flags)
-            flChanged |= PSF_FLAGS;
+            flChanged |= ESF_FLAGS;
         if (self.effects != self.last_effects)
-            flChanged |= PSF_EFFECTS;
+            flChanged |= ESF_EFFECTS;
 
         // HEALTH
         if (self.health != self.last_health || self.max_health != self.last_max_health)
-            flChanged |= PSF_HEALTH;
+            flChanged |= ESF_HEALTH;
 
         // LEVEL
         if (self.level != self.last_level)
-            flChanged |= PSF_LEVEL;
+            flChanged |= ESF_LEVEL;
 
         // PVP
         if (self.pvp != self.last_pvp)
-            flChanged |= PSF_PVP;
+            flChanged |= ESF_PVP;
 
         // EQUIPMENT
         if (self.main_hand != self.last_main_hand ||
             self.off_hand != self.last_off_hand ||
             self.armorname != self.last_armorname)
-            flChanged |= PSF_EQUIPMENT;
+            flChanged |= ESF_EQUIPMENT;
 
         // ANIMATION
         if (self.anistate != self.last_anistate ||
             self.cast_finished != self.last_cast_finished ||
             self.attack_type != self.last_attack_type ||
             self.blocking != self.last_blocking)
-            flChanged |= PSF_ANIMATION;
+            flChanged |= ESF_ANIMATION;
 
         // MISC small flags
         if (self.climbing != self.last_climbing ||
@@ -1132,13 +1132,13 @@ void(float flIsNew) Player_SendFlags =
             self.stepdodge_counter != self.last_stepdodge ||
 			self.waterlevel != self.last_waterlevel ||
 			self.levitate_finished != self.last_levitate_finished)
-            flChanged |= PSF_MISC;
+            flChanged |= ESF_MISC;
 
         // MODEL & NAME
         if (self.modelindex != self.last_modelindex)
-            flChanged |= PSF_MODEL;
+            flChanged |= ESF_MODEL;
         if (self.netname != self.last_netname)
-            flChanged |= PSF_NAME;
+            flChanged |= ESF_NAME;
     }
 
     self.SendFlags = flChanged;
@@ -1525,11 +1525,8 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
     WriteByte(MSG_ENTITY, ENT_PLAYER);
 	WriteShort(MSG_ENTITY, flChanged);
 
-	//WriteByte(MSG_ENTITY, flChanged & 255);           // lower 8 bits
-	//WriteByte(MSG_ENTITY, (flChanged >> 8) & 255);   // upper 8 bits
-
     // --- ORIGIN ---
-    if (flChanged & PSF_ORIGIN)
+    if (flChanged & ESF_ORIGIN)
     {
         WriteCoord(MSG_ENTITY, self.origin_x);
         WriteCoord(MSG_ENTITY, self.origin_y);
@@ -1537,7 +1534,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
     }
 
     // --- ANGLES ---
-    if (flChanged & PSF_ANGLES)
+    if (flChanged & ESF_ANGLES)
     {
         WriteCoord(MSG_ENTITY, self.v_angle_x);
         WriteCoord(MSG_ENTITY, self.v_angle_y);
@@ -1545,7 +1542,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
     }
 
     // --- VELOCITY ---
-    if (flChanged & PSF_VELOCITY)
+    if (flChanged & ESF_VELOCITY)
     {
         WriteShort(MSG_ENTITY, self.velocity_x);
         WriteShort(MSG_ENTITY, self.velocity_y);
@@ -1553,26 +1550,26 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
     }
 
     // --- FLAGS & EFFECTS ---
-    if (flChanged & PSF_FLAGS)   WriteFloat(MSG_ENTITY, self.flags);
-    if (flChanged & PSF_EFFECTS) WriteFloat(MSG_ENTITY, self.effects);
+    if (flChanged & ESF_FLAGS)   WriteFloat(MSG_ENTITY, self.flags);
+    if (flChanged & ESF_EFFECTS) WriteFloat(MSG_ENTITY, self.effects);
 
     // --- MODEL & NAME ---
-    if (flChanged & PSF_MODEL) WriteShort(MSG_ENTITY, self.modelindex);
-    if (flChanged & PSF_NAME)  WriteString(MSG_ENTITY, self.netname);
+    if (flChanged & ESF_MODEL) WriteShort(MSG_ENTITY, self.modelindex);
+    if (flChanged & ESF_NAME)  WriteString(MSG_ENTITY, self.netname);
 
     // --- HEALTH ---
-    if (flChanged & PSF_HEALTH)
+    if (flChanged & ESF_HEALTH)
     {
         WriteShort(MSG_ENTITY, self.health);
         WriteShort(MSG_ENTITY, self.max_health);
     }
 
     // --- LEVEL & PVP ---
-    if (flChanged & PSF_LEVEL) WriteByte(MSG_ENTITY, self.level);
-    if (flChanged & PSF_PVP)   WriteByte(MSG_ENTITY, self.pvp);
+    if (flChanged & ESF_LEVEL) WriteByte(MSG_ENTITY, self.level);
+    if (flChanged & ESF_PVP)   WriteByte(MSG_ENTITY, self.pvp);
 
     // --- EQUIPMENT ---
-    if (flChanged & PSF_EQUIPMENT)
+    if (flChanged & ESF_EQUIPMENT)
     {
         WriteString(MSG_ENTITY, self.main_hand);
         WriteString(MSG_ENTITY, self.off_hand);
@@ -1580,7 +1577,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
     }
 
     // --- ANIMATION & ACTION STATES ---
-    if (flChanged & PSF_ANIMATION)
+    if (flChanged & ESF_ANIMATION)
     {
         WriteByte(MSG_ENTITY, self.anistate);
         WriteByte(MSG_ENTITY, self.cast_finished);
@@ -1589,7 +1586,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
     }
 
     // --- MISC small flags ---
-    if (flChanged & PSF_MISC)
+    if (flChanged & ESF_MISC)
     {
         WriteByte(MSG_ENTITY, self.climbing);
         WriteByte(MSG_ENTITY, self.bonfire);
@@ -1601,34 +1598,34 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
     }
 
     // --- Update last sent values ---
-    if (flChanged & PSF_ORIGIN)       self.last_origin = self.origin;
-    if (flChanged & PSF_ANGLES)       self.last_v_angle = self.v_angle;
-    if (flChanged & PSF_VELOCITY)     self.last_velocity = self.velocity;
-    if (flChanged & PSF_FLAGS)        self.last_flags = self.flags;
-    if (flChanged & PSF_EFFECTS)      self.last_effects = self.effects;
-    if (flChanged & PSF_MODEL)        self.last_modelindex = self.modelindex;
-    if (flChanged & PSF_NAME)         self.last_netname = self.netname;
-    if (flChanged & PSF_HEALTH)
+    if (flChanged & ESF_ORIGIN)       self.last_origin = self.origin;
+    if (flChanged & ESF_ANGLES)       self.last_v_angle = self.v_angle;
+    if (flChanged & ESF_VELOCITY)     self.last_velocity = self.velocity;
+    if (flChanged & ESF_FLAGS)        self.last_flags = self.flags;
+    if (flChanged & ESF_EFFECTS)      self.last_effects = self.effects;
+    if (flChanged & ESF_MODEL)        self.last_modelindex = self.modelindex;
+    if (flChanged & ESF_NAME)         self.last_netname = self.netname;
+    if (flChanged & ESF_HEALTH)
     {
         self.last_health = self.health;
         self.last_max_health = self.max_health;
     }
-    if (flChanged & PSF_LEVEL)        self.last_level = self.level;
-    if (flChanged & PSF_PVP)          self.last_pvp = self.pvp;
-    if (flChanged & PSF_EQUIPMENT)
+    if (flChanged & ESF_LEVEL)        self.last_level = self.level;
+    if (flChanged & ESF_PVP)          self.last_pvp = self.pvp;
+    if (flChanged & ESF_EQUIPMENT)
     {
         self.last_main_hand = self.main_hand;
         self.last_off_hand = self.off_hand;
         self.last_armorname = self.armorname;
     }
-    if (flChanged & PSF_ANIMATION)
+    if (flChanged & ESF_ANIMATION)
     {
         self.last_anistate = self.anistate;
         self.last_cast_finished = self.cast_finished;
         self.last_attack_type = self.attack_type;
         self.last_blocking = self.blocking;
     }
-    if (flChanged & PSF_MISC)
+    if (flChanged & ESF_MISC)
     {
         self.last_climbing = self.climbing;
         self.last_bonfire = self.bonfire;

@@ -10,3 +10,4 @@
 #define ENT_DLIGHT 6
 #define ENT_BONFIRE 7
 #define ENT_NPC 8
+#define ENT_ALLY 9
