@@ -1049,15 +1049,17 @@ void() PlayerPreThink =
 
 		self.maxspeed = 1; // staggered speed
 	}
-	if (cvar("sv_cheats") == 0) // allow name changes with sv_cheats on, also removes console spam in developer mode
+
+	// removes console spam in developer mode
+	if (cvar("developer") == 0)
 	{
 		if (self.loggedin) // enforce name
 		{
 			if (self.loginname != self.netname)
 				forceinfokey(self, "name", self.loginname);
 		}
-		else
-				forceinfokey(self, "name", "");
+		//else
+		//		forceinfokey(self, "name", "");
 	}
 
 	if (self.menu == MENU_INVENTORY || self.menu == MENU_BUYSELL)
