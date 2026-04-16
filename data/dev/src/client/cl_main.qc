@@ -1035,6 +1035,27 @@ void(float flIsNew) CSQC_Ent_Update =
 		// void(entity target,vector neworg,float newtime) entity_state_update
 		entity_state_update(self, self.origin, self.angles, self.velocity, time);
 	}
+	
+	//
+	// Wall Torch 2
+	//
+	if (flEntType == ENT_FISHNODE)
+	{
+		if (flIsNew == TRUE)
+		{
+			self.classname = "fish_node";
+			self.solid = SOLID_NOT;
+			self.predraw = FishNode_PreDraw;
+			self.drawmask = MASK_ENGINE;
+			setmodel(self, "models/fishschool.glb");
+		}
+		self.origin_x = readcoord();
+		self.origin_y = readcoord();
+		self.origin_z = readcoord();
+		self.angles_x = readcoord();
+		self.angles_y = readcoord();
+		self.angles_z = readcoord();
+	}
 };
 
 noref void CSQC_Shutdown() =

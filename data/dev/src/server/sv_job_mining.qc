@@ -68,7 +68,7 @@ void() ore_idle_check =
 };
 
 //
-// Respawn ore
+// (Re)spawn ore
 //
 void() ore_respawn =
 {

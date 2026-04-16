@@ -148,6 +148,7 @@ void() worldspawn =
 	precache_model("models/arrow.glb");
 	precache_model("progs/targetdot.spr");
 
+	precache_sound ("bonfire1.wav");
 	precache_sound ("levelup.wav");
 	precache_sound ("hatchet1.wav");
 	precache_sound ("miningpick1.wav");

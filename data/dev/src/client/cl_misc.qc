@@ -178,3 +178,39 @@ float(void) NPC_PreDraw =
     addentity(self);
     return PREDRAW_NEXT;
 };
+
+//
+// Fishing Node
+//
+
+//self.frame = frameforname(self.modelindex, "Idle");
+.vector base_origin;
+float(void) FishNode_PreDraw =
+{
+    vector org;
+    float radius = 32;
+    float speed = 1.25;
+    float t;
+
+    if (!self.base_origin)
+        self.base_origin = self.origin;
+
+    t = time * speed;
+
+    org = self.base_origin;
+
+    org_x += cos(t) * radius;
+    org_y += sin(t) * radius;
+	org_z += sin(t * 2) * 2;
+
+	self.scale = 1 + sin(t * 1.7) * 0.05; // 'water' effect
+	self.angles_z = sin(t) * 10; // bank roll
+
+    setorigin(self, org);
+
+    // Face movement direction (tangent to the circle)
+    self.angles_y = t * (180 / M_PI) + 90;
+
+    addentity(self);
+    return PREDRAW_NEXT;
+};

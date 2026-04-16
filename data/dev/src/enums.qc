@@ -11,3 +11,4 @@
 #define ENT_BONFIRE 7
 #define ENT_NPC 8
 #define ENT_ALLY 9
+#define ENT_FISHNODE 10

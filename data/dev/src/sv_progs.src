@@ -24,3 +24,4 @@ server/sv_funcs.qc
 server/sv_bank.qc
 server/sv_job_wood.qc
 server/sv_job_mining.qc
+server/sv_job_fishing.qc

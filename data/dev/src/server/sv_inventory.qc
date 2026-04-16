@@ -490,7 +490,7 @@ void() Item_Touch =
 
     if (check) // player can grab item
     {
-        float amount = self.count;
+        amount = self.count;
         if (amount <= 0)
             amount = 1;
 
