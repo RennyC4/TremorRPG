@@ -1905,6 +1905,8 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float hatchet_durability;
 .float pick_durability;
 .float part_vfx; // Used for particle effects on NPCs via CSQC
+.float fishing_finished;
+.float fishcast_finished;
 
 // Animation States
 .float anistate;
@@ -1932,6 +1934,8 @@ const float ANISTATE_STEPDODGE = 20;
 const float ANISTATE_STEPCOUNTER = 21;
 const float ANISTATE_IMPACT = 22;
 const float ANISTATE_JUMP = 23;
+const float ANISTATE_FISHCAST = 24;
+const float ANISTATE_FISHIDLE = 25;
 
 //.float armorvalue; (this is already defined)
 

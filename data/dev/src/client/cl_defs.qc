@@ -2425,6 +2425,8 @@ const float ANISTATE_STEPDODGE = 20;
 const float ANISTATE_STEPCOUNTER = 21;
 const float ANISTATE_IMPACT = 22;
 const float ANISTATE_JUMP = 23;
+const float ANISTATE_FISHCAST = 24;
+const float ANISTATE_FISHIDLE = 25;
 
 .float anim_state;
 // constants for clarity, these are strictly CSQC
@@ -2460,7 +2462,8 @@ const float ANISTATE_JUMP = 23;
 #define ANIM_STEPDODGE		30
 #define ANIM_STEPCOUNTER	31
 #define ANIM_IMPACT			32
-
+#define ANIM_FISHCAST		33
+#define ANIM_FISHIDLE		34
 
 // Chat setup
 #define CHAT_LINE_CHARS 68

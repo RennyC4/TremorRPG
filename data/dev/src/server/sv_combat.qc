@@ -10,6 +10,7 @@ float(entity player, string itemname) HasItem;
 void(entity targ, entity attacker, float damage) RegisterAttacker;
 void() DoJob_Hatchet;
 void() DoJob_Pick;
+void() DoJob_Fishing;
 
 .entity last_hit_attacker;
 .float last_hit_time;
@@ -141,6 +142,12 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 	if (self.main_hand == "Mining Pick")
 	{
 		DoJob_Pick();
+		return;
+	}
+	if (self.main_hand == "Fishing Rod")
+	{
+		self.fishcast_finished = time + 9999;
+		DoJob_Fishing();
 		return;
 	}
 

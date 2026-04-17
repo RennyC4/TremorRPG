@@ -235,6 +235,10 @@ void() CSEv_PlayerJump =
         return;
     if (self.melee_finished > time)
         return;
+	if (self.fishcast_finished > time) // fishing
+		return;
+	if (self.fishing_finished > time) // fishing
+		return;
     if (!(self.flags & FL_ONGROUND))
         return;
     if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || 
@@ -304,6 +308,10 @@ void(float whichdir) CSEv_PlayerDodge_f =
 	if (self.dodge_finished > time)
 		return;
 	if (self.melee_finished > time)
+		return;
+	if (self.fishcast_finished > time) // fishing
+		return;
+	if (self.fishing_finished > time) // fishing
 		return;
 	if (!(self.flags & FL_ONGROUND))
 		return;
@@ -394,6 +402,10 @@ void() CSEv_PlayerCrouch =
 	if (self.bonfire)
 		return;
 	if (self.melee_finished > time)
+		return;
+	if (self.fishcast_finished > time) // fishing
+		return;
+	if (self.fishing_finished > time) // fishing
 		return;
 	if (self.stagger_finished > time)
 		return;
@@ -634,6 +646,10 @@ void() Player_ShieldBlock =
 {
 	if (self.blockvalue <= 0)
 		return;
+	if (self.fishcast_finished > time) // fishing
+		return;
+	if (self.fishing_finished > time) // fishing
+		return;
 
 	if (self.melee_finished < time && self.stagger_finished < time)
 	{
@@ -832,7 +848,7 @@ void() CSEv_User_StartAttack_ =
         {
             PlayerSpawn(3); // respawn
             // Reset timers to avoid stuck states
-            self.melee_finished = time;
+            self.melee_finished = time + 1;
             self.cancast_finished = time;
             self.cast_finished = time;
             self.lockview_finished = time;
@@ -891,7 +907,12 @@ void() CSEv_User_StartAttack_ =
         {
             // Select attack type
             if (self.attack_type == 0)
-                self.anistate = ANISTATE_PUNCH;
+			{
+				if (self.main_hand == "Fishing Rod")
+					self.anistate = ANISTATE_FISHCAST;
+				else
+					self.anistate = ANISTATE_PUNCH;
+			}
             else if (self.attack_type == 1)
                 self.anistate = ANISTATE_SLASH;
             else if (self.attack_type == 2)
@@ -915,12 +936,20 @@ void() CSEv_User_StartAttack_ =
             // Set cooldown timers
             if (!nobow)
             {
-                self.melee_finished = time + self.attack_speed;
+				if (self.main_hand == "Fishing Rod")
+						self.melee_finished = time + 9999;
+					else
+						self.melee_finished = time + self.attack_speed;
+
                 if (self.attack_type != 4)
 				{
-					if (self.main_hand != "Hatchet" && self.main_hand != "Mining Pick") // hatchet+pick doesn't push players
+					if (self.main_hand != "Hatchet" && self.main_hand != "Mining Pick" && self.main_hand != "Fishing Rod") // job equippables do not push players
 						self.velocitypush_finished = time + (self.attack_speed / 4);
-					self.lockview_finished = time + self.attack_speed; // bows don't lock player view
+
+					if (self.main_hand == "Fishing Rod")
+						self.lockview_finished = time + 9999;
+					else
+						self.lockview_finished = time + self.attack_speed; // bows don't lock player view
 				}
             }
         }
@@ -940,10 +969,20 @@ void() Anistate_Handler =
 			self.anistate = ANISTATE_NONE;
 	}
 
+	if (self.anistate == ANISTATE_FISHCAST)
+	{
+		if (self.fishing_finished > time)
+		{
+			self.anistate = ANISTATE_FISHIDLE;
+			sprint(self, PRINT_HIGH, "Anistate: FishingIdle\n");
+		}
+		return;
+	}
+
 	// Tied to melee_finished
 	if (self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_PUNCH || self.anistate == ANISTATE_BASH
 	|| self.anistate == ANISTATE_PARRY || self.anistate == ANISTATE_SMASH || self.anistate == ANISTATE_ARCHERY || self.anistate == ANISTATE_BLOCK
-	|| self.anistate == ANISTATE_AIRMELEE || self.anistate == ANISTATE_STEPCOUNTER)
+	|| self.anistate == ANISTATE_AIRMELEE || self.anistate == ANISTATE_STEPCOUNTER)// || self.anistate == ANISTATE_FISHCAST)
 	{
 		if (self.anistate == ANISTATE_AIRMELEE)
 		{
@@ -1025,7 +1064,7 @@ void() PlayerPreThink =
 		// attack / dodge / magic commitment / npc interaction menus
 		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.menu == MENU_BANKING ||
 			self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time
-			|| self.dodge_finished > time)
+			|| self.dodge_finished > time || self.fishcast_finished > time)// || self.fishing_finished > time)
 			self.maxspeed = 1;
 		else
 		{

@@ -225,6 +225,16 @@ void() OtherPlayer_Anistate =
 		speed = 1.5;
 	}
 
+	if (self.anistate == ANISTATE_FISHCAST)
+	{
+		if (self.frame != frameforname(self.modelindex, "FishingCast"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "FishingCast");
+			self.anim_state = ANIM_FISHCAST;
+		}
+	}
+
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
@@ -798,12 +808,20 @@ void() Player_Animate =
     // -----------------------------
     if (self.anim_attacking)
     {
-		if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH && self.anim_state != ANIM_SMASH)// && self.anim_state != ANIM_ARCHERY)
+		if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH && self.anim_state != ANIM_SMASH && self.anim_state != ANIM_FISHCAST) // && self.anim_state != ANIM_ARCHERY)
 		{
 			if (!self.attack_type)
 			{
-				self.frame = frameforname(self.modelindex, "Punch");
-				self.anim_state = ANIM_PUNCH;
+				if (self.main_hand == "Fishing Rod")
+				{
+					self.frame = frameforname(self.modelindex, "FishingCast");
+					self.anim_state = ANIM_FISHCAST;
+				}
+				else
+				{
+					self.frame = frameforname(self.modelindex, "Punch");
+					self.anim_state = ANIM_PUNCH;
+				}
 			}
 			else if (self.attack_type == 1)
 			{
