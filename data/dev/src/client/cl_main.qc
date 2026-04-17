@@ -740,7 +740,7 @@ void(float flIsNew) CSQC_Ent_Update =
         if (deltaFlags & ESF_PVP) self.pvp = readbyte();
         if (deltaFlags & ESF_EQUIPMENT) { self.main_hand = readstring(); self.off_hand = readstring(); self.armorname = readstring(); }
         if (deltaFlags & ESF_ANIMATION) { self.anistate = readbyte(); self.cast_finished = readbyte(); self.attack_type = readbyte(); self.blocking = readbyte(); }
-        if (deltaFlags & ESF_MISC) { self.climbing = readbyte(); self.bonfire = readbyte(); self.crouch = readbyte(); self.dodgedir = readbyte(); self.stepdodge_counter = readbyte(); self.waterlevel = readbyte(); self.levitate_finished = readbyte();}
+        if (deltaFlags & ESF_MISC) { self.climbing = readbyte(); self.bonfire = readbyte(); self.crouch = readbyte(); self.dodgedir = readbyte(); self.stepdodge_counter = readbyte(); self.waterlevel = readbyte(); self.levitate_finished = readbyte(); self.melee_finished = readbyte();}
 
         if (flIsNew)
             setorigin(self, self.origin);

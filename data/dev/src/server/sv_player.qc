@@ -884,11 +884,22 @@ void() CSEv_User_StartAttack_ =
 		// Air melee attack priority with ground distance check
 		if (!(self.flags & FL_ONGROUND) && self.attack_type != 4 && self.pressedJump)
 		{
-			self.anistate = ANISTATE_AIRMELEE;
-			self.melee_finished = time + self.attack_speed;
-			self.velocitypush_finished = time + (self.attack_speed / 4);
-			self.lockview_finished = time + self.attack_speed;
-			return;
+			if (self.main_hand != "Fishing Rod")
+			{
+				self.anistate = ANISTATE_AIRMELEE;
+				self.melee_finished = time + self.attack_speed;
+				self.velocitypush_finished = time + (self.attack_speed / 4);
+				self.lockview_finished = time + self.attack_speed;
+				return;
+			}
+			else
+			{
+				self.anistate = ANISTATE_JUMP;
+				self.melee_finished = time;
+				self.velocitypush_finished = time;
+				self.lockview_finished = time + self.attack_speed;
+
+			}
 		}
 
         // Ground attacks
@@ -1172,7 +1183,8 @@ void(float flIsNew) Player_SendFlags =
             self.dodgedir != self.last_dodgedir ||
             self.stepdodge_counter != self.last_stepdodge ||
 			self.waterlevel != self.last_waterlevel ||
-			self.levitate_finished != self.last_levitate_finished)
+			self.levitate_finished != self.last_levitate_finished ||
+			self.melee_finished != self.last_melee_finished)
             flChanged |= ESF_MISC;
 
         // MODEL & NAME
@@ -1636,6 +1648,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
         WriteByte(MSG_ENTITY, self.stepdodge_counter);
         WriteByte(MSG_ENTITY, self.waterlevel);
         WriteByte(MSG_ENTITY, self.levitate_finished);
+        WriteByte(MSG_ENTITY, self.melee_finished);
     }
 
     // --- Update last sent values ---
@@ -1675,6 +1688,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
         self.last_stepdodge = self.stepdodge_counter;
         self.last_waterlevel = self.waterlevel;
         self.last_levitate_finished = self.levitate_finished;
+		self.last_melee_finished = self.melee_finished;
     }
 
     return TRUE;

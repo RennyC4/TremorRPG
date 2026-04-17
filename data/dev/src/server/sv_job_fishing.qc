@@ -5,10 +5,18 @@
 .float fishing_node_idle_expire;
 void() fishing_node_respawn;
 
+void() Fishing_ForceOff = // reset timer states cleanly
+{	
+	self.owner.melee_finished = time;
+	self.owner.fishing_finished = time;
+	self.owner.fishcast_finished = time;
+	self.owner.lockview_finished = time;
+	self.owner.anistate = ANISTATE_NONE;
+};
+
 //
 // Fishing node CSQC
 //
-
 float(entity ePVEnt, float flChanged) FishingNode_SendEntity =
 {
 	WriteByte(MSG_ENTITY, ENT_FISHNODE);
@@ -89,26 +97,25 @@ void() fishing_node_respawn =
 	self.nextthink = time + 5;
 };
 
-
 //
 // Fishing_Bobber_SearchNode - Searches for the actual fishing node and does its thing
 //
-
 void() Fishing_Bobber_SearchNode =
 {
 	sub_remove();
 	
-	sprint (self.owner, PRINT_HIGH, "Fishing: Nothing WIP!\n");
+	// Run a radius search, interact with the node. Similar to how ore is mined.
 
-	// reset timer states
-	self.owner.melee_finished = time;
-	self.owner.fishing_finished = time;
-	self.owner.fishcast_finished = time;
-	self.owner.lockview_finished = time;
+	sprint (self.owner, PRINT_HIGH, "Fishing: Nothing WIP!\n"); // Debug message, can be removed
+
+	string eventlog_print = (strcat("^4Fishing:^2 You caught something!"));
+	stuffcmd (self.owner, sprintf("conecho event %s\n", eventlog_print));
+
+	Fishing_ForceOff();
 };
 
 //
-// DoJob_Fishing_Bobber - Fishing Rod 'attack' action
+// DoJob_Fishing_Bobber - Fishing Rod 'attack button' action
 //
 void() DoJob_Fishing_Bobber =
 {
@@ -121,15 +128,15 @@ void() DoJob_Fishing_Bobber =
             self.waterlevel = 1;
 
             // Stop falling
-            self.movetype = MOVETYPE_NONE;
+            self.movetype = MOVETYPE_FLY;
             self.velocity = '0 0 0';
 
-            // Snap slightly upward so it sits near surface
-            self.origin_z += 12;
+            // Snap slightly upward so it sits 'near' surface
+            self.origin_z += 16;
             setorigin(self, self.origin);
 
 			self.owner.anistate = ANISTATE_FISHIDLE;
-			self.owner.fishing_finished = time + 3;
+			self.owner.fishing_finished = time + 3; // add some randomness
 			self.think = Fishing_Bobber_SearchNode;
 			self.nextthink = time + 3;
 			return;
@@ -139,23 +146,25 @@ void() DoJob_Fishing_Bobber =
 	{
 		if (self.flags & FL_ONGROUND) // Bobber landed on ground, fail
 		{
+			string eventlog_print = (strcat("^4Fishing: ^1Failed!"));
+			stuffcmd (self.owner, sprintf("conecho event %s\n", eventlog_print));
+
 			self.owner.anistate = ANISTATE_NONE;
-			// reset timer states
-			self.owner.melee_finished = time;
-			self.owner.fishing_finished = time;
-			self.owner.fishcast_finished = time;
-			self.owner.lockview_finished = time;
+			Fishing_ForceOff();
 			sub_remove();
 		}
+		else // extra check (weird geometry?)
+		{
+			self.cnt += 1;
+			if (self.cnt > 49)
+			{
+				Fishing_ForceOff();
+				self.cnt = 0;
+				sub_remove();			
+			}
+		}
 	}
-
-	/*
-    if (self.cnt < 49)
-        self.cnt += 1;
-    else
-        sub_remove();
-	*/
-
+	
     self.nextthink = time + 0.1;
 };
 
@@ -164,6 +173,9 @@ void() DoJob_Fishing_Bobber =
 //
 void() DoJob_Fishing =
 {
+	string eventlog_print = (strcat("^4Fishing:^2 Line cast ..."));
+	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+	
 	makevectors(self.angles);
 
 	entity bobber = spawn();
@@ -173,6 +185,7 @@ void() DoJob_Fishing =
 	bobber.classname = "bobber";
 	bobber.scale = 0.5;
 	bobber.hitcontentsmaski = CONTENTBIT_WATER | CONTENTBIT_SLIME | CONTENTBIT_LAVA | CONTENTBIT_SOLID;
+	bobber.effects = EF_FULLBRIGHT;
 
 	//bobber.modelflags = MF_ROTATE;
 
@@ -191,7 +204,6 @@ void() DoJob_Fishing =
 //
 // misc_fishing_node
 //
-
 void() misc_fishing_node =
 {
 	self.SendEntity = FishingNode_SendEntity;

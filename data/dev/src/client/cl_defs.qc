@@ -2475,6 +2475,7 @@ float chat_times[MAX_CHAT_LINES];
 .vector last_angles;
 .vector prev_velocity;
 .vector last_velocity;
+.float melee_finished;
 
 float LerpAngle(float a1, float a2, float t)
 {

@@ -1069,7 +1069,8 @@ void() Player_Think =
 		return;
 
 	float levitating = (self.levitate_finished > time);
-	if (!levitating)
+	float melee = (self.melee_finished > time);
+	if (!levitating && !melee)
 	{
 		if (self.health <= 0)
 			self.movetype = MOVETYPE_TOSS;

@@ -235,6 +235,16 @@ void() OtherPlayer_Anistate =
 		}
 	}
 
+	if (self.anistate == ANISTATE_FISHIDLE)
+	{
+		if (self.frame != frameforname(self.modelindex, "FishingIdle"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "FishingIdle");
+			self.anim_state = ANIM_FISHIDLE;
+		}
+	}
+
     speed *= frametime;
 
     if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
@@ -485,6 +495,31 @@ void() Player_Animate =
 
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = duration - 0.1;
+		else
+			self.frame1time += speed;
+		return;
+	}
+
+	// -----------------------------
+    // Fishing Idle Animation
+    // -----------------------------
+	if (self.anistate == ANISTATE_FISHIDLE)
+	{
+		if (self.frame != frameforname(self.modelindex, "FishingIdle"))
+		{
+			self.frame1time = 0;
+			self.frame = frameforname(self.modelindex, "FishingIdle");
+			self.anim_state = ANIM_FISHIDLE;
+			self.anim_attacking = FALSE; // turn off attack animation flag
+		}
+		speed = 1;
+		speed *= frametime;
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = 0; // loop
 		else
 			self.frame1time += speed;
 		return;

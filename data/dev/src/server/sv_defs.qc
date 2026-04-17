@@ -2152,10 +2152,7 @@ const float TIME_NIGHT = 3;
 .vector last_angles;
 .float last_attack_speed;
 .float last_levitate_finished;
-.string last_equipment;
-.string last_main_hand;
-.string last_off_hand;
-.string last_armorname;
+.float last_melee_finished;
 //
 //
 //
