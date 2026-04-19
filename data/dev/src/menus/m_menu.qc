@@ -353,10 +353,11 @@ void() credits_menu =
         "^1MMC Works^7 - Low poly trees, flowers and grass pack",
         "^1WispCorp^7 - Play testing & bug reports",
         "^1terra_32^7 - Play testing & suggestions",
+		"^1Titanas YT^7 - School of fish"
     };
 
-	int numLines = 7;
-	for (int i = 0; i < numLines; i++)
+	//int numLines = lineHeight;
+	for (int i = 0; i < lineHeight; i++)
 		sui_text([xpos, ypos + lineHeight*i], MENU_TEXT_SMALL, lines[i], [1,1,1], 1, 0);
 
     sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
