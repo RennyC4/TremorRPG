@@ -147,6 +147,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 	if (self.main_hand == "Fishing Rod")
 	{
 		self.fishcast_finished = time + 9999;
+		self.melee_finished = time + 9999;
 		DoJob_Fishing();
 		return;
 	}

@@ -1188,7 +1188,8 @@ void() User_CharacterScreen =
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;
-	displaystat = strcat("^5Fishing: ^7", ftos(disp_fishing));
+	string g = sprintf("%.1f", disp_fishing);
+	displaystat = strcat("^5Fishing: ^7", g);
 	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
 	newpos_y += 10;

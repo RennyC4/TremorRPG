@@ -54,7 +54,10 @@ void() mining_oredrop =
 void() ore_idle_check =
 {
 	if (self.alpha < 1 || self.solid == SOLID_NOT)
+	{
+		self.nextthink = time + 5;
 		return;
+	}
 
 	if (time >= self.ore_idle_expire)
 	{

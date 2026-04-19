@@ -347,7 +347,8 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		{
 			self.godmode_finished = time + 0.35;
 			self.dodge_finished = time + 0.5;
-			self.stepdodge_counter = time + 1;
+			if (self.main_hand != "Fishing Rod")
+				self.stepdodge_counter = time + 1;
 			self.anistate = ANISTATE_STEPDODGE;
 		}
 		else

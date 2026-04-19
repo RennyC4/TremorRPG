@@ -3,9 +3,12 @@
 //
 
 .float fishing_node_idle_expire;
+.float bobber_in_water;
+.float spawn_time;
+
 void() fishing_node_respawn;
 
-void() Fishing_ForceOff = // reset timer states cleanly
+void() Fishing_ForceOff =
 {	
 	self.owner.melee_finished = time;
 	self.owner.fishing_finished = time;
@@ -30,15 +33,12 @@ float(entity ePVEnt, float flChanged) FishingNode_SendEntity =
 };
 
 //
-// Fade fishing node out on being fished up OR idle despawn
+// Fade fishing node out
 //
 void() fishing_node_remove =
 {
 	if (!self.cnt)
 	{
-		//sound(self, CHAN_BODY, "orebreak.wav", 1, ATTN_NORM);
-		//pointparticles(PART_OREDIE, self.origin);
-		//mining_oredrop();
 		self.cnt = TRUE;
 	}
 
@@ -62,11 +62,15 @@ void() fishing_node_remove =
 void() fishing_node_idle_check =
 {
 	if (self.alpha < 1 || self.solid == SOLID_NOT)
+	{
+		self.nextthink = time + 5;
 		return;
+	}
+
+	self.angles_y += random_range(-3, 3);
 
 	if (time >= self.fishing_node_idle_expire)
 	{
-//		self.ore_nodrop = TRUE; // prevent loot
 		self.think = fishing_node_remove;
 		self.nextthink = time + 0.1;
 		return;
@@ -76,7 +80,7 @@ void() fishing_node_idle_check =
 };
 
 //
-// (Re)spawn fishing node
+// Respawn fishing node
 //
 void() fishing_node_respawn =
 {
@@ -86,86 +90,171 @@ void() fishing_node_respawn =
 	self.health = self.max_health;
 	self.cnt = FALSE;
 
-	//idle despawn timer (3–8 minutes)
 	self.fishing_node_idle_expire = time + (180 + random() * 300);
 
 	setmodel(self, self.mdl);
 	setsize(self, self.mins, self.maxs);
 
-	// Start idle checking loop
 	self.think = fishing_node_idle_check;
 	self.nextthink = time + 5;
 };
 
 //
-// Fishing_Bobber_SearchNode - Searches for the actual fishing node and does its thing
+// Fishing result logic
 //
 void() Fishing_Bobber_SearchNode =
 {
-	sub_remove();
-	
-	// Run a radius search, interact with the node. Similar to how ore is mined.
+	float found = FALSE;
 
-	sprint (self.owner, PRINT_HIGH, "Fishing: Nothing WIP!\n"); // Debug message, can be removed
+	entity targ = findradius(self.origin, 100);
+	while (targ)
+	{
+		if (targ.classname == "fishing_node")
+		{
+			found = TRUE;
 
-	string eventlog_print = (strcat("^4Fishing:^2 You caught something!"));
-	stuffcmd (self.owner, sprintf("conecho event %s\n", eventlog_print));
+			// Reset idle timer
+			targ.fishing_node_idle_expire = time + (180 + random() * 300);
+
+			// -----------------------
+			// XP Gain (like mining)
+			// -----------------------
+			float xp_chance;
+			float skill_factor;
+			float node_factor;
+
+			node_factor = targ.level + 1;
+			skill_factor = (self.owner.skill_fishing / 20) + 1;
+
+			xp_chance = node_factor / skill_factor;
+
+			if (xp_chance > 0.35) xp_chance = 0.35;
+			if (xp_chance < 0.01) xp_chance = 0.01;
+
+			if (random() < xp_chance)
+			{
+				self.owner.skill_fishing += 0.1;
+
+				string f = sprintf("%.1f", self.owner.skill_fishing);
+				sprint(self.owner, PRINT_HIGH, "Fishing increased to ", f, "\n");
+			}
+
+			// -----------------------
+			// Loot roll
+			// -----------------------
+			float skill = self.owner.skill_fishing;
+			float success_chance = 0.5 + (skill * 0.002);
+
+			if (success_chance > 0.9) success_chance = 0.9;
+
+			string item_name;
+
+			if (random() < success_chance)
+				item_name = "Small Fish";
+			else
+				item_name = "Old Boot";
+
+			AddToInventory(self.owner, item_name, 1);
+
+			string eventlog_print = strcat("^4Fishing:^2 You caught ", item_name, "!");
+			stuffcmd(self.owner, sprintf("conecho event %s\n", eventlog_print));
+
+			// -----------------------
+			// Consume node
+			// -----------------------
+			targ.health -= 1;
+
+			if (targ.health <= 0)
+			{
+				targ.think = fishing_node_remove;
+				targ.nextthink = time + 0.1;
+			}
+
+			break;
+		}
+		targ = targ.chain;
+	}
+
+	if (!found)
+	{
+		string eventlog_print = (strcat("^4Fishing:^1 Miss!"));
+		stuffcmd(self.owner, sprintf("conecho event %s\n", eventlog_print));
+	}
 
 	Fishing_ForceOff();
+	sub_remove();
 };
 
 //
-// DoJob_Fishing_Bobber - Fishing Rod 'attack button' action
+// Bobber logic
 //
 void() DoJob_Fishing_Bobber =
 {
-    float water_check = pointcontents(self.origin);
+	self.modelflags = MF_ROTATE;
 
-    if (water_check == CONTENT_WATER)
-    {
-        if (!self.waterlevel) // just entered water
-        {
-            self.waterlevel = 1;
+	// failsafe
+	if (time > self.spawn_time + 10)
+	{
+		Fishing_ForceOff();
+		sub_remove();
+		return;
+	}
 
-            // Stop falling
-            self.movetype = MOVETYPE_FLY;
-            self.velocity = '0 0 0';
+	float water_here = pointcontents(self.origin);
+	float water_above = pointcontents(self.origin + '0 0 8');
 
-            // Snap slightly upward so it sits 'near' surface
-            self.origin_z += 16;
-            setorigin(self, self.origin);
+	if (water_here == CONTENT_WATER || water_above == CONTENT_WATER
+	 || water_here == CONTENT_SLIME || water_above == CONTENT_SLIME
+	 || water_here == CONTENT_LAVA  || water_above == CONTENT_LAVA)
+	{
+		if (!self.bobber_in_water)
+		{
+			sound(self, CHAN_BODY, "fishbobber.wav", 1, ATTN_NORM);
+
+			self.bobber_in_water = TRUE;
+
+			self.movetype = MOVETYPE_FLY;
+			self.velocity = '0 0 0';
+
+			self.origin_z += 16;
+			setorigin(self, self.origin);
+
+			float delay = 3 + random() * random() * 4;
 
 			self.owner.anistate = ANISTATE_FISHIDLE;
-			self.owner.fishing_finished = time + 3; // add some randomness
+			self.owner.fishing_finished = time + delay;
+
 			self.think = Fishing_Bobber_SearchNode;
-			self.nextthink = time + 3;
+			self.nextthink = time + delay;
+
 			return;
-        }
-    }
+		}
+	}
 	else
 	{
-		if (self.flags & FL_ONGROUND) // Bobber landed on ground, fail
+		if (self.flags & FL_ONGROUND)
 		{
 			string eventlog_print = (strcat("^4Fishing: ^1Failed!"));
-			stuffcmd (self.owner, sprintf("conecho event %s\n", eventlog_print));
+			stuffcmd(self.owner, sprintf("conecho event %s\n", eventlog_print));
 
-			self.owner.anistate = ANISTATE_NONE;
 			Fishing_ForceOff();
 			sub_remove();
+			return;
 		}
-		else // extra check (weird geometry?)
+		else
 		{
 			self.cnt += 1;
 			if (self.cnt > 49)
 			{
 				Fishing_ForceOff();
 				self.cnt = 0;
-				sub_remove();			
+				sub_remove();
+				return;
 			}
 		}
 	}
-	
-    self.nextthink = time + 0.1;
+
+	self.nextthink = time + 0.1;
 };
 
 //
@@ -173,9 +262,14 @@ void() DoJob_Fishing_Bobber =
 //
 void() DoJob_Fishing =
 {
+	Player_RemoveCrouch(); // remove crouch
+	self.velocity_x = self.velocity_y = 0; // stop movement
+
+	sound(self, CHAN_WEAPON, "fishcast.wav", 1, ATTN_NORM);
+
 	string eventlog_print = (strcat("^4Fishing:^2 Line cast ..."));
-	stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
-	
+	stuffcmd(self, sprintf("conecho event %s\n", eventlog_print));
+
 	makevectors(self.angles);
 
 	entity bobber = spawn();
@@ -187,14 +281,16 @@ void() DoJob_Fishing =
 	bobber.hitcontentsmaski = CONTENTBIT_WATER | CONTENTBIT_SLIME | CONTENTBIT_LAVA | CONTENTBIT_SOLID;
 	bobber.effects = EF_FULLBRIGHT;
 
-	//bobber.modelflags = MF_ROTATE;
-
 	setmodel(bobber, "models/fishingbobber.glb");
 	setsize(bobber, '-16 -16 -0', '16 16 16');
 	setorigin(bobber, self.origin + v_forward * 24 + v_up * 48);
-	bobber.velocity_z = 400;
 
-	vector dir = normalize(v_forward);
+	bobber.velocity_z = 400 + random_range(-50, 50);
+	bobber.spawn_time = time;
+	bobber.bobber_in_water = FALSE;
+
+	vector dir = v_forward + v_right * random_range(-0.15, 0.15) + v_up * random_range(0, 0.2);
+	dir = normalize(dir);
 	bobber.velocity = bobber.velocity + dir * random_range(300, 600);
 
 	bobber.think = DoJob_Fishing_Bobber;
@@ -202,34 +298,33 @@ void() DoJob_Fishing =
 };
 
 //
-// misc_fishing_node
+// Fishing node spawn
 //
 void() misc_fishing_node =
 {
 	self.SendEntity = FishingNode_SendEntity;
 	self.SendFlags = 1;
 
-	float respawn_time = 1 + random()*300;
-
 	precache_model("models/fishschool.glb");
 
-	self.classname = "fish_node";
+	self.classname = "fishing_node";
 	self.solid = SOLID_NOT;
 	self.movetype = MOVETYPE_NONE;
 	self.takedamage = DAMAGE_NO;
 	self.health = 0;
 	self.max_health = 6 + floor(random() * 4);
+	self.flags |= FL_FINDABLE_NONSOLID;
 	self.alpha = 0;
+
 	if (!self.level)
 		self.level = 0;
+
 	self.angles_y = random()*360;
 	self.mdl = "models/fishschool.glb";
 
 	setsize(self, [-64, -64, -64], [64, 64, 64]);
-
 	setorigin(self, self.origin);
 
 	self.think = fishing_node_respawn;
-	self.nextthink = time + 1;
-	//self.nextthink = time + respawn_time;
+	self.nextthink = time + (120 + random() * 480);
 };

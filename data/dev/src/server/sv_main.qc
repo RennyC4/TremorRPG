@@ -182,6 +182,8 @@ void() worldspawn =
 	precache_sound ("move_wade0.wav");
 	precache_sound ("move_wade1.wav");
 	precache_sound ("learnspell.wav");
+	precache_sound ("fishcast.wav");
+	precache_sound ("fishbobber.wav");
 
 	precache_sound ("item/drop.wav");
 	precache_sound ("item/get.wav");
