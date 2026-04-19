@@ -106,7 +106,7 @@ void() Fishing_Bobber_SearchNode =
 {
 	float found = FALSE;
 
-	entity targ = findradius(self.origin, 100);
+	entity targ = findradius(self.origin, 64);
 	while (targ)
 	{
 		if (targ.classname == "fishing_node")
