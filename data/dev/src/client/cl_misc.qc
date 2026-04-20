@@ -184,65 +184,75 @@ float(void) NPC_PreDraw =
 //
 
 .vector base_origin;
+.float swim_phase;
+.float swim_speed;
+.float swim_radius;
 float(void) FishNode_PreDraw =
 {
     vector org;
-    float radius = 32;
-    float speed = 1;
     float t;
 
-	// Smooth alpha fade
-	if (self.alpha != self.target_alpha)
+	if (!self.swim_speed)
 	{
-		float step = frametime * self.fade_speed;
-
-		if (self.alpha < self.target_alpha)
-		{
-			self.alpha += step;
-			if (self.alpha > self.target_alpha)
-			{
-				self.effects = 0;
-				self.alpha = self.target_alpha;
-			}
-			else
-				self.effects = EF_ADDITIVE;
-		}
-		else
-		{
-			self.alpha -= step;
-			if (self.alpha < self.target_alpha)
-			{
-				self.effects = 0;
-				self.alpha = self.target_alpha;
-			}
-			else
-				self.effects = EF_ADDITIVE;
-		}
-
-		// When fully faded out → remove model
-		if (self.alpha <= 0.01 && self.target_alpha == 0)
-		{
-			setmodel(self, __NULL__);
-		}
+		self.swim_phase  = random() * 6.28318; // 0 → 2π
+		self.swim_speed  = 0.6 + random() * 0.8; // slight variation
+		self.swim_radius = 24 + random() * 16; // vary circle size
 	}
 
+	float radius = self.swim_radius;
+	
+    // ----------
+    // Fade logic
+    // ----------
+    float fading = (self.alpha != self.target_alpha);
+
+    if (fading)
+    {
+        float step = frametime * self.fade_speed;
+
+        if (self.alpha < self.target_alpha)
+        {
+            self.alpha += step;
+            if (self.alpha >= self.target_alpha)
+                self.alpha = self.target_alpha;
+        }
+        else
+        {
+            self.alpha -= step;
+            if (self.alpha <= self.target_alpha)
+                self.alpha = self.target_alpha;
+        }
+		self.effects |= EF_ADDITIVE; // Only additive while fading
+    }
+    else
+		self.effects &= ~EF_ADDITIVE; // Always clear when not fading
+
+    // Fully faded out - remove model
+    if (self.alpha <= 0.01 && self.target_alpha == 0)
+    {
+        setmodel(self, __NULL__);
+    }
+
+    // -------------------------
+    // Movement / animation
+    // -------------------------
     if (!self.base_origin)
         self.base_origin = self.origin;
 
-    t = time * speed;
+    t = time * self.swim_speed + self.swim_phase;
 
     org = self.base_origin;
 
     org_x += cos(t) * radius;
     org_y += sin(t) * radius;
-	org_z += sin(t * 2) * 2;
+    org_z += sin(t * 2) * 2;
 
-	self.scale = 1 + sin(t * 1.7) * 0.05; // 'water' effect
-	self.angles_z = sin(t) * 10; // bank roll
+    self.scale = 1 + sin(t * 1.7) * 0.05; // water wobble
+    self.angles_z = sin(t) * 10;          // banking
 
     setorigin(self, org);
 
-    // Face movement direction (tangent to the circle)
+    // Face movement direction
     self.angles_y = t * (180 / M_PI) + 90;
 
     addentity(self);

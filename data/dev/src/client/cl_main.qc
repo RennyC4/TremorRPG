@@ -1041,22 +1041,25 @@ void(float flIsNew) CSQC_Ent_Update =
 	//
 	if (flEntType == ENT_FISHNODE)
 	{
-		if (flIsNew == TRUE)
+		float deltaFlags = readshort();
+
+		if (flIsNew)
 		{
 			self.classname = "fishing_node";
 			self.solid = SOLID_NOT;
 			self.predraw = FishNode_PreDraw;
 			self.drawmask = MASK_ENGINE;
-			
-			//setmodel(self, "models/fishschool.glb");
 		}
-		self.origin_x = readcoord();
-		self.origin_y = readcoord();
-		self.origin_z = readcoord();
-		self.angles_x = readcoord();
-		self.angles_y = readcoord();
-		self.angles_z = readcoord();
-		self.health = readbyte();
+
+		if (deltaFlags & ESF_ORIGIN)
+		{
+			self.origin_x = readcoord();
+			self.origin_y = readcoord();
+			self.origin_z = readcoord();
+		}
+
+		if (deltaFlags & ESF_HEALTH)
+			self.health = readbyte();
 
 		float is_alive = (self.health > 0);
 

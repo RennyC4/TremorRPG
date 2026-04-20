@@ -299,7 +299,6 @@ void() monster_ai_update_state =
         self.goalentity = self.ai_runback_temp;
         self.enemy = world;
         self.ai_mode = AI_RUNBACK;
-        self.ai_mode = AI_RUNBACK;
 		self.avoid_dir = 0;
 		self.avoid_time = 0;
         self.anistate = ANISTATE_RUN;
@@ -497,6 +496,7 @@ void() monster_ai_update_state =
             self.effects &= ~EF_ADDITIVE;
             self.velocity = '0 0 0';
             movetofloor(self);
+			Monster_SendFlags(FALSE);
         }
 		self.nextthink = time + 0.1;
 		return;

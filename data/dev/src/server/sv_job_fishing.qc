@@ -23,13 +23,17 @@ void(entity e) Fishing_ForceOff =
 float(entity ePVEnt, float flChanged) FishingNode_SendEntity =
 {
 	WriteByte(MSG_ENTITY, ENT_FISHNODE);
-	WriteCoord(MSG_ENTITY, self.origin_x);
-	WriteCoord(MSG_ENTITY, self.origin_y);
-	WriteCoord(MSG_ENTITY, self.origin_z);
-	WriteCoord(MSG_ENTITY, self.angles_x);
-	WriteCoord(MSG_ENTITY, self.angles_y);
-	WriteCoord(MSG_ENTITY, self.angles_z);
-	WriteByte(MSG_ENTITY, self.health);
+	WriteShort(MSG_ENTITY, flChanged);
+
+	if (flChanged & ESF_ORIGIN)
+	{
+		WriteCoord(MSG_ENTITY, self.origin_x);
+		WriteCoord(MSG_ENTITY, self.origin_y);
+		WriteCoord(MSG_ENTITY, self.origin_z);
+	}
+
+	if (flChanged & ESF_HEALTH)
+		WriteByte(MSG_ENTITY, self.health);
 	return TRUE;
 };
 
@@ -71,7 +75,7 @@ void() fishing_node_respawn =
 
 	self.fishing_node_idle_expire = time + (180 + random() * 300);
 
-	self.SendFlags = 1; // Send CSQC update
+	self.SendFlags |= ESF_HEALTH;
 	self.think = fishing_node_idle_check;
 	self.nextthink = time + 5;
 };
@@ -167,7 +171,7 @@ void() Fishing_Bobber_SearchNode =
 
 			if (targ.health <= 0)
 			{
-				targ.SendFlags = 1; // Send CSQC update
+				targ.SendFlags |= ESF_HEALTH;
 				targ.think = fishing_node_remove;
 				targ.nextthink = time + 0.1;
 			}
@@ -325,8 +329,9 @@ void() misc_fishing_node =
 	setorigin(self, self.origin);
 
 	self.think = fishing_node_respawn;
-	self.nextthink = time + (120 + random() * 480);
+	self.nextthink = time + 1; // debug
+	//self.nextthink = time + (120 + random() * 480);
 
 	self.SendEntity = FishingNode_SendEntity;
-	self.SendFlags = 1;
+	self.SendFlags = ESF_ORIGIN | ESF_HEALTH;
 };

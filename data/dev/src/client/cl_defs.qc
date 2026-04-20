@@ -2492,7 +2492,7 @@ float LerpAngle(float a1, float a2, float t)
     return a1 + d * t;
 }
 
-void(entity target,vector neworg,vector newangles,vector newvelocity, float newtime) entity_state_update =
+void(entity target, vector neworg, vector newangles, vector newvelocity, float newtime) entity_state_update =
 {
 		target.prev_origin = target.last_origin;
 		target.last_origin = neworg;
@@ -2503,7 +2503,7 @@ void(entity target,vector neworg,vector newangles,vector newvelocity, float newt
 		target.prev_velocity = target.last_velocity;
 		target.last_velocity = newvelocity;
 
-		target.prev_update_time = self.last_update_time;
+		target.prev_update_time = target.last_update_time;
 		target.last_update_time = newtime;
 };
 
