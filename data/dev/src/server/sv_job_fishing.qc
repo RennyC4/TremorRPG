@@ -329,8 +329,8 @@ void() misc_fishing_node =
 	setorigin(self, self.origin);
 
 	self.think = fishing_node_respawn;
-	self.nextthink = time + 1; // debug
-	//self.nextthink = time + (120 + random() * 480);
+	//self.nextthink = time + 1; // debug
+	self.nextthink = time + (120 + random() * 480);
 
 	self.SendEntity = FishingNode_SendEntity;
 	self.SendFlags = ESF_ORIGIN | ESF_HEALTH;
