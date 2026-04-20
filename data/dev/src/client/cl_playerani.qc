@@ -927,11 +927,27 @@ void() Player_Animate =
         // End attack
         if (self.frame1time >= duration - 0.1)
         {
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Idle");
-            self.anim_attacking = FALSE;
-            self.attack_triggered = FALSE;
-            self.anim_state = ANIM_IDLE;
+			if (self.anim_state != ANIM_FISHCAST) // not fishing, normal behavior
+			{
+				self.frame1time = 0;
+				self.frame = frameforname(self.modelindex, "Idle");
+				self.anim_attacking = FALSE;
+				self.attack_triggered = FALSE;
+				self.anim_state = ANIM_IDLE;
+			}
+			else
+			{
+				if (self.anistate == ANISTATE_FISHCAST)
+					self.frame1time = duration - 0.1; // hold final frame
+				else
+				{
+					self.frame1time = 0;
+					self.frame = frameforname(self.modelindex, "Idle");
+					self.anim_attacking = FALSE;
+					self.attack_triggered = FALSE;
+					self.anim_state = ANIM_IDLE;
+				}
+			}
         }
     }
 

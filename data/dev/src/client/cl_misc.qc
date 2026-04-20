@@ -183,14 +183,48 @@ float(void) NPC_PreDraw =
 // Fishing Node
 //
 
-//self.frame = frameforname(self.modelindex, "Idle");
 .vector base_origin;
 float(void) FishNode_PreDraw =
 {
     vector org;
     float radius = 32;
-    float speed = 1.25;
+    float speed = 1;
     float t;
+
+	// Smooth alpha fade
+	if (self.alpha != self.target_alpha)
+	{
+		float step = frametime * self.fade_speed;
+
+		if (self.alpha < self.target_alpha)
+		{
+			self.alpha += step;
+			if (self.alpha > self.target_alpha)
+			{
+				self.effects = 0;
+				self.alpha = self.target_alpha;
+			}
+			else
+				self.effects = EF_ADDITIVE;
+		}
+		else
+		{
+			self.alpha -= step;
+			if (self.alpha < self.target_alpha)
+			{
+				self.effects = 0;
+				self.alpha = self.target_alpha;
+			}
+			else
+				self.effects = EF_ADDITIVE;
+		}
+
+		// When fully faded out → remove model
+		if (self.alpha <= 0.01 && self.target_alpha == 0)
+		{
+			setmodel(self, __NULL__);
+		}
+	}
 
     if (!self.base_origin)
         self.base_origin = self.origin;

@@ -2398,6 +2398,9 @@ float LockOn_CycleToggle; // same
 .entity goalentity;
 .vector idealangles;
 .float part_vfx; // Used for particle effects on NPCs via CSQC
+.float target_alpha;
+.float fade_speed;
+.float was_alive;
 
 // Animation States, typically used for other players server -> client stuff
 .float anistate;

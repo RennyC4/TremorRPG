@@ -984,10 +984,7 @@ void() Anistate_Handler =
 	if (self.anistate == ANISTATE_FISHCAST)
 	{
 		if (self.fishing_finished > time)
-		{
 			self.anistate = ANISTATE_FISHIDLE;
-			sprint(self, PRINT_HIGH, "Anistate: FishingIdle\n");
-		}
 		return;
 	}
 
@@ -1076,7 +1073,7 @@ void() PlayerPreThink =
 		// attack / dodge / magic commitment / npc interaction menus
 		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.menu == MENU_BANKING ||
 			self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time
-			|| self.dodge_finished > time || self.fishcast_finished > time)// || self.fishing_finished > time)
+			|| self.dodge_finished > time || self.fishcast_finished > time || self.fishing_finished > time)
 			self.maxspeed = 1;
 		else
 		{

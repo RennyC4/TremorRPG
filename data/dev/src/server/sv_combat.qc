@@ -11,6 +11,7 @@ void(entity targ, entity attacker, float damage) RegisterAttacker;
 void() DoJob_Hatchet;
 void() DoJob_Pick;
 void() DoJob_Fishing;
+void(entity e) Fishing_ForceOff;
 
 .entity last_hit_attacker;
 .float last_hit_time;
@@ -747,6 +748,10 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 		stuffcmd(targ, "conecho event ^1You drop your potion!\n");
 	}
 
+	// cancel Fishing
+	if (targ.fishcast_finished > time || targ.fishing_finished > time)
+		Fishing_ForceOff(targ);
+
 	// monsters
 	if (targ.flags & FL_MONSTER)
 	{
@@ -764,9 +769,9 @@ void(entity targ, entity attacker, float damage, float silent) DoDamage =
 	}
 };
 
-// =======================================
+// ======================
 // RADIUS ATTACK FUNCTION
-// =======================================
+// ======================
 float(entity attacker, vector org, float radius, float damage, float diminish, float silent) DoRadiusDamage =
 {
     float did_damage = FALSE;

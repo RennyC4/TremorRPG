@@ -1037,17 +1037,18 @@ void(float flIsNew) CSQC_Ent_Update =
 	}
 	
 	//
-	// Wall Torch 2
+	// Fishing Node
 	//
 	if (flEntType == ENT_FISHNODE)
 	{
 		if (flIsNew == TRUE)
 		{
-			self.classname = "fish_node";
+			self.classname = "fishing_node";
 			self.solid = SOLID_NOT;
 			self.predraw = FishNode_PreDraw;
 			self.drawmask = MASK_ENGINE;
-			setmodel(self, "models/fishschool.glb");
+			
+			//setmodel(self, "models/fishschool.glb");
 		}
 		self.origin_x = readcoord();
 		self.origin_y = readcoord();
@@ -1055,6 +1056,30 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.angles_x = readcoord();
 		self.angles_y = readcoord();
 		self.angles_z = readcoord();
+		self.health = readbyte();
+
+		float is_alive = (self.health > 0);
+
+		// Detect state change
+		if (is_alive != self.was_alive)
+		{
+			if (is_alive)
+			{
+				// Fade IN
+				setmodel(self, "models/fishschool.glb");
+				self.alpha = 0;
+				self.target_alpha = 1;
+				self.fade_speed = 0.5;
+			}
+			else
+			{
+				// Fade OUT
+				self.target_alpha = 0;
+				self.fade_speed = 0.5;
+			}
+
+			self.was_alive = is_alive;
+		}
 	}
 };
 
