@@ -1033,7 +1033,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		}
 
 		// void(entity target,vector neworg,float newtime) entity_state_update
-		entity_state_update(self, self.origin, self.angles, self.velocity, time);
+		//entity_state_update(self, self.origin, self.angles, self.velocity, time);
 	}
 	
 	//

@@ -68,8 +68,8 @@ void() ally_ai_update_state =
 
 void() ally_ai_think =
 {
-    ally_ai_update_state();   // ALL logic + movement
-    Ally_SendFlags(FALSE);    // delta compare
+    ally_ai_update_state();  // ALL logic + movement
+    Ally_SendFlags(FALSE);   // delta compare
     NPC_CommitState(self);   // snapshot
 
     self.nextthink = time + 0.1;

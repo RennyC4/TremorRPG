@@ -22,9 +22,9 @@ void(float flIsNew) Ally_SendFlags =
         if (self.modelindex != self.last_modelindex) flChanged |= ESF_MODEL;
         if (self.main_hand != self.last_main_hand || self.off_hand != self.last_off_hand) flChanged |= ESF_EQUIPMENT;
         if (self.anistate != self.last_anistate || self.attack_speed != self.last_attack_speed) flChanged |= ESF_ANIMATION;
-    }
+	}
 
-    self.SendFlags = flChanged;
+	self.SendFlags = flChanged;
 };
 
 float(entity ePVEnt, float flChanged) Ally_SendEntity =
@@ -128,9 +128,9 @@ void() set_ally =
 		self.health = 1;
 	else
 		self.health = self.max_health;
-	self.takedamage = DAMAGE_NO; // Change later?
+	self.takedamage = DAMAGE_NO; // change later ...
+	self.radius_candamage = FALSE; // cannot be affected by radius damage, change later ...
 	self.classname = "ally";
-	self.radius_candamage = TRUE; // can be affected by radius damage
 	self.idealangles = self.angles;
 	self.worldlight = TRUE;
 

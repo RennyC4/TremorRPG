@@ -2509,7 +2509,7 @@ void(entity target, vector neworg, vector newangles, vector newvelocity, float n
 
 void(entity target) entity_interpolate = 
 {
-	local float frac = (time - target.last_update_time) / (target.last_update_time - target.prev_update_time);
+	float frac = (time - target.last_update_time) / (target.last_update_time - target.prev_update_time);
 	frac = bound(0, frac, 1);
 	target.origin = target.prev_origin + (target.last_origin-target.prev_origin) * frac;
 	

@@ -167,13 +167,15 @@ void() Ally_Animate =
 
 	self.frame1time += speed;
 	self.frame2time += speed;
+	
 	//print (ftos(frameduration(self.modelindex,self.frame)), "\n");
 };
 
 float(void) Ally_PreDraw =
 {
 	// interpolate stuff first to get proper angles/origin
-	entity_interpolate(self);
+	//entity_interpolate(self);
+
 	// animate and set objects after to get correct bone origins/angles
 	Ally_Animate();
 
