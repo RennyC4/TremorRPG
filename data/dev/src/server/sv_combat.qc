@@ -97,8 +97,8 @@ void() DoAttack_ShieldBash =
 			if (trace_ent.stagger_finished < time)
 			{
 				trace_ent.anistate = ANISTATE_IMPACT;
-				trace_ent.stagger_finished = time + 1.5;
-				trace_ent.lockview_finished = time + 1.5;
+				trace_ent.stagger_finished = time + 2;
+				trace_ent.lockview_finished = time + 2;
 			}
 			// Knock target out of casting
 			trace_ent.cast_finished_spell = "";
@@ -116,8 +116,8 @@ void() DoAttack_ShieldBash =
 
 			// apply effects
 			self.anistate = ANISTATE_IMPACT;
-			self.stagger_finished = time + 3.5;
-			self.lockview_finished = time + 3.5;
+			self.stagger_finished = time + 4;
+			self.lockview_finished = time + 4;
 			sound (self, CHAN_AUTO, "parry.wav", 1, ATTN_NORM);
 		}
 	}
@@ -295,7 +295,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
         if (targ.classname == "player" && targ.stagger_finished < time)
         {
             stuffcmd(targ, "conecho event ^1You've been staggered!\n");
-            targ.lockview_finished = targ.stagger_finished = time + 3;
+            targ.lockview_finished = targ.stagger_finished = time + 3.5;
         }
     }
 
@@ -330,7 +330,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
                 damage -= ceil(targ.blockvalue / 2);
                 targ.stamina = 0;
                 targ.blocking = FALSE;
-                targ.lockview_finished = targ.stagger_finished = time + 3;
+                targ.lockview_finished = targ.stagger_finished = time + 3.5;
             }
         }
         else // parry
@@ -343,7 +343,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
             targ.anistate = ANISTATE_PARRY;
 
             // apply stagger to attacker
-            self.stagger_finished = self.lockview_finished = time + 3.5;
+            self.stagger_finished = self.lockview_finished = time + 4;
         }
         sound(targ, CHAN_AUTO, "shield1.wav", 1, ATTN_NORM);
     }
@@ -417,7 +417,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
         targ.velocity_z += 125;
 
         if (targ.stagger_finished < time)
-            targ.lockview_finished = targ.stagger_finished = time + 1.5;
+            targ.lockview_finished = targ.stagger_finished = time + 2;
 
         targ.cast_finished_spell = "";
         targ.cast_finished = time;
@@ -538,7 +538,7 @@ void() arrow_touch =
 			mid_z += (other.mins_z + other.maxs_z) * 0.5;
 			te_blood(mid, vel, 6);
 
-    // Apply damage
+			// Apply damage
 			if (!blocked)
 			{
 				other.stagger_finished = time + 0.8; // impact frame on target only
