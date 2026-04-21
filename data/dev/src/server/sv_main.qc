@@ -185,6 +185,7 @@ void() worldspawn =
 	precache_sound ("learnspell.wav");
 	precache_sound ("fishcast.wav");
 	precache_sound ("fishbobber.wav");
+	precache_sound ("fishsplash.wav");
 
 	precache_sound ("item/drop.wav");
 	precache_sound ("item/get.wav");
@@ -409,7 +410,7 @@ void(string str) SV_ParseClientCommand =
 			return;
 		}
 
-		string raw = substring(str, 9, strlen(str));
+		raw = substring(str, 9, strlen(str));
 		string bubble_msg = raw; // only the spoken text
 
 		// Remove starting quote
@@ -426,8 +427,6 @@ void(string str) SV_ParseClientCommand =
 		// For Nearby chat
 		for (entity e = world; (e = find(e, classname, "player")) ;)
 		{
-			string msg;
-
 			if (self == e) // local player colour coded text
 				msg = strcat("[^1Nearby^7]^3", self.netname, "^7: ", raw);
 			else

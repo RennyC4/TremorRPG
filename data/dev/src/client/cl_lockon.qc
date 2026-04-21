@@ -29,20 +29,6 @@ float LerpYaw(float current, float target, float smoothness, float dt)
     return current + delta * alpha;
 }
 
-// ============================
-// VISIBILITY CHECK
-// ============================
-float(entity targ) LockOn_Visible =
-{
-	vector start = self.origin + self.view_ofs;
-	vector end   = targ.origin + targ.view_ofs;
-
-	traceline(start, end, TRUE, world);
-	if (trace_fraction == 1 || trace_ent == targ)
-		return TRUE;
-	return FALSE;
-};
-
 // =======================================
 // LOCKON FOCUS FOLLOW ENTITY
 // =======================================

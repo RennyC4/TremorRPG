@@ -378,7 +378,7 @@ void() connect_mainserver =
 	float v = fopen("server.txt", FILE_READ);
 	if (v >= 0) // file exists
 	{
-		if (line = fgets(v))
+		if ((line = fgets(v)))
 			server_ip = line;
 		localcmd(sprintf("connect %s\n", server_ip));
 		connect_text = TRUE; // flash connect message on screen

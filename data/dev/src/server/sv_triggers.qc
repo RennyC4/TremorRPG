@@ -117,9 +117,11 @@ void() SUB_DelayThink =
 	remove(self);
 };
 
-void(entity ent, entity activator) SUB_UseTargets =
+void(entity ent, entity act) SUB_UseTargets =
 {
 	entity t;
+
+	activator = act; // set the global explicitly
 
 	if (ent.killtarget) // killtarget first
 	{
@@ -135,19 +137,21 @@ void(entity ent, entity activator) SUB_UseTargets =
 	{
 		t = spawn();
 		t.owner = ent;
-		t.enemy = activator;
+		t.enemy = act;
 		t.think = SUB_DelayThink;
 		t.nextthink = time + ent.delay;
 		return;
 	}
 
 	// fire immediately
-	SUB_FireTargets(ent, activator);
+	SUB_FireTargets(ent, act);
 };
 
-void(entity ent, entity activator) SUB_FireTargets =
+void(entity ent, entity act) SUB_FireTargets =
 {
 	entity t;
+
+	activator = act; // set global activator
 
 	if (!ent.target)
 		return;
@@ -156,8 +160,10 @@ void(entity ent, entity activator) SUB_FireTargets =
 	while (t)
 	{
 		if (t.use)
-			t.use();
-			//t.use(t, activator);
+		{
+			self = t;     // critical: set correct self
+			t.use();      // now runs in proper context
+		}
 		t = find(t, targetname, ent.target);
 	}
 };

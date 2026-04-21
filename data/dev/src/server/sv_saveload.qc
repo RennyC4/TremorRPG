@@ -51,7 +51,6 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     }
 
 	// Read entire file to capture last line (password)
-	string line;
 	string last_line;
 
 	f = fopen(filename, FILE_READ);
@@ -412,7 +411,7 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
         self.spell[i] = file_contents[spell_count_line + 1 + i];
 
 	// --- Step 6: Load upgrades safely ---
-	float upgrades_start = spell_count_line + self.spell_count + 1;
+	upgrades_start = spell_count_line + self.spell_count + 1;
 	// Load gold bank, default to 0 if missing
 	self.gold_bank = (upgrades_start < total_lines) ? stof(file_contents[upgrades_start]) : 0;
 	// Load old next exp, default to self.exp_next if missing

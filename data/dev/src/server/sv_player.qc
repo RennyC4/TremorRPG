@@ -1595,9 +1595,9 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
     // --- VELOCITY ---
     if (flChanged & ESF_VELOCITY)
     {
-        WriteShort(MSG_ENTITY, self.velocity_x);
-        WriteShort(MSG_ENTITY, self.velocity_y);
-        WriteShort(MSG_ENTITY, self.velocity_z);
+        WriteCoord(MSG_ENTITY, self.velocity_x);
+        WriteCoord(MSG_ENTITY, self.velocity_y);
+        WriteCoord(MSG_ENTITY, self.velocity_z);
     }
 
     // --- FLAGS & EFFECTS ---

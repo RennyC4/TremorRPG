@@ -80,7 +80,14 @@ void() CSQC_Precache =
 	precache_model("models/armor0.glb");
 	precache_model("models/arrow2.glb");
 	precache_model("models/bonfire.glb");
-	
+
+	precache_model("models/hatchet0.glb");
+	precache_model("models/pick0.glb");
+	precache_model("models/fishrod.glb");
+	precache_model("models/walltorch1.glb");
+	precache_model("models/walltorch2.glb");
+	precache_model("models/fishschool.glb");
+
 	precache_sound ("ambience/fountain.wav");
 	precache_sound("bonfire1.wav");
 	precache_sound("bonfire2.wav");
@@ -668,7 +675,7 @@ void() CSQC_Parse_Event =
 	if (event == CSQC_SAY_NEARBY)
 	{
 		float entread = readentitynum();
-		string msg = readstring();
+		msg = readstring();
 		entity speaker = findfloat(world, entnum, entread);
 
 		//print("Received nearby msg from ent:", ftos(entnum), " text:", msg, "\n"); // DEBUG
@@ -730,7 +737,7 @@ void(float flIsNew) CSQC_Ent_Update =
 
         // --- Update other fields as usual ---
         if (deltaFlags & ESF_ANGLES) { self.angles_x = readcoord(); self.angles_y = readcoord(); self.angles_z = readcoord(); }
-        if (deltaFlags & ESF_VELOCITY) { self.velocity_x = readshort(); self.velocity_y = readshort(); self.velocity_z = readshort(); }
+        if (deltaFlags & ESF_VELOCITY) { self.velocity_x = readcoord(); self.velocity_y = readcoord(); self.velocity_z = readcoord(); }
         if (deltaFlags & ESF_FLAGS) self.flags = readfloat();
         if (deltaFlags & ESF_EFFECTS) self.effects = readfloat();
         if (deltaFlags & ESF_MODEL) self.modelindex = readshort();
@@ -781,9 +788,9 @@ void(float flIsNew) CSQC_Ent_Update =
 
 		if (deltaFlags & ESF_VELOCITY)
 		{
-			self.velocity_x = readshort();
-			self.velocity_y = readshort();
-			self.velocity_z = readshort();
+			self.velocity_x = readcoord();
+			self.velocity_y = readcoord();
+			self.velocity_z = readcoord();
 		}
 
 		if (deltaFlags & ESF_FLAGS)
@@ -822,7 +829,6 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.attack_speed = readbyte();
 		}
 
-		// void(entity target,vector neworg,float newtime) entity_state_update
 		entity_state_update(self, self.origin, self.angles, self.velocity, time);
 	}
 
@@ -991,9 +997,9 @@ void(float flIsNew) CSQC_Ent_Update =
 
 		if (deltaFlags & ESF_VELOCITY)
 		{
-			self.velocity_x = readshort();
-			self.velocity_y = readshort();
-			self.velocity_z = readshort();
+			self.velocity_x = readcoord();
+			self.velocity_y = readcoord();
+			self.velocity_z = readcoord();
 		}
 
 		if (deltaFlags & ESF_FLAGS)
@@ -1032,8 +1038,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.attack_speed = readbyte();
 		}
 
-		// void(entity target,vector neworg,float newtime) entity_state_update
-		//entity_state_update(self, self.origin, self.angles, self.velocity, time);
+		entity_state_update(self, self.origin, self.angles, self.velocity, time);
 	}
 	
 	//

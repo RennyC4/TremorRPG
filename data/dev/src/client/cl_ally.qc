@@ -174,7 +174,7 @@ void() Ally_Animate =
 float(void) Ally_PreDraw =
 {
 	// interpolate stuff first to get proper angles/origin
-	//entity_interpolate(self);
+	entity_interpolate(self);
 
 	// animate and set objects after to get correct bone origins/angles
 	Ally_Animate();

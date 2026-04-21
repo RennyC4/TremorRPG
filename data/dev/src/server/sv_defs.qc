@@ -2153,6 +2153,12 @@ const float TIME_NIGHT = 3;
 .float last_attack_speed;
 .float last_levitate_finished;
 .float last_melee_finished;
+.float last_alpha;
+.string last_displayname;
+.float last_speed;
+.float last_level;
+.float last_ai_mode;
+
 //
 //
 //

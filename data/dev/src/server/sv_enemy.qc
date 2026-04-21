@@ -23,6 +23,7 @@ void(float flIsNew) Monster_SendFlags =
         if (self.modelindex != self.last_modelindex) flChanged |= ESF_MODEL;
         if (self.main_hand != self.last_main_hand || self.off_hand != self.last_off_hand) flChanged |= ESF_EQUIPMENT;
         if (self.anistate != self.last_anistate || self.attack_speed != self.last_attack_speed) flChanged |= ESF_ANIMATION;
+		if (self.alpha != self.last_alpha || self.displayname != self.last_displayname || self.speed != self.last_speed || self.level != self.last_level || self.ai_mode != self.last_ai_mode) flChanged |= ESF_MISC;
     }
 
     self.SendFlags = flChanged;
@@ -49,9 +50,9 @@ float(entity ePVEnt, float flChanged) Monster_SendEntity =
 
     if (flChanged & ESF_VELOCITY)
     {
-        WriteShort(MSG_ENTITY, self.velocity_x);
-        WriteShort(MSG_ENTITY, self.velocity_y);
-        WriteShort(MSG_ENTITY, self.velocity_z);
+        WriteCoord(MSG_ENTITY, self.velocity_x);
+        WriteCoord(MSG_ENTITY, self.velocity_y);
+        WriteCoord(MSG_ENTITY, self.velocity_z);
     }
 
     if (flChanged & ESF_FLAGS)
@@ -71,11 +72,11 @@ float(entity ePVEnt, float flChanged) Monster_SendEntity =
 
     if (flChanged & ESF_MISC)
     {
-        WriteByte(MSG_ENTITY, self.alpha);
-        WriteString(MSG_ENTITY, self.displayname);
-        WriteByte(MSG_ENTITY, self.speed);
-        WriteByte(MSG_ENTITY, self.level);
-        WriteByte(MSG_ENTITY, self.ai_mode);
+		WriteByte(MSG_ENTITY, self.alpha);
+		WriteString(MSG_ENTITY, self.displayname);
+		WriteByte(MSG_ENTITY, self.speed);
+		WriteByte(MSG_ENTITY, self.level);
+		WriteByte(MSG_ENTITY, self.ai_mode);
     }
 
     if (flChanged & ESF_EQUIPMENT)

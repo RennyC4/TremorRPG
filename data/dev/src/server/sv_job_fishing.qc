@@ -182,7 +182,7 @@ void() Fishing_Bobber_SearchNode =
 
 	if (!found)
 	{
-		string eventlog_print = (strcat("^4Fishing:^1 Miss!"));
+		eventlog_print = (strcat("^4Fishing:^1 Miss!"));
 		stuffcmd(self.owner, sprintf("conecho event %s\n", eventlog_print));
 	}
 

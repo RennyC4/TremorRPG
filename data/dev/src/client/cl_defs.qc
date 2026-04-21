@@ -2507,14 +2507,42 @@ void(entity target, vector neworg, vector newangles, vector newvelocity, float n
 		target.last_update_time = newtime;
 };
 
-void(entity target) entity_interpolate = 
+void(entity target) entity_interpolate =
 {
-	float frac = (time - target.last_update_time) / (target.last_update_time - target.prev_update_time);
-	frac = bound(0, frac, 1);
-	target.origin = target.prev_origin + (target.last_origin-target.prev_origin) * frac;
-	
-	target.angles_x = LerpAngle(target.prev_angles_x,target.last_angles_x,frac);
-	target.angles_y = LerpAngle(target.prev_angles_y,target.last_angles_y,frac);
+    float dt = target.last_update_time - target.prev_update_time;
+
+    // Safety: no valid time delta
+    if (dt <= 0)
+    {
+        target.origin = target.last_origin;
+        target.angles = target.last_angles;
+        return;
+    }
+
+    // Small interpolation delay (smooths motion)
+    float interp_delay = 0.1;
+
+    float frac = (time - target.prev_update_time - interp_delay) / dt;
+    frac = bound(0, frac, 1);
+
+    // Calculate movement delta between snapshots
+    vector delta = target.last_origin - target.prev_origin;
+
+    // If movement is tiny → snap to prevent drift
+    if (vlen(delta) < 0.05)
+    {
+        target.prev_origin = target.last_origin; // stop accumulation
+        target.origin = target.last_origin;
+    }
+    else
+    {
+        target.origin = target.prev_origin + delta * frac;
+    }
+
+    // Angle interpolation (keep smooth always)
+    target.angles_x = LerpAngle(target.prev_angles_x, target.last_angles_x, frac);
+    target.angles_y = LerpAngle(target.prev_angles_y, target.last_angles_y, frac);
+    target.angles_z = LerpAngle(target.prev_angles_z, target.last_angles_z, frac);
 };
 
 float(entity target,vector i_move, vector i_angles,float i_buttons,float i_impulse, float delta,float sequence,float sequence_max) predict_callback = 

@@ -72,7 +72,6 @@ void(entity targ, entity monster, float expmin, float expmax) GiveExperience =
     // -----------------------------
     // Server EXP Multiplier
     // -----------------------------
-    float exp_multiplier = cvar("sv_expmultiplier");
     if (exp_multiplier > 0)
         amount *= exp_multiplier;
 
@@ -109,16 +108,16 @@ void(entity targ, entity monster, float goldmin, float goldmax) GiveGold =
 };
 
 // MonsterReward, Only reward players who did ≥10% of total damage
-void(entity self, entity killer) MonsterReward =
+void(entity ent, entity killer) MonsterReward =
 {
-    float total_xp   = ceil(random_range(self.exp_min, self.exp));
-    float total_gold = ceil(random_range(self.gold_min, self.gold));
+    float total_xp   = ceil(random_range(ent.exp_min, ent.exp));
+    float total_gold = ceil(random_range(ent.gold_min, ent.gold));
 
     // Calculate total damage dealt by all attackers
     float total_damage = 0;
     for (float i = 0; i < 8; i++)
-        if (self.attackers[i])
-            total_damage += self.attacker_damage[i];
+        if (ent.attackers[i])
+            total_damage += ent.attacker_damage[i];
 
     if (total_damage <= 0)
         return;
@@ -129,13 +128,13 @@ void(entity self, entity killer) MonsterReward =
 
     for (float i = 0; i < 8; i++)
     {
-        if (!self.attackers[i])
+        if (!ent.attackers[i])
             continue;
 
         // Check damage contribution
-        if (self.attacker_damage[i] >= total_damage * 0.10)
+        if (ent.attacker_damage[i] >= total_damage * 0.10)
         {
-            sharelist[count] = self.attackers[i];
+            sharelist[count] = ent.attackers[i];
             count += 1;
         }
     }
@@ -152,15 +151,15 @@ void(entity self, entity killer) MonsterReward =
         entity p = sharelist[i];
 
         // Fixed min/max values with diminishing returns handled inside
-        GiveExperience(p, self, xp_each, xp_each);
-        GiveGold(p, self, gold_each, gold_each);
+        GiveExperience(p, ent, xp_each, xp_each);
+        GiveGold(p, ent, gold_each, gold_each);
     }
 
     // IMPORTANT: wipe attacker tracking after rewards
     for (float i = 0; i < 8; i++)
     {
-        self.attackers[i] = world;
-        self.attacker_damage[i] = 0;
+        ent.attackers[i] = world;
+        ent.attacker_damage[i] = 0;
     }
 };
 

@@ -25,6 +25,11 @@ void(entity e) NPC_CommitState =
     e.last_off_hand = e.off_hand;
     e.last_anistate = e.anistate;
     e.last_attack_speed = e.attack_speed;
+	e.last_alpha = e.alpha;
+	e.last_displayname = e.displayname;
+	e.last_speed = e.speed;
+	e.last_level = e.level;
+	e.last_ai_mode = e.ai_mode;
 };
 
 void() npc_use =

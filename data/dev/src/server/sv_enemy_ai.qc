@@ -371,12 +371,12 @@ void() monster_ai_update_state =
         // Detect players
         for (entity targ = world; (targ = find(targ, classname, "player"));)
         {
-            if (vlen(targ.origin - self.origin) <= self.sight_range &&
-                targ.deadflag != DEAD_DEAD &&
-                visible(targ) &&
-                infront_stealth(targ, self) &&
-                targ.bonfire == FALSE &&
-				!targ.flags & FL_NOTARGET)
+		if (vlen((targ.origin - self.origin)) <= self.sight_range &&
+		    targ.deadflag != DEAD_DEAD &&
+		    visible(targ) &&
+		    infront_stealth(targ, self) &&
+		    targ.bonfire == FALSE &&
+		    !(targ.flags & FL_NOTARGET))
             {
                 if (self.noise)
                     sound(self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
@@ -550,7 +550,7 @@ void() monster_ai_update_state =
 			self.enemy.classname == "player" &&
 			self.enemy.health > 0)
 		{
-			float dist = vlen(self.enemy.origin - self.origin);
+			dist = vlen((self.enemy.origin - self.origin));
 
 			// ---------------------------
 			// Defensive maneuvers: block
