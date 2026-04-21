@@ -7,6 +7,7 @@ void() Skeleton_Animate;
 void() CSQC_DayNight_Update;
 void(entity pl) DrawFloatingText;
 void() Player_Think;
+void() FootstepThink;
 
 .float attack_released;
 .float anim_attacking;
@@ -867,6 +868,7 @@ float(void) Player_PreDraw =
         setorigin(self, self.origin);
 
         Skeleton_ObjectDraw();
+		FootstepThink(); // Hear other players walking
         addentity(self);
     }
 
@@ -1040,12 +1042,12 @@ void() FootstepThink =
 					self.nextfootstep_finished = time + 0.35;
 				else
 					self.nextfootstep_finished = time + 0.5;
-				sound(self, CHAN_BODY, s, 0.25, ATTN_NORM);
+				sound(self, CHAN_BODY, s, 0.15, ATTN_NORM);
 			}
 			else
 			{
 				self.nextfootstep_finished = time + 0.5;
-				sound(self, CHAN_BODY, s, 0.1, ATTN_NORM);
+				sound(self, CHAN_BODY, s, 0.05, ATTN_NORM);
 			}
 		}
 		else

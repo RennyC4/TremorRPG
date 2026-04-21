@@ -11,247 +11,130 @@
 // Special animations sent from SSQC
 //
 
+void(float newframe, float animstate, float animenum) SetOtherPlayerAnim =
+{
+	if (self.frame != newframe)
+	{
+		self.frame1time = 0;
+		self.frame = newframe;
+		self.anim_state = animenum;
+	}
+
+	self.anistate = animstate;
+};
+
 void() OtherPlayer_Anistate =
 {
 	float speed = 1;
-	float duration = frameduration(self.modelindex, self.frame);
+	float f;
+
+	// -------------------
+	// Animation selection
+	// -------------------
 
 	if (self.anistate == ANISTATE_SLASH)
-	{
-		if (self.frame != frameforname(self.modelindex, "Slash"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Slash");
-			self.anim_state = ANIM_SLASH;
-		}
-	}
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Slash"), ANISTATE_SLASH, ANIM_SLASH);
 
-	if (self.anistate == ANISTATE_STAB)
-	{
-		if (self.frame != frameforname(self.modelindex, "Stab"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Stab");
-			self.anim_state = ANIM_SLASH;
-		}
-	}
+	else if (self.anistate == ANISTATE_STAB)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Stab"), ANISTATE_STAB, ANIM_SLASH);
 
-	if (self.anistate == ANISTATE_PUNCH)
-	{
-		if (self.frame != frameforname(self.modelindex, "Punch"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Punch");
-			self.anim_state = ANIM_PUNCH;
-		}
-	}
-	
-	if (self.anistate == ANISTATE_SMASH)
-	{
-		if (self.frame != frameforname(self.modelindex, "Smash"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Smash");
-			self.anim_state = ANIM_SMASH;
-		}
-	}
+	else if (self.anistate == ANISTATE_PUNCH)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Punch"), ANISTATE_PUNCH, ANIM_PUNCH);
 
-	if (self.anistate == ANISTATE_ARCHERY)
-	{
-		if (self.frame != frameforname(self.modelindex, "Archery"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Archery");
-			self.anim_state = ANIM_ARCHERY;
-		}
-	}
-	
-	if (self.anistate == ANISTATE_SIT)
-	{
-		if (self.frame != frameforname(self.modelindex, "Sit"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Sit");
-			self.anim_state = ANIM_SIT;
-		}
-	}
+	else if (self.anistate == ANISTATE_SMASH)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Smash"), ANISTATE_SMASH, ANIM_SMASH);
 
-	if (self.anistate == ANISTATE_CASTING)
-	{
-		if (self.frame != frameforname(self.modelindex, "Casting"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Casting");
-			self.anim_state = ANIM_CASTING;
-		}
-	}
+	else if (self.anistate == ANISTATE_ARCHERY)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Archery"), ANISTATE_ARCHERY, ANIM_ARCHERY);
 
-	if (self.anistate == ANISTATE_CASTAOE)
-	{
-		if (self.frame != frameforname(self.modelindex, "CastArea"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "CastArea");
-			self.anim_state = ANIM_CASTAOE;
-		}
-	}
+	else if (self.anistate == ANISTATE_SIT)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Sit"), ANISTATE_SIT, ANIM_SIT);
 
-	if (self.anistate == ANISTATE_CASTTARGET)
-	{
-		if (self.frame != frameforname(self.modelindex, "CastTarget"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "CastTarget");
-			self.anim_state = ANIM_CASTTARGET;
-		}
-	}
+	else if (self.anistate == ANISTATE_CASTING)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Casting"), ANISTATE_CASTING, ANIM_CASTING);
 
-	if (self.anistate == ANISTATE_CASTSELF)
+	else if (self.anistate == ANISTATE_CASTAOE)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "CastArea"), ANISTATE_CASTAOE, ANIM_CASTAOE);
+
+	else if (self.anistate == ANISTATE_CASTTARGET)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "CastTarget"), ANISTATE_CASTTARGET, ANIM_CASTTARGET);
+
+	else if (self.anistate == ANISTATE_CASTSELF)
 	{
-		if (self.frame != frameforname(self.modelindex, "CastSelf"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "CastSelf");
-			self.anim_state = ANIM_CASTSELF;
-		}
+		SetOtherPlayerAnim(frameforname(self.modelindex, "CastSelf"), ANISTATE_CASTSELF, ANIM_CASTSELF);
 		speed = 1.5;
 	}
 
-	if (self.anistate == ANISTATE_STUNNED)
-	{
-		if (self.frame != frameforname(self.modelindex, "Stunned"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Stunned");
-			self.anim_state = ANIM_STUNNED;
-		}
-	}
+	else if (self.anistate == ANISTATE_STUNNED)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Stunned"), ANISTATE_STUNNED, ANIM_STUNNED);
 
-	if (self.anistate == ANISTATE_IMPACT)
-	{
-		if (self.frame != frameforname(self.modelindex, "Impact"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Impact");
-			self.anim_state = ANIM_IMPACT;
-		}
-	}
+	else if (self.anistate == ANISTATE_IMPACT)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Impact"), ANISTATE_IMPACT, ANIM_IMPACT);
 
-	if (self.anistate == ANISTATE_DRINK)
+	else if (self.anistate == ANISTATE_DRINK)
 	{
-		if (self.frame != frameforname(self.modelindex, "Drink"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Drink");
-			self.anim_state = ANIM_DRINK;
-		}
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Drink"), ANISTATE_DRINK, ANIM_DRINK);
 		speed = 1.5;
 	}
-	
-	if (self.anistate == ANISTATE_AIRMELEE)
+
+	else if (self.anistate == ANISTATE_AIRMELEE)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "AirMelee"), ANISTATE_AIRMELEE, ANIM_AIRMELEE);
+
+	else if (self.anistate == ANISTATE_DODGE)
 	{
-		if (self.frame != frameforname(self.modelindex, "AirMelee"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "AirMelee");
-			self.anim_state = ANIM_AIRMELEE;
-		}
-	}
-	
-	if (self.anistate == ANISTATE_DODGE)
-	{
-		if (self.frame != frameforname(self.modelindex, "Dodge"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Dodge");
-			self.anim_state = ANIM_DODGE;
-			speed = 1.5;
-		}
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Dodge"), ANISTATE_DODGE, ANIM_DODGE);
+		speed = 1.5;
 	}
 
-	if (self.anistate == ANISTATE_STEPDODGE)
+	else if (self.anistate == ANISTATE_STEPDODGE)
 	{
-		if (self.frame != frameforname(self.modelindex, "StepDodge"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "StepDodge");
-			self.anim_state = ANIM_STEPDODGE;
-			speed = 1.5;
-		}
+		SetOtherPlayerAnim(frameforname(self.modelindex, "StepDodge"), ANISTATE_STEPDODGE, ANIM_STEPDODGE);
+		speed = 1.5;
 	}
 
-	if (self.anistate == ANISTATE_STEPCOUNTER)
+	else if (self.anistate == ANISTATE_STEPCOUNTER)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "StepCounter"), ANISTATE_STEPCOUNTER, ANIM_STEPCOUNTER);
+
+	else if (self.anistate == ANISTATE_BASH)
 	{
-		if (self.frame != frameforname(self.modelindex, "StepCounter"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "StepCounter");
-			self.anim_state = ANIM_STEPCOUNTER;
-		}
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Bash"), ANISTATE_BASH, ANIM_BASH);
+		speed = 1.5;
 	}
 
-	if (self.anistate == ANISTATE_BASH)
+	else if (self.anistate == ANISTATE_PARRY)
 	{
-		if (self.frame != frameforname(self.modelindex, "Bash"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Bash");
-			self.anim_state = ANIM_BASH;
-			speed = 1.5;
-		}
-	}
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Parry"), ANISTATE_PARRY, ANIM_PARRY);
 
-	if (self.anistate == ANISTATE_PARRY)
-	{
-		if (self.frame != frameforname(self.modelindex, "Parry"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Parry");
-			self.anim_state = ANIM_PARRY;
-			makevectors(self.angles);
-			pointparticles(PART_PARRY, self.origin + v_forward * 32 + v_up * self.view_ofs_z);
-		}
+		makevectors(self.angles);
+		pointparticles(PART_PARRY,
+			self.origin + v_forward * 32 + v_up * self.view_ofs_z);
+
 		speed = 1.25;
 	}
 
-	if (self.anistate == ANISTATE_JUMP)
+	else if (self.anistate == ANISTATE_JUMP)
 	{
-		if (self.frame != frameforname(self.modelindex, "Jump"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "Jump");
-			self.anim_state = ANIM_JUMP;
-		}
+		SetOtherPlayerAnim(frameforname(self.modelindex, "Jump"), ANISTATE_JUMP, ANIM_JUMP);
 		speed = 1.5;
 	}
 
-	if (self.anistate == ANISTATE_FISHCAST)
-	{
-		if (self.frame != frameforname(self.modelindex, "FishingCast"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "FishingCast");
-			self.anim_state = ANIM_FISHCAST;
-		}
-	}
+	else if (self.anistate == ANISTATE_FISHCAST)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "FishingCast"), ANISTATE_FISHCAST, ANIM_FISHCAST);
 
-	if (self.anistate == ANISTATE_FISHIDLE)
-	{
-		if (self.frame != frameforname(self.modelindex, "FishingIdle"))
-		{
-			self.frame1time = 0;
-			self.frame = frameforname(self.modelindex, "FishingIdle");
-			self.anim_state = ANIM_FISHIDLE;
-		}
-	}
+	else if (self.anistate == ANISTATE_FISHIDLE)
+		SetOtherPlayerAnim(frameforname(self.modelindex, "FishingIdle"), ANISTATE_FISHIDLE, ANIM_FISHIDLE);
 
-    speed *= frametime;
+	// ------------
+	// Frame timing
+	// ------------
 
-    if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
-        speed /= 2; // fix minimap slowdown
+	speed *= frametime;
 
-    self.frame1time += speed;
-    self.frame2time = self.frame1time;
+	if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+		speed /= 2;
+
+	self.frame1time += speed;
+	self.frame2time = self.frame1time;
 };
 
 //
