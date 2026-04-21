@@ -10,6 +10,8 @@ entity lockon_focus; // smoothed tracking entity
 float lockon_smoothness = 5; // higher = faster snapping
 vector lockon_angles;
 
+float(entity targ) Monster_Visible;
+
 // Utility
 float(vector a, vector b) vdot = { return a_x * b_x + a_y * b_y + a_z * b_z; };
 
@@ -171,7 +173,7 @@ void() CSQC_LockOn_Toggle =
 
 		float dot = vdot(forward, dir);
 		if (dot < LOCK_ON_FOV) continue;
-		if (!LockOn_Visible(e)) continue;
+		if (!Monster_Visible(e)) continue;
 
 		if (dist < best_dist)
 		{
@@ -193,7 +195,7 @@ void() CSQC_LockOn_Toggle =
 
 		float dot = vdot(forward, dir);
 		if (dot < LOCK_ON_FOV) continue;
-		if (!LockOn_Visible(e)) continue;
+		if (!Monster_Visible(e)) continue;
 
 		if (dist < best_dist)
 		{
@@ -248,7 +250,7 @@ void() CSQC_LockOn_Cycle =
 		vector dir = normalize(e.origin - self.origin);
 		float dot = vdot(forward, dir);
 		if (dot < LOCK_ON_FOV) continue;
-		if (!LockOn_Visible(e)) continue;
+		if (!Monster_Visible(e)) continue;
 		if (dot > best_dot)
 		{
 			best_dot = dot;
@@ -264,7 +266,7 @@ void() CSQC_LockOn_Cycle =
 		vector dir = normalize(e.origin - self.origin);
 		float dot = vdot(forward, dir);
 		if (dot < LOCK_ON_FOV) continue;
-		if (!LockOn_Visible(e)) continue;
+		if (!Monster_Visible(e)) continue;
 		if (dot > best_dot)
 		{
 			best_dot = dot;
