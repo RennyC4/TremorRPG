@@ -171,11 +171,6 @@ noref void() CSQC_WorldLoaded =
 	PART_ARROW_HITWALL = particleeffectnum("arrow_wallhit");
 };
 
-void(string rendererdescription) CSQC_RendererRestarted =
-{
-	localcmd("exec haze.cfg\n");
-};
-
 void() CSQC_DayNight_Update =
 {
 	// update entity lighting on world map client-side, SSQC -> CSQC use inverted abslight values for some reason
@@ -195,6 +190,11 @@ void() CSQC_DayNight_Update =
 
 		c.abslight = 255 - light;
 	}
+};
+
+void(string rendererdescription) CSQC_RendererRestarted =
+{
+	localcmd("exec haze.cfg\n");
 };
 
 // CALLED EVERY CLIENT RENDER FRAME
