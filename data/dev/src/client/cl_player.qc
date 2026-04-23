@@ -719,6 +719,7 @@ void() Player_Screen =
 			Draw_Stamina();
 			Draw_Exp();
 			Draw_InCombatorPVP();
+			Draw_PlayerAlerts();
 			if (autocvar_minimap != "off" && autocvar_minimap != "")
 			{
 				if (substring(world.model, -3, 3) == "hmp") // mini-map only on over world
@@ -1058,8 +1059,61 @@ void() FootstepThink =
     }
 };
 
+//
+// On screen Alerts (health / mana)
+//
+float lowhealth_warned;
+float lowmana_warned;
+
+void() Player_Alerts =
+{
+	float health = getstatf(STAT_HEALTH);
+	float max_health = getstatf(STAT_MAXHEALTH);
+	float mana = getstatf(STAT_MANA);
+	float max_mana = getstatf(STAT_MAXMANA);
+
+	float health_threshold = max_health * 0.25;
+	float mana_threshold = max_mana * 0.25;
+
+	// -------------------------
+	// LOW HEALTH ALERT
+	// -------------------------
+	if (health <= health_threshold)
+	{
+		if (!lowhealth_warned)
+		{
+			sound(self, CHAN_AUTO, "lowhealth.wav", 1, ATTN_NORM);
+			lowhealth_warned = TRUE;
+			lowhealth_display_start = time;
+			lowhealth_display_until = time + 3; // show for 3 seconds
+		}
+	}
+	else
+		lowhealth_warned = FALSE;
+
+	// -------------------------
+	// LOW MANA ALERT
+	// -------------------------
+	if (mana <= mana_threshold)
+	{
+		if (!lowmana_warned)
+		{
+			sound(self, CHAN_AUTO, "lowmana.wav", 1, ATTN_NORM);
+			lowmana_warned = TRUE;
+			lowmana_display_start = time;
+			lowmana_display_until = time + 3;
+		}
+	}
+	else
+		lowmana_warned = FALSE;
+};
+
 void() Player_Think =
 {
+	float player_loggedin = getstatf(STAT_LOGGEDIN);
+	if (!player_loggedin)
+		return;
+
 	if (self.flags & FL_ONGROUND)
 		PlayerOnGround = TRUE;
 	else
@@ -1069,6 +1123,8 @@ void() Player_Think =
 
 	if (self.health <= 0)
 		return;
+
+	Player_Alerts(); // sounds
 
 	float levitating = (self.levitate_finished > time);
 	float melee = (self.melee_finished > time);

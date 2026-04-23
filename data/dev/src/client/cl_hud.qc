@@ -375,6 +375,106 @@ void() Draw_ToolTip =
 	drawtextfield(tt_pos+[2.5,2.5], [tt_size[0],tt_size[1]], 3, tt_contents);
 };
 
+float lowhealth_display_until;
+float lowmana_display_until;
+float lowhealth_display_start;
+float lowmana_display_start;
+void() Draw_PlayerAlerts =
+{
+	vector screen;
+	screen_x = g_width;
+	screen_y = g_height;
+
+	float cx = screen_x * 0.5;
+	float cy = screen_y * 0.25;
+
+	float duration = 3;
+
+	// =========================================================
+	// LOW HEALTH
+	// =========================================================
+	if (time < lowhealth_display_until)
+	{
+		float t = (time - lowhealth_display_start) / duration;
+		t = bound(0, t, 1);
+
+		float fade = pow(1 - t, 2);
+		float shake = pow(1 - t, 2) * 1.5;
+
+		string msg = "LOW HEALTH";
+		vector size = '16 16 0';
+
+		float text_width = stringwidth(msg, 0, size);
+
+		vector pos;
+		pos_x = floor(cx - text_width * 0.5);
+		pos_y = floor(cy - 20);
+
+		pos_x += sin(time * 25) * shake;
+		pos_y += cos(time * 20) * shake;
+
+		// -------------------------
+		// ICON (above text)
+		// -------------------------
+		vector icon_pos;
+		icon_pos_x = pos_x + (text_width * 0.5) - 8; // center icon
+		icon_pos_y = pos_y - 28;
+
+		drawpic(icon_pos, "progs/lowhealth.png", '24 24 0', '1 1 1', fade, 0);
+
+		// shadow
+		vector shadow_pos;
+		shadow_pos_x = pos_x + 1;
+		shadow_pos_y = pos_y + 1;
+		drawstring(shadow_pos, msg, size, '0 0 0', fade, 0);
+
+		// main
+		drawstring(pos, msg, size, '1 0 0', fade, 0);
+	}
+
+	// =========================================================
+	// LOW MANA
+	// =========================================================
+	if (time < lowmana_display_until)
+	{
+		float t = (time - lowmana_display_start) / duration;
+		t = bound(0, t, 1);
+
+		float fade = pow(1 - t, 2);
+		float shake = pow(1 - t, 2) * 1.2;
+
+		string msg = "LOW MANA";
+		vector size = '16 16 0';
+
+		float text_width = stringwidth(msg, 0, size);
+
+		vector pos;
+		pos_x = floor(cx - text_width * 0.5);
+		pos_y = floor(cy);
+
+		pos_x += sin(time * 22) * shake;
+		pos_y += cos(time * 18) * shake;
+
+		// -------------------------
+		// ICON (above text)
+		// -------------------------
+		vector icon_pos;
+		icon_pos_x = pos_x + (text_width * 0.5) - 8;
+		icon_pos_y = pos_y - 28;
+
+		drawpic(icon_pos, "progs/lowmana.png", '24 24 0', '1 1 1', fade, 0);
+
+		// shadow
+		vector shadow_pos;
+		shadow_pos_x = pos_x + 1;
+		shadow_pos_y = pos_y + 1;
+		drawstring(shadow_pos, msg, size, '0 0 0', fade, 0);
+
+		// main
+		drawstring(pos, msg, size, '0 0.4 1', fade, 0);
+	}
+};
+
 void() Draw_CastingStat =
 {
 	float casting = getstatf(STAT_CASTING);
@@ -1102,7 +1202,6 @@ void() User_CharacterScreen =
 	//
 	// skill buttons for stat increases
 	//
-
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 	newpos = [-5, 5]; // reset newpos
