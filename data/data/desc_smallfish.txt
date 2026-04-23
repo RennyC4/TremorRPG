@@ -2,4 +2,5 @@
 
 A small fish, maybe once sold it'll find a better home
 
-Consume to regain a sliver of health and stamina
+Consume to regain a sliver of health and
+stamina
