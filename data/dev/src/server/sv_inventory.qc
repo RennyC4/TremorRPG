@@ -360,13 +360,18 @@ void(string itemname) CSEv_UseItem_s =
 
 	// IMPORTANT: Capital letters are considered in itemname string!
 
+	//
 	// Consumables
+	//
     if (itemname == "Health Potion")
 		CSEv_Player_UseItem_fs(0, itemname);
     if (itemname == "Lantern")
 		CSEv_Player_UseItem_fs(1, itemname);
     if (itemname == "Mana Potion")
 		CSEv_Player_UseItem_fs(2, itemname);
+	// Fish
+	if (itemname == "Small Fish")
+		CSEv_Player_UseItem_fs(4, itemname);
 
 	// Magic spells
 	if (itemname == "Spell - Thorn" || itemname == "Spell - Light Heal" || itemname == "Spell - Levitate")

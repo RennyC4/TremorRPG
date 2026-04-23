@@ -189,6 +189,7 @@ void() worldspawn =
 
 	precache_sound ("item/drop.wav");
 	precache_sound ("item/get.wav");
+	precache_sound ("item/eat.wav");
 
 	precache_sound ("magic/thorn_hit.wav");
 	precache_sound ("magic/thorn_misc.wav");
@@ -274,7 +275,7 @@ void() daynight_think =
 		// update entity lighting on world map server-side
 		for (entity c = world;(c = findfloat(c, worldlight, TRUE));)
 		{
-			c.drawflags = 7;
+			c.drawflags |= 7;
 			if (timeofday == TIME_DAY)
 				c.abslight = 1;
 			else if (timeofday == TIME_NIGHT)

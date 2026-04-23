@@ -198,9 +198,25 @@ void(float id, string itemname) CSEv_Player_UseItem_fs =
 		else
 			sprint(self, PRINT_HIGH, "You do not posses ", strcat(itemname, " \n"));
 	}
-	else if (id == 3) // Add magic spell to magic screen
+	else if (id == 3) // Add magic spell to magic screen			RemoveFromInventory(self, itemname, 1);	
 	{
 		LearnSpell(itemname);
+		RemoveFromInventory(self, itemname, 1);
+	}
+	else if (id == 4) // Small fish - consumable
+	{
+		self.health += 5;
+		self.stamina += 5;
+
+		if (self.health > self.max_health) // cap
+			self.health = self.max_health;
+		if (self.stamina >= 100) // cap
+			self.stamina = 100;
+
+		stuffcmd (self, sprintf("play %s\n", "eat.wav")); // sound
+		string eventlog_print = (strcat("^5", itemname, ":^2 +5 HP +5 Stam"));
+		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+
 		RemoveFromInventory(self, itemname, 1);
 	}
 	else

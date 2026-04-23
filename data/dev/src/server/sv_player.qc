@@ -461,6 +461,7 @@ void() Player_DeveloperBind =
 
 		AddToInventory(self, "Health Potion", 1);
 		AddToInventory(self, "Mana Potion", 1);
+		AddToInventory(self, "Small Fish", 10); // debug item
 	}
 };
 
