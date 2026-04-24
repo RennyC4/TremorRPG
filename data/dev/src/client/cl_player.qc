@@ -19,6 +19,7 @@ void() FootstepThink;
 .entity offhand_vfx;
 .entity arrow_vfx;
 .entity armor_vfx;
+.entity helmet_vfx;
 
 string nightskybox = "skyworld_star";
 string dayskybox = "";
@@ -385,6 +386,92 @@ void() Skeleton_ObjectDraw =
 
 		remove(self.armor_vfx);
 		self.armor_vfx = world;
+	}
+	
+	//
+	// Draw helmet
+	//
+
+	if (self.helmetname != "")
+	{
+		if (!self.helmet_vfx)
+		{
+			self.helmet_vfx = spawn();
+			self.helmet_vfx.owner = self;
+			self.helmet_vfx.worldlight = TRUE;
+		}
+		else
+		{
+			org = gettaginfo(self, gettagindex(self, "mixamorig:Head"));
+			offset = '0 0 0';  // offset relative to the bone
+
+			//
+			// Models to draw
+			//
+
+			if (self.helmetname == "Bandit Hood")
+			{
+				setmodel(self.helmet_vfx, "models/helmet0.glb");
+				if (gender == "Female")
+				{
+					self.helmet_vfx.scale = 0.88;
+					offset = '0 3 3';  // offset relative to the bone
+				}
+			}
+		}
+
+		// local offset into world space
+		org += v_forward * offset_x;
+		org += v_right   * offset_y;
+		org += v_up      * offset_z;
+
+		self.helmet_vfx.origin = org;
+
+		// angles
+		ang = vectoangles(v_forward, v_up);
+		self.helmet_vfx.angles = ang;
+
+		// prevent player model intrusion
+		if (self.entnum == player_localentnum)
+		{
+			if (!camera_mode && thirdcam_dist < 30) // First-person mode
+			{
+				// In first-person: use world layer, hide model from camera
+				self.helmet_vfx.drawmask = MASK_ENGINE;
+				self.helmet_vfx.renderflags |= RF_EXTERNALMODEL;
+			}
+			else // Third-person mode
+			{
+				if (camera_gdist > 24) // Normal distance: show helmet
+				{
+
+					self.helmet_vfx.drawmask = MASK_ENGINE;
+					self.helmet_vfx.renderflags &= ~RF_EXTERNALMODEL;
+				}
+				else // Too close: completely hide helmet
+				{
+					self.helmet_vfx.drawmask = 0; // <- hide entity
+					self.helmet_vfx.renderflags &= ~RF_EXTERNALMODEL;
+				}
+			}
+		}
+
+		// Stealth causes objects to alpha, same with monsters running back to their spawn point
+		if (self.crouch || self.ai_mode == AI_RUNBACK)
+		{
+			self.helmet_vfx.effects = self.effects;
+			self.helmet_vfx.alpha = self.alpha;
+		}
+		else
+			self.helmet_vfx.effects = 0;
+	}
+	else if (self.helmet_vfx)
+	{
+		if (self.helmet_vfx.skeletonindex)
+			skel_delete(self.helmet_vfx.skeletonindex);
+
+		remove(self.helmet_vfx);
+		self.helmet_vfx = world;
 	}
 };
 
@@ -1124,6 +1211,8 @@ void() Player_Alerts =
 
 void() Player_Think =
 {
+	//self.helmetname = "Bandit Hood"; // debug
+
 	float player_loggedin = getstatf(STAT_LOGGEDIN);
 	if (!player_loggedin)
 		return;
