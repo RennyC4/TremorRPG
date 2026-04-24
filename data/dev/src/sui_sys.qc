@@ -1078,7 +1078,6 @@ void(vector pos, vector size, string text, vector color, float alpha, float flag
 	drawstring(pos, text, size, color, alpha, flags);
 };
 
-
 void(float index, vector click_ratios) sui_noop = {};
 void(float value) sui_slider_noop = {};
 

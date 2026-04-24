@@ -2202,6 +2202,7 @@ string LOGIN_NAME; // users login name
 string LOGIN_PASSWORD; // users password
 string LOGIN_GENDER; // create gender
 float cursor;
+float cursor_mode; // on or off
 entity csqcplayerent;
 string nameforplayerent;
 entity ZoneName_alpha;

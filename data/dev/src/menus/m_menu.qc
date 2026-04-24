@@ -119,6 +119,7 @@ struct name_command {
 
 name_command bindlist[] = 
 {
+	{ "Cursor Toggle", "toggle_cursor" },
 	{ "Forward", "+forward" },
 	{ "Back", "+back" },
 	{ "Left", "+moveleft" },
@@ -134,7 +135,7 @@ name_command bindlist[] =
 	{ "Sneak", "toggle_crouch" },
 	{ "Use", "+button3" },
 	{ "Block", "+button4" },
-	{ "Camera", "toggle_camera" },
+	{ "Camera Toggle", "toggle_camera" },
 	{ "Target", "target" },
 	{ "Cycle Target", "targetcycle" },
 	{ "Player List", "+showscores" },

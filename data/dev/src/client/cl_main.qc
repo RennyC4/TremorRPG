@@ -137,6 +137,7 @@ noref void(float apiver, string enginename, float enginever) CSQC_Init =
 
 noref void() CSQC_WorldLoaded =
 {
+	registercommand("toggle_cursor", "Turns mouse cursor on or off\n");
 	registercommand("+showscores", "Show scoreboard");
 	registercommand("show_character", "Displays character information screen\n");
 	registercommand("show_inventory", "Displays inventory information screen\n");
@@ -327,7 +328,7 @@ float(string strCommand) CSQC_ConsoleCommand =
 	float player_menu = getstatf(STAT_MENU);
 	float atbonfire = getstatf(STAT_BONFIRE);
 
-	if (!player_menu && !atbonfire)
+	if (!player_menu && !atbonfire && !cursor_mode)
 	{
 		// Tremor Jump / Dodge / Climb
 		if (argv(0) == "+t_jump")
@@ -384,7 +385,16 @@ float(string strCommand) CSQC_ConsoleCommand =
 		showscores = TRUE;
 	else if (argv(0) == "-showscores")
 		showscores = FALSE;
-
+	if (argv(0) == "toggle_cursor")
+	{
+		if (!player_menu)
+		{
+			if (!cursor_mode)
+				cursor_mode = TRUE;
+			else
+				cursor_mode = FALSE;
+		}
+	}
 	return FALSE;
 };
 
@@ -401,8 +411,8 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent =
 	float health = getstatf(STAT_HEALTH);
 	float atbonfire = getstatf(STAT_BONFIRE);
 
-	// Send input to UI if a menu is active
-	if (player_menu > 1)
+	// Send input to UI if a menu is active, or cursor mode is toggled on
+	if (player_menu > 1 || cursor_mode)
 		sui_input_event(evtype, scanx, chary, devid);
 
 	// Normal gameplay input handling

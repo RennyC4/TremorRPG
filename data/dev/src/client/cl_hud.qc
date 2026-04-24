@@ -611,6 +611,19 @@ void() Draw_ChatLog =
     sui_pop_frame();
 };
 
+void() Draw_HUDIcons =
+{
+	vector pos = [0, -145];
+	vector size = [32, 32];
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
+	my_button_gfx("button_char", pos, size, "progs/char.png") ? sendevent("PlayerShowStats", "") : 0; // avatar button
+	pos_x += 34;
+	my_button_gfx("button_magic", pos, size, "progs/magic.png") ? sendevent("PlayerShowMagic", "") : 0; // magic
+	pos_x += 34;
+	my_button_gfx("button_inventory", pos, size, "progs/inventory.png") ? sendevent("PlayerShowInventory", "") : 0; // inventory
+};
+
 void() Draw_EventLog =
 {
 	vector pos = [0, -45];
@@ -1343,7 +1356,7 @@ void() User_InventoryScreen =
 	float get_h = getstatf(STAT_HEALTH);
 	if (get_h <= 0)
 		return;
-
+		
 	// darken screen
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);

@@ -28,6 +28,50 @@ float(string id, vector pos, vector size, string text) my_button =
 	return sui_is_clicked(id);
 };
 
+float(string id, vector pos, vector size, string image) my_button_gfx =
+{
+	sui_push_frame(pos, size);
+
+	// INPUT STATE (GATED)
+	float hovered = cursor_mode ? sui_is_hovered(id) : 0;
+	float held    = cursor_mode ? sui_is_held(id)    : 0;
+
+	if (!cursor_mode)
+		held = 0;
+
+	// SCALE
+	float scale = 1;
+
+	if (held)
+		scale = 0.95;
+
+	// VISUAL RESPONSE
+	vector icon_color = '1 1 1';
+	float icon_alpha = 1;
+
+	if (hovered)
+		icon_color = '1.25 1.25 1.25';
+
+	if (held)
+		icon_color = '0.9 0.9 0.9';
+
+	vector drawsize = size * scale;
+	vector offset = (size - drawsize) * 0.5;
+
+	// DRAW ICON
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	sui_pic(offset, drawsize, image, icon_color, icon_alpha, 0);
+
+	// INPUT (DISABLED IF NO CURSOR)
+	if (cursor_mode)
+		sui_action_element([0, 0], size, id, sui_noop);
+
+	sui_pop_frame();
+
+	// also gate click so it doesn't fire on toggle-off frame
+	return cursor_mode ? sui_is_clicked(id) : 0;
+};
+
 void(string id, vector pos, vector size, float maxlen, __inout string text, __inout float cursor, float mask) text_input_control =
 {
     vector textsize = [size_y - 4, size_y - 4];

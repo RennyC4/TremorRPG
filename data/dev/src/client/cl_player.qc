@@ -655,6 +655,7 @@ void() Player_Screen =
 {
 	float player_loggedin = getstatf(STAT_LOGGEDIN);
 	float player_menu = getstatf(STAT_MENU);
+
 	if (player_menu > 0)
 	{
 		setcursormode(TRUE,"gfx/xhair", [5, 5], cvar("vid_conautoscale")); // enable mouse cursor when menus are active
@@ -671,15 +672,23 @@ void() Player_Screen =
 		}
 
 		if (player_menu == MENU_CHARACTER)
+		{
 			User_CharacterScreen();
+			Draw_HUDIcons();
+			Draw_EventLog();
+		}
 		if (player_menu == MENU_INVENTORY)
 		{
 			User_InventoryScreen();
+			Draw_HUDIcons();
+			Draw_EventLog();
 			Draw_ToolTip();
 		}
 		if (player_menu == MENU_MAGIC)
 		{
 			User_MagicScreen();
+			Draw_HUDIcons();
+			Draw_EventLog();
 			Draw_ToolTip();
 		}
 		if (player_menu == MENU_DIALOGUE)
@@ -693,6 +702,7 @@ void() Player_Screen =
 		{
 			User_NPCBanking();
 		}
+		
 	}
 	else // Regular gameplay
 	{
@@ -712,6 +722,7 @@ void() Player_Screen =
 		Draw_NameTag_ChatBubble();
 		if (!player_idle && health > 0)
 		{
+			Draw_HUDIcons();
 			Draw_EventLog();
 			Draw_ChatLog();
 			Draw_Health();
@@ -817,11 +828,14 @@ void() Player_Screen =
 
 			Draw_NPCUse = FALSE;
 		}
-
+			
 		if (time - last_input_time > idle_threshold)
 			player_idle = TRUE; // turn on camera orbit
 
-		setcursormode(FALSE,"", 0, 0);
+		if (!cursor_mode)
+			setcursormode(FALSE,"", 0, 0);
+		else
+			setcursormode(TRUE,"gfx/xhair", [5, 5], cvar("vid_conautoscale")); // enable mouse by user
 	}
 };
 
