@@ -650,17 +650,20 @@ void() Draw_InCombatorPVP =
 	float incombat = getstatf(STAT_INCOMBAT);
 	float pvp = getstatf(STAT_PVP);
 
-	vector pos = [2.5, (g_height - 182.5)];
+	vector pos = [195, -145];
 	vector size = [35, 35];
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
 
 	if (!pvp || pvp == 2)
 	{
 		if (incombat) // only show when in combat
-			drawpic (pos, "progs/combat.png", size, '1 1 1', 1, 0);
+			sui_pic(pos, size, "progs/combat.png", '1 1 1', 1, 0);
 	}
 	else if (pvp == 1)
-		drawpic (pos, "progs/combat.png", size, '1 .25 .25', 1, 0); // PVP icon
+		sui_pic(pos, size, "progs/combat.png", '1 .25 .25', 1, 0); // PVP icon
 };
+
 
 //
 // Draw Health
