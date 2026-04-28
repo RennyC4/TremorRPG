@@ -724,7 +724,7 @@ void() Player_Animate =
     // -----------------------------
     // Attack Animation
     // -----------------------------
-    if (self.anim_attacking)
+    if (self.anim_attacking || self.anistate == ANISTATE_PUNCH || self.anistate == ANISTATE_SLASH || self.anistate == ANISTATE_STAB || self.anistate == ANISTATE_SMASH)
     {
 		if (self.anim_state != ANIM_SLASH && self.anim_state != ANIM_STAB && self.anim_state != ANIM_PUNCH && self.anim_state != ANIM_SMASH && self.anim_state != ANIM_FISHCAST) // && self.anim_state != ANIM_ARCHERY)
 		{
