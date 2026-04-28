@@ -159,7 +159,11 @@ float did_autofill;
 
 void() User_LoginScreen =
 {
-    vector pos = [0, 0];
+	// Draw background
+	vector bg_size = [g_width, g_height];
+	sui_pic([0,0], bg_size, "textures/login.jpg", '0.5 0.5 0.5', 1, 0);
+
+    vector pos = [40, -45];
     vector size = [360, 160];
 
     // Auto-fill last login ONCE
@@ -169,16 +173,17 @@ void() User_LoginScreen =
 		did_autofill = TRUE;
 	}
 
-    sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+    sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
     sui_push_frame(pos, size);
 
     sui_fill([0, 0], size, MENU_BG, 0.75, 0);
     sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
-    sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-    sui_pic(pos+[0,-90], [214,115.5], "textures/logo2.png", [1,1,1], 1, 0);
+	// background
+    sui_pic(pos + [15, -125], [214,115.5], "textures/logo2.png", [1,1,1], 1, 0);
 
     sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text([110, 10], MENU_TEXT_MEDIUM, "Character Information", '0 1 1', 1, 0);
     sui_text([10, 50], MENU_TEXT_SMALL, "Name", MENU_TEXT_MEDIUM, 1, 0);
     sui_text([10, 75], MENU_TEXT_SMALL, "Password", MENU_TEXT_MEDIUM, 1, 0);
 
@@ -186,10 +191,9 @@ void() User_LoginScreen =
     sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
     my_button("login_login", [0, size_y - 65], [size_x / 2, 20], "Login") ? User_ResumeCharacter(FALSE) : 0;
     my_button("login_lastlogin", [size_x / 2, size_y - 65], [size_x / 2, 20], "Use Last Login") ? User_ResumeCharacter(TRUE) : 0;
-    my_button("login_newchar", [0, size_y], [size_x, 40], "New Character") ? User_NewCharacter(LOGIN_GENDER) : 0;
+    my_button("login_newchar", [0, size_y], [size_x, 40], "Create New Character") ? User_NewCharacter(LOGIN_GENDER) : 0;
 
     sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-    my_button("login_quit", [g_width / 2.18, g_height / 2.25], [40, 40], "Disconnect") ? localcmd("disconnect\n") : 0;
 
     // Name input
     sui_fill([-15, -25], '240 25 0', MENU_BG_DARK, 0.75, 0);
@@ -202,12 +206,16 @@ void() User_LoginScreen =
     sui_border_box([-15, 0], '240 25 0', 2, MENU_BORDER, 0.3, 0);
 
     // New character section
-    sui_text([0, 45], MENU_TEXT_SMALL, "New Character", MENU_TEXT_MEDIUM, 1, 0);
+    sui_text([0, 45], MENU_TEXT_SMALL, "New Character", '0 1 1', 1, 0);
 
     my_button("login_male", [-30, 65], [50, 25], "Male") ? SetGender(0) : 0;
     my_button("login_female", [30, 65], [50, 25], "Female") ? SetGender(1) : 0;
 
     sui_pop_frame();
+
+	vector pos_dc = [0, 0];
+    sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
+    my_button("login_quit", pos_dc, [40, 40], "Disconnect") ? localcmd("disconnect\n") : 0;
 
     // MOTD
     if (motd != "")
