@@ -1156,8 +1156,17 @@ void() FootstepThink =
 		}
 		else
 		{
-			sound(self, CHAN_AUTO, s, 0.25, ATTN_NORM); // water sounds need CHAN_AUTO
-			self.nextfootstep_finished = time + 0.35;
+			
+			if (self.crouch)
+			{
+				sound(self, CHAN_AUTO, s, 0.1, ATTN_NORM); // water sounds need CHAN_AUTO
+				self.nextfootstep_finished = time + 0.5;
+			}
+			else
+			{
+				sound(self, CHAN_AUTO, s, 0.25, ATTN_NORM); // water sounds need CHAN_AUTO
+				self.nextfootstep_finished = time + 0.35;
+			}
 		}
     }
 };

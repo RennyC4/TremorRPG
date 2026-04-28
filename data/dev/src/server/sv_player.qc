@@ -745,10 +745,16 @@ void() WaterUpdate =
 {
 	if (self.waterlevel > 1)
 	{
+		if (self.lantern)
+		{
+			sound(self, CHAN_AUTO, "lantern.wav", 0.25, ATTN_NORM);
+			sprint(self, PRINT_HIGH, strcat("Lantern is unlit\n"));
+			self.effects &= ~EF_BRIGHTLIGHT;
+			self.lantern = FALSE;
+		}
+
 		if (self.waterlevel >= 3)
 		{
-			if (self.lantern)
-				self.lantern = FALSE;
 
 			if (self.underwatersfx_finished < time)
 			{

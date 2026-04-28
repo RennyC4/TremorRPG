@@ -156,23 +156,28 @@ void(float id, string itemname) CSEv_Player_UseItem_fs =
 	}
 	else if (id == 1) // lantern
 	{
-		if (!self.bonfire)
+		if (!self.waterlevel)
 		{
-			if (!self.lantern)
+			if (!self.bonfire)
 			{
-				sound(self, CHAN_AUTO, "lantern.wav", 0.5, ATTN_NORM);
-				sprint(self, PRINT_HIGH, strcat(itemname, " is lit\n"));
-				self.effects |= EF_BRIGHTLIGHT;
-				self.lantern = TRUE;
-			}
-			else
-			{
-				sound(self, CHAN_AUTO, "lantern.wav", 0.25, ATTN_NORM);
-				sprint(self, PRINT_HIGH, strcat(itemname, " is unlit\n"));
-				self.effects &= ~EF_BRIGHTLIGHT;
-				self.lantern = FALSE;
+				if (!self.lantern)
+				{
+					sound(self, CHAN_AUTO, "lantern.wav", 0.5, ATTN_NORM);
+					sprint(self, PRINT_HIGH, strcat(itemname, " is lit\n"));
+					self.effects |= EF_BRIGHTLIGHT;
+					self.lantern = TRUE;
+				}
+				else
+				{
+					sound(self, CHAN_AUTO, "lantern.wav", 0.25, ATTN_NORM);
+					sprint(self, PRINT_HIGH, strcat(itemname, " is unlit\n"));
+					self.effects &= ~EF_BRIGHTLIGHT;
+					self.lantern = FALSE;
+				}
 			}
 		}
+		else
+			sprint(self, PRINT_HIGH, strcat(itemname, " cannot be lit underwater\n"));
 	}
 	else if (id == 2) // mana potion
 	{
