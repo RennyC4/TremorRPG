@@ -1121,6 +1121,8 @@ void() FootstepThink =
 		return;
 	if (self.anistate == ANISTATE_STEPCOUNTER || self.anistate == ANISTATE_DODGE)
 		return;
+	if (self.levitate_finished > time)
+		return;
 
 	string s;
     vector vel = self.velocity;
