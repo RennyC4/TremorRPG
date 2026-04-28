@@ -28,7 +28,7 @@ float(string id, vector pos, vector size, string text) my_button =
 	return sui_is_clicked(id);
 };
 
-float(string id, vector pos, vector size, string image) my_button_gfx =
+float(string id, vector pos, vector size, string image, string label) my_button_gfx =
 {
 	sui_push_frame(pos, size);
 
@@ -61,6 +61,23 @@ float(string id, vector pos, vector size, string image) my_button_gfx =
 	// DRAW ICON
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_pic(offset, drawsize, image, icon_color, icon_alpha, 0);
+
+	// TOOL-TIP
+	if (hovered)
+	{
+		vector tip_size = [32, 12];
+		vector tip_pos;
+
+		// center above button
+		tip_pos_x = (size_x * 0.5) - (tip_size_x * 0.5);
+		tip_pos_y = -tip_size_y - 12;
+
+		sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+		sui_fill(tip_pos, tip_size, MENU_BG, 0.85, 0);
+		sui_border_box(tip_pos, tip_size, 1, MENU_BORDER, 0.6, 0);
+
+		sui_text(tip_pos, [8,8], label, '1 1 1', 1, 0);
+	}
 
 	// INPUT (DISABLED IF NO CURSOR)
 	if (cursor_mode)
