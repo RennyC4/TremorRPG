@@ -7,14 +7,14 @@ void() trigger_zone_touch =
 	// Monsters do not cross territories or enter towns - Force runback behavior
 	if (other.flags & FL_MONSTER && other.ai_mode != AI_RUNBACK)
     {
-		other.goalentity = other.ai_runback_temp;
-
-        if (!other.goalentity)
-            print("error in monster ai (trigger)\n");
-
         other.enemy = world;
         other.ai_mode = AI_RUNBACK;
         other.anistate = ANISTATE_RUN;
+
+		// clear movement states
+		other.avoid_dir = 0;
+		other.avoid_time = 0;
+		other.velocity = '0 0 0';
 
         return; // don't process player logic
     }

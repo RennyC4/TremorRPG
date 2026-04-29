@@ -154,7 +154,8 @@ void() set_ally =
 	self.flags |= FL_FINDABLE_NONSOLID;
 	self.frame = 1; // Animation will be done CSQC-side
 
-	ally_ai_spawnrunback();
+	//obsolete
+	//ally_ai_spawnrunback();
 
 	self.think = ally_ai_think;
 	self.nextthink = time + 0.1 + random()*1; // stagger start think

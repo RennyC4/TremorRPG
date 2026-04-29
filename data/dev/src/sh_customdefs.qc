@@ -8,9 +8,12 @@ void(float speed) TurnToTarget =
 	vector dir, target_angles;
 	float turn_speed, diff;
 
-	if (self.goalentity)
+	if (self.enemy || self.goalentity)
 	{
-		dir = normalize(self.goalentity.origin - self.origin);
+		if (self.enemy)
+			dir = normalize(self.enemy.origin - self.origin);
+		else if (self.goalentity)
+			dir = normalize(self.goalentity.origin - self.origin);
 		target_angles = vectoangles(dir);
 	}
 	else

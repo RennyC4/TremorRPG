@@ -42,17 +42,6 @@ void() ally_ai_melee =
 
 void() ally_ai_move = {};
 
-void() ally_ai_spawnrunback =
-{
-	if (!self.ai_runback_temp)
-	{
-		self.ai_runback_temp = spawn();
-		self.ai_runback_temp.owner = self;
-		setmodel(self.ai_runback_temp, string_null);
-		setorigin(self.ai_runback_temp, self.origin);
-	}
-};
-
 // main ally ai execution function
 void() ally_ai_update_state =
 {

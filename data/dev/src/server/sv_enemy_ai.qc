@@ -34,7 +34,7 @@ float	RANGE_FAR				= 4;
 void() monster_death =
 {
 	self.angles_x = 0;
-	self.goalentity = self.enemy = world; // reset targets
+	self.enemy = world; // reset targets
 	self.velocity = '0 0 0'; // slide fix
 	self.solid = SOLID_NOT;
 	self.deadflag = DEAD_DEAD;
@@ -297,13 +297,12 @@ void() monster_ai_update_state =
     // ---------------------------
     if (self.waterlevel >= 2 && self.ai_mode != AI_RUNBACK)
     {
-        self.goalentity = self.ai_runback_temp;
         self.enemy = world;
         self.ai_mode = AI_RUNBACK;
 		self.avoid_dir = 0;
 		self.avoid_time = 0;
         self.anistate = ANISTATE_RUN;
-        self.nextthink = time + 0.1;
+
         return;
     }
 
@@ -320,7 +319,6 @@ void() monster_ai_update_state =
         else
             self.anistate = ANISTATE_STUNNED;
 
-        self.nextthink = time + 0.1;
         return;
     }
     self.impact_frame = time + 1; // impact frame timing
@@ -382,7 +380,7 @@ void() monster_ai_update_state =
                 if (self.noise)
                     sound(self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
 
-                self.goalentity = self.enemy = targ;
+                self.enemy = targ;
                 self.ai_mode = AI_CHASE;
                 self.anistate = ANISTATE_RUN;
 
@@ -403,12 +401,11 @@ void() monster_ai_update_state =
 	if (self.enemy && self.enemy != world)
 		ai_move_dist_check *= 2; // double leash range when in combat
 
+
     if (self.ai_mode != AI_RUNBACK && b >= ai_move_dist_check)
     {
-        self.goalentity = self.ai_runback_temp;
-        if (!self.goalentity)
-			print("error in monster ai\n");
         self.enemy = world;
+
         self.ai_mode = AI_RUNBACK;
 		self.avoid_dir = 0;
 		self.avoid_time = 0;
@@ -421,7 +418,8 @@ void() monster_ai_update_state =
     if (self.ai_mode == AI_RUNBACK)
     {
 		self.enemy = world;
-        vector target = self.ai_runback_temp.origin;
+        //vector target = self.ai_runback_temp.origin;
+		vector target = self.saveorigin;
         float dist = vlen(self.origin - target);
 
         if (dist > 75)
@@ -466,8 +464,9 @@ void() monster_ai_update_state =
             self.effects |= EF_ADDITIVE;
 
             self.enemy = world;
-            self.goalentity = self.ai_runback_temp;
-            self.movetype = MOVETYPE_NOCLIP;
+
+			if (self.movetype != MOVETYPE_NOCLIP)
+				self.movetype = MOVETYPE_NOCLIP;
 
             if (self.health != self.max_health)
                 self.health = self.max_health;
@@ -478,14 +477,14 @@ void() monster_ai_update_state =
             tracebox(self.saveorigin, self.mins, self.maxs, self.saveorigin, MOVE_NORMAL, self);
             if (trace_startsolid || trace_fraction < 1)
             {
-                self.nextthink = time + 1;
                 self.think = monster_ai_think;
+                self.nextthink = time + 1;
                 return;
             }
 
             setorigin(self, self.saveorigin + v_up * 5);
             self.enemy = world;
-            self.goalentity = world;
+
             self.movetype = MOVETYPE_STEP;
 			self.takedamage = DAMAGE_AIM;
 
@@ -497,17 +496,14 @@ void() monster_ai_update_state =
             self.effects &= ~EF_ADDITIVE;
             self.velocity = '0 0 0';
             movetofloor(self);
-			Monster_SendFlags(FALSE);    // delta compare
-			NPC_CommitState(self);   // snapshot
         }
-		self.nextthink = time + 0.1;
 		return;
     }
 
 	// ---------------------------
 	// Combat & Defensive Behavior
 	// ---------------------------
-	if (self.goalentity)
+	if (self.enemy)
 	{
 		self.stamina = 100; // needed to pass some combat checks
 
@@ -655,9 +651,6 @@ void() monster_ai_update_state =
     {
         self.angles_x = 0;
         self.oldenemy = self.enemy;
-        self.goalentity = self.ai_runback_temp;
-        if (!self.goalentity)
-            print("error in monster ai\n");
 
         self.enemy = world;
         self.ai_mode = AI_RUNBACK;
@@ -665,12 +658,11 @@ void() monster_ai_update_state =
 		self.avoid_time = 0;
         self.anistate = ANISTATE_RUN;
     }
-    //self.nextthink = time + 0.1;
 };
 
 void() monster_ai_think =
 {
-    monster_ai_update_state();   // ALL logic + movement
+    monster_ai_update_state();   // Monster logic + movement
     Monster_SendFlags(FALSE);    // delta compare
     NPC_CommitState(self);   // snapshot
 

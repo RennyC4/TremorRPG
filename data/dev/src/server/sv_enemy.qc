@@ -123,19 +123,6 @@ void() monster_respawn =
 	Monster_SendFlags(TRUE); // Send full delta snapshot
 };
 
-void() monster_ai_spawnrunback =
-{
-	if (!self.ai_runback_temp)
-	{
-		self.ai_runback_temp = spawn();
-		self.ai_runback_temp.owner = self;
-		setmodel(self.ai_runback_temp, string_null);
-		setorigin(self.ai_runback_temp, self.origin);
-		setsize(self.ai_runback_temp, self.mins, self.maxs);
-		movetofloor(self.ai_runback_temp);
-	}
-};
-
 void() set_monster =
 {
 	if (self.model)
@@ -183,9 +170,8 @@ void() set_monster =
 
 	self.flags |= FL_FINDABLE_NONSOLID;
 	
-	movetofloor(self);
-	monster_ai_spawnrunback();
-
+	movetofloor(self); 
+	
 	self.think = monster_ai_think;
 	self.nextthink = time + 0.1 + random()*1; // stagger start think
 	
