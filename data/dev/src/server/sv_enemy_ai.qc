@@ -44,8 +44,8 @@ void() monster_death =
 
 	self.think = monster_respawn;
 	self.nextthink = time + self.respawn_finished;
-	Monster_SendFlags(FALSE); // Send delta snapshot
-	NPC_CommitState(self);   // snapshot
+    Monster_SendFlags(FALSE);    // delta compare
+    NPC_CommitState(self);   // snapshot
 };
 
 void() PitchToTarget =
@@ -497,8 +497,8 @@ void() monster_ai_update_state =
             self.effects &= ~EF_ADDITIVE;
             self.velocity = '0 0 0';
             movetofloor(self);
-			//Monster_SendFlags(FALSE);
-			//NPC_CommitState(self);   // snapshot
+			Monster_SendFlags(FALSE);    // delta compare
+			NPC_CommitState(self);   // snapshot
         }
 		self.nextthink = time + 0.1;
 		return;
