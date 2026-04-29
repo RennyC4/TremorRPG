@@ -918,6 +918,11 @@ string(float i) SkillName =
 		case 15: return "Climbing";
 		case 16: return "Swimming";
 		case 17: return "Acrobatics";
+
+		// passive skills
+		case 18: return "Mining";
+		case 19: return "Fishing";
+		case 20: return "Wood Cutting";
 	}
 	return "Unknown";
 };
@@ -944,6 +949,11 @@ float(float i) SkillValue =
 		case 15: return getstatf(STAT_SKILL_CLIMB);
 		case 16: return getstatf(STAT_SKILL_SWIM);
 		case 17: return getstatf(STAT_SKILL_ACROBATIC);
+
+		// passive skills
+		case 18: return getstatf(STAT_MINING);
+		case 19: return getstatf(STAT_FISHING);
+		case 20: return getstatf(STAT_WOODCUTTING);
 	}
 	return 0;
 };
@@ -1172,24 +1182,40 @@ void() User_SkillsScreen =
 	sui_text([0, -15], MENU_TEXT_MEDIUM, "^2Skills", MENU_TEXT_1, 1, 0);
 
 	float i;
-	for (i = 0; i < 18; i++)
+	float MAX_SKILLS = 21;
+	for (i = 0; i < MAX_SKILLS; i++)
 	{
 		string sname = SkillName(i);
 		float sval = SkillValue(i);
+		string sval_str = sprintf("%.1f", sval);
 
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-		sui_text(row, MENU_TEXT_SMALL,
-			strcat("^5", sname, ": ^7", ftos(sval)),
-			MENU_TEXT_1, 1, 0);
+		float is_lastactive = (i == 17); // we do a gap here
+		float is_passive = (i > 17);
+		string col;
 
-		if (bonfire && skillpoints > 0)
+		if (is_passive)
+		{
+			col = "^8"; // dull grey / muted
+			sui_text(row, MENU_TEXT_SMALL, strcat(col, sname, ": ^7", sval_str), MENU_TEXT_1, 1, 0);
+		}
+		else
+		{
+			col = "^5"; // your normal highlight color
+			sui_text(row, MENU_TEXT_SMALL, strcat(col, sname, ": ^7", ftos(sval)), MENU_TEXT_1, 1, 0);
+		}
+
+		if (bonfire && skillpoints > 0 && !is_passive)
 		{
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 			my_button(strcat("sp_", ftos(i)), row, [25, 10], "+", strcat("^3", sname))
 				? sendevent("User_AddSkillPoint", "f", i)
 				: 0;
 		}
+
+		if (is_lastactive) // do gap after last active skill
+			row_y += 12;
 
 		row_y += 10;
 	}
