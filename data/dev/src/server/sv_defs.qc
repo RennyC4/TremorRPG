@@ -2156,8 +2156,8 @@ const float TIME_NIGHT = 3;
 .float last_alpha;
 .string last_displayname;
 .float last_speed;
-.float last_level;
 .float last_ai_mode;
+.float last_movetype;
 
 //
 //

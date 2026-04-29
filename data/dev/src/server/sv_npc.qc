@@ -30,6 +30,7 @@ void(entity e) NPC_CommitState =
 	e.last_speed = e.speed;
 	e.last_level = e.level;
 	e.last_ai_mode = e.ai_mode;
+	e.last_movetype = e.movetype;
 };
 
 void() npc_use =

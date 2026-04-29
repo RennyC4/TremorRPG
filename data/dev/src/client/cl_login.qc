@@ -179,9 +179,10 @@ void() User_LoginScreen =
     sui_fill([0, 0], size, MENU_BG, 0.75, 0);
     sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
-	// background
-    sui_pic(pos + [15, -125], [214,115.5], "textures/logo2.png", [1,1,1], 1, 0);
+	// Tremor logo
+    sui_pic(pos + [25, -125], [214,115.5], "textures/logo2.png", [1,1,1], 1, 0);
 
+	// Menu text
     sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text([110, 10], MENU_TEXT_MEDIUM, "Character Information", '0 1 1', 1, 0);
     sui_text([10, 50], MENU_TEXT_SMALL, "Name", MENU_TEXT_MEDIUM, 1, 0);
@@ -213,6 +214,7 @@ void() User_LoginScreen =
 
     sui_pop_frame();
 
+	// Disconnect button
 	vector pos_dc = [0, 0];
     sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
     my_button("login_quit", pos_dc, [40, 40], "Disconnect") ? localcmd("disconnect\n") : 0;

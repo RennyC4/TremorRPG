@@ -780,6 +780,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.drawmask = MASK_ENGINE;
 			self.view_ofs = '0 0 48';
 			self.worldlight = TRUE;
+			self.movetype = MOVETYPE_STEP;
 		}
 
 		if (deltaFlags & ESF_ORIGIN)
@@ -825,6 +826,7 @@ void(float flIsNew) CSQC_Ent_Update =
 			self.speed = readbyte();
 			self.level = readbyte();
 			self.ai_mode = readbyte();
+			self.movetype = readshort();
 		}
 
 		if (deltaFlags & ESF_EQUIPMENT)
