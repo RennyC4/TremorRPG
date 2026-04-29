@@ -596,6 +596,7 @@ void() Draw_HUDIcons =
 	vector pos = [8, -145];
 	vector size = [32, 32];
 
+	// Bottom Left Buttons (Event Log)
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
 	my_button_gfx("button_char", pos, size, "progs/char.png", "Skills") ? sendevent("PlayerShowStats", "") : 0; // avatar button
 	pos_x += 38;
@@ -603,12 +604,15 @@ void() Draw_HUDIcons =
 	pos_x += 38;
 	my_button_gfx("button_inventory", pos, size, "progs/inventory.png", "Inventory") ? sendevent("PlayerShowInventory", "") : 0; // inventory
 
+	//  Top Left Buttons (Compass)
 	pos = [0, 0];
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 	pos_x -= 8;
 	pos_y += 142;
 
-	my_button_gfx("button_system", pos, size, "progs/gear.png", "System") ? localcmd("togglemenu\n") : 0; // inventory
+	my_button_gfx("button_system", pos, size, "progs/gear.png", "System") ? localcmd("togglemenu\n") : 0; // system menu
+	pos_x -= 40;
+	my_button_gfx("button_pvp", pos, size, "progs/pvp.png", "PvP Toggle") ? sendevent("User_TogglePVP", "") : 0; // pvp toggle
 };
 
 void() Draw_EventLog =

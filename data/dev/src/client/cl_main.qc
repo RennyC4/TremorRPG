@@ -361,18 +361,30 @@ float(string strCommand) CSQC_ConsoleCommand =
 	}
 	if (argv(0) == "show_character")
 	{
+		// turn off cursor mode if user closes menu by quick command
+		float player_menu = getstatf(STAT_MENU);
+		if (!player_menu) cursor_mode = TRUE;
+		else cursor_mode = FALSE;
+
 		sendevent("PlayerShowStats", "");
-		cursor_mode = TRUE;
 	}
 	if (argv(0) == "show_inventory")
 	{
+		// turn off cursor mode if user closes menu by quick command
+		float player_menu = getstatf(STAT_MENU);
+		if (!player_menu) cursor_mode = TRUE;
+		else cursor_mode = FALSE;
+
 		sendevent("PlayerShowInventory", "");
-		cursor_mode = TRUE;
 	}
 	if (argv(0) == "show_magic")
 	{
+		// turn off cursor mode if user closes menu by quick command
+		float player_menu = getstatf(STAT_MENU);
+		if (!player_menu) cursor_mode = TRUE;
+		else cursor_mode = FALSE;
+
 		sendevent("PlayerShowMagic", "");
-		cursor_mode = TRUE;
 	}
 	if (argv(0) == "toggle_camera") // send camera mode to SSQC for various reasons
 	{
