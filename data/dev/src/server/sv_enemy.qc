@@ -120,7 +120,8 @@ void() monster_respawn =
 	self.think = monster_ai_think;
 	self.nextthink = time + 0.1;
 	
-	Monster_SendFlags(TRUE); // Send full delta snapshot
+	Monster_SendFlags(FALSE); // Send full delta snapshot
+	NPC_CommitState(self);
 };
 
 void() set_monster =
