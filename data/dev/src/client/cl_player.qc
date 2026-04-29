@@ -756,11 +756,13 @@ void() Player_Screen =
 			Draw_Stamina();
 			Draw_Exp();
 			Draw_InCombatorPVP();
+			Compass_Draw();
+			Coords_Draw();
 		}
 
 		if (player_menu == MENU_CHARACTER)
 		{
-			User_CharacterScreen();
+			User_SkillsScreen();
 			Draw_HUDIcons();
 			Draw_EventLog();
 		}

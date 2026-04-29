@@ -288,7 +288,7 @@ void(entity e) Draw_FloatingText =
     for (float i = 0; i < line_count; i++)
     {
         string msg = lines[i];
-        float w = stringwidth(msg, TRUE, FLOATTEXT_SCALE);
+        w = stringwidth(msg, TRUE, FLOATTEXT_SCALE);
         vector draw_pos = line_pos + [bubble_width/2 - w/2,0,0];
 
         drawstring(draw_pos + [1,1,0], msg, FLOATTEXT_SCALE,'0 0 0',fade,0); // shadow
@@ -437,7 +437,7 @@ void() Draw_PlayerAlerts =
 	// =========================================================
 	if (time < lowmana_display_until)
 	{
-		float t = (time - lowmana_display_start) / duration;
+		t = (time - lowmana_display_start) / duration;
 		t = bound(0, t, 1);
 
 		float fade = pow(1 - t, 2);
@@ -507,26 +507,6 @@ void() Draw_CastingStat =
 		}
 		i += 1;
 	}
-};
-
-//
-// Reki's Code to draw 3D objects on the HUD
-//
-
-void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
-{
-    clearscene();
-    setviewprop(VF_MIN, pos);
-    setviewprop(VF_SIZE, canvas_size);
- 
-    setviewprop(VF_AFOV, 25);
-    setviewprop(VF_DRAWWORLD, FALSE);
- 
-    setviewprop(VF_ORIGIN, [zoom, 0, 0]);
-    setviewprop(VF_ANGLES, '0 0 0');
- 
-    addentity(ent);
-	renderscene();
 };
 
 void(vector pos, vector canvas_size) WorldMap_Draw =
@@ -617,7 +597,7 @@ void() Draw_HUDIcons =
 	vector size = [32, 32];
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	my_button_gfx("button_char", pos, size, "progs/char.png", "Stats") ? sendevent("PlayerShowStats", "") : 0; // avatar button
+	my_button_gfx("button_char", pos, size, "progs/char.png", "Skills") ? sendevent("PlayerShowStats", "") : 0; // avatar button
 	pos_x += 38;
 	my_button_gfx("button_magic", pos, size, "progs/magic.png", "Magic") ? sendevent("PlayerShowMagic", "") : 0; // magic
 	pos_x += 38;
@@ -846,6 +826,22 @@ void() Draw_Exp =
 // 3D Character portrait
 //
 
+void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
+{
+    clearscene();
+    setviewprop(VF_MIN, pos);
+    setviewprop(VF_SIZE, canvas_size);
+ 
+    setviewprop(VF_AFOV, 25);
+    setviewprop(VF_DRAWWORLD, FALSE);
+ 
+    setviewprop(VF_ORIGIN, [zoom, 0, 0]);
+    setviewprop(VF_ANGLES, '0 0 0');
+ 
+    addentity(ent);
+	renderscene();
+};
+
 entity doll;
 void() Skeleton_ObjectDraw;
 void(vector pos) Draw_3DPDoll =
@@ -878,7 +874,8 @@ void(vector pos) Draw_3DPDoll =
 
         setorigin(doll, '0 0 0');
 		doll.angles_y -= 180;
-		doll.origin_z -= 35;
+		//doll.origin_z -= 0;
+
 		doll.frame = frameforname(doll.modelindex, "Idle");
 	}
 
@@ -888,519 +885,157 @@ void(vector pos) Draw_3DPDoll =
 	else
 		doll.frame1time += frametime;
 
-	entdraw(doll, pos, '150 250', -245);
+	entdraw(doll, pos, '175 275', -245);
 };
 
-//
-// Character stat screen + skill point distribution
-//
+//==============================================================
+// Character Skills / Magic / Inventory screens
+//==============================================================
 
-void() User_CharacterScreen =
+// =================
+// SKILL DATA ACCESS
+// =================
+
+string(float i) SkillName =
 {
-	float get_h = getstatf(STAT_HEALTH);
-	if (get_h <= 0)
+	switch (i)
+	{
+		case 0: return "Unarmed";
+		case 1: return "Slashing";
+		case 2: return "Piercing";
+		case 3: return "Bashing";
+		case 4: return "Stealth";
+		case 5: return "Backstab";
+		case 6: return "Offensive Magic";
+		case 7: return "Defensive Magic";
+		case 8: return "Neutral Magic";
+		case 9: return "Endurance";
+		case 10: return "Spell Resist";
+		case 11: return "Archery";
+		case 12: return "Health Regen";
+		case 13: return "Mana Regen";
+		case 14: return "Haggling";
+		case 15: return "Climbing";
+		case 16: return "Swimming";
+		case 17: return "Acrobatics";
+	}
+	return "Unknown";
+};
+
+float(float i) SkillValue =
+{
+	switch (i)
+	{
+		case 0: return getstatf(STAT_SKILL_UNARMED);
+		case 1: return getstatf(STAT_SKILL_SLASH);
+		case 2: return getstatf(STAT_SKILL_PIERCE);
+		case 3: return getstatf(STAT_SKILL_BASH);
+		case 4: return getstatf(STAT_SKILL_STEALTH);
+		case 5: return getstatf(STAT_SKILL_BACKSTAB);
+		case 6: return getstatf(STAT_SKILL_OFFENSIVEMAGIC);
+		case 7: return getstatf(STAT_SKILL_DEFENSIVEMAGIC);
+		case 8: return getstatf(STAT_SKILL_NEUTRALMAGIC);
+		case 9: return getstatf(STAT_SKILL_ENDURANCE);
+		case 10: return getstatf(STAT_SKILL_SPELLRESIST);
+		case 11: return getstatf(STAT_SKILL_ARCHERY);
+		case 12: return getstatf(STAT_SKILL_HEALTHREGEN);
+		case 13: return getstatf(STAT_SKILL_MANAREGEN);
+		case 14: return getstatf(STAT_SKILL_HAGGLE);
+		case 15: return getstatf(STAT_SKILL_CLIMB);
+		case 16: return getstatf(STAT_SKILL_SWIM);
+		case 17: return getstatf(STAT_SKILL_ACROBATIC);
+	}
+	return 0;
+};
+
+// Skills Screen
+void() User_SkillsScreen =
+{
+	float hp = getstatf(STAT_HEALTH);
+	if (hp <= 0)
 		return;
 
-	// darken screen
+	// ========
+	// BACKDROP
+	// ========
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
-	string displaystat;
-
-	string disp_gender = getstats(STAT_GENDER);
-	float disp_level = getstatf(STAT_LEVEL);
-	float disp_exp =  getstatf(STAT_EXP);
-	float disp_neededexp =  getstatf(STAT_EXPNEEDED);
-	float disp_gold =  getstatf(STAT_GOLD);
-	float disp_skillpoints =  getstatf(STAT_SKILLPOINTS);
-	string disp_mainhand = getstats(STAT_MAINHAND);
-	string disp_offhand = getstats(STAT_OFFHAND);
-	float disp_attackmin = getstatf(STAT_ATTACKMIN);
-	float disp_attackmax = getstatf(STAT_ATTACKMAX);
-	float disp_attackspeed = getstatf(STAT_ATTACKSPEED);
-	float disp_attacktype = getstatf(STAT_ATTACKTYPE);
-	string disp_armorname = getstats(STAT_ARMORNAME);
-	float disp_armorvalue = getstatf(STAT_ARMORVALUE);
-	float disp_unarmed = getstatf(STAT_SKILL_UNARMED);
-	float disp_slash = getstatf(STAT_SKILL_SLASH);
-	float disp_pierce = getstatf(STAT_SKILL_PIERCE);
-	float disp_bash = getstatf(STAT_SKILL_BASH);
-	float disp_stealth = getstatf(STAT_SKILL_STEALTH);
-	float disp_backstab = getstatf(STAT_SKILL_BACKSTAB);
-	float disp_offensivemagic = getstatf(STAT_SKILL_OFFENSIVEMAGIC);
-	float disp_defensivemagic = getstatf(STAT_SKILL_DEFENSIVEMAGIC);
-	float disp_neutralmagic = getstatf(STAT_SKILL_NEUTRALMAGIC);
-	float disp_endurance = getstatf(STAT_SKILL_ENDURANCE);
-	float disp_spellresist = getstatf(STAT_SKILL_SPELLRESIST);
-	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
-	float disp_healthregen = getstatf(STAT_SKILL_HEALTHREGEN);
-	float disp_manaregen = getstatf(STAT_SKILL_MANAREGEN);
-	float disp_haggle = getstatf(STAT_SKILL_HAGGLE);
-	float disp_climb = getstatf(STAT_SKILL_CLIMB);
-	float disp_swim = getstatf(STAT_SKILL_SWIM);
-	float disp_acrobatic = getstatf(STAT_SKILL_ACROBATIC);
-	float disp_reapermarks = getstatf(STAT_REAPERMARK);
-	float disp_blocking = getstatf(STAT_BLOCKVALUE);
-	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
-	float disp_spellmin = getstatf(STAT_SPELLMIN);
-	float disp_spellmax = getstatf(STAT_SPELLMAX);
-	float atbonfire = getstatf(STAT_BONFIRE);
-	float disp_mining = getstatf(STAT_MINING);
-	float disp_fishing = getstatf(STAT_FISHING);
-	float disp_woodcutting = getstatf(STAT_WOODCUTTING);
-	float disp_projmin = getstatf(STAT_PROJ_MIN);
-	float disp_projmax = getstatf(STAT_PROJ_MAX);
-	float disp_bankgold = getstatf(STAT_GOLD_BANK);
-	
-	vector pos = [0, 0];
-	vector size = [450, 325];
-
-	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_push_frame(pos, size);
-
-	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
-
-	// Display name, gender
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	displaystat = strcat(disp_gender, " ^1", LOGIN_NAME);
-	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
-
-	// 3D Character box
-	pos = [25, 25];
-	size = [125, 150];
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_border_box(pos, size, 2, MENU_BORDER, 0.3, 0);
-	sui_fill(pos, size, MENU_BG_DARK, 0.75, 0);
-
-	// Draw 3D doll model
-	pos_x -= 15;
-	pos_y -= 65;
-	Draw_3DPDoll(pos);
-
-	//Level, Experience, Next Experience
-	vector newpos = [2, 20];
-
-	displaystat = strcat("^5Level: ^7", ftos(disp_level));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 10;
-
-	displaystat = strcat("^5Exp: ^7", ftos(disp_exp), " / ", ftos(disp_neededexp));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 10;
-
-	displaystat = strcat("^5Gold: ^7", ftos(disp_gold), "^8 Bank: ", ftos(disp_bankgold));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 10;
-
-	displaystat = strcat("^5Skill Points: ^7", ftos(disp_skillpoints));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 12.5;
-
-	displaystat = strcat("^5Main Hand");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	// button to unequip main hand
-	newpos_x += 40;
-	my_button("unequip_mainhand", newpos, [30, 10], "Unequip") ? sendevent("User_UnequipMainhand", "", 0) : 0;
-	newpos_x -= 40;
-	
-	newpos_y += 10;
-	
-	displaystat = strcat(disp_mainhand, " (^8", ftos(disp_attackmin), "-", ftos(disp_attackmax), "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 10;
-
-	float disp_dps = (disp_attackmin + disp_attackmax * 0.5) / disp_attackspeed; // calculate DPS
-
-	// add skill calculation to DPS
-	if (!disp_attacktype) // unarmed
-		disp_dps = (disp_unarmed * 0.055) / disp_attackspeed; // unarmed - calculated differently
-	else if (disp_attacktype == 1) // slashing
-		disp_dps = disp_dps + (disp_slash * 0.1);
-	else if (disp_attacktype == 2) // piercing
-		disp_dps = disp_dps + (disp_pierce * 0.1);
-	else if (disp_attacktype == 3) // bashing
-		disp_dps = disp_dps + (disp_bash * 0.1);
-	else 						   // archery - calculated differently
-	{
-		disp_dps = (((disp_attackmin + disp_attackmax) * 0.5) + ((disp_projmin + disp_projmax) * 0.5)) / disp_attackspeed;
-		disp_dps += (disp_archery * 0.1);
-	}
-
-	string dispfix_dps = ftos(disp_dps);
-	dispfix_dps = sprintf("%.2f", disp_dps); // cut down numbers
-
-	if (!disp_attacktype)			string displaystat2 = "Unarmed";
-	else if (disp_attacktype == 1)  displaystat2 = "Slash";
-	else if (disp_attacktype == 2)  displaystat2 = "Pierce";
-	else if (disp_attacktype == 3)  displaystat2 = "Bash";
-	else if (disp_attacktype == 4)  displaystat2 = "Projectile";
-	else displaystat2 = "Unknown";
-
-	displaystat = strcat("^1DPS: ^7" , dispfix_dps, " (^8", displaystat2, "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 12.5;
-
-	displaystat = "^5Off Hand";
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	// button to unequip off hand
-	newpos_x += 40;
-	my_button("unequip_offhand", newpos, [30, 10], "Unequip") ? sendevent("User_UnequipOffhand", "", 0) : 0;
-	newpos_x -= 40;
-	
-	newpos_y += 10;
-	
-	displaystat = disp_offhand;
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 10;
-
-	displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	//newpos_y += 22;
-	newpos_y += 12.5;
-
-	displaystat = strcat("^5Armor: ^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 10;
-
-	displaystat = strcat("^5Magic Spell : ^7", disp_magicspell, " ^7(^8", ftos(disp_spellmin), "-", ftos(disp_spellmax), "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 20;
-
-	displaystat = strcat("^1Reaper Marks: ^7", ftos(disp_reapermarks));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	// Draw skill point box/frame/text
-	pos = [75, 0];
-	size = [250, 280];
-
-	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_push_frame(pos, size);
-
-	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
-
-	pos = [0, -15];
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	sui_text(pos, MENU_TEXT_MEDIUM, "^2Skills", MENU_TEXT_1, 1, 0);
-
-	//
-	// skill stats
-	//
-
-	// Draw skill point text
-	newpos = [5, 7];
-
-	displaystat = strcat("^5Unarmed: ^7", ftos(disp_unarmed));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Slashing: ^7", ftos(disp_slash));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Piercing: ^7", ftos(disp_pierce));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Bashing: ^7", ftos(disp_bash));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-	
-	newpos_y +=10;
-
-	displaystat = strcat("^5Stealth: ^7", ftos(disp_stealth));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-	
-	newpos_y +=10;
-
-	displaystat = strcat("^5Backstab: ^7", ftos(disp_backstab));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-	
-	newpos_y +=10;
-
-	displaystat = strcat("^5Offensive Magic: ^7", ftos(disp_offensivemagic));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Defensive Magic: ^7", ftos(disp_defensivemagic));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Neutral Magic: ^7", ftos(disp_neutralmagic));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Endurance: ^7", ftos(disp_endurance));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Spell Resist: ^7", ftos(disp_spellresist));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Archery: ^7", ftos(disp_archery));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Health Regen: ^7", ftos(disp_healthregen));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Mana Regen: ^7", ftos(disp_manaregen));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Haggling: ^7", ftos(disp_haggle));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Climbing: ^7", ftos(disp_climb));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Swimming: ^7", ftos(disp_swim));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y +=10;
-
-	displaystat = strcat("^5Acrobatics: ^7", ftos(disp_acrobatic));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	//
-	// skill buttons for stat increases
-	//
-
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	newpos = [-5, 5]; // reset newpos
-
-	if (atbonfire && disp_skillpoints > 0)
-	{
-		vector drawline_pos;
-		float line_length = 118;
-		drawline_pos = [25, -5];
-		
-		my_button("skillpoint_unarmed", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 0) : 0;
-		newpos_y +=10;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		my_button("skillpoint_slash", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 1) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_pierce", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 2) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_bash", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 3) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_stealth", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 4) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_backstab", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 5) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_offensivemagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 6) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_defensivemagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 7) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_neutralmagic", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 8) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_endurance", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 9) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_spellresist", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 10) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_archery", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 11) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_healthregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 12) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_manaregen", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 13) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_haggling", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 14) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_climbing", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 15) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_swimming", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 16) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		my_button("skillpoint_acrobatics", newpos, [25, 10], "+") ? sendevent("User_AddSkillPoint", "f", 17) : 0;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-		newpos_y +=10;
-		sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], '1 1 1', 1);
-	}
-
-	// Job skills
-	
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	line_length = 245;
-	drawline_pos = [0, 0];
-	newpos = [2.5, 50];
-
-	// seperation line
-	sui_line(newpos, 1, [drawline_pos_x, drawline_pos_y], [drawline_pos_x + line_length, drawline_pos_y], MENU_BORDER, 1);
-	newpos_x = 5;
-	
-	newpos_y += 10;
-	
-	string e = sprintf("%.1f", disp_mining);
-	displaystat = strcat("^5Mining: ^7", e);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 10;
-	string g = sprintf("%.1f", disp_fishing);
-	displaystat = strcat("^5Fishing: ^7", g);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	newpos_y += 10;
-	string f = sprintf("%.1f", disp_woodcutting);
-
-	displaystat = strcat("^5Wood Cutting: ^7", f);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-
-	//
-	// Bottom button list
-	//
-
-	newpos = [3, -2]; // reset newpos
-
-	// PVP button
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-
-	float disp_pvp = getstatf(STAT_PVP);
-	if (!disp_pvp)
-		string pvpcolor = "^8PVP";
-	else if (disp_pvp == 1)
-		pvpcolor = "^1PVP";
+	// =================
+	// BASIC STATS CACHE
+	// =================
+	string name = LOGIN_NAME;
+	string gender = getstats(STAT_GENDER);
+
+	float level = getstatf(STAT_LEVEL);
+	float exp = getstatf(STAT_EXP);
+	float expneed = getstatf(STAT_EXPNEEDED);
+
+	float gold = getstatf(STAT_GOLD);
+	float bank = getstatf(STAT_GOLD_BANK);
+
+	float skillpoints = getstatf(STAT_SKILLPOINTS);
+	float reapermarks = getstatf(STAT_REAPERMARK);
+
+	string mainhand = getstats(STAT_MAINHAND);
+	string offhand = getstats(STAT_OFFHAND);
+
+	float atmin = getstatf(STAT_ATTACKMIN);
+	float atmax = getstatf(STAT_ATTACKMAX);
+	float atspd = getstatf(STAT_ATTACKSPEED);
+	float atype = getstatf(STAT_ATTACKTYPE);
+
+	string armor = getstats(STAT_ARMORNAME);
+	float armorval = getstatf(STAT_ARMORVALUE);
+
+	string spell = getstats(STAT_SPELLEQUIPPED);
+	float spmin = getstatf(STAT_SPELLMIN);
+	float spmax = getstatf(STAT_SPELLMAX);
+
+	float projmin = getstatf(STAT_PROJ_MIN);
+	float projmax = getstatf(STAT_PROJ_MAX);
+
+	float blocking = getstatf(STAT_BLOCKVALUE);
+	float bonfire = getstatf(STAT_BONFIRE);
+
+	// ========
+	// DPS CALC
+	// ========
+	float dps = (atmin + atmax * 0.5) / atspd;
+
+	float unarmed = getstatf(STAT_SKILL_UNARMED);
+	float slash = getstatf(STAT_SKILL_SLASH);
+	float pierce = getstatf(STAT_SKILL_PIERCE);
+	float bash = getstatf(STAT_SKILL_BASH);
+	float archery = getstatf(STAT_SKILL_ARCHERY);
+
+	if (!atype)
+		dps = (unarmed * 0.055) / atspd;
+	else if (atype == 1)
+		dps += slash * 0.1;
+	else if (atype == 2)
+		dps += pierce * 0.1;
+	else if (atype == 3)
+		dps += bash * 0.1;
 	else
-		pvpcolor = "^2PVP";
+	{
+		dps = (((atmin + atmax) * 0.5) + ((projmin + projmax) * 0.5)) / atspd;
+		dps += archery * 0.1;
+	}
 
-	my_button("pvp_toggle", newpos, [25, 25], pvpcolor) ? sendevent("User_TogglePVP", "") : 0;
+	string dpss = sprintf("%.2f", dps);
 
-	newpos_x += 26;
-	my_button("stats_toggle", newpos, [72, 25], "Skills") ? sendevent("PlayerShowStats", "") : 0;
-	newpos_x += 73;
-	my_button("magic_toggle", newpos, [72, 25], "Magic") ? sendevent("PlayerShowMagic", "") : 0;
-	newpos_x += 73;
-	my_button("inventory_toggle", newpos, [72, 25], "Inventory") ? sendevent("PlayerShowInventory", "") : 0;
+	string dps_type;
+	if (!atype) dps_type = "Unarmed";
+	else if (atype == 1) dps_type = "Slash";
+	else if (atype == 2) dps_type = "Pierce";
+	else if (atype == 3) dps_type = "Bash";
+	else if (atype == 4) dps_type = "Projectile";
+	else dps_type = "Unknown";
 
-	sui_pop_frame();
-	
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	my_button("close", [0, 0], [15, 15], "X") ? sendevent("ShutDownMenus", "") : 0;
-
-	sui_pop_frame();
-
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-	my_button("disconnect", [0, 0], [40, 20], "Disconnect") ? localcmd("cfg_save;disconnect\n") : 0;
-};
-
-//
-// Character inventory screen + use/drop items
-//
-
-void() User_InventoryScreen =
-{
-	float get_h = getstatf(STAT_HEALTH);
-	if (get_h <= 0)
-		return;
-		
-	// darken screen
-	vector scrsz = [g_width, g_height];
-	drawfill('0 0', scrsz, '0 0 0', 0.65);
-
-	string displaystat;
-
-	string disp_gender = getstats(STAT_GENDER);
-	float disp_level = getstatf(STAT_LEVEL);
-	float disp_exp =  getstatf(STAT_EXP);
-	float disp_neededexp =  getstatf(STAT_EXPNEEDED);
-	float disp_gold =  getstatf(STAT_GOLD);
-	float disp_skillpoints =  getstatf(STAT_SKILLPOINTS);
-	string disp_mainhand = getstats(STAT_MAINHAND);
-	string disp_offhand = getstats(STAT_OFFHAND);
-	float disp_attackmin = getstatf(STAT_ATTACKMIN);
-	float disp_attackmax = getstatf(STAT_ATTACKMAX);
-	float disp_attackspeed = getstatf(STAT_ATTACKSPEED);
-	float disp_attacktype = getstatf(STAT_ATTACKTYPE);
-	string disp_armorname = getstats(STAT_ARMORNAME);
-	float disp_armorvalue = getstatf(STAT_ARMORVALUE);
-	float disp_unarmed = getstatf(STAT_SKILL_UNARMED);
-	float disp_slash = getstatf(STAT_SKILL_SLASH);
-	float disp_pierce = getstatf(STAT_SKILL_PIERCE);
-	float disp_bash = getstatf(STAT_SKILL_BASH);
-	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
-	float disp_reapermarks = getstatf(STAT_REAPERMARK);
-	float disp_blocking = getstatf(STAT_BLOCKVALUE);
-	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
-	float disp_spellmin = getstatf(STAT_SPELLMIN);
-	float disp_spellmax = getstatf(STAT_SPELLMAX);
-	float disp_projmin = getstatf(STAT_PROJ_MIN);
-	float disp_projmax = getstatf(STAT_PROJ_MAX);
-	float disp_bankgold = getstatf(STAT_GOLD_BANK);
-
+	// ============
+	// MAIN WINDOW
+	// ============
 	vector pos = [0, 0];
 	vector size = [450, 325];
 
@@ -1410,282 +1045,253 @@ void() User_InventoryScreen =
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
-	// Display name, gender
+	// =======
+	// HEADER
+	// =======
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	displaystat = strcat(disp_gender, " ^1", LOGIN_NAME);
-	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text([2.5, 4], MENU_TEXT_MEDIUM,
+		strcat(gender, " ^1", name),
+		MENU_TEXT_1, 1, 0);
 
-	// 3D Character box
-	pos = [25, 25];
-	size = [125, 150];
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_border_box(pos, size, 2, MENU_BORDER, 0.3, 0);
-	sui_fill(pos, size, MENU_BG_DARK, 0.75, 0);
+	// ================
+	// CHARACTER MODEL
+	// ================
+	vector modelpos = [25, 25];
+	vector modelsz = [125, 150];
 
-	// Draw 3D doll model
-	pos_x -= 15;
-	pos_y -= 65;
-	Draw_3DPDoll(pos);
+	sui_border_box(modelpos, modelsz, 2, MENU_BORDER, 0.3, 0);
+	sui_fill(modelpos, modelsz, MENU_BG_DARK, 0.75, 0);
 
-	//Level, Experience, Next Experience
-	vector newpos = [2, 20];
+	Draw_3DPDoll(modelpos - [25, 0]);
 
-	displaystat = strcat("^5Level: ^7", ftos(disp_level));
+	// =========================================================
+	// LEFT INFO COLUMN
+	// =========================================================
+	vector info = [2, 20];
+
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
-	newpos_y += 10;
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Level: ^7", ftos(level)),
+		MENU_TEXT_1, 1, 0);
 
-	displaystat = strcat("^5Exp: ^7", ftos(disp_exp), " / ", ftos(disp_neededexp));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	info_y += 10;
 
-	newpos_y += 10;
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Exp: ^7", ftos(exp), " / ", ftos(expneed)),
+		MENU_TEXT_1, 1, 0);
 
-	displaystat = strcat("^5Gold: ^7", ftos(disp_gold), "^8 Bank: ", ftos(disp_bankgold));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	info_y += 10;
 
-	newpos_y += 10;
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)),
+		MENU_TEXT_1, 1, 0);
 
-	displaystat = strcat("^5Skill Points: ^7", ftos(disp_skillpoints));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	info_y += 10;
 
-	newpos_y += 12.5;
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Skill Points: ^7", ftos(skillpoints)),
+		MENU_TEXT_1, 1, 0);
 
-	displaystat = strcat("^5Main Hand");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-	
-	// button to unequip main hand
-	newpos_x += 40;
-	my_button("unequip_mainhand", newpos, [30, 10], "Unequip") ? sendevent("User_UnequipMainhand", "", 0) : 0;
-	newpos_x -= 40;
+	info_y += 12;
 
-	newpos_y += 10;
-	
-	displaystat = strcat(disp_mainhand, " (^8", ftos(disp_attackmin), "-", ftos(disp_attackmax), "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	// =========================================================
+	// EQUIPMENT
+	// =========================================================
+	sui_text(info, MENU_TEXT_SMALL, "^5Main Hand", MENU_TEXT_1, 1, 0);
 
-	newpos_y += 10;
+	info_x += 40;
+	my_button("unequip_mainhand", info, [30, 10], "Unequip", "")
+		? sendevent("User_UnequipMainhand", "", 0)
+		: 0;
+	info_x -= 40;
 
-	float disp_dps = (disp_attackmin + disp_attackmax * 0.5) / disp_attackspeed; // calculate DPS
-	
-	// add skill calculation to DPS
-	if (!disp_attacktype) // unarmed
-		disp_dps = (disp_unarmed * 0.055) / disp_attackspeed; // unarmed - calculated differently
-	else if (disp_attacktype == 1) // slashing
-		disp_dps = disp_dps + (disp_slash * 0.1);
-	else if (disp_attacktype == 2) // piercing
-		disp_dps = disp_dps + (disp_pierce * 0.1);
-	else if (disp_attacktype == 3) // bashing
-		disp_dps = disp_dps + (disp_bash * 0.1);
-	else 						   // archery - calculated differently
-	{
-		disp_dps = (((disp_attackmin + disp_attackmax) * 0.5) + ((disp_projmin + disp_projmax) * 0.5)) / disp_attackspeed;
-		disp_dps += (disp_archery * 0.1);
-	}
+	info_y += 10;
 
-	string dispfix_dps = ftos(disp_dps);
-	dispfix_dps = sprintf("%.2f", disp_dps); // cut down numbers
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"),
+		MENU_TEXT_1, 1, 0);
 
-	if (!disp_attacktype)			string displaystat2 = "Unarmed";
-	else if (disp_attacktype == 1)  displaystat2 = "Slash";
-	else if (disp_attacktype == 2)  displaystat2 = "Pierce";
-	else if (disp_attacktype == 3)  displaystat2 = "Bash";
-	else if (disp_attacktype == 4)  displaystat2 = "Projectile";
-	else displaystat2 = "Unknown";
+	info_y += 10;
 
-	displaystat = strcat("^1DPS: ^7" , dispfix_dps, " (^8", displaystat2, "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^1DPS: ^7", dpss, " (^8", dps_type, "^7)"),
+		MENU_TEXT_1, 1, 0);
 
-	newpos_y += 12.5;
+	info_y += 12;
 
-	displaystat = "^5Off Hand";
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text(info, MENU_TEXT_SMALL, "^5Off Hand", MENU_TEXT_1, 1, 0);
 
-	// button to unequip off hand
-	newpos_x += 40;
-	my_button("unequip_offhand", newpos, [30, 10], "Unequip") ? sendevent("User_UnequipOffhand", "", 0) : 0;
-	newpos_x -= 40;
+	info_x += 40;
+	my_button("unequip_offhand", info, [30, 10], "Unequip", "")
+		? sendevent("User_UnequipOffhand", "", 0)
+		: 0;
+	info_x -= 40;
 
-	newpos_y += 10;
+	info_y += 10;
 
-	displaystat = disp_offhand;
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text(info, MENU_TEXT_SMALL, offhand, MENU_TEXT_1, 1, 0);
 
-	newpos_y += 10;
+	info_y += 10;
 
-	displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^2Blocking: ^7", ftos(blocking)),
+		MENU_TEXT_1, 1, 0);
 
-	//newpos_y += 22;
-	newpos_y += 12.5;
+	info_y += 12;
 
-	displaystat = strcat("^5Armor: ^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"),
+		MENU_TEXT_1, 1, 0);
 
-	newpos_y += 10;
+	info_y += 10;
 
-	displaystat = strcat("^5Magic Spell : ^7", disp_magicspell, " ^7(^8", ftos(disp_spellmin), "-", ftos(disp_spellmax), "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"),
+		MENU_TEXT_1, 1, 0);
 
-	newpos_y += 20;
+	info_y += 20;
 
-	displaystat = strcat("^1Reaper Marks: ^7", ftos(disp_reapermarks));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^1Reaper Marks: ^7", ftos(reapermarks)),
+		MENU_TEXT_1, 1, 0);
 
-	// Draw inventory point box/frame/text
-	pos = [75, 0];
-	size = [250, 280];
+	// ============
+	// SKILLS PANEL
+	// ============
+	vector spanel = [75, 0];
+	vector row = [0, 3];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_push_frame(pos, size);
+	sui_push_frame(spanel, [250, 280]);
 
-	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+	sui_fill([0, 0], [250, 280], MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], [250, 280], 2, MENU_BORDER, 0.3, 0);
 
-	pos = [0, -15];
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	sui_text(pos, MENU_TEXT_MEDIUM, "^2Inventory", MENU_TEXT_1, 1, 0);
-
-	//
-	// inventory item display
-	//
-
-	newpos = [2.5, 2.5];
-	vector buttonpos = [-2.5, 2.5];
-	vector linepos = [2.5, 2.5];
-
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text([0, -15], MENU_TEXT_MEDIUM, "^2Skills", MENU_TEXT_1, 1, 0);
 
 	float i;
-	string j = "";
-	string d = "";
-	string desc = "";
+	for (i = 0; i < 18; i++)
+	{
+		string sname = SkillName(i);
+		float sval = SkillValue(i);
 
-    for (i = 0; i < inv_count; i++)
-    {
-		string item_disp = strcat("^5", inventory[i], " ^7[^2", ftos(inventory_count[i]), "^7]");
-		if (inventory_count[i] > 0)
+		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+
+		sui_text(row, MENU_TEXT_SMALL,
+			strcat("^5", sname, ": ^7", ftos(sval)),
+			MENU_TEXT_1, 1, 0);
+
+		if (bonfire && skillpoints > 0)
 		{
-			float usebutton_count = 0;
-			while (usebutton_count < inventory_count[i]) // setup use buttons
-			{
-				usebutton_count += 1;
-				j = strcat("u_", inventory[i]); // use
-				d = strcat("d_", string_remove_spaces(inventory[i])); // drop
-				desc = strcat("desc_", string_remove_spaces(inventory[i])); // tooltip display
-			}
-			
-			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
-
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-			buttonpos_x = -2.5;
-			my_button(j, buttonpos, [32, 10], "Use") ? sendevent("UseItem", "s", inventory[i]) : 0;
-			buttonpos_x = -34;
-			my_button(d, buttonpos, [32, 10], "Drop") ? sendevent("DropItem", "s", inventory[i]) : 0;
-			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-
-			// tooltip (draw last)
-			float hover_text_size = stringwidth(inventory[i], 1);
-			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
-
+			my_button(strcat("sp_", ftos(i)), row, [25, 10], "+", strcat("^3", sname))
+				? sendevent("User_AddSkillPoint", "f", i)
+				: 0;
 		}
-		linepos_y += 10;
-		buttonpos_y += 10;
-    }
 
-	//
-	// Bottom button list
-	//
-
-	newpos = [3, -2]; // reset newpos
-
-	// PVP button
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-
-	float disp_pvp = getstatf(STAT_PVP);
-	if (!disp_pvp)
-		string pvpcolor = "^8PVP";
-	else if (disp_pvp == 1)
-		pvpcolor = "^1PVP";
-	else
-		pvpcolor = "^2PVP";
-
-	my_button("pvp_toggle", newpos, [25, 25], pvpcolor) ? sendevent("User_TogglePVP", "") : 0;
-
-	newpos_x += 26;
-	my_button("stats_toggle", newpos, [72, 25], "Skills") ? sendevent("PlayerShowStats", "") : 0;
-	newpos_x += 73;
-	my_button("magic_toggle", newpos, [72, 25], "Magic") ? sendevent("PlayerShowMagic", "") : 0;
-	newpos_x += 73;
-	my_button("inventory_toggle", newpos, [72, 25], "Inventory") ? sendevent("PlayerShowInventory", "") : 0;
+		row_y += 10;
+	}
 
 	sui_pop_frame();
-	
+
+	// CLOSE button
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	my_button("close", [0, 0], [15, 15], "X") ? sendevent("ShutDownMenus", "") : 0;
+	my_button("close", [0, 0], [15, 15], "X", "")
+		? sendevent("ShutDownMenus", "")
+		: 0;
 
 	sui_pop_frame();
-
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-	my_button("disconnect", [0, 0], [40, 20], "Disconnect") ? localcmd("cfg_save;disconnect\n") : 0;
 };
 
-//
-// Character inventory screen + use/drop items
-//
-
+// Magic Screen
 void() User_MagicScreen =
 {
-	float get_h = getstatf(STAT_HEALTH);
-	if (get_h <= 0)
+	float hp = getstatf(STAT_HEALTH);
+	if (hp <= 0)
 		return;
 
-	// darken screen
+	// =================
+	// BACKDROP
+	// =================
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
-	string displaystat;
+	// =================
+	// CACHE STATS
+	// =================
+	string name = LOGIN_NAME;
+	string gender = getstats(STAT_GENDER);
 
-	string disp_gender = getstats(STAT_GENDER);
-	float disp_level = getstatf(STAT_LEVEL);
-	float disp_exp =  getstatf(STAT_EXP);
-	float disp_neededexp =  getstatf(STAT_EXPNEEDED);
-	float disp_gold =  getstatf(STAT_GOLD);
-	float disp_skillpoints =  getstatf(STAT_SKILLPOINTS);
-	string disp_mainhand = getstats(STAT_MAINHAND);
-	string disp_offhand = getstats(STAT_OFFHAND);
-	float disp_attackmin = getstatf(STAT_ATTACKMIN);
-	float disp_attackmax = getstatf(STAT_ATTACKMAX);
-	float disp_attackspeed = getstatf(STAT_ATTACKSPEED);
-	float disp_attacktype = getstatf(STAT_ATTACKTYPE);
-	string disp_armorname = getstats(STAT_ARMORNAME);
-	float disp_armorvalue = getstatf(STAT_ARMORVALUE);
-	float disp_unarmed = getstatf(STAT_SKILL_UNARMED);
-	float disp_slash = getstatf(STAT_SKILL_SLASH);
-	float disp_pierce = getstatf(STAT_SKILL_PIERCE);
-	float disp_bash = getstatf(STAT_SKILL_BASH);
-	float disp_reapermarks = getstatf(STAT_REAPERMARK);
-	float disp_blocking = getstatf(STAT_BLOCKVALUE);
-	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
-	float disp_spellmin = getstatf(STAT_SPELLMIN);
-	float disp_spellmax = getstatf(STAT_SPELLMAX);
-	float disp_projmin = getstatf(STAT_PROJ_MIN);
-	float disp_projmax = getstatf(STAT_PROJ_MAX);
-	float disp_archery = getstatf(STAT_SKILL_ARCHERY);
-	float disp_bankgold = getstatf(STAT_GOLD_BANK);
+	float level = getstatf(STAT_LEVEL);
+	float exp = getstatf(STAT_EXP);
+	float expneed = getstatf(STAT_EXPNEEDED);
 
+	float gold = getstatf(STAT_GOLD);
+	float bank = getstatf(STAT_GOLD_BANK);
+	float skillpoints = getstatf(STAT_SKILLPOINTS);
+	float reapermarks = getstatf(STAT_REAPERMARK);
+
+	string mainhand = getstats(STAT_MAINHAND);
+	string offhand = getstats(STAT_OFFHAND);
+
+	float atmin = getstatf(STAT_ATTACKMIN);
+	float atmax = getstatf(STAT_ATTACKMAX);
+	float atspd = getstatf(STAT_ATTACKSPEED);
+	float atype = getstatf(STAT_ATTACKTYPE);
+
+	string armor = getstats(STAT_ARMORNAME);
+	float armorval = getstatf(STAT_ARMORVALUE);
+
+	string spell_equip = getstats(STAT_SPELLEQUIPPED);
+	float spmin = getstatf(STAT_SPELLMIN);
+	float spmax = getstatf(STAT_SPELLMAX);
+
+	float projmin = getstatf(STAT_PROJ_MIN);
+	float projmax = getstatf(STAT_PROJ_MAX);
+
+	float blocking = getstatf(STAT_BLOCKVALUE);
+	float bonfire = getstatf(STAT_BONFIRE);
+
+	// ========
+	// DPS CALC
+	// ========
+	float dps = (atmin + atmax * 0.5) / atspd;
+
+	float unarmed = getstatf(STAT_SKILL_UNARMED);
+	float slash = getstatf(STAT_SKILL_SLASH);
+	float pierce = getstatf(STAT_SKILL_PIERCE);
+	float bash = getstatf(STAT_SKILL_BASH);
+	float archery = getstatf(STAT_SKILL_ARCHERY);
+
+	if (!atype)
+		dps = (unarmed * 0.055) / atspd;
+	else if (atype == 1)
+		dps += slash * 0.1;
+	else if (atype == 2)
+		dps += pierce * 0.1;
+	else if (atype == 3)
+		dps += bash * 0.1;
+	else
+	{
+		dps = (((atmin + atmax) * 0.5) + ((projmin + projmax) * 0.5)) / atspd;
+		dps += archery * 0.1;
+	}
+
+	string dpss = sprintf("%.2f", dps);
+
+	string dps_type;
+	if (!atype) dps_type = "Unarmed";
+	else if (atype == 1) dps_type = "Slash";
+	else if (atype == 2) dps_type = "Pierce";
+	else if (atype == 3) dps_type = "Bash";
+	else if (atype == 4) dps_type = "Projectile";
+	else dps_type = "Unknown";
+
+	// ============
+	// MAIN WINDOW
+	// ============
 	vector pos = [0, 0];
 	vector size = [450, 325];
 
@@ -1695,143 +1301,258 @@ void() User_MagicScreen =
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
-	// Display name, gender
+	// =================
+	// HEADER
+	// =================
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	displaystat = strcat(disp_gender, " ^1", LOGIN_NAME);
-	sui_text([2.5, 4], MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text([2.5, 4], MENU_TEXT_MEDIUM,
+		strcat(gender, " ^1", name),
+		MENU_TEXT_1, 1, 0);
 
-	// 3D Character box
-	pos = [25, 25];
-	size = [125, 150];
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_border_box(pos, size, 2, MENU_BORDER, 0.3, 0);
-	sui_fill(pos, size, MENU_BG_DARK, 0.75, 0);
+	// =================
+	// MODEL
+	// =================
+	vector modelpos = [25, 25];
+	vector modelsz = [125, 150];
 
-	// Draw 3D doll model
-	pos_x -= 15;
-	pos_y -= 65;
-	Draw_3DPDoll(pos);
+	sui_border_box(modelpos, modelsz, 2, MENU_BORDER, 0.3, 0);
+	sui_fill(modelpos, modelsz, MENU_BG_DARK, 0.75, 0);
 
-	//Level, Experience, Next Experience
-	vector newpos = [2, 20];
+	Draw_3DPDoll(modelpos - [25, 0]);
 
-	displaystat = strcat("^5Level: ^7", ftos(disp_level));
+	// =================
+	// LEFT COLUMN
+	// =================
+	vector info = [2, 20];
+
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
 
-	newpos_y += 10;
+	sui_text(info, MENU_TEXT_SMALL, strcat("^5Level: ^7", ftos(level)), MENU_TEXT_1, 1, 0);
+	info_y += 10;
 
-	displaystat = strcat("^5Exp: ^7", ftos(disp_exp), " / ", ftos(disp_neededexp));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text(info, MENU_TEXT_SMALL, strcat("^5Exp: ^7", ftos(exp), " / ", ftos(expneed)), MENU_TEXT_1, 1, 0);
+	info_y += 10;
 
-	newpos_y += 10;
+	sui_text(info, MENU_TEXT_SMALL, strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)), MENU_TEXT_1, 1, 0);
+	info_y += 10;
 
-	displaystat = strcat("^5Gold: ^7", ftos(disp_gold), "^8 Bank: ", ftos(disp_bankgold));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text(info, MENU_TEXT_SMALL, strcat("^5Skill Points: ^7", ftos(skillpoints)), MENU_TEXT_1, 1, 0);
+	info_y += 12;
 
-	newpos_y += 10;
+	// =================
+	// EQUIPMENT
+	// =================
+	sui_text(info, MENU_TEXT_SMALL, "^5Main Hand", MENU_TEXT_1, 1, 0);
 
-	displaystat = strcat("^5Skill Points: ^7", ftos(disp_skillpoints));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	info_x += 40;
+	my_button("unequip_mainhand", info, [30, 10], "Unequip", "")
+		? sendevent("User_UnequipMainhand", "", 0)
+		: 0;
+	info_x -= 40;
 
-	newpos_y += 12.5;
+	info_y += 10;
 
-	displaystat = strcat("^5Main Hand");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-	
-	// button to unequip main hand
-	newpos_x += 40;
-	my_button("unequip_mainhand", newpos, [30, 10], "Unequip") ? sendevent("User_UnequipMainhand", "", 0) : 0;
-	newpos_x -= 40;
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"),
+		MENU_TEXT_1, 1, 0);
 
-	newpos_y += 10;
-	
-	displaystat = strcat(disp_mainhand, " (^8", ftos(disp_attackmin), "-", ftos(disp_attackmax), "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	info_y += 10;
 
-	newpos_y += 10;
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^1DPS: ^7", dpss, " (^8", dps_type, "^7)"),
+		MENU_TEXT_1, 1, 0);
 
-	float disp_dps = (disp_attackmin + disp_attackmax * 0.5) / disp_attackspeed; // calculate DPS
-	
-	// add skill calculation to DPS
-	if (!disp_attacktype) // unarmed
-		disp_dps = (disp_unarmed * 0.055) / disp_attackspeed; // unarmed - calculated differently
-	else if (disp_attacktype == 1) // slashing
-		disp_dps = disp_dps + (disp_slash * 0.1);
-	else if (disp_attacktype == 2) // piercing
-		disp_dps = disp_dps + (disp_pierce * 0.1);
-	else if (disp_attacktype == 3) // bashing
-		disp_dps = disp_dps + (disp_bash * 0.1);
-	else 						   // archery - calculated differently
+	info_y += 12;
+
+	sui_text(info, MENU_TEXT_SMALL, "^5Off Hand", MENU_TEXT_1, 1, 0);
+
+	info_x += 40;
+	my_button("unequip_offhand", info, [30, 10], "Unequip", "")
+		? sendevent("User_UnequipOffhand", "", 0)
+		: 0;
+	info_x -= 40;
+
+	info_y += 10;
+
+	sui_text(info, MENU_TEXT_SMALL, offhand, MENU_TEXT_1, 1, 0);
+
+	info_y += 10;
+
+	sui_text(info, MENU_TEXT_SMALL, strcat("^2Blocking: ^7", ftos(blocking)), MENU_TEXT_1, 1, 0);
+	info_y += 12;
+
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"),
+		MENU_TEXT_1, 1, 0);
+
+	info_y += 10;
+
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Magic Spell: ^7", spell_equip, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"),
+		MENU_TEXT_1, 1, 0);
+
+	info_y += 20;
+
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^1Reaper Marks: ^7", ftos(reapermarks)),
+		MENU_TEXT_1, 1, 0);
+
+	// ===========
+	// SPELL PANEL
+	// ===========
+	vector panel = [75, 0];
+	vector row = [0, 2.5];
+
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	sui_push_frame(panel, [250, 280]);
+
+	sui_fill([0, 0], [250, 280], MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], [250, 280], 2, MENU_BORDER, 0.3, 0);
+
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	sui_text([0, -15], MENU_TEXT_MEDIUM, "^2Magic", MENU_TEXT_1, 1, 0);
+
+	float i;
+	for (i = 0; i < spell_count; i++)
 	{
-		disp_dps = (((disp_attackmin + disp_attackmax) * 0.5) + ((disp_projmin + disp_projmax) * 0.5)) / disp_attackspeed;
-		disp_dps += (disp_archery * 0.1);
+		string s = spell[i];
+		if (!s)
+		{
+			row_y += 10;
+			continue;
+		}
+
+		string desc = strcat("desc_", string_remove_spaces(s));
+		string btn  = strcat("spell_", ftos(i));
+
+		// ===================
+		// RESET ALIGN PER ROW
+		// ===================
+		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+
+		// label width for tooltip box
+		float w = stringwidth(s, 1);
+
+		vector label_size = [w * 8, 10];
+
+		// draw tooltip label (LEFT SIDE)
+		sui_tooltip(
+			desc,
+			row,
+			label_size,
+			strcat("^5", s)
+		);
+
+		// =========================
+		// BUTTON (RIGHT SIDE)
+		// =========================
+		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+
+		my_button(btn, row, [32, 10], "Equip", "")
+			? sendevent("EquipSpell", "s", s)
+			: 0;
+
+		// =========================
+		// NEXT ROW
+		// =========================
+		row_y += 10;
 	}
 
-	string dispfix_dps = ftos(disp_dps);
-	dispfix_dps = sprintf("%.2f", disp_dps); // cut down numbers
+	sui_pop_frame();
 
-	if (!disp_attacktype)			string displaystat2 = "Unarmed";
-	else if (disp_attacktype == 1)  displaystat2 = "Slash";
-	else if (disp_attacktype == 2)  displaystat2 = "Pierce";
-	else if (disp_attacktype == 3)  displaystat2 = "Bash";
-	else if (disp_attacktype == 4)  displaystat2 = "Projectile";
-	else displaystat2 = "Unknown";
+	// =================
+	// CLOSE
+	// =================
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	my_button("close", [0, 0], [15, 15], "X", "")
+		? sendevent("ShutDownMenus", "")
+		: 0;
 
-	displaystat = strcat("^1DPS: ^7" , dispfix_dps, " (^8", displaystat2, "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	sui_pop_frame();
+};
 
-	newpos_y += 12.5;
+// Inventory Screen
+void() User_InventoryScreen =
+{
+	float hp = getstatf(STAT_HEALTH);
+	if (hp <= 0)
+		return;
 
-	displaystat = "^5Off Hand";
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	// =========================================================
+	// BACKDROP
+	// =========================================================
+	vector scrsz = [g_width, g_height];
+	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
-	// button to unequip off hand
-	newpos_x += 40;
-	my_button("unequip_offhand", newpos, [30, 10], "Unequip") ? sendevent("User_UnequipOffhand", "", 0) : 0;
-	newpos_x -= 40;
+	// =========================================================
+	// CACHE STATS
+	// =========================================================
+	string name = LOGIN_NAME;
+	string gender = getstats(STAT_GENDER);
 
-	newpos_y += 10;
+	float level = getstatf(STAT_LEVEL);
+	float exp = getstatf(STAT_EXP);
+	float expneed = getstatf(STAT_EXPNEEDED);
 
-	displaystat = disp_offhand;
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	float gold = getstatf(STAT_GOLD);
+	float bank = getstatf(STAT_GOLD_BANK);
+	float skillpoints = getstatf(STAT_SKILLPOINTS);
+	float reapermarks = getstatf(STAT_REAPERMARK);
 
-	newpos_y += 10;
+	string mainhand = getstats(STAT_MAINHAND);
+	string offhand = getstats(STAT_OFFHAND);
 
-	displaystat = strcat("^2Blocking: ^7" , ftos(disp_blocking), "\n");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	float atmin = getstatf(STAT_ATTACKMIN);
+	float atmax = getstatf(STAT_ATTACKMAX);
+	float atspd = getstatf(STAT_ATTACKSPEED);
+	float atype = getstatf(STAT_ATTACKTYPE);
 
-	//newpos_y += 22;
-	newpos_y += 12.5;
+	string armor = getstats(STAT_ARMORNAME);
+	float armorval = getstatf(STAT_ARMORVALUE);
 
-	displaystat = strcat("^5Armor: ^7", disp_armorname, " (^2+", ftos(disp_armorvalue), "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	string spell = getstats(STAT_SPELLEQUIPPED);
+	float spmin = getstatf(STAT_SPELLMIN);
+	float spmax = getstatf(STAT_SPELLMAX);
 
-	newpos_y += 10;
+	float blocking = getstatf(STAT_BLOCKVALUE);
 
-	displaystat = strcat("^5Magic Spell : ^7", disp_magicspell, " ^7(^8", ftos(disp_spellmin), "-", ftos(disp_spellmax), "^7)");
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	// =========
+	// DPS CALC
+	// =========
+	float dps = (atmin + atmax * 0.5) / atspd;
 
-	newpos_y += 20;
+	float unarmed = getstatf(STAT_SKILL_UNARMED);
+	float slash = getstatf(STAT_SKILL_SLASH);
+	float pierce = getstatf(STAT_SKILL_PIERCE);
+	float bash = getstatf(STAT_SKILL_BASH);
+	float archery = getstatf(STAT_SKILL_ARCHERY);
 
-	displaystat = strcat("^1Reaper Marks: ^7", ftos(disp_reapermarks));
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
+	if (!atype)
+		dps = (unarmed * 0.055) / atspd;
+	else if (atype == 1)
+		dps += slash * 0.1;
+	else if (atype == 2)
+		dps += pierce * 0.1;
+	else if (atype == 3)
+		dps += bash * 0.1;
+	else
+		dps = (((atmin + atmax) * 0.5) + archery) / atspd;
 
-	// Draw inventory point box/frame/text
-	pos = [75, 0];
-	size = [250, 280];
+	string dpss = sprintf("%.2f", dps);
+
+	string dps_type;
+	if (!atype) dps_type = "Unarmed";
+	else if (atype == 1) dps_type = "Slash";
+	else if (atype == 2) dps_type = "Pierce";
+	else if (atype == 3) dps_type = "Bash";
+	else if (atype == 4) dps_type = "Projectile";
+	else dps_type = "Unknown";
+
+	// =========================================================
+	// MAIN WINDOW
+	// =========================================================
+	vector pos = [0, 0];
+	vector size = [450, 325];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
@@ -1839,84 +1560,175 @@ void() User_MagicScreen =
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
-	pos = [0, -15];
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	sui_text(pos, MENU_TEXT_MEDIUM, "^2Magic", MENU_TEXT_1, 1, 0);
-
-	//
-	// magic spell list display
-	//
-
-	newpos = [2.5, 2.5];
-	vector buttonpos = [-2.5, 2.5];
-	vector linepos = [2.5, 2.5];
-
+	// =========================================================
+	// HEADER
+	// =========================================================
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text([2.5, 4], MENU_TEXT_MEDIUM,
+		strcat(gender, " ^1", name),
+		MENU_TEXT_1, 1, 0);
 
-	float i;
-	string j = "";
-	string desc = "";
+	// =========================================================
+	// CHARACTER MODEL
+	// =========================================================
+	vector modelpos = [25, 25];
+	vector modelsz = [125, 150];
 
-    for (i = 0; i < spell_count; i++)
-    {
-		string spell_disp = strcat("^5", spell[i], "\n");
-		if (spell[i])
-		{
-			float usebutton_count = 0;
-			while (usebutton_count < spell_count) // setup use buttons
-			{
-				usebutton_count += 1;
-				j = strcat("u_", spell[i]); // use
-				desc = strcat("desc_", string_remove_spaces(spell[i])); // tooltip display
-			}
+	sui_border_box(modelpos, modelsz, 2, MENU_BORDER, 0.3, 0);
+	sui_fill(modelpos, modelsz, MENU_BG_DARK, 0.75, 0);
 
-			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-			buttonpos_x = -2.5;
-			my_button(j, buttonpos, [32, 10], "Equip")  ? sendevent("EquipSpell", "s", spell[i]) : 0;
+	Draw_3DPDoll(modelpos - [25, 0]);
 
-			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	// ================
+	// LEFT INFO COLUMN
+	// ================
+	vector info = [2, 20];
 
-			// tooltip (draw last)
-			float hover_text_size = stringwidth(spell[i], 1);
-			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], spell_disp);
-		}
-		linepos_y += 10;
-		buttonpos_y += 10;
-    }
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 
-	//
-	// Bottom button list
-	//
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Level: ^7", ftos(level)),
+		MENU_TEXT_1, 1, 0);
+	info_y += 10;
 
-	newpos = [3, -2]; // reset newpos
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Exp: ^7", ftos(exp), " / ", ftos(expneed)),
+		MENU_TEXT_1, 1, 0);
+	info_y += 10;
 
-	// PVP button
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)),
+		MENU_TEXT_1, 1, 0);
+	info_y += 10;
 
-	float disp_pvp = getstatf(STAT_PVP);
-	if (!disp_pvp)
-		string pvpcolor = "^8PVP";
-	else if (disp_pvp == 1)
-		pvpcolor = "^1PVP";
-	else
-		pvpcolor = "^2PVP";
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Skill Points: ^7", ftos(skillpoints)),
+		MENU_TEXT_1, 1, 0);
+	info_y += 12;
 
-	my_button("pvp_toggle", newpos, [25, 25], pvpcolor) ? sendevent("User_TogglePVP", "") : 0;
+	// =========================================================
+	// EQUIPMENT
+	// =========================================================
+	sui_text(info, MENU_TEXT_SMALL, "^5Main Hand", MENU_TEXT_1, 1, 0);
 
-	newpos_x += 26;
-	my_button("stats_toggle", newpos, [72, 25], "Skills") ? sendevent("PlayerShowStats", "") : 0;
-	newpos_x += 73;
-	my_button("magic_toggle", newpos, [72, 25], "Magic") ? sendevent("PlayerShowMagic", "") : 0;
-	newpos_x += 73;
-	my_button("inventory_toggle", newpos, [72, 25], "Inventory") ? sendevent("PlayerShowInventory", "") : 0;
+	info_x += 40;
+	my_button("unequip_mainhand", info, [30, 10], "Unequip", "")
+		? sendevent("User_UnequipMainhand", "", 0)
+		: 0;
+	info_x -= 40;
 
-	sui_pop_frame();
-	
+	info_y += 10;
+
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"),
+		MENU_TEXT_1, 1, 0);
+
+	info_y += 10;
+
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^1DPS: ^7", dpss, " (^8", dps_type, "^7)"),
+		MENU_TEXT_1, 1, 0);
+
+	info_y += 12;
+
+	sui_text(info, MENU_TEXT_SMALL, "^5Off Hand", MENU_TEXT_1, 1, 0);
+
+	info_x += 40;
+	my_button("unequip_offhand", info, [30, 10], "Unequip", "")
+		? sendevent("User_UnequipOffhand", "", 0)
+		: 0;
+	info_x -= 40;
+
+	info_y += 10;
+
+	sui_text(info, MENU_TEXT_SMALL, offhand, MENU_TEXT_1, 1, 0);
+
+	info_y += 10;
+
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^2Blocking: ^7", ftos(blocking)),
+		MENU_TEXT_1, 1, 0);
+
+	info_y += 12;
+
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"),
+		MENU_TEXT_1, 1, 0);
+
+	info_y += 10;
+
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"),
+		MENU_TEXT_1, 1, 0);
+
+	info_y += 20;
+
+	sui_text(info, MENU_TEXT_SMALL,
+		strcat("^1Reaper Marks: ^7", ftos(reapermarks)),
+		MENU_TEXT_1, 1, 0);
+
+	// =========================================================
+	// INVENTORY PANEL
+	// =========================================================
+	vector panel = [75, 0];
+	vector row = [0, 2.5];
+
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	sui_push_frame(panel, [250, 280]);
+
+	sui_fill([0, 0], [250, 280], MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], [250, 280], 2, MENU_BORDER, 0.3, 0);
+
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	my_button("close", [0, 0], [15, 15], "X") ? sendevent("ShutDownMenus", "") : 0;
+	sui_text([0, -15], MENU_TEXT_MEDIUM, "^2Inventory", MENU_TEXT_1, 1, 0);
+
+	// =========================================================
+	// ITEMS
+	// =========================================================
+	float i;
+
+	for (i = 0; i < inv_count; i++)
+	{
+		if (inventory_count[i] <= 0)
+			continue;
+
+		string item = inventory[i];
+
+		string use_btn = strcat("u_", item);
+		string drop_btn = strcat("d_", item);
+		string desc = strcat("desc_", string_remove_spaces(item));
+
+		string label = strcat("^5", item, " ^7[^2", ftos(inventory_count[i]), "^7]");
+
+		// FIXED: consistent row alignment
+		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+
+		float w = stringwidth(item, 1);
+		sui_tooltip(desc, row, [w * 8, 8], label);
+
+		// ALWAYS present buttons
+		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+
+		my_button(use_btn, row, [32, 10], "Use", "")
+			? sendevent("UseItem", "s", item)
+			: 0;
+
+		my_button(drop_btn, row - [34, 0], [32, 10], "Drop", "")
+			? sendevent("DropItem", "s", item)
+			: 0;
+
+		row_y += 10;
+	}
 
 	sui_pop_frame();
 
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-	my_button("disconnect", [0, 0], [40, 20], "Disconnect") ? localcmd("cfg_save;disconnect\n") : 0;
+	// ======
+	// CLOSE
+	// ======
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	my_button("close", [0, 0], [15, 15], "X", "")
+		? sendevent("ShutDownMenus", "")
+		: 0;
+
+	sui_pop_frame();
 };

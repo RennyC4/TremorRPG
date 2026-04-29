@@ -360,11 +360,20 @@ float(string strCommand) CSQC_ConsoleCommand =
 			sendevent("DoAttack_Magic", "v", [0,0,0]); // send nothing when lock-on is off
 	}
 	if (argv(0) == "show_character")
+	{
 		sendevent("PlayerShowStats", "");
+		cursor_mode = TRUE;
+	}
 	if (argv(0) == "show_inventory")
+	{
 		sendevent("PlayerShowInventory", "");
+		cursor_mode = TRUE;
+	}
 	if (argv(0) == "show_magic")
+	{
 		sendevent("PlayerShowMagic", "");
+		cursor_mode = TRUE;
+	}
 	if (argv(0) == "toggle_camera") // send camera mode to SSQC for various reasons
 	{
 		if (!player_menu && !atbonfire)

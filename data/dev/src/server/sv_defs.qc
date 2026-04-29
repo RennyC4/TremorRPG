@@ -1786,7 +1786,7 @@ const float MENU_BANKING = 7; // user banking screen
 .string gender;
 .float menu; // menu float, send to CSQC
 .float radius_candamage; // TRUE, entity can be damaged by radius attacks
-.vector saveorigin; // used for monsters to save their inital spawn location and patrol near it
+.vector saveorigin; // used for monsters / allies to save their inital spawn location and patrol near it
 .vector idealangles;
 .float turn_speed; // how fast monsters/npcs can turn
 .string music; // what track to play for the client
@@ -1939,7 +1939,9 @@ const float ANISTATE_FISHIDLE = 25;
 
 //.float armorvalue; (this is already defined)
 
+//
 // skill point stats
+//
 .float skill_unarmed;
 .float skill_slash;
 .float skill_pierce;
@@ -2101,7 +2103,7 @@ const float TIME_NIGHT = 3;
 .float chat_last_time;
 .float chat_flood_count;
 #define CHAT_FLOOD_TIME   1   // Minimum time between messages
-#define CHAT_FLOOD_LIMIT  5     // Messages allowed in a short burst
+#define CHAT_FLOOD_LIMIT  5   // Messages allowed in a short burst
 #define CHAT_FLOOD_RESET  4   // Time before flood counter resets
 
 // ========================

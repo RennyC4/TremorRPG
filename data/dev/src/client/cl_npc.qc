@@ -26,18 +26,18 @@ void() User_NPCDialogue =
 	// Bottom buttons
 	newpos_y -= 5;
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	my_button("npc_leave", newpos, [50, 22.5], "Leave") ? sendevent("ShutDownMenus", "") : 0;
+	my_button("npc_leave", newpos, [50, 22.5], "Leave", "") ? sendevent("ShutDownMenus", "") : 0;
 
 	newpos_x -= 5;
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
 
 	float buysell = getstatf(STAT_VENDOR);
 	if (buysell == 1)
-		my_button("npc_buy", newpos, [85, 22.5], "Buy / Sell") ? sendevent("PlayerShowBuySell", "") : 0;
+		my_button("npc_buy", newpos, [85, 22.5], "Buy / Sell", "") ? sendevent("PlayerShowBuySell", "") : 0;
 	else if (buysell == 2)
-		my_button("npc_bank", newpos, [85, 22.5], "Banking") ? sendevent("PlayerShowBanking", "") : 0;
+		my_button("npc_bank", newpos, [85, 22.5], "Banking", "") ? sendevent("PlayerShowBanking", "") : 0;
 	else if (buysell == 3)
-		my_button("npc_wood", newpos, [85, 22.5], "Sell Lumber") ? sendevent("PlayerSellLumber", "") : 0;
+		my_button("npc_wood", newpos, [85, 22.5], "Sell Lumber", "") ? sendevent("PlayerSellLumber", "") : 0;
 
 	// NPC chatter box
 	newpos = [2.5, 0]; //reset newpos
@@ -64,7 +64,7 @@ void() User_NPCDialogue =
 	}
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	my_button("close", [0, 0], [15, 15], "X") ? sendevent("ShutDownMenus", "") : 0;
+	my_button("close", [0, 0], [15, 15], "X", "") ? sendevent("ShutDownMenus", "") : 0;
 
 	sui_pop_frame();
 };
@@ -109,11 +109,11 @@ void() User_NPCBuySell =
 	newpos_x += 3.25;
 	newpos_y -= 5;
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	my_button("npc_leave", newpos, [50, 22.5], "Leave") ? sendevent("ShutDownMenus", "") : 0;
+	my_button("npc_leave", newpos, [50, 22.5], "Leave", "") ? sendevent("ShutDownMenus", "") : 0;
 
 	newpos_x -= 5;
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-	my_button("npc_talk", newpos, [85, 22.5], "Dialogue") ? sendevent("PlayerShowDialogue", "") : 0;
+	my_button("npc_talk", newpos, [85, 22.5], "Dialogue", "") ? sendevent("PlayerShowDialogue", "") : 0;
 
 	// Player Inventory
 	size_x = size_x / 2;
@@ -141,7 +141,7 @@ void() User_NPCBuySell =
 			desc = strcat("desc_", string_remove_spaces(inventory[i]));
 
 			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-			my_button(j, buttonpos, [32, 10], "Sell") ? sendevent("PlayerSellItem", "s", inventory[i]) : 0;
+			my_button(j, buttonpos, [32, 10], "Sell", "") ? sendevent("PlayerSellItem", "s", inventory[i]) : 0;
 			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
 			float hover_text_size = stringwidth(inventory[i], 1);
@@ -176,7 +176,7 @@ void() User_NPCBuySell =
 			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
 
 			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-			my_button(j, buttonpos, [25, 10], "Buy") ? sendevent("PlayerBuyItem", "sf", npc_inventory[i], npc_inventory_gold[i]) : 0;
+			my_button(j, buttonpos, [25, 10], "Buy", "") ? sendevent("PlayerBuyItem", "sf", npc_inventory[i], npc_inventory_gold[i]) : 0;
 
 			// tooltip
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
@@ -244,25 +244,25 @@ void() User_NPCBanking =
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 	pos_y += 25;
-	my_button("bank_deposit", [pos_x, pos_y], [240 / 2, 20], "Deposit") ? sendevent("User_BankDeposit", "s", BANK_AMOUNT) : 0;
-	my_button("bank_withdraw", [pos_x+120, pos_y], [240 / 2, 20], "Withdraw") ? sendevent("User_BankWithdraw", "s", BANK_AMOUNT) : 0;
+	my_button("bank_deposit", [pos_x, pos_y], [240 / 2, 20], "Deposit", "") ? sendevent("User_BankDeposit", "s", BANK_AMOUNT) : 0;
+	my_button("bank_withdraw", [pos_x+120, pos_y], [240 / 2, 20], "Withdraw", "") ? sendevent("User_BankWithdraw", "s", BANK_AMOUNT) : 0;
 
 	// all buttons
 	pos_y += 20;
 	
-	my_button("bank_deposit_all", [pos_x, pos_y], [240 / 2, 20], "Desposit All") ? sendevent("User_BankDepositAll", "s", BANK_AMOUNT) : 0;
-	my_button("bank_withdraw_all", [pos_x+120, pos_y], [240 / 2, 20], "Withdraw All") ? sendevent("User_BankWithdrawAll", "s", BANK_AMOUNT) : 0;
+	my_button("bank_deposit_all", [pos_x, pos_y], [240 / 2, 20], "Desposit All", "") ? sendevent("User_BankDepositAll", "s", BANK_AMOUNT) : 0;
+	my_button("bank_withdraw_all", [pos_x+120, pos_y], [240 / 2, 20], "Withdraw All", "") ? sendevent("User_BankWithdrawAll", "s", BANK_AMOUNT) : 0;
 
 	pos_y += 25;
 
 	// Leave button & X button
 	pos = [0,0];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	my_button("npc_leave", pos, [50, 22.5], "Leave") ? sendevent("ShutDownMenus", "") : 0;
+	my_button("npc_leave", pos, [50, 22.5], "Leave", "") ? sendevent("ShutDownMenus", "") : 0;
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	my_button("close", [0, 0], [15, 15], "X") ? sendevent("ShutDownMenus", "") : 0;
+	my_button("close", [0, 0], [15, 15], "X", "") ? sendevent("ShutDownMenus", "") : 0;
 
 	// Dialogue button
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-	my_button("npc_talk", pos, [50, 22.5], "Dialogue") ? sendevent("PlayerShowDialogue", "") : 0;
+	my_button("npc_talk", pos, [50, 22.5], "Dialogue", "") ? sendevent("PlayerShowDialogue", "") : 0;
 };

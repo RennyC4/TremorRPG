@@ -190,9 +190,9 @@ void() User_LoginScreen =
 
     // Buttons
     sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-    my_button("login_login", [0, size_y - 65], [size_x / 2, 20], "Login") ? User_ResumeCharacter(FALSE) : 0;
-    my_button("login_lastlogin", [size_x / 2, size_y - 65], [size_x / 2, 20], "Use Last Login") ? User_ResumeCharacter(TRUE) : 0;
-    my_button("login_newchar", [0, size_y], [size_x, 40], "Create New Character") ? User_NewCharacter(LOGIN_GENDER) : 0;
+    my_button("login_login", [0, size_y - 65], [size_x / 2, 20], "Login", "") ? User_ResumeCharacter(FALSE) : 0;
+    my_button("login_lastlogin", [size_x / 2, size_y - 65], [size_x / 2, 20], "Use Last Login", "") ? User_ResumeCharacter(TRUE) : 0;
+    my_button("login_newchar", [0, size_y], [size_x, 40], "Create New Character", "") ? User_NewCharacter(LOGIN_GENDER) : 0;
 
     sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 
@@ -209,15 +209,15 @@ void() User_LoginScreen =
     // New character section
     sui_text([0, 45], MENU_TEXT_SMALL, "New Character", '0 1 1', 1, 0);
 
-    my_button("login_male", [-30, 65], [50, 25], "Male") ? SetGender(0) : 0;
-    my_button("login_female", [30, 65], [50, 25], "Female") ? SetGender(1) : 0;
+    my_button("login_male", [-30, 65], [50, 25], "Male", "") ? SetGender(0) : 0;
+    my_button("login_female", [30, 65], [50, 25], "Female", "") ? SetGender(1) : 0;
 
     sui_pop_frame();
 
 	// Disconnect button
 	vector pos_dc = [0, 0];
     sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-    my_button("login_quit", pos_dc, [40, 40], "Disconnect") ? localcmd("disconnect\n") : 0;
+    my_button("login_quit", pos_dc, [40, 40], "Disconnect", "") ? localcmd("disconnect\n") : 0;
 
     // MOTD
     if (motd != "")

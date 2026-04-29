@@ -10,6 +10,7 @@ void(float speed) TurnToTarget =
 
 	if (self.enemy || self.goalentity)
 	{
+		dir = [0, 0, 0];
 		if (self.enemy)
 			dir = normalize(self.enemy.origin - self.origin);
 		else if (self.goalentity)

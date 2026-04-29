@@ -12,13 +12,31 @@ vector MENU_TEXT_SMALL = '8 8 0';
 vector MENU_TEXT_MEDIUM = '16 16 0';
 vector MENU_TEXT_LARGE = '24 24 0';
 
-float(string id, vector pos, vector size, string text) my_button =
+float(string id, vector pos, vector size, string text, string label) my_button =
 {
 	sui_push_frame(pos, size);
 	vector basecolor = sui_is_hovered(id) ? MENU_BUTTON + MENU_HIGHLIGHT * 0.25 : MENU_BUTTON; 
 	basecolor = sui_is_held(id) ? MENU_BUTTON - MENU_DARKEN * 0.1 : basecolor;
 	sui_fill([0, 0], size, basecolor, 0.6, 0);
 	sui_border_box([0, 0], size, 1, MENU_BUTTON_BORDER, 0.4, 0);
+
+	// TOOL-TIP
+	float hovered = cursor_mode ? sui_is_hovered(id) : 0;
+	if (hovered && label != "")
+	{
+		vector tip_size = [(strlen(text) * 64), 12];
+		vector tip_pos;
+
+		// center above button
+		tip_pos_x = ((size_x) - (tip_size_x * 0.4));
+		tip_pos_y = -tip_size_y - 2;
+
+		sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+		sui_fill(tip_pos, tip_size, MENU_BG_DARK, 0.95, 0);
+		sui_border_box(tip_pos, tip_size, 1, MENU_BORDER, 0.6, 0);
+
+		sui_text(tip_pos, [8,8], label, '1 1 1', 1, 0);
+	}
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_text([0, 0], MENU_TEXT_SMALL, text, MENU_TEXT_1, 1, 0);	

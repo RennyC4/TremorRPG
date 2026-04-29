@@ -470,7 +470,7 @@ void() CSEv_PlayerShowStats =
 {
 	if (self.deadflag != DEAD_NO)
 		return;
-
+	
 	if (self.menu == MENU_CHARACTER)
 	{
 		self.menushut_finished = time + 0.2; // prevent +attack misfire

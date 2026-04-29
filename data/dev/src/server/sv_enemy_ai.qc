@@ -12,7 +12,6 @@ const float AI_PATROL = 4;
 .float ai_patrolidle;
 .float ai_standstill;
 .float ai_backup_finished;
-.entity ai_runback_temp;
 .float ai_move_dist;
 .float ai_doattack;
 .float ai_attacktriggered;
@@ -418,7 +417,6 @@ void() monster_ai_update_state =
     if (self.ai_mode == AI_RUNBACK)
     {
 		self.enemy = world;
-        //vector target = self.ai_runback_temp.origin;
 		vector target = self.saveorigin;
         float dist = vlen(self.origin - target);
 
