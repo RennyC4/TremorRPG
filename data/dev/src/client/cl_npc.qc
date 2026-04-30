@@ -71,123 +71,186 @@ void() User_NPCDialogue =
 
 void() User_NPCBuySell =
 {
-	float disp_gold =  getstatf(STAT_GOLD);
+	float disp_gold = getstatf(STAT_GOLD);
 
 	// darken screen
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
-	vector pos = [0, 0];
-	vector size = [450, 325];
+	// =================
+	// FRAME
+	// =================
+	vector pos;
+	pos_x = UI(0);
+	pos_y = UI(0);
+
+	vector size;
+	size_x = UI(450);
+	size_y = UI(325);
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
-	
-	// Display player name
-	vector newpos = [2.5, 2.5];
+	sui_border_box([0, 0], size, UI(2), MENU_BORDER, 0.3, 0);
+
+	// =================
+	// HEADER
+	// =================
+	vector base;
+	base_x = UI(2.5);
+	base_y = UI(2.5);
+
+	// Player name (left)
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	string displaystat = strcat("^2", LOGIN_NAME);
-	sui_text(newpos, MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text(base, MENU_TEXT_MEDIUM, strcat("^2", LOGIN_NAME), MENU_TEXT_1, 1, 0);
 
-	// Display Gold
-	newpos_y -= 15;
-	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
-	displaystat = strcat("^3Gold: ", ftos(disp_gold));
-	sui_text(newpos, MENU_TEXT_SMALL, displaystat, MENU_TEXT_1, 1, 0);
-	newpos = [2.5, 2.5]; // reset newpos
-
-	// Display NPC name
-	newpos_x -= 3.5;
+	// NPC name (right)
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	displaystat = strcat("^1", npc_name);
-	sui_text(newpos, MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
+	vector npcpos;
+	npcpos = base;
+	npcpos_x += UI(-3.5);
 
-	// Bottom buttons
-	newpos_x += 3.25;
-	newpos_y -= 5;
+	sui_text(npcpos, MENU_TEXT_MEDIUM, strcat("^1", npc_name), MENU_TEXT_1, 1, 0);
+
+	// Gold
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
+	vector goldpos;
+	goldpos = base;
+	goldpos_y += UI(-15);
+
+	sui_text(goldpos, MENU_TEXT_SMALL,
+		strcat("^3Gold: ", ftos(disp_gold)), MENU_TEXT_1, 1, 0);
+
+	// =================
+	// BOTTOM BUTTONS
+	// =================
+	vector btnpos;
+	btnpos_x = UI(2.5);
+	btnpos_y = UI(-2.5);
+
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	my_button("npc_leave", newpos, [50, 22.5], "Leave", "") ? sendevent("ShutDownMenus", "") : 0;
 
-	newpos_x -= 5;
+	vector btn_size_small;
+	btn_size_small_x = UI(50);
+	btn_size_small_y = UI(22.5);
+
+	my_button("npc_leave", btnpos, btn_size_small, "Leave", "")
+		? sendevent("ShutDownMenus", "") : 0;
+
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
-	my_button("npc_talk", newpos, [85, 22.5], "Dialogue", "") ? sendevent("PlayerShowDialogue", "") : 0;
 
-	// Player Inventory
-	size_x = size_x / 2;
-	newpos = [2.5, 0]; //reset newpos
-	newpos_y += 25;
-	size_x -= 5;
-	size_y -= 50;
+	vector talkpos;
+	talkpos = btnpos;
+	talkpos_x += UI(-5);
+
+	vector btn_size_large;
+	btn_size_large_x = UI(85);
+	btn_size_large_y = UI(22.5);
+
+	my_button("npc_talk", talkpos, btn_size_large, "Dialogue", "")
+		? sendevent("PlayerShowDialogue", "") : 0;
+
+	// =================
+	// PANELS
+	// =================
+	vector panel_pos;
+	panel_pos_x = UI(2.5);
+	panel_pos_y = UI(25);
+
+	vector panel_size;
+	panel_size = size;
+	panel_size_x = panel_size_x / 2;
+	panel_size_x -= UI(5);
+	panel_size_y -= UI(50);
+
+	// -----------------
+	// PLAYER INVENTORY
+	// -----------------
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_border_box(newpos, size, 2, MENU_BORDER, 0.3, 0);
-	sui_fill(newpos, size, MENU_BG_DARK, 0.75, 0);
+	sui_border_box(panel_pos, panel_size, UI(2), MENU_BORDER, 0.3, 0);
+	sui_fill(panel_pos, panel_size, MENU_BG_DARK, 0.75, 0);
+
+	vector linepos;
+	linepos = panel_pos;
+
+	vector buttonpos;
+	buttonpos = panel_pos;
+	buttonpos_x += panel_size_x - UI(35);
 
 	float i;
-	string j = "";
-	string desc = "";
-
-	vector linepos = [2.5, 25];
-	vector buttonpos = [-19, 25];
-    for (i = 0; i < inv_count; i++)
-    {
-		float sellbutton_count = 0;
-		string item_disp = strcat("^5", inventory[i], " ^7[^2", ftos(inventory_count[i]), "^7]");
+	for (i = 0; i < inv_count; i++)
+	{
 		if (inventory_count[i] > 0)
 		{
-			j = strcat("s_", inventory[i]);
-			desc = strcat("desc_", string_remove_spaces(inventory[i]));
+			string item = inventory[i];
+			string item_disp = strcat("^5", item, " ^7[^2", ftos(inventory_count[i]), "^7]");
+			string btn_id = strcat("s_", item);
+			string desc = strcat("desc_", string_remove_spaces(item));
 
-			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-			my_button(j, buttonpos, [32, 10], "Sell", "") ? sendevent("PlayerSellItem", "s", inventory[i]) : 0;
-			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+			vector sell_size;
+			sell_size_x = UI(32);
+			sell_size_y = UI(10);
 
-			float hover_text_size = stringwidth(inventory[i], 1);
-			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
+			my_button(btn_id, buttonpos, sell_size, "Sell", "")
+				? sendevent("PlayerSellItem", "s", item) : 0;
+
+			float w = stringwidth(item, 1);
+
+			vector tip_size;
+			tip_size_x = UI(w * 8);
+			tip_size_y = UI(8);
+
+			sui_tooltip(desc, linepos, tip_size, item_disp);
 		}
 
-		linepos_y += 10;
-		buttonpos_y += 10; // move buy buttons down
-    }
+		linepos_y   += UI(10);
+		buttonpos_y += UI(10);
+	}
 
-	// NPC Inventory
-	newpos_x -= 5;
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	sui_border_box(newpos, size, 2, MENU_BORDER, 0.3, 0);
-	sui_fill(newpos, size, MENU_BG_DARK, 0.75, 0);
+	// -----------------
+	// NPC INVENTORY
+	// -----------------
+	vector npc_panel_pos;
+	npc_panel_pos = panel_pos;
+	npc_panel_pos_x += panel_size_x + UI(5);
 
-	linepos = [-25, 25];
-	buttonpos = [15, 25];
-    for (i = 0; i < npc_inv_count; i++)
-    {
-		float buybutton_count = 0;
-		string item_disp = strcat("^5", npc_inventory[i], " ^7- ^3", ftos(npc_inventory_gold[i]), "^7g");
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_border_box(npc_panel_pos, panel_size, UI(2), MENU_BORDER, 0.3, 0);
+	sui_fill(npc_panel_pos, panel_size, MENU_BG_DARK, 0.75, 0);
+
+	linepos = npc_panel_pos;
+	buttonpos = npc_panel_pos;
+	buttonpos_x += panel_size_x - UI(25);
+
+	for (i = 0; i < npc_inv_count; i++)
+	{
 		if (npc_inventory_gold[i] > 0)
 		{
-			while (buybutton_count < npc_inv_count) // setup buy buttons
-			{
-				buybutton_count += 1;
-				j = strcat("b_", npc_inventory[i]);
-				desc = strcat("desc_", string_remove_spaces(npc_inventory[i])); // tooltip display
-			}
+			string item = npc_inventory[i];
+			string item_disp = strcat("^5", item, " ^7- ^3", ftos(npc_inventory_gold[i]), "^7g");
+			string btn_id = strcat("b_", item);
+			string desc = strcat("desc_", string_remove_spaces(item));
 
-			//sui_text(linepos, MENU_TEXT_SMALL, item_disp, MENU_TEXT_1, 1, 0);
+			vector buy_size;
+			buy_size_x = UI(25);
+			buy_size_y = UI(10);
 
-			sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-			my_button(j, buttonpos, [25, 10], "Buy", "") ? sendevent("PlayerBuyItem", "sf", npc_inventory[i], npc_inventory_gold[i]) : 0;
+			my_button(btn_id, buttonpos, buy_size, "Buy", "")
+				? sendevent("PlayerBuyItem", "sf", item, npc_inventory_gold[i]) : 0;
 
-			// tooltip
-			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-			float hover_text_size = stringwidth(npc_inventory[i], 1);
-			sui_tooltip(desc, linepos, [hover_text_size * 8, 8], item_disp);
+			float w = stringwidth(item, 1);
 
-			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+			vector tip_size;
+			tip_size_x = UI(w * 8);
+			tip_size_y = UI(8);
+
+			sui_tooltip(desc, linepos, tip_size, item_disp);
 		}
-		linepos_y += 10;
-		buttonpos_y += 10; // move buy buttons down
-    }
+
+		linepos_y   += UI(10);
+		buttonpos_y += UI(10);
+	}
 
 	sui_pop_frame();
 };

@@ -17,7 +17,6 @@ float() UI_Scale =
 };
 
 #define UI(x) ((x) * UI_Scale())
-#define UIPOS(x) ((x) * UI_Scale())
 
 float() UI_TextScale =
 {
