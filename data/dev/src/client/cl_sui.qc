@@ -20,6 +20,8 @@ vector MENU_TEXT_SMALL    = '8 8 0';
 vector MENU_TEXT_MEDIUM   = '16 16 0';
 vector MENU_TEXT_LARGE    = '24 24 0';
 
+vector MENU_TEXT_SHADOW    = '0 0 0';
+
 float(string id, vector pos, vector size, string text, string label) my_button =
 {
 	sui_push_frame(pos, size);

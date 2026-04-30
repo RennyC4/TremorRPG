@@ -1044,9 +1044,8 @@ void() UI_DrawPlayerSummary =
 	// HEADER
 	// =================
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text([2.5, 4], MENU_TEXT_MEDIUM,
-		strcat(gender, " ^1", name),
-		MENU_TEXT_1, 1, 0);
+	sui_text([3.5, 5], MENU_TEXT_MEDIUM, strcat(gender, " ^1", name), MENU_TEXT_SHADOW, 1, 0); // drop shadow
+	sui_text([2.5, 4], MENU_TEXT_MEDIUM, strcat(gender, " ^1", name), MENU_TEXT_1, 1, 0);
 
 	// =================
 	// MODEL
@@ -1116,7 +1115,9 @@ void() UI_DrawPlayerSummary =
 	#undef LINE
 };
 
+//
 // Skills Screen
+//
 void() User_SkillsScreen =
 {
 	float hp = getstatf(STAT_HEALTH);
@@ -1157,7 +1158,8 @@ void() User_SkillsScreen =
 	sui_border_box([0, 0], [250, 280], 2, MENU_BORDER, 0.3, 0);
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	sui_text([0, -15], MENU_TEXT_MEDIUM, "^2Skills", MENU_TEXT_1, 1, 0);
+	sui_text([1, -19], MENU_TEXT_MEDIUM, "^2Skills", MENU_TEXT_SHADOW, 1, 0); // drop shadow
+	sui_text([0, -20], MENU_TEXT_MEDIUM, "^2Skills", MENU_TEXT_1, 1, 0);
 
 	float i;
 	float MAX_SKILLS = 21;
@@ -1209,7 +1211,9 @@ void() User_SkillsScreen =
 	sui_pop_frame();
 };
 
+//
 // Magic Screen
+//
 void() User_MagicScreen =
 {
 	float hp = getstatf(STAT_HEALTH);
@@ -1250,7 +1254,9 @@ void() User_MagicScreen =
 	sui_border_box([0, 0], [250, 280], 2, MENU_BORDER, 0.3, 0);
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	sui_text([0, -15], MENU_TEXT_MEDIUM, "^2Magic", MENU_TEXT_1, 1, 0);
+	
+	sui_text([1, -19], MENU_TEXT_MEDIUM, "^2Magic", MENU_TEXT_SHADOW, 1, 0); // drop shadow
+	sui_text([0, -20], MENU_TEXT_MEDIUM, "^2Magic", MENU_TEXT_1, 1, 0);
 
 	float i;
 	for (i = 0; i < spell_count; i++)
@@ -1311,7 +1317,9 @@ void() User_MagicScreen =
 	sui_pop_frame();
 };
 
+//
 // Inventory Screen
+//
 void() User_InventoryScreen =
 {
 	float hp = getstatf(STAT_HEALTH);
@@ -1351,7 +1359,8 @@ void() User_InventoryScreen =
 	sui_border_box([0, 0], [250, 280], 2, MENU_BORDER, 0.3, 0);
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	sui_text([0, -15], MENU_TEXT_MEDIUM, "^2Inventory", MENU_TEXT_1, 1, 0);
+	sui_text([1, -19], MENU_TEXT_MEDIUM, "^2Inventory", MENU_TEXT_SHADOW, 1, 0);  // drop shadow
+	sui_text([0, -20], MENU_TEXT_MEDIUM, "^2Inventory", MENU_TEXT_1, 1, 0);
 
 	// =========================================================
 	// ITEMS

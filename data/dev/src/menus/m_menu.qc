@@ -20,6 +20,7 @@ vector MENU_TEXT_SMALL    = '8 8 0';
 vector MENU_TEXT_MEDIUM   = '16 16 0';
 vector MENU_TEXT_LARGE    = '24 24 0';
 
+vector MENU_TEXT_SHADOW    = '0 0 0';
 
 void() input_tester =
 {

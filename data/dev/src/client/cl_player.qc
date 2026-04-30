@@ -769,16 +769,16 @@ void() Player_Screen =
 		if (player_menu == MENU_INVENTORY)
 		{
 			Draw_EventLog();
-			Draw_ToolTip();
 			User_InventoryScreen();
 			Draw_HUDIcons();
+			Draw_ToolTip(); // tool tips draw over everything else
 		}
 		if (player_menu == MENU_MAGIC)
 		{
 			Draw_EventLog();
-			Draw_ToolTip();
 			User_MagicScreen();
 			Draw_HUDIcons();
+			Draw_ToolTip(); // tool tips draw over everything else
 		}
 		if (player_menu == MENU_DIALOGUE)
 			User_NPCDialogue();
