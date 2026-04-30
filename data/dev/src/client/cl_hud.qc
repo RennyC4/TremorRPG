@@ -1254,6 +1254,8 @@ void() User_SkillsScreen =
 {
 	float hp = getstatf(STAT_HEALTH);
 	float skillpoints = getstatf(STAT_SKILLPOINTS);
+	float atbonfire = getstatf(STAT_BONFIRE);
+
 	if (hp <= 0)
 		return;
 
@@ -1281,7 +1283,7 @@ void() User_SkillsScreen =
 	// SKILLS PANEL
 	// ============
 	vector spanel = [UI(75), 0];
-	vector row = [0, UI_Scale()*3];
+	vector row = [2.5, UI_Scale()*3];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(spanel, [UI_Scale()*250, UI_Scale()*280]);
@@ -1320,12 +1322,10 @@ void() User_SkillsScreen =
 			sui_text(row, MENU_TEXT_SMALL * UI_TextScale(), strcat(col, sname, ": ^7", ftos(sval)), MENU_TEXT_1, 1, 0);
 		}
 
-		if (bonfire && skillpoints > 0 && !is_passive)
+		if (atbonfire && skillpoints > 0 && !is_passive)
 		{
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-			my_button(strcat("sp_", ftos(i)), row, [UI(25), UI(10)], "+", strcat("^3", sname))
-				? sendevent("User_AddSkillPoint", "f", i)
-				: 0;
+			my_button(strcat("sp_", ftos(i)), row + [UI(-4), UI(-1)],[UI(25), UI(10)], "+", strcat("^3", sname))? sendevent("User_AddSkillPoint", "f", i): 0;
 		}
 
 		if (is_lastactive) // do gap after last active skill
@@ -1378,7 +1378,7 @@ void() User_MagicScreen =
 	// SPELL PANEL
 	// =================
 	vector panel = [UI(75), 0];
-	vector row = [0, UI_Scale() * 2.5];
+	vector row = [2.5, UI_Scale() * 2.5];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(panel, [UI_Scale() * 250, UI_Scale() * 280]);
@@ -1440,9 +1440,7 @@ void() User_MagicScreen =
 		// =========================
 		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
-		my_button(btn, row, [UI(32), UI(10)], "Equip", "")
-			? sendevent("EquipSpell", "s", s)
-			: 0;
+		my_button(btn, row + [UI(-2.5), UI(-1)], [UI(32), UI(10)], "Equip", "") ? sendevent("EquipSpell", "s", s) : 0;
 
 		// =========================
 		// ROW ADVANCE
@@ -1557,7 +1555,7 @@ void() User_InventoryScreen =
 
 		// text + tooltip
 		float w = stringwidth(item, 1);
-		sui_tooltip(desc, row, [w * 8, 8], label);
+		sui_tooltip(desc, row + [UI(2.5), UI(0)], [w * 8, 8], label);
 
 		// =====================================================
 		// BUTTONS
@@ -1566,11 +1564,11 @@ void() User_InventoryScreen =
 
 		vector btn_size = [UI(32), UI(10)];
 
-		my_button(use_btn, row, btn_size, "Use", "")
+		my_button(use_btn, row - [UI(2.5), 0], btn_size, "Use", "")
 			? sendevent("UseItem", "s", item)
 			: 0;
 
-		my_button(drop_btn, row - [UI(34), 0], btn_size, "Drop", "")
+		my_button(drop_btn, row - [UI(44), 0], btn_size, "Drop", "")
 			? sendevent("DropItem", "s", item)
 			: 0;
 
