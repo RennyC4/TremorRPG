@@ -1,21 +1,20 @@
 // =====================
-// BLUE THEME PALETTE
+// DEEP BLUE UI THEME
 // =====================
-vector MENU_BG            = '0.08 0.18 0.12'; // deep navy-teal background
-vector MENU_BG_DARK       = '0.03 0.10 0.07'; // near-black blue tint
 
-vector MENU_BORDER        = '0.20 0.55 0.90'; // bright azure edge
-vector MENU_BUTTON        = '0.12 0.28 0.22'; // muted blue-green panel
-vector MENU_BUTTON_BORDER = '0.25 0.65 1.00'; // glowing cyan border
+vector MENU_BG            = '0.04 0.10 0.14'; // deep ocean navy
+vector MENU_BG_DARK       = '0.01 0.04 0.08'; // near-black abyss blue
 
-vector MENU_TEXT_1        = '0.90 0.95 1.00'; // near-white cool text
-vector MENU_TEXT_2        = '0.60 0.75 0.85'; // secondary soft blue text
+vector MENU_BORDER        = '0.12 0.35 0.60'; // subdued royal blue edge
+vector MENU_BUTTON        = '0.06 0.14 0.20'; // dark steel-blue panels
+vector MENU_BUTTON_BORDER = '0.18 0.50 0.85'; // controlled glow blue
 
-vector MENU_HIGHLIGHT     = '0.35 0.80 1.00'; // hover glow cyan
-vector MENU_DARKEN        = '0.05 0.12 0.20'; // overlay dim blue
+vector MENU_TEXT_1        = '0.85 0.90 0.98'; // soft cool white-blue
+vector MENU_TEXT_2        = '0.55 0.65 0.78'; // muted secondary blue-gray
 
-// =====================
-// TEXT SIZES
+vector MENU_HIGHLIGHT     = '0.20 0.55 0.90'; // focused deep azure glow
+vector MENU_DARKEN        = '0.02 0.06 0.10'; // overlay shadow tint
+
 // =====================
 vector MENU_TEXT_SMALL    = '8 8 0';
 vector MENU_TEXT_MEDIUM   = '16 16 0';
