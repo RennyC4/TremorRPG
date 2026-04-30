@@ -1430,16 +1430,10 @@ void() User_MagicScreen =
 		// =========================
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-		float w = stringwidth(s, UI_TextScale(), 0);
-
-		vector label_size = [w, UI_Scale() * 10];
-
-		sui_tooltip(
-			desc,
-			row,
-			label_size,
-			strcat("^5", s)
-		);
+		// text + tooltip
+		float w = stringwidth(s, 1);
+		vector label_size = [w * 8, 10];
+		sui_tooltip(desc, row, label_size, strcat("^5", s));
 
 		// =========================
 		// BUTTON SIDE
@@ -1559,7 +1553,11 @@ void() User_InventoryScreen =
 
 		vector label_size = [w * UI_TextScale(), UI(10)];
 
-		sui_tooltip(desc, row, label_size, label);
+		string hover_btn = strcat("i_", item);
+
+		// text + tooltip
+		float w = stringwidth(item, 1);
+		sui_tooltip(desc, row, [w * 8, 8], label);
 
 		// =====================================================
 		// BUTTONS
@@ -1577,9 +1575,9 @@ void() User_InventoryScreen =
 			: 0;
 
 		// =====================================================
-		// FIXED ROW SPACING (KEY FIX)
+		// ROW SPACING (FIXED)
 		// =====================================================
-		row_y += UI(14);
+		row += [0, UI(14)];
 	}
 
 	sui_pop_frame();
