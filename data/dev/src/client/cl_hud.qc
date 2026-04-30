@@ -962,66 +962,12 @@ float(float i) SkillValue =
 	return 0;
 };
 
-// Skills Screen
-void() User_SkillsScreen =
+//
+// Helper DPS Calculation function
+//
+void(float atmin, float atmax, float atspd, float atype, float projmin, float projmax, float unarmed, float slash, float pierce, float bash, float archery, float &dps_out, string &type_out) Calc_DPS =
 {
-	float hp = getstatf(STAT_HEALTH);
-	if (hp <= 0)
-		return;
-
-	// ========
-	// BACKDROP
-	// ========
-	vector scrsz = [g_width, g_height];
-	drawfill('0 0', scrsz, '0 0 0', 0.65);
-
-	// =================
-	// BASIC STATS CACHE
-	// =================
-	string name = LOGIN_NAME;
-	string gender = getstats(STAT_GENDER);
-
-	float level = getstatf(STAT_LEVEL);
-	float exp = getstatf(STAT_EXP);
-	float expneed = getstatf(STAT_EXPNEEDED);
-
-	float gold = getstatf(STAT_GOLD);
-	float bank = getstatf(STAT_GOLD_BANK);
-
-	float skillpoints = getstatf(STAT_SKILLPOINTS);
-	float reapermarks = getstatf(STAT_REAPERMARK);
-
-	string mainhand = getstats(STAT_MAINHAND);
-	string offhand = getstats(STAT_OFFHAND);
-
-	float atmin = getstatf(STAT_ATTACKMIN);
-	float atmax = getstatf(STAT_ATTACKMAX);
-	float atspd = getstatf(STAT_ATTACKSPEED);
-	float atype = getstatf(STAT_ATTACKTYPE);
-
-	string armor = getstats(STAT_ARMORNAME);
-	float armorval = getstatf(STAT_ARMORVALUE);
-
-	string spell = getstats(STAT_SPELLEQUIPPED);
-	float spmin = getstatf(STAT_SPELLMIN);
-	float spmax = getstatf(STAT_SPELLMAX);
-
-	float projmin = getstatf(STAT_PROJ_MIN);
-	float projmax = getstatf(STAT_PROJ_MAX);
-
-	float blocking = getstatf(STAT_BLOCKVALUE);
-	float bonfire = getstatf(STAT_BONFIRE);
-
-	// ========
-	// DPS CALC
-	// ========
 	float dps = (atmin + atmax * 0.5) / atspd;
-
-	float unarmed = getstatf(STAT_SKILL_UNARMED);
-	float slash = getstatf(STAT_SKILL_SLASH);
-	float pierce = getstatf(STAT_SKILL_PIERCE);
-	float bash = getstatf(STAT_SKILL_BASH);
-	float archery = getstatf(STAT_SKILL_ARCHERY);
 
 	if (!atype)
 		dps = (unarmed * 0.055) / atspd;
@@ -1037,15 +983,152 @@ void() User_SkillsScreen =
 		dps += archery * 0.1;
 	}
 
+	string type;
+	if (!atype) type = "Unarmed";
+	else if (atype == 1) type = "Slash";
+	else if (atype == 2) type = "Pierce";
+	else if (atype == 3) type = "Bash";
+	else if (atype == 4) type = "Projectile";
+	else type = "Unknown";
+
+	dps_out = dps;
+	type_out = type;
+};
+
+void() UI_DrawPlayerSummary =
+{
+	// =================
+	// CACHE
+	// =================
+	string name = LOGIN_NAME;
+	string gender = getstats(STAT_GENDER);
+
+	float level = getstatf(STAT_LEVEL);
+	float exp = getstatf(STAT_EXP);
+	float expneed = getstatf(STAT_EXPNEEDED);
+
+	float gold = getstatf(STAT_GOLD);
+	float bank = getstatf(STAT_GOLD_BANK);
+	float skillpoints = getstatf(STAT_SKILLPOINTS);
+	float reapermarks = getstatf(STAT_REAPERMARK);
+
+	string mainhand = getstats(STAT_MAINHAND);
+	string offhand = getstats(STAT_OFFHAND);
+
+	float atmin = getstatf(STAT_ATTACKMIN);
+	float atmax = getstatf(STAT_ATTACKMAX);
+	float atspd = getstatf(STAT_ATTACKSPEED);
+	float atype = getstatf(STAT_ATTACKTYPE);
+
+	float projmin = getstatf(STAT_PROJ_MIN);
+	float projmax = getstatf(STAT_PROJ_MAX);
+
+	float blocking = getstatf(STAT_BLOCKVALUE);
+
+	string armor = getstats(STAT_ARMORNAME);
+	float armorval = getstatf(STAT_ARMORVALUE);
+
+	string spell = getstats(STAT_SPELLEQUIPPED);
+	float spmin = getstatf(STAT_SPELLMIN);
+	float spmax = getstatf(STAT_SPELLMAX);
+
+	// =================
+	// DPS
+	// =================
+	float dps;
+	string dps_type;
+	Calc_DPS(atmin, atmax, atspd, atype, projmin, projmax, getstatf(STAT_SKILL_UNARMED), getstatf(STAT_SKILL_SLASH), getstatf(STAT_SKILL_PIERCE), getstatf(STAT_SKILL_BASH), getstatf(STAT_SKILL_ARCHERY), dps, dps_type);
 	string dpss = sprintf("%.2f", dps);
 
-	string dps_type;
-	if (!atype) dps_type = "Unarmed";
-	else if (atype == 1) dps_type = "Slash";
-	else if (atype == 2) dps_type = "Pierce";
-	else if (atype == 3) dps_type = "Bash";
-	else if (atype == 4) dps_type = "Projectile";
-	else dps_type = "Unknown";
+	// =================
+	// HEADER
+	// =================
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text([2.5, 4], MENU_TEXT_MEDIUM,
+		strcat(gender, " ^1", name),
+		MENU_TEXT_1, 1, 0);
+
+	// =================
+	// MODEL
+	// =================
+	vector modelpos = [25, 25];
+	vector modelsz = [125, 150];
+
+	sui_border_box(modelpos, modelsz, 2, MENU_BORDER, 0.3, 0);
+	sui_fill(modelpos, modelsz, MENU_BG_DARK, 0.75, 0);
+
+	Draw_3DPDoll(modelpos - [25, 0]);
+
+	// =================
+	// INFO COLUMN
+	// =================
+	vector info = [2, 20];
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
+
+	#define LINE(str) sui_text(info, MENU_TEXT_SMALL, str, MENU_TEXT_1, 1, 0); info_y += 10;
+
+	LINE(strcat("^5Level: ^7", ftos(level)));
+	LINE(strcat("^5Exp: ^7", ftos(exp), " / ", ftos(expneed)));
+	LINE(strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)));
+	LINE(strcat("^5Skill Points: ^7", ftos(skillpoints)));
+
+	info_y += 2;
+
+	// ===== Equipment =====
+	sui_text(info, MENU_TEXT_SMALL, "^5Main Hand", MENU_TEXT_1, 1, 0);
+
+	info_x += 40;
+	my_button("unequip_mainhand", info, [30,10], "Unequip", "")
+		? sendevent("User_UnequipMainhand", "", 0)
+		: 0;
+	info_x -= 40;
+
+	info_y += 10;
+
+	LINE(strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"));
+	LINE(strcat("^1DPS: ^7", dpss, " (^8", dps_type, "^7)"));
+
+	info_y += 2;
+
+	sui_text(info, MENU_TEXT_SMALL, "^5Off Hand", MENU_TEXT_1, 1, 0);
+
+	info_x += 40;
+	my_button("unequip_offhand", info, [30,10], "Unequip", "")
+		? sendevent("User_UnequipOffhand", "", 0)
+		: 0;
+	info_x -= 40;
+
+	info_y += 10;
+
+	LINE(offhand);
+	LINE(strcat("^2Blocking: ^7", ftos(blocking)));
+
+	info_y += 2;
+
+	LINE(strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"));
+	LINE(strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"));
+
+	info_y += 10;
+
+	LINE(strcat("^1Reaper Marks: ^7", ftos(reapermarks)));
+
+	#undef LINE
+};
+
+// Skills Screen
+void() User_SkillsScreen =
+{
+	float hp = getstatf(STAT_HEALTH);
+	float skillpoints = getstatf(STAT_SKILLPOINTS);
+	if (hp <= 0)
+		return;
+
+	// ========
+	// BACKDROP
+	// ========
+	vector scrsz = [g_width, g_height];
+	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
 	// ============
 	// MAIN WINDOW
@@ -1059,116 +1142,7 @@ void() User_SkillsScreen =
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
-	// =======
-	// HEADER
-	// =======
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text([2.5, 4], MENU_TEXT_MEDIUM,
-		strcat(gender, " ^1", name),
-		MENU_TEXT_1, 1, 0);
-
-	// ================
-	// CHARACTER MODEL
-	// ================
-	vector modelpos = [25, 25];
-	vector modelsz = [125, 150];
-
-	sui_border_box(modelpos, modelsz, 2, MENU_BORDER, 0.3, 0);
-	sui_fill(modelpos, modelsz, MENU_BG_DARK, 0.75, 0);
-
-	Draw_3DPDoll(modelpos - [25, 0]);
-
-	// =========================================================
-	// LEFT INFO COLUMN
-	// =========================================================
-	vector info = [2, 20];
-
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Level: ^7", ftos(level)),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Exp: ^7", ftos(exp), " / ", ftos(expneed)),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Skill Points: ^7", ftos(skillpoints)),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 12;
-
-	// =========================================================
-	// EQUIPMENT
-	// =========================================================
-	sui_text(info, MENU_TEXT_SMALL, "^5Main Hand", MENU_TEXT_1, 1, 0);
-
-	info_x += 40;
-	my_button("unequip_mainhand", info, [30, 10], "Unequip", "")
-		? sendevent("User_UnequipMainhand", "", 0)
-		: 0;
-	info_x -= 40;
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^1DPS: ^7", dpss, " (^8", dps_type, "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 12;
-
-	sui_text(info, MENU_TEXT_SMALL, "^5Off Hand", MENU_TEXT_1, 1, 0);
-
-	info_x += 40;
-	my_button("unequip_offhand", info, [30, 10], "Unequip", "")
-		? sendevent("User_UnequipOffhand", "", 0)
-		: 0;
-	info_x -= 40;
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL, offhand, MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^2Blocking: ^7", ftos(blocking)),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 12;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 20;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^1Reaper Marks: ^7", ftos(reapermarks)),
-		MENU_TEXT_1, 1, 0);
+	UI_DrawPlayerSummary(); // Draw all left side player information + 3d model
 
 	// ============
 	// SKILLS PANEL
@@ -1248,76 +1222,6 @@ void() User_MagicScreen =
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
-	// =================
-	// CACHE STATS
-	// =================
-	string name = LOGIN_NAME;
-	string gender = getstats(STAT_GENDER);
-
-	float level = getstatf(STAT_LEVEL);
-	float exp = getstatf(STAT_EXP);
-	float expneed = getstatf(STAT_EXPNEEDED);
-
-	float gold = getstatf(STAT_GOLD);
-	float bank = getstatf(STAT_GOLD_BANK);
-	float skillpoints = getstatf(STAT_SKILLPOINTS);
-	float reapermarks = getstatf(STAT_REAPERMARK);
-
-	string mainhand = getstats(STAT_MAINHAND);
-	string offhand = getstats(STAT_OFFHAND);
-
-	float atmin = getstatf(STAT_ATTACKMIN);
-	float atmax = getstatf(STAT_ATTACKMAX);
-	float atspd = getstatf(STAT_ATTACKSPEED);
-	float atype = getstatf(STAT_ATTACKTYPE);
-
-	string armor = getstats(STAT_ARMORNAME);
-	float armorval = getstatf(STAT_ARMORVALUE);
-
-	string spell_equip = getstats(STAT_SPELLEQUIPPED);
-	float spmin = getstatf(STAT_SPELLMIN);
-	float spmax = getstatf(STAT_SPELLMAX);
-
-	float projmin = getstatf(STAT_PROJ_MIN);
-	float projmax = getstatf(STAT_PROJ_MAX);
-
-	float blocking = getstatf(STAT_BLOCKVALUE);
-	float bonfire = getstatf(STAT_BONFIRE);
-
-	// ========
-	// DPS CALC
-	// ========
-	float dps = (atmin + atmax * 0.5) / atspd;
-
-	float unarmed = getstatf(STAT_SKILL_UNARMED);
-	float slash = getstatf(STAT_SKILL_SLASH);
-	float pierce = getstatf(STAT_SKILL_PIERCE);
-	float bash = getstatf(STAT_SKILL_BASH);
-	float archery = getstatf(STAT_SKILL_ARCHERY);
-
-	if (!atype)
-		dps = (unarmed * 0.055) / atspd;
-	else if (atype == 1)
-		dps += slash * 0.1;
-	else if (atype == 2)
-		dps += pierce * 0.1;
-	else if (atype == 3)
-		dps += bash * 0.1;
-	else
-	{
-		dps = (((atmin + atmax) * 0.5) + ((projmin + projmax) * 0.5)) / atspd;
-		dps += archery * 0.1;
-	}
-
-	string dpss = sprintf("%.2f", dps);
-
-	string dps_type;
-	if (!atype) dps_type = "Unarmed";
-	else if (atype == 1) dps_type = "Slash";
-	else if (atype == 2) dps_type = "Pierce";
-	else if (atype == 3) dps_type = "Bash";
-	else if (atype == 4) dps_type = "Projectile";
-	else dps_type = "Unknown";
 
 	// ============
 	// MAIN WINDOW
@@ -1331,101 +1235,7 @@ void() User_MagicScreen =
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
-	// =================
-	// HEADER
-	// =================
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text([2.5, 4], MENU_TEXT_MEDIUM,
-		strcat(gender, " ^1", name),
-		MENU_TEXT_1, 1, 0);
-
-	// =================
-	// MODEL
-	// =================
-	vector modelpos = [25, 25];
-	vector modelsz = [125, 150];
-
-	sui_border_box(modelpos, modelsz, 2, MENU_BORDER, 0.3, 0);
-	sui_fill(modelpos, modelsz, MENU_BG_DARK, 0.75, 0);
-
-	Draw_3DPDoll(modelpos - [25, 0]);
-
-	// =================
-	// LEFT COLUMN
-	// =================
-	vector info = [2, 20];
-
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-
-	sui_text(info, MENU_TEXT_SMALL, strcat("^5Level: ^7", ftos(level)), MENU_TEXT_1, 1, 0);
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL, strcat("^5Exp: ^7", ftos(exp), " / ", ftos(expneed)), MENU_TEXT_1, 1, 0);
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL, strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)), MENU_TEXT_1, 1, 0);
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL, strcat("^5Skill Points: ^7", ftos(skillpoints)), MENU_TEXT_1, 1, 0);
-	info_y += 12;
-
-	// =================
-	// EQUIPMENT
-	// =================
-	sui_text(info, MENU_TEXT_SMALL, "^5Main Hand", MENU_TEXT_1, 1, 0);
-
-	info_x += 40;
-	my_button("unequip_mainhand", info, [30, 10], "Unequip", "")
-		? sendevent("User_UnequipMainhand", "", 0)
-		: 0;
-	info_x -= 40;
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^1DPS: ^7", dpss, " (^8", dps_type, "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 12;
-
-	sui_text(info, MENU_TEXT_SMALL, "^5Off Hand", MENU_TEXT_1, 1, 0);
-
-	info_x += 40;
-	my_button("unequip_offhand", info, [30, 10], "Unequip", "")
-		? sendevent("User_UnequipOffhand", "", 0)
-		: 0;
-	info_x -= 40;
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL, offhand, MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL, strcat("^2Blocking: ^7", ftos(blocking)), MENU_TEXT_1, 1, 0);
-	info_y += 12;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Magic Spell: ^7", spell_equip, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 20;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^1Reaper Marks: ^7", ftos(reapermarks)),
-		MENU_TEXT_1, 1, 0);
+	UI_DrawPlayerSummary(); // Draw all left side player information + 3d model
 
 	// ===========
 	// SPELL PANEL
@@ -1515,70 +1325,6 @@ void() User_InventoryScreen =
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
 	// =========================================================
-	// CACHE STATS
-	// =========================================================
-	string name = LOGIN_NAME;
-	string gender = getstats(STAT_GENDER);
-
-	float level = getstatf(STAT_LEVEL);
-	float exp = getstatf(STAT_EXP);
-	float expneed = getstatf(STAT_EXPNEEDED);
-
-	float gold = getstatf(STAT_GOLD);
-	float bank = getstatf(STAT_GOLD_BANK);
-	float skillpoints = getstatf(STAT_SKILLPOINTS);
-	float reapermarks = getstatf(STAT_REAPERMARK);
-
-	string mainhand = getstats(STAT_MAINHAND);
-	string offhand = getstats(STAT_OFFHAND);
-
-	float atmin = getstatf(STAT_ATTACKMIN);
-	float atmax = getstatf(STAT_ATTACKMAX);
-	float atspd = getstatf(STAT_ATTACKSPEED);
-	float atype = getstatf(STAT_ATTACKTYPE);
-
-	string armor = getstats(STAT_ARMORNAME);
-	float armorval = getstatf(STAT_ARMORVALUE);
-
-	string spell = getstats(STAT_SPELLEQUIPPED);
-	float spmin = getstatf(STAT_SPELLMIN);
-	float spmax = getstatf(STAT_SPELLMAX);
-
-	float blocking = getstatf(STAT_BLOCKVALUE);
-
-	// =========
-	// DPS CALC
-	// =========
-	float dps = (atmin + atmax * 0.5) / atspd;
-
-	float unarmed = getstatf(STAT_SKILL_UNARMED);
-	float slash = getstatf(STAT_SKILL_SLASH);
-	float pierce = getstatf(STAT_SKILL_PIERCE);
-	float bash = getstatf(STAT_SKILL_BASH);
-	float archery = getstatf(STAT_SKILL_ARCHERY);
-
-	if (!atype)
-		dps = (unarmed * 0.055) / atspd;
-	else if (atype == 1)
-		dps += slash * 0.1;
-	else if (atype == 2)
-		dps += pierce * 0.1;
-	else if (atype == 3)
-		dps += bash * 0.1;
-	else
-		dps = (((atmin + atmax) * 0.5) + archery) / atspd;
-
-	string dpss = sprintf("%.2f", dps);
-
-	string dps_type;
-	if (!atype) dps_type = "Unarmed";
-	else if (atype == 1) dps_type = "Slash";
-	else if (atype == 2) dps_type = "Pierce";
-	else if (atype == 3) dps_type = "Bash";
-	else if (atype == 4) dps_type = "Projectile";
-	else dps_type = "Unknown";
-
-	// =========================================================
 	// MAIN WINDOW
 	// =========================================================
 	vector pos = [0, 0];
@@ -1590,112 +1336,7 @@ void() User_InventoryScreen =
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
-	// =========================================================
-	// HEADER
-	// =========================================================
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text([2.5, 4], MENU_TEXT_MEDIUM,
-		strcat(gender, " ^1", name),
-		MENU_TEXT_1, 1, 0);
-
-	// =========================================================
-	// CHARACTER MODEL
-	// =========================================================
-	vector modelpos = [25, 25];
-	vector modelsz = [125, 150];
-
-	sui_border_box(modelpos, modelsz, 2, MENU_BORDER, 0.3, 0);
-	sui_fill(modelpos, modelsz, MENU_BG_DARK, 0.75, 0);
-
-	Draw_3DPDoll(modelpos - [25, 0]);
-
-	// ================
-	// LEFT INFO COLUMN
-	// ================
-	vector info = [2, 20];
-
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Level: ^7", ftos(level)),
-		MENU_TEXT_1, 1, 0);
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Exp: ^7", ftos(exp), " / ", ftos(expneed)),
-		MENU_TEXT_1, 1, 0);
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)),
-		MENU_TEXT_1, 1, 0);
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Skill Points: ^7", ftos(skillpoints)),
-		MENU_TEXT_1, 1, 0);
-	info_y += 12;
-
-	// =========================================================
-	// EQUIPMENT
-	// =========================================================
-	sui_text(info, MENU_TEXT_SMALL, "^5Main Hand", MENU_TEXT_1, 1, 0);
-
-	info_x += 40;
-	my_button("unequip_mainhand", info, [30, 10], "Unequip", "")
-		? sendevent("User_UnequipMainhand", "", 0)
-		: 0;
-	info_x -= 40;
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^1DPS: ^7", dpss, " (^8", dps_type, "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 12;
-
-	sui_text(info, MENU_TEXT_SMALL, "^5Off Hand", MENU_TEXT_1, 1, 0);
-
-	info_x += 40;
-	my_button("unequip_offhand", info, [30, 10], "Unequip", "")
-		? sendevent("User_UnequipOffhand", "", 0)
-		: 0;
-	info_x -= 40;
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL, offhand, MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^2Blocking: ^7", ftos(blocking)),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 12;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 10;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"),
-		MENU_TEXT_1, 1, 0);
-
-	info_y += 20;
-
-	sui_text(info, MENU_TEXT_SMALL,
-		strcat("^1Reaper Marks: ^7", ftos(reapermarks)),
-		MENU_TEXT_1, 1, 0);
+	UI_DrawPlayerSummary(); // Draw all left side player information + 3d model
 
 	// =========================================================
 	// INVENTORY PANEL

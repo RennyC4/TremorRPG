@@ -1,16 +1,25 @@
-vector MENU_BG = '0.3 0.3 0.3';
-vector MENU_BG_DARK = '0.1 0.1 0.1';
-vector MENU_BORDER = '1.25 0.35 0.35';
-vector MENU_BUTTON = '0.4 0.4 0.4';
-vector MENU_BUTTON_BORDER = '0.45 0.45 0.45';
-vector MENU_TEXT_1 = '1 1 1';
-vector MENU_TEXT_2 = '0.7 0.75 0.75';
-vector MENU_HIGHLIGHT = '1 1 1';
-vector MENU_DARKEN = '1 1 1';
+// =====================
+// BLUE THEME PALETTE
+// =====================
+vector MENU_BG            = '0.08 0.18 0.12'; // deep navy-teal background
+vector MENU_BG_DARK       = '0.03 0.10 0.07'; // near-black blue tint
 
-vector MENU_TEXT_SMALL = '8 8 0';
-vector MENU_TEXT_MEDIUM = '16 16 0';
-vector MENU_TEXT_LARGE = '24 24 0';
+vector MENU_BORDER        = '0.20 0.55 0.90'; // bright azure edge
+vector MENU_BUTTON        = '0.12 0.28 0.22'; // muted blue-green panel
+vector MENU_BUTTON_BORDER = '0.25 0.65 1.00'; // glowing cyan border
+
+vector MENU_TEXT_1        = '0.90 0.95 1.00'; // near-white cool text
+vector MENU_TEXT_2        = '0.60 0.75 0.85'; // secondary soft blue text
+
+vector MENU_HIGHLIGHT     = '0.35 0.80 1.00'; // hover glow cyan
+vector MENU_DARKEN        = '0.05 0.12 0.20'; // overlay dim blue
+
+// =====================
+// TEXT SIZES
+// =====================
+vector MENU_TEXT_SMALL    = '8 8 0';
+vector MENU_TEXT_MEDIUM   = '16 16 0';
+vector MENU_TEXT_LARGE    = '24 24 0';
 
 void() input_tester =
 {
