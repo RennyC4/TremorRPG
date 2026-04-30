@@ -762,23 +762,23 @@ void() Player_Screen =
 
 		if (player_menu == MENU_CHARACTER)
 		{
+			Draw_EventLog();
 			User_SkillsScreen();
 			Draw_HUDIcons();
-			Draw_EventLog();
 		}
 		if (player_menu == MENU_INVENTORY)
 		{
-			User_InventoryScreen();
-			Draw_HUDIcons();
 			Draw_EventLog();
 			Draw_ToolTip();
+			User_InventoryScreen();
+			Draw_HUDIcons();
 		}
 		if (player_menu == MENU_MAGIC)
 		{
-			User_MagicScreen();
-			Draw_HUDIcons();
 			Draw_EventLog();
 			Draw_ToolTip();
+			User_MagicScreen();
+			Draw_HUDIcons();
 		}
 		if (player_menu == MENU_DIALOGUE)
 			User_NPCDialogue();

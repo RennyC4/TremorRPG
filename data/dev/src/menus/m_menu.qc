@@ -425,7 +425,10 @@ void() main_menu =
 	sui_pic(logo_pos, logo_size+[5,5,5], "textures/logo.png", colour, 1, 0); // logo shadow effect
 	sui_pic(logo_pos, logo_size, "textures/logo.png", '1 1 1', 1, 0);
 
+	//
 	// Handling the actual menu
+	//
+
 	vector pos = [25, -75];
 	vector size = [120, 180];
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
@@ -443,8 +446,27 @@ void() main_menu =
 	my_button("mm_credits", [0, 8 + 96], [size_x - 16, 20], "Credits") ? current_menu = MENU_CREDITS : 0;
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_END]);
 	my_button("mm_quit", [0, -8], [size_x - 16, 20], "Quit") ? localcmd("cfg_save;disconnect;quit\n") : 0;
+
 	sui_pop_frame();	
 
+	float ingame_status = clientstate();
+
+	//
+	// Resume game button
+	//
+	if (ingame_status == 2)
+	{
+		pos = [25, -185];
+		size = [120, 20];
+
+		sui_push_frame(pos, size);
+		sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
+
+		my_button("mm_resume", [0, 8], [size_x - 16, 20], "Resume Game") ? m_toggle(0) : 0;
+
+		sui_pop_frame();
+	}
+	
 	if (serverkey("constate") == "active")
 		connect_text = FALSE;
 
