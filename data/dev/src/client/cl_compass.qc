@@ -2,7 +2,7 @@
 // CSQC compass, coordinates
 // -------------------------
 
-float compass_radius = 60; // radius size of compass rose
+float compass_radius = 60;
 
 // colors
 vector COMPASS_FG   = '1 1 1';
@@ -42,30 +42,52 @@ string(float v, float prec) ftoa_prec =
 // ---------------
 // compass drawing
 // ---------------
-
 void() Compass_Draw =
 {
-	vector center = [g_width - (compass_radius + 5), -2.5 + compass_radius];
+	// =========================================================
+	// runtime-scaled radius (SAFE)
+	// =========================================================
+	float radius = compass_radius * UI_Scale();
+
+	// fixed anchor
+	vector center;
+	center_x = g_width - (UI_Scale() * 65);
+	center_y = UI_Scale() * 65;
 
 	// camera yaw
 	vector vang = getproperty(VF_ANGLES);
 	float yaw = angle_normalize360(vang_y);
 
-	// draw 8 cardinal directions around circle
+	// =========================================================
+	// draw ring
+	// =========================================================
 	float step = 45;
 	float ang;
+
 	for (ang = 0; ang < 360; ang += step)
 	{
 		string lbl = heading_to_cardinal(ang);
-		vector s = [10, 10, 0];
-		float rad = compass_radius - 14;
+
+		float rad = radius - (UI_Scale() * 14);
 		float radAng = (ang - yaw) * M_PI / 180;
-		float x = center_x + cos(radAng) * rad;
-		float y = center_y - sin(radAng) * rad;
-		vector sz = [stringwidth(lbl, 10, 0), 10];
-		vector col = (ang == 0 ? COMPASS_HI : COMPASS_FG);
-		drawstring([x - sz_x*0.5+1, y - 5+1], lbl, s, '0 0 0', 1, 0); // shadow
-		drawstring([x - sz_x*0.5, y - 5, 0], lbl, s, '1 1 1', 1, 0);
+
+		vector p;
+		p_x = center_x + cos(radAng) * rad;
+		p_y = center_y - sin(radAng) * rad;
+
+		vector txtsize = [UI_Scale() * 10, UI_Scale() * 10];
+
+		float tw = stringwidth(lbl, txtsize_x, 0);
+
+		drawstring(
+			[p_x - tw * 0.5,
+			 p_y - (UI_Scale() * 5)],
+			lbl,
+			txtsize,
+			(ang == 0 ? COMPASS_HI : COMPASS_FG),
+			1,
+			0
+		);
 	}
 };
 
@@ -74,18 +96,43 @@ void() Compass_Draw =
 // -----------
 void() Coords_Draw =
 {
-	vector org = [getstatf(STAT_PLAYER_X), getstatf(STAT_PLAYER_Y)];	
+	vector org = [
+		getstatf(STAT_PLAYER_X),
+		getstatf(STAT_PLAYER_Y)
+	];
 
-	float prec = 0;
-	string sx = ftoa_prec(org_x, prec);
-	string sy = ftoa_prec(org_y, prec);
-	string txt = strcat("X: ", sx, " Y: ", sy);
+	string txt = strcat(
+		"X: ", ftoa_prec(org_x, 0),
+		" Y: ", ftoa_prec(org_y, 0)
+	);
 
-	vector scale = [10, 10];
-	float tw = stringwidth(txt, 1, [10,10]);
-	vector pos = [g_width - tw - 8, (compass_radius * 2) - 4];
+	vector scale = [UI_Scale() * 10, UI_Scale() * 10];
 
-	// backdrop
-	drawfill(pos + [-8,-4], [tw+16, 16], '0,0,0', 0.35, 0);
+	float tw = stringwidth(txt, scale_x, 0);
+
+	// =========================================================
+	// FIXED COMPASS-RELATIVE ANCHOR (NOT SCREEN EDGE CALC)
+	// =========================================================
+	vector base;
+	base_x = g_width - (UI_Scale() * 90);   // locked HUD column
+	base_y = UI_Scale() * 125;                // aligned under compass
+
+	vector pos;
+	pos_x = base_x;
+	pos_y = base_y;
+
+	// =========================================================
+	// BACKGROUND (stable box, not text-driven width shift)
+	// =========================================================
+	drawfill(
+		[pos_x - (UI_Scale() * 8),
+		 pos_y - (UI_Scale() * 4)],
+		[UI_Scale() * 90, UI_Scale() * 16],
+		'0 0 0',
+		0.35,
+		0
+	);
+
+	// TEXT (no longer used for positioning math)
 	drawstring(pos, txt, scale, COMPASS_FG, 1, 0);
 };

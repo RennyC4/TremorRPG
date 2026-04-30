@@ -156,155 +156,188 @@ void(int what) SetGender =
 // LOGIN SCREEN UI
 // ============================================================
 float did_autofill;
+
 void() User_LoginScreen =
 {
 	// =========================================================
-	// SCALE
-	// =========================================================
-	float scale_x = g_width / 1920;
-	float scale_y = g_height / 1080;
-	float scale = min(scale_x, scale_y);
-	scale = bound(0.75, scale, 1.5);
-
-	#define UI(x,y) [x * scale, y * scale]
-
-	// =========================================================
-	// BACKGROUND
+	// BACKGROUND (FULL SCREEN - NO SCALING NEEDED)
 	// =========================================================
 	sui_pic([0,0], [g_width, g_height], "textures/login.jpg", '0.5 0.5 0.5', 1, 0);
 
 	// =========================================================
-	// PANEL (LEFT SIDE)
+	// AUTOFILL
 	// =========================================================
-	vector size = UI(380, 270);
-	float margin = 40 * scale;
-
-	vector pos = [
-		margin,
-		(g_height - size_y) * 0.5
-	];
-
-	// Autofill once
 	if (!did_autofill)
 	{
 		ReadLastLogin();
 		did_autofill = TRUE;
 	}
 
+	// =========================================================
+	// LOGO (GLOBAL HEADER - ABOVE EVERYTHING)
+	// =========================================================
+	vector logo_size = [UI(214), UI(90)];
+
+	vector logo_pos;
+	logo_pos_x = (g_width - logo_size_x) * 0.175;
+	logo_pos_y = UI(45);
+
+	drawpic(logo_pos, "textures/logo2.png", logo_size, '1 1 1', 1, 0);
+
+	// =========================================================
+	// MAIN PANEL (CONSISTENT UI SYSTEM)
+	// =========================================================
+	vector size = [UI(380), UI(270)];
+	float margin = UI(40);
+
+	vector pos;
+	pos_x = margin;
+	pos_y = (g_height - size_y) * 0.5;
+
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_push_frame(pos, size);
 
-	// Background
+	// Panel background
 	sui_fill([0,0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0,0], size, 2, MENU_BORDER, 0.3, 0);
 
 	// =========================================================
-	// LOGO
+	// CONTENT FLOW
 	// =========================================================
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_pic(UI(75, -110), UI(214,90), "textures/logo2.png", [1,1,1], 1, 0);
+	float y = UI(10);
+	vector input_size = [UI(240), UI(25)];
 
-	// =========================================================
-	// CONTENT FLOW (TOP → BOTTOM)
-	// =========================================================
-	float y = 10 * scale;
-	vector input_size = UI(240, 25);
-
-	// ---- Header ----
+	// ---- HEADER ----
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-	sui_text([size_x * 0.01, y], MENU_TEXT_MEDIUM, "Character Information", '0 1 1', 1, 0);
+	sui_text([size_x * 0.01, y],
+		MENU_TEXT_MEDIUM,
+		"Character Information",
+		'0 1 1',
+		1,
+		0);
 
-	y += 35 * scale;
+	y += UI(35);
 
-	// ---- Name ----
+	// ---- NAME ----
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-	sui_text(UI(10, y + 5), MENU_TEXT_SMALL, "Name", MENU_TEXT_MEDIUM, 1, 0);
+	sui_text([UI(10), y + UI(5)],
+		MENU_TEXT_SMALL,
+		"Name",
+		MENU_TEXT_MEDIUM,
+		1,
+		0);
 
-	sui_fill(UI(80, y - 5), input_size, MENU_BG_DARK, 0.75, 0);
-	text_input_control("name_entry", UI(80, y - 5), input_size, 31, LOGIN_NAME, cursor, FALSE);
-	sui_border_box(UI(80, y - 5), input_size, 2, MENU_BORDER, 0.3, 0);
+	sui_fill([UI(80), y - UI(5)], input_size, MENU_BG_DARK, 0.75, 0);
+	text_input_control("name_entry", [UI(80), y - UI(5)], input_size, 31, LOGIN_NAME, cursor, FALSE);
+	sui_border_box([UI(80), y - UI(5)], input_size, 2, MENU_BORDER, 0.3, 0);
 
-	y += 35 * scale;
+	y += UI(35);
 
-	// ---- Password ----
-	sui_text(UI(10, y + 5), MENU_TEXT_SMALL, "Password", MENU_TEXT_MEDIUM, 1, 0);
+	// ---- PASSWORD ----
+	sui_text([UI(10), y + UI(5)],
+		MENU_TEXT_SMALL,
+		"Password",
+		MENU_TEXT_MEDIUM,
+		1,
+		0);
 
-	sui_fill(UI(80, y - 5), input_size, MENU_BG_DARK, 0.75, 0);
-	text_input_control("password_entry", UI(80, y - 5), input_size, 31, LOGIN_PASSWORD, cursor, TRUE);
-	sui_border_box(UI(80, y - 5), input_size, 2, MENU_BORDER, 0.3, 0);
+	sui_fill([UI(80), y - UI(5)], input_size, MENU_BG_DARK, 0.75, 0);
+	text_input_control("password_entry", [UI(80), y - UI(5)], input_size, 31, LOGIN_PASSWORD, cursor, TRUE);
+	sui_border_box([UI(80), y - UI(5)], input_size, 2, MENU_BORDER, 0.3, 0);
 
-	y += 40 * scale;
+	y += UI(40);
 
-	// ---- Login buttons ----
-	float btn_h = 24 * scale;
+	// ---- LOGIN BUTTONS ----
+	float btn_h = UI(24);
 
 	my_button("login_login",
 		[0, y],
 		[size_x * 0.5, btn_h],
-		"Login", "") ? User_ResumeCharacter(FALSE) : 0;
+		"Login", "")
+		? User_ResumeCharacter(FALSE)
+		: 0;
 
 	my_button("login_lastlogin",
 		[size_x * 0.5, y],
 		[size_x * 0.5, btn_h],
-		"Use Last Login", "") ? User_ResumeCharacter(TRUE) : 0;
+		"Use Last Login", "")
+		? User_ResumeCharacter(TRUE)
+		: 0;
 
-	y += 35 * scale;
+	y += UI(35);
 
-	// ---- New Character section ----
+	// ---- NEW CHARACTER ----
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text([size_x * 0.45, y], MENU_TEXT_SMALL, "New Character", '0 1 1', 1, 0);
 
-	y += 25 * scale;
+	sui_text([size_x * 0.45, y],
+		MENU_TEXT_SMALL,
+		"New Character",
+		'0 1 1',
+		1,
+		0);
 
-	// Gender buttons (centered properly)
-	float btn_w = 70 * scale;
-	float gap = 20 * scale;
+	y += UI(25);
+
+	// ---- GENDER BUTTONS ----
+	float btn_w = UI(70);
+	float gap = UI(20);
+
 	float start_x = (size_x - (btn_w * 2 + gap)) * 0.5;
-
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
 	my_button("login_male",
 		[start_x, y],
-		[btn_w, 26 * scale],
-		"Male", "") ? SetGender(0) : 0;
+		[btn_w, UI(26)],
+		"Male", "")
+		? SetGender(0)
+		: 0;
 
 	my_button("login_female",
 		[start_x + btn_w + gap, y],
-		[btn_w, 26 * scale],
-		"Female", "") ? SetGender(1) : 0;
+		[btn_w, UI(26)],
+		"Female", "")
+		? SetGender(1)
+		: 0;
 
-	y += 40 * scale;
+	y += UI(40);
 
-	// ---- Create Character (LAST like original) ----
+	// ---- CREATE CHARACTER ----
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
+
 	my_button("login_newchar",
 		[0, y],
-		[size_x, 36 * scale],
-		"Create New Character", "") ? User_NewCharacter(LOGIN_GENDER) : 0;
+		[size_x, UI(36)],
+		"Create New Character", "")
+		? User_NewCharacter(LOGIN_GENDER)
+		: 0;
 
+	// =========================================================
+	// CLOSE PANEL
+	// =========================================================
 	sui_pop_frame();
 
 	// =========================================================
-	// DISCONNECT BUTTON (BOTTOM RIGHT)
+	// DISCONNECT BUTTON
 	// =========================================================
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
 
 	my_button("login_quit",
 		UI(-10, -10),
-		UI(140, 32),
-		"Disconnect", "") ? localcmd("disconnect\n") : 0;
+		UI(70, 16),
+		"Disconnect", "")
+		? localcmd("disconnect\n")
+		: 0;
 
 	// =========================================================
-	// MOTD (BOTTOM CENTER)
+	// MOTD
 	// =========================================================
 	if (motd != "")
 	{
 		vector msize = UI(500, 70);
-		vector mpos = [
-			(g_width - msize_x) * 0.5,
-			g_height - msize_y - 10 * scale
-		];
+
+		vector mpos;
+		mpos_x = (g_width - msize_x) * 0.5;
+		mpos_y = g_height - UI(70) - UI(10);
 
 		drawfill(mpos, msize, MENU_BG_DARK, 0.25, 0);
 		drawtextfield(mpos, msize, 3, motd);

@@ -371,7 +371,7 @@ float(string strCommand) CSQC_ConsoleCommand =
 	if (argv(0) == "show_inventory")
 	{
 		// turn off cursor mode if user closes menu by quick command
-		float player_menu = getstatf(STAT_MENU);
+		player_menu = getstatf(STAT_MENU);
 		if (!player_menu) cursor_mode = TRUE;
 		else cursor_mode = FALSE;
 
@@ -380,7 +380,7 @@ float(string strCommand) CSQC_ConsoleCommand =
 	if (argv(0) == "show_magic")
 	{
 		// turn off cursor mode if user closes menu by quick command
-		float player_menu = getstatf(STAT_MENU);
+		player_menu = getstatf(STAT_MENU);
 		if (!player_menu) cursor_mode = TRUE;
 		else cursor_mode = FALSE;
 
@@ -1079,7 +1079,7 @@ void(float flIsNew) CSQC_Ent_Update =
 	//
 	if (flEntType == ENT_FISHNODE)
 	{
-		float deltaFlags = readshort();
+		deltaFlags = readshort();
 
 		if (flIsNew)
 		{

@@ -3,6 +3,27 @@
 //
 string(string s) StripColors;
 
+float() UI_Scale =
+{
+	float base_w = 800;
+	float base_h = 600;
+
+	float sx = g_width / base_w;
+	float sy = g_height / base_h;
+
+	if (sx < sy)
+		return sx;
+	return sy;
+};
+
+#define UI(x) ((x) * UI_Scale())
+#define UIPOS(x) ((x) * UI_Scale())
+
+float() UI_TextScale =
+{
+	return UI_Scale() * 1.0; // tweak this for a slightly smaller/larger UI overall
+};
+
 // ===============
 // Monster Plaques
 // ===============
@@ -558,80 +579,144 @@ void(float screenwidth, float screenheight) Draw_ZoneName =
 
 void() Draw_ChatLog =
 {
-    vector size = [230, 100];
-    vector pos;
+	// =========================================================
+	// PANEL SIZE (scaled)
+	// =========================================================
+	vector size = [UI(230), UI(100)];
 
-    float offset_right = 0;
-    float offset_bottom = 7;
+	float offset_right = UI(0);
+	float offset_bottom = UI(7);
 
-    pos_x = g_width - size_x - offset_right;
-    pos_y = g_height - size_y - offset_bottom;
-    pos = [pos_x, pos_y];
+	// =========================================================
+	// POSITION (bottom-right anchored properly)
+	// =========================================================
+	vector pos;
+	pos_x = g_width - size_x - offset_right;
+	pos_y = g_height - size_y - offset_bottom;
+	pos = [pos_x, pos_y];
 
-    sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-    sui_push_frame(pos, size);
+	// =========================================================
+	// FRAME
+	// =========================================================
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_push_frame(pos, size);
 
-    // Background
-    sui_fill([0, 0], size, '0 0 0', 0.5, 0);
-    sui_border_box([0, 0], size, 2, '0 0 0', 0.1, 0);
+	sui_fill([0, 0], size, '0 0 0', 0.5, 0);
+	sui_border_box([0, 0], size, 2, '0 0 0', 0.1, 0);
 
-    // Draw chat text
-    float y = 4;
-    float i;
+	// =========================================================
+	// CHAT TEXT
+	// =========================================================
+	float y = UI(4);
+	float i;
 
-    for (i = MAX_CHAT_LINES - 1; i >= 0; i--)
-    {
-        if (!chat_lines[i])
-            continue;
+	float line_step = UI(12);
 
-		sui_text([2,y], MENU_TEXT_SMALL, chat_lines[i], '1 1 1', 1, 0);
-        y += 12;
-    }
+	for (i = MAX_CHAT_LINES - 1; i >= 0; i--)
+	{
+		if (!chat_lines[i])
+			continue;
 
-    sui_pop_frame();
+		sui_text(
+			[UI(2), y],
+			MENU_TEXT_SMALL,
+			chat_lines[i],
+			'1 1 1',
+			1,
+			0
+		);
+
+		y += line_step;
+	}
+
+	sui_pop_frame();
 };
 
 void() Draw_HUDIcons =
 {
-	vector pos = [8, -145];
-	vector size = [32, 32];
+	// =========================================================
+	// BASE ICON SIZE (scaled)
+	// =========================================================
+	vector size = [UI(32), UI(32)];
 
-	// Bottom Left Buttons (Event Log)
+	// =========================================================
+	// BOTTOM LEFT BUTTONS (Skills / Magic / Inventory)
+	// =========================================================
+	vector pos = [UI(8), UI(-145)];
+
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	my_button_gfx("button_char", pos, size, "progs/char.png", "Skills") ? sendevent("PlayerShowStats", "") : 0; // avatar button
-	pos_x += 38;
-	my_button_gfx("button_magic", pos, size, "progs/magic.png", "Magic") ? sendevent("PlayerShowMagic", "") : 0; // magic
-	pos_x += 38;
-	my_button_gfx("button_inventory", pos, size, "progs/inventory.png", "Inventory") ? sendevent("PlayerShowInventory", "") : 0; // inventory
 
-	//  Top Left Buttons (Compass)
+	my_button_gfx("button_char", pos, size, "progs/char.png", "Skills")
+		? sendevent("PlayerShowStats", "")
+		: 0;
+
+	pos_x += UI(38);
+
+	my_button_gfx("button_magic", pos, size, "progs/magic.png", "Magic")
+		? sendevent("PlayerShowMagic", "")
+		: 0;
+
+	pos_x += UI(38);
+
+	my_button_gfx("button_inventory", pos, size, "progs/inventory.png", "Inventory")
+		? sendevent("PlayerShowInventory", "")
+		: 0;
+
+	// =========================================================
+	// TOP LEFT BUTTONS (System / PvP)
+	// =========================================================
 	pos = [0, 0];
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	pos_x -= 8;
-	pos_y += 142;
 
-	my_button_gfx("button_system", pos, size, "progs/gear.png", "System") ? localcmd("togglemenu\n") : 0; // system menu
-	pos_x -= 40;
-	my_button_gfx("button_pvp", pos, size, "progs/pvp.png", "PvP Toggle") ? sendevent("User_TogglePVP", "") : 0; // pvp toggle
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+
+	pos_x -= UI(8);
+	pos_y += UI(142);
+
+	my_button_gfx("button_system", pos, size, "progs/gear.png", "System")
+		? localcmd("togglemenu\n")
+		: 0;
+
+	pos_x -= UI(40);
+
+	my_button_gfx("button_pvp", pos, size, "progs/pvp.png", "PvP Toggle")
+		? sendevent("User_TogglePVP", "")
+		: 0;
 };
 
 void() Draw_EventLog =
 {
-	vector pos = [0, -45];
-	vector size = [230, 100];
+	// =========================================================
+	// PANEL SIZE (scaled)
+	// =========================================================
+	vector pos = [0, UI(-45)];
+	vector size = [UI(230), UI(100)];
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
 	sui_push_frame(pos, size);
+
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+
 	sui_pop_frame();
 
-	// draw text
-	pos = [(g_width * 0.0001), (g_height - 146)];
-	size = [330, 100];
+	// =========================================================
+	// TEXT POSITION (fixed properly to screen bottom-left anchor)
+	// =========================================================
+	vector tpos = [
+		UI(5),
+		g_height - UI(146)
+	];
+
+	vector tsize = [UI(330), UI(100)];
+
+	// =========================================================
+	// FONT SWITCH (unchanged logic)
+	// =========================================================
 	if (drawfont != drawfont2)
 		drawfont = drawfont2;
-	con_draw("event", pos, size, 12);
+
+	con_draw("event", tpos, tsize, UI(12));
+
 	if (drawfont != drawfont1)
 		drawfont = drawfont1;
 };
@@ -641,20 +726,30 @@ void() Draw_InCombatorPVP =
 	float incombat = getstatf(STAT_INCOMBAT);
 	float pvp = getstatf(STAT_PVP);
 
-	vector pos = [195, -145];
-	vector size = [35, 35];
+	// =========================================================
+	// SCALED HUD POSITION (BOTTOM-LEFT CLUSTER)
+	// =========================================================
+	vector pos;
+	pos_x = UI_Scale() * 195;
+	pos_y = -UI_Scale() * 145;
+
+	vector size = [UI_Scale() * 35, UI_Scale() * 35];
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
 
+	// =========================================================
+	// RENDER LOGIC
+	// =========================================================
 	if (!pvp || pvp == 2)
 	{
-		if (incombat) // only show when in combat
+		if (incombat)
 			sui_pic(pos, size, "progs/combat.png", '1 1 1', 1, 0);
 	}
 	else if (pvp == 1)
-		sui_pic(pos, size, "progs/combat.png", '1 .25 .25', 1, 0); // PVP icon
+	{
+		sui_pic(pos, size, "progs/combat.png", '1 .25 .25', 1, 0);
+	}
 };
-
 
 //
 // Draw Health
@@ -664,36 +759,48 @@ void() Draw_Health =
 {
 	float h = getstatf(STAT_HEALTH);
 	float hmax = getstatf(STAT_MAXHEALTH);
-	vector pos = [30, (g_height - 38)];
 
-	// Bar
-	vector hbar_size = '100 8 0';
+	// =========================================================
+	// POSITION (scaled)
+	// =========================================================
+	vector pos = [UI(30), g_height - UI(38)];
+
+	// =========================================================
+	// BAR (scaled)
+	// =========================================================
+	vector hbar_size = [UI(100), UI(8)];
 	vector hbarpos = pos;
-	
-	drawfill(hbarpos + '1 1 0', hbar_size, '0.5 0 0', 0.35, 0); // background bar
-	
-	hbar_size_x = (h / hmax) * hbar_size_x; // keep bar updated
-	drawfill(hbarpos + '1 1 0', hbar_size, '0.5 0 0', 1, 0);
 
-	// text
+	drawfill(hbarpos + [UI(1), UI(1)], hbar_size, '0.5 0 0', 0.35, 0);
+
+	hbar_size_x = (h / hmax) * hbar_size_x;
+	drawfill(hbarpos + [UI(1), UI(1)], hbar_size, '0.5 0 0', 1, 0);
+
+	// =========================================================
+	// TEXT (scaled spacing)
+	// =========================================================
 	string h1 = FloatToIntString(h);
 	string h2 = ftos(hmax);
 
-	pos = [0, (g_height - 36)];
-	drawstring (pos+[1,1], "Health", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, "^1Health", '8 8 0', '1 1 1', 1, 0);
+	vector tpos = [0, g_height - UI(36)];
 
-	pos_x += 40;
-	drawstring (pos+[1,1], h1, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, h1, '8 8 0', '1 1 1', 1, 0);
+	drawstring(tpos + [UI(1), UI(1)], "Health", '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, "^1Health", '8 8 0', '1 1 1', 1, 0);
 
-	pos_x += 25;
-	drawstring (pos+[1,1], "/", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, "/", '8 8 0', '1 1 1', 1, 0);
+	tpos_x += UI(40);
 
-	pos_x += 20;
-	drawstring (pos+[1,1], h2, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, h2, '8 8 0', '1 1 1', 1, 0);
+	drawstring(tpos + [UI(1), UI(1)], h1, '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, h1, '8 8 0', '1 1 1', 1, 0);
+
+	tpos_x += UI(25);
+
+	drawstring(tpos + [UI(1), UI(1)], "/", '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, "/", '8 8 0', '1 1 1', 1, 0);
+
+	tpos_x += UI(20);
+
+	drawstring(tpos + [UI(1), UI(1)], h2, '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, h2, '8 8 0', '1 1 1', 1, 0);
 };
 
 //
@@ -704,44 +811,48 @@ void() Draw_Mana =
 {
 	float m = getstatf(STAT_MANA);
 	float mmax = getstatf(STAT_MAXMANA);
-	vector pos = [30, (g_height - 28)];
 
-	// Bar
-	vector mbar_size = '100 8 0';
+	vector pos = [UI(30), g_height - UI(28)];
+
+	vector mbar_size = [UI(100), UI(8)];
 	vector mbarpos = pos;
 
-	drawfill(mbarpos + '1 1 0', mbar_size, '0 0 0.5', 0.35, 0); // background bar
-	
-	mbar_size_x = (m / mmax) * mbar_size_x; // keep bar updated
-	drawfill(mbarpos + '1 1 0', mbar_size, '0 0 0.5', 1, 0);
+	drawfill(mbarpos + [UI(1), UI(1)], mbar_size, '0 0 0.5', 0.35, 0);
 
-	// text
+	mbar_size_x = (m / mmax) * mbar_size_x;
+	drawfill(mbarpos + [UI(1), UI(1)], mbar_size, '0 0 0.5', 1, 0);
+
 	string m1 = FloatToIntString(m);
 	string m2 = ftos(mmax);
 
-	pos = [0, (g_height - 26)];
-	drawstring (pos+[1,1], "Mana", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, "^4Mana", '8 8 0', '1 1 1', 1, 0);
+	vector tpos = [0, g_height - UI(26)];
 
-	pos_x += 40;
-	drawstring (pos+[1,1], m1, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, m1, '8 8 0', '1 1 1', 1, 0);
+	drawstring(tpos + [UI(1), UI(1)], "Mana", '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, "^4Mana", '8 8 0', '1 1 1', 1, 0);
 
-	pos_x += 25;
-	drawstring (pos+[1,1], "/", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, "/", '8 8 0', '1 1 1', 1, 0);
+	tpos_x += UI(40);
 
-	pos_x += 20;
-	drawstring (pos+[1,1], m2, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, m2, '8 8 0', '1 1 1', 1, 0);
-	
-	// Draw spell name on screen
+	drawstring(tpos + [UI(1), UI(1)], m1, '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, m1, '8 8 0', '1 1 1', 1, 0);
+
+	tpos_x += UI(25);
+
+	drawstring(tpos + [UI(1), UI(1)], "/", '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, "/", '8 8 0', '1 1 1', 1, 0);
+
+	tpos_x += UI(20);
+
+	drawstring(tpos + [UI(1), UI(1)], m2, '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, m2, '8 8 0', '1 1 1', 1, 0);
+
+	// Spell name
 	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
 	if (disp_magicspell != "")
 	{
-		pos_x += 50;
-		drawstring (pos+[1,1], disp_magicspell, '8 8 0', '0 0 0', 1, 0); // text shadow
-		drawstring (pos, disp_magicspell, '8 8 0', '0 .75 .75', 1, 0);
+		tpos_x += UI(50);
+
+		drawstring(tpos + [UI(1), UI(1)], disp_magicspell, '8 8 0', '0 0 0', 1, 0);
+		drawstring(tpos, disp_magicspell, '8 8 0', '0 .75 .75', 1, 0);
 	}
 };
 
@@ -753,45 +864,48 @@ void() Draw_Stamina =
 {
 	float s = getstatf(STAT_STAMINA);
 	float smax = 100;
-	vector pos = [30, (g_height - 18)];
 
-	// Bar
-	vector sbar_size = '100 8 0';
+	vector pos = [UI(30), g_height - UI(18)];
+
+	vector sbar_size = [UI(100), UI(8)];
 	vector sbarpos = pos;
 
-	drawfill(sbarpos + '1 1 0', sbar_size, '0 0.5 0', 0.35, 0); // background bar
-	
-	sbar_size_x = (s / smax) * sbar_size_x; // keep bar updated
-	drawfill(sbarpos + '1 1 0', sbar_size, '0 0.5 0', 1, 0);
+	drawfill(sbarpos + [UI(1), UI(1)], sbar_size, '0 0.5 0', 0.35, 0);
 
-	// Text
+	sbar_size_x = (s / smax) * sbar_size_x;
+	drawfill(sbarpos + [UI(1), UI(1)], sbar_size, '0 0.5 0', 1, 0);
+
 	string s1 = ftos(s);
-	string s2 = ftos(smax);	
-	string dispfix_stamina = sprintf("%.1f", s); // cut down numbers
+	string s2 = ftos(smax);
+	string dispfix_stamina = sprintf("%.1f", s);
 
-	pos = [0, (g_height - 16)];
-	drawstring (pos+[1,1], "Stamina", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, "^2Stamina", '8 8 0', '1 1 1', 1, 0);
+	vector tpos = [0, g_height - UI(16)];
 
-	pos_x += 40;
+	drawstring(tpos + [UI(1), UI(1)], "Stamina", '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, "^2Stamina", '8 8 0', '1 1 1', 1, 0);
+
+	tpos_x += UI(40);
+
 	if (s < 100)
 	{
-		drawstring (pos+[1,1], dispfix_stamina, '8 8 0', '0 0 0', 1, 0); // text shadow
-		drawstring (pos, dispfix_stamina, '8 8 0', '1 1 1', 1, 0);
+		drawstring(tpos + [UI(1), UI(1)], dispfix_stamina, '8 8 0', '0 0 0', 1, 0);
+		drawstring(tpos, dispfix_stamina, '8 8 0', '1 1 1', 1, 0);
 	}
 	else
 	{
-		drawstring (pos+[1,1], s1, '8 8 0', '0 0 0', 1, 0); // text shadow
-		drawstring (pos, s1, '8 8 0', '1 1 1', 1, 0);
+		drawstring(tpos + [UI(1), UI(1)], s1, '8 8 0', '0 0 0', 1, 0);
+		drawstring(tpos, s1, '8 8 0', '1 1 1', 1, 0);
 	}
 
-	pos_x += 25;
-	drawstring (pos+[1,1], "/", '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, "/", '8 8 0', '1 1 1', 1, 0);
+	tpos_x += UI(25);
 
-	pos_x += 20;
-	drawstring (pos+[1,1], s2, '8 8 0', '0 0 0', 1, 0); // text shadow
-	drawstring (pos, s2, '8 8 0', '1 1 1', 1, 0);
+	drawstring(tpos + [UI(1), UI(1)], "/", '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, "/", '8 8 0', '1 1 1', 1, 0);
+
+	tpos_x += UI(20);
+
+	drawstring(tpos + [UI(1), UI(1)], s2, '8 8 0', '0 0 0', 1, 0);
+	drawstring(tpos, s2, '8 8 0', '1 1 1', 1, 0);
 };
 
 //
@@ -833,17 +947,24 @@ void() Draw_Exp =
 void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
 {
     clearscene();
-    setviewprop(VF_MIN, pos);
-    setviewprop(VF_SIZE, canvas_size);
- 
-    setviewprop(VF_AFOV, 25);
+
+    vector pad = [UI(4), UI(4)];
+
+    vector vp_min = pos + pad;
+    vector vp_size = canvas_size - pad * 2;
+
+    setviewprop(VF_MIN, vp_min);
+    setviewprop(VF_SIZE, vp_size);
+
     setviewprop(VF_DRAWWORLD, FALSE);
- 
-    setviewprop(VF_ORIGIN, [zoom, 0, 0]);
     setviewprop(VF_ANGLES, '0 0 0');
- 
+
+    setviewprop(VF_AFOV, 25);
+
+    setviewprop(VF_ORIGIN, [zoom, 0, 0]);
+
     addentity(ent);
-	renderscene();
+    renderscene();
 };
 
 entity doll;
@@ -878,7 +999,6 @@ void(vector pos) Draw_3DPDoll =
 
         setorigin(doll, '0 0 0');
 		doll.angles_y -= 180;
-		//doll.origin_z -= 0;
 
 		doll.frame = frameforname(doll.modelindex, "Idle");
 	}
@@ -889,7 +1009,8 @@ void(vector pos) Draw_3DPDoll =
 	else
 		doll.frame1time += frametime;
 
-	entdraw(doll, pos, '175 275', -245);
+	vector size = [UI(175), UI(275)];
+	entdraw(doll, pos, size, -245);
 };
 
 //==============================================================
@@ -997,9 +1118,6 @@ void(float atmin, float atmax, float atspd, float atype, float projmin, float pr
 
 void() UI_DrawPlayerSummary =
 {
-	// =================
-	// CACHE
-	// =================
 	string name = LOGIN_NAME;
 	string gender = getstats(STAT_GENDER);
 
@@ -1032,85 +1150,99 @@ void() UI_DrawPlayerSummary =
 	float spmin = getstatf(STAT_SPELLMIN);
 	float spmax = getstatf(STAT_SPELLMAX);
 
-	// =================
 	// DPS
-	// =================
 	float dps;
 	string dps_type;
-	Calc_DPS(atmin, atmax, atspd, atype, projmin, projmax, getstatf(STAT_SKILL_UNARMED), getstatf(STAT_SKILL_SLASH), getstatf(STAT_SKILL_PIERCE), getstatf(STAT_SKILL_BASH), getstatf(STAT_SKILL_ARCHERY), dps, dps_type);
+	Calc_DPS(atmin, atmax, atspd, atype, projmin, projmax,
+		getstatf(STAT_SKILL_UNARMED),
+		getstatf(STAT_SKILL_SLASH),
+		getstatf(STAT_SKILL_PIERCE),
+		getstatf(STAT_SKILL_BASH),
+		getstatf(STAT_SKILL_ARCHERY),
+		dps, dps_type);
+
 	string dpss = sprintf("%.2f", dps);
 
 	// =================
 	// HEADER
 	// =================
+	vector header = [UI_Scale()*3.5, UI_Scale()*5];
+
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text([3.5, 5], MENU_TEXT_MEDIUM, strcat(gender, " ^1", name), MENU_TEXT_SHADOW, 1, 0); // drop shadow
-	sui_text([2.5, 4], MENU_TEXT_MEDIUM, strcat(gender, " ^1", name), MENU_TEXT_1, 1, 0);
+	sui_text(header + [0,1], MENU_TEXT_MEDIUM * UI_TextScale() * UI_TextScale(), strcat(gender, " ^1", name), MENU_TEXT_SHADOW, 1, 0);
+	sui_text(header, MENU_TEXT_MEDIUM * UI_TextScale() * UI_TextScale(), strcat(gender, " ^1", name), MENU_TEXT_1, 1, 0);
 
 	// =================
 	// MODEL
 	// =================
-	vector modelpos = [25, 25];
-	vector modelsz = [125, 150];
+	
+	vector modelpos = [UI(25), UI(25)];
+	vector modelsz = [UI(125), UI(150)];
 
 	sui_border_box(modelpos, modelsz, 2, MENU_BORDER, 0.3, 0);
 	sui_fill(modelpos, modelsz, MENU_BG_DARK, 0.75, 0);
 
-	Draw_3DPDoll(modelpos - [25, 0]);
+	Draw_3DPDoll(modelpos - [UI_Scale()*25, 0]);
 
 	// =================
-	// INFO COLUMN
+	// INFO
 	// =================
-	vector info = [2, 20];
+	vector info = [UI_Scale()*2, UI_Scale()*20];
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 
-	#define LINE(str) sui_text(info, MENU_TEXT_SMALL, str, MENU_TEXT_1, 1, 0); info_y += 10;
+	#define LINE(str) \
+		sui_text(info, MENU_TEXT_SMALL * UI_TextScale(), str, MENU_TEXT_1, 1, 0); \
+		info_y += UI_Scale()*10;
 
 	LINE(strcat("^5Level: ^7", ftos(level)));
 	LINE(strcat("^5Exp: ^7", ftos(exp), " / ", ftos(expneed)));
 	LINE(strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)));
-	LINE(strcat("^5Skill Points: ^7", ftos(skillpoints)));
+	LINE(strcat("^5Skill Points: ^7", ftos(skillpoints)))
 
-	info_y += 2;
+	info_y += UI_Scale()*2;
 
-	// ===== Equipment =====
-	sui_text(info, MENU_TEXT_SMALL, "^5Main Hand", MENU_TEXT_1, 1, 0);
+	// Equipment
+	sui_text(info, MENU_TEXT_SMALL * UI_TextScale(), "^5Main Hand", MENU_TEXT_1, 1, 0);
 
-	info_x += 40;
-	my_button("unequip_mainhand", info, [30,10], "Unequip", "")
+	info_x += UI_Scale()*40;
+
+	my_button("unequip_mainhand", info, [UI_Scale()*30, UI_Scale()*10], "Unequip", "")
 		? sendevent("User_UnequipMainhand", "", 0)
 		: 0;
-	info_x -= 40;
 
-	info_y += 10;
+	info_x -= UI_Scale()*40;
 
-	LINE(strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"));
-	LINE(strcat("^1DPS: ^7", dpss, " (^8", dps_type, "^7)"));
+	info_y += UI_Scale()*10;
 
-	info_y += 2;
+	LINE(strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"))
+	LINE(strcat("^1DPS: ^7", dpss, " (^8", dps_type, "^7)"))
 
-	sui_text(info, MENU_TEXT_SMALL, "^5Off Hand", MENU_TEXT_1, 1, 0);
+	info_y += UI_Scale()*2;
 
-	info_x += 40;
-	my_button("unequip_offhand", info, [30,10], "Unequip", "")
+	sui_text(info, MENU_TEXT_SMALL * UI_TextScale(), "^5Off Hand", MENU_TEXT_1, 1, 0);
+
+	info_x += UI_Scale()*40;
+
+	my_button("unequip_offhand", info, [UI_Scale()*30, UI_Scale()*10], "Unequip", "")
 		? sendevent("User_UnequipOffhand", "", 0)
 		: 0;
-	info_x -= 40;
 
-	info_y += 10;
+	info_x -= UI_Scale()*40;
+
+	info_y += UI_Scale()*10;
 
 	LINE(offhand);
-	LINE(strcat("^2Blocking: ^7", ftos(blocking)));
+	LINE(strcat("^2Blocking: ^7", ftos(blocking)))
 
-	info_y += 2;
+	info_y += UI_Scale()*2;
 
-	LINE(strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"));
-	LINE(strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"));
+	LINE(strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"))
+	LINE(strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"))
 
-	info_y += 10;
+	info_y += UI_Scale()*10;
 
-	LINE(strcat("^1Reaper Marks: ^7", ftos(reapermarks)));
+	LINE(strcat("^1Reaper Marks: ^7", ftos(reapermarks)))
 
 	#undef LINE
 };
@@ -1135,7 +1267,7 @@ void() User_SkillsScreen =
 	// MAIN WINDOW
 	// ============
 	vector pos = [0, 0];
-	vector size = [450, 325];
+	vector size = [UI(450), UI(325)];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
@@ -1148,18 +1280,20 @@ void() User_SkillsScreen =
 	// ============
 	// SKILLS PANEL
 	// ============
-	vector spanel = [75, 0];
-	vector row = [0, 3];
+	vector spanel = [UI(75), 0];
+	vector row = [0, UI_Scale()*3];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_push_frame(spanel, [250, 280]);
+	sui_push_frame(spanel, [UI_Scale()*250, UI_Scale()*280]);
 
-	sui_fill([0, 0], [250, 280], MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], [250, 280], 2, MENU_BORDER, 0.3, 0);
+	sui_fill([0, 0], [UI_Scale()*250, UI_Scale()*280], MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], [UI_Scale()*250, UI_Scale()*280], 2, MENU_BORDER, 0.3, 0);
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	sui_text([1, -19], MENU_TEXT_MEDIUM, "^2Skills", MENU_TEXT_SHADOW, 1, 0); // drop shadow
-	sui_text([0, -20], MENU_TEXT_MEDIUM, "^2Skills", MENU_TEXT_1, 1, 0);
+
+	vector title_off = [UI_Scale()*1, UI_Scale()*-20];
+	sui_text(title_off + [0, UI_Scale()*1], MENU_TEXT_MEDIUM * UI_TextScale(), "^2Skills", MENU_TEXT_SHADOW, 1, 0);
+	sui_text(title_off, MENU_TEXT_MEDIUM * UI_TextScale(), "^2Skills", MENU_TEXT_1, 1, 0);
 
 	float i;
 	float MAX_SKILLS = 21;
@@ -1178,33 +1312,33 @@ void() User_SkillsScreen =
 		if (is_passive)
 		{
 			col = "^8"; // dull grey / muted
-			sui_text(row, MENU_TEXT_SMALL, strcat(col, sname, ": ^7", sval_str), MENU_TEXT_1, 1, 0);
+			sui_text(row, MENU_TEXT_SMALL * UI_TextScale(), strcat(col, sname, ": ^7", sval_str), MENU_TEXT_1, 1, 0);
 		}
 		else
 		{
 			col = "^5"; // your normal highlight color
-			sui_text(row, MENU_TEXT_SMALL, strcat(col, sname, ": ^7", ftos(sval)), MENU_TEXT_1, 1, 0);
+			sui_text(row, MENU_TEXT_SMALL * UI_TextScale(), strcat(col, sname, ": ^7", ftos(sval)), MENU_TEXT_1, 1, 0);
 		}
 
 		if (bonfire && skillpoints > 0 && !is_passive)
 		{
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-			my_button(strcat("sp_", ftos(i)), row, [25, 10], "+", strcat("^3", sname))
+			my_button(strcat("sp_", ftos(i)), row, [UI(25), UI(10)], "+", strcat("^3", sname))
 				? sendevent("User_AddSkillPoint", "f", i)
 				: 0;
 		}
 
 		if (is_lastactive) // do gap after last active skill
-			row_y += 12;
+			row_y += UI(12);
 
-		row_y += 10;
+		row_y += UI(10);
 	}
 
 	sui_pop_frame();
 
 	// CLOSE button
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	my_button("close", [0, 0], [15, 15], "X", "")
+	my_button("close", [0, 0], [UI(15), UI(15)], "X", "")
 		? sendevent("ShutDownMenus", "")
 		: 0;
 
@@ -1226,12 +1360,11 @@ void() User_MagicScreen =
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
-
-	// ============
+	// =================
 	// MAIN WINDOW
-	// ============
+	// =================
 	vector pos = [0, 0];
-	vector size = [450, 325];
+	vector size = [UI(450), UI(325)];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
@@ -1239,49 +1372,68 @@ void() User_MagicScreen =
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
-	UI_DrawPlayerSummary(); // Draw all left side player information + 3d model
+	UI_DrawPlayerSummary();
 
-	// ===========
+	// =================
 	// SPELL PANEL
-	// ===========
-	vector panel = [75, 0];
-	vector row = [0, 2.5];
+	// =================
+	vector panel = [UI(75), 0];
+	vector row = [0, UI_Scale() * 2.5];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_push_frame(panel, [250, 280]);
+	sui_push_frame(panel, [UI_Scale() * 250, UI_Scale() * 280]);
 
-	sui_fill([0, 0], [250, 280], MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], [250, 280], 2, MENU_BORDER, 0.3, 0);
+	sui_fill([0, 0], [UI_Scale() * 250, UI_Scale() * 280], MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], [UI_Scale() * 250, UI_Scale() * 280], 2, MENU_BORDER, 0.3, 0);
 
+	// =================
+	// TITLE
+	// =================
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	
-	sui_text([1, -19], MENU_TEXT_MEDIUM, "^2Magic", MENU_TEXT_SHADOW, 1, 0); // drop shadow
-	sui_text([0, -20], MENU_TEXT_MEDIUM, "^2Magic", MENU_TEXT_1, 1, 0);
 
+	vector title_off = [UI_Scale() * 1, UI_Scale() * -20];
+
+	sui_text(title_off + [0, UI_Scale() * 1],
+		MENU_TEXT_MEDIUM * UI_TextScale(),
+		"^2Magic",
+		MENU_TEXT_SHADOW,
+		1,
+		0);
+
+	sui_text(title_off,
+		MENU_TEXT_MEDIUM * UI_TextScale(),
+		"^2Magic",
+		MENU_TEXT_1,
+		1,
+		0);
+
+	// =================
+	// SPELL LIST (FIXED FLOW)
+	// =================
 	float i;
+
 	for (i = 0; i < spell_count; i++)
 	{
 		string s = spell[i];
+
 		if (!s)
 		{
-			row_y += 10;
+			row_y += UI_Scale() * 10;
 			continue;
 		}
 
 		string desc = strcat("desc_", string_remove_spaces(s));
 		string btn  = strcat("spell_", ftos(i));
 
-		// ===================
-		// RESET ALIGN PER ROW
-		// ===================
+		// =========================
+		// LABEL SIDE
+		// =========================
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-		// label width for tooltip box
-		float w = stringwidth(s, 1);
+		float w = stringwidth(s, UI_TextScale(), 0);
 
-		vector label_size = [w * 8, 10];
+		vector label_size = [w, UI_Scale() * 10];
 
-		// draw tooltip label (LEFT SIDE)
 		sui_tooltip(
 			desc,
 			row,
@@ -1290,27 +1442,28 @@ void() User_MagicScreen =
 		);
 
 		// =========================
-		// BUTTON (RIGHT SIDE)
+		// BUTTON SIDE
 		// =========================
 		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
-		my_button(btn, row, [32, 10], "Equip", "")
+		my_button(btn, row, [UI(32), UI(10)], "Equip", "")
 			? sendevent("EquipSpell", "s", s)
 			: 0;
 
 		// =========================
-		// NEXT ROW
+		// ROW ADVANCE
 		// =========================
-		row_y += 10;
+		row_y += UI_Scale() * 10;
 	}
 
 	sui_pop_frame();
 
 	// =================
-	// CLOSE
+	// CLOSE BUTTON
 	// =================
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	my_button("close", [0, 0], [15, 15], "X", "")
+
+	my_button("close", [0, 0], [UI(15), UI(15)], "X", "")
 		? sendevent("ShutDownMenus", "")
 		: 0;
 
@@ -1336,7 +1489,7 @@ void() User_InventoryScreen =
 	// MAIN WINDOW
 	// =========================================================
 	vector pos = [0, 0];
-	vector size = [450, 325];
+	vector size = [UI(450), UI(325)];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
@@ -1344,23 +1497,40 @@ void() User_InventoryScreen =
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
 
-	UI_DrawPlayerSummary(); // Draw all left side player information + 3d model
+	UI_DrawPlayerSummary();
 
 	// =========================================================
 	// INVENTORY PANEL
 	// =========================================================
-	vector panel = [75, 0];
-	vector row = [0, 2.5];
+	vector panel = [UI(75), 0];
+	vector row = [0, UI_Scale() * 2.5];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_push_frame(panel, [250, 280]);
+	sui_push_frame(panel, [UI_Scale() * 250, UI_Scale() * 280]);
 
-	sui_fill([0, 0], [250, 280], MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], [250, 280], 2, MENU_BORDER, 0.3, 0);
+	sui_fill([0, 0], [UI_Scale() * 250, UI_Scale() * 280], MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], [UI_Scale() * 250, UI_Scale() * 280], 2, MENU_BORDER, 0.3, 0);
 
+	// =========================================================
+	// TITLE
+	// =========================================================
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	sui_text([1, -19], MENU_TEXT_MEDIUM, "^2Inventory", MENU_TEXT_SHADOW, 1, 0);  // drop shadow
-	sui_text([0, -20], MENU_TEXT_MEDIUM, "^2Inventory", MENU_TEXT_1, 1, 0);
+
+	vector title_off = [UI_Scale() * 1, UI_Scale() * -20];
+
+	sui_text(title_off + [0, UI_Scale() * 1],
+		MENU_TEXT_MEDIUM * UI_TextScale(),
+		"^2Inventory",
+		MENU_TEXT_SHADOW,
+		1,
+		0);
+
+	sui_text(title_off,
+		MENU_TEXT_MEDIUM * UI_TextScale(),
+		"^2Inventory",
+		MENU_TEXT_1,
+		1,
+		0);
 
 	// =========================================================
 	// ITEMS
@@ -1374,39 +1544,52 @@ void() User_InventoryScreen =
 
 		string item = inventory[i];
 
-		string use_btn = strcat("u_", item);
+		string use_btn  = strcat("u_", item);
 		string drop_btn = strcat("d_", item);
-		string desc = strcat("desc_", string_remove_spaces(item));
+		string desc     = strcat("desc_", string_remove_spaces(item));
 
 		string label = strcat("^5", item, " ^7[^2", ftos(inventory_count[i]), "^7]");
 
-		// FIXED: consistent row alignment
+		// =====================================================
+		// LABEL SIDE
+		// =====================================================
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-		float w = stringwidth(item, 1);
-		sui_tooltip(desc, row, [w * 8, 8], label);
+		float w = stringwidth(item, UI_TextScale(), 0);
 
-		// ALWAYS present buttons
+		vector label_size = [w * UI_TextScale(), UI(10)];
+
+		sui_tooltip(desc, row, label_size, label);
+
+		// =====================================================
+		// BUTTONS
+		// =====================================================
 		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
-		my_button(use_btn, row, [32, 10], "Use", "")
+		vector btn_size = [UI(32), UI(10)];
+
+		my_button(use_btn, row, btn_size, "Use", "")
 			? sendevent("UseItem", "s", item)
 			: 0;
 
-		my_button(drop_btn, row - [34, 0], [32, 10], "Drop", "")
+		my_button(drop_btn, row - [UI(34), 0], btn_size, "Drop", "")
 			? sendevent("DropItem", "s", item)
 			: 0;
 
-		row_y += 10;
+		// =====================================================
+		// FIXED ROW SPACING (KEY FIX)
+		// =====================================================
+		row_y += UI(14);
 	}
 
 	sui_pop_frame();
 
-	// ======
-	// CLOSE
-	// ======
+	// =========================================================
+	// CLOSE BUTTON
+	// =========================================================
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	my_button("close", [0, 0], [15, 15], "X", "")
+
+	my_button("close", [0, 0], [UI(15), UI(15)], "X", "")
 		? sendevent("ShutDownMenus", "")
 		: 0;
 
