@@ -47,19 +47,20 @@ void() Compass_Draw =
 	// =========================================================
 	// runtime-scaled radius (SAFE)
 	// =========================================================
-	float radius = compass_radius * UI_Scale();
+	float scale = UI_Scale();
+	float radius = compass_radius * scale;
 
-	// fixed anchor
+	// fixed anchor (top-right)
 	vector center;
-	center_x = g_width - (UI_Scale() * 65);
-	center_y = UI_Scale() * 65;
+	center_x = g_width - (scale * 65);
+	center_y = scale * 65;
 
 	// camera yaw
 	vector vang = getproperty(VF_ANGLES);
 	float yaw = angle_normalize360(vang_y);
 
 	// =========================================================
-	// draw ring
+	// ring step
 	// =========================================================
 	float step = 45;
 	float ang;
@@ -68,20 +69,47 @@ void() Compass_Draw =
 	{
 		string lbl = heading_to_cardinal(ang);
 
-		float rad = radius - (UI_Scale() * 14);
+		float rad = radius - (scale * 14);
 		float radAng = (ang - yaw) * M_PI / 180;
 
 		vector p;
 		p_x = center_x + cos(radAng) * rad;
 		p_y = center_y - sin(radAng) * rad;
 
-		vector txtsize = [UI_Scale() * 10, UI_Scale() * 10];
+		vector txtsize = [scale * 10, scale * 10];
 
 		float tw = stringwidth(lbl, txtsize_x, 0);
 
+		vector base;
+		base_x = p_x - tw * 0.5;
+		base_y = p_y - (scale * 5);
+
+		// =========================================================
+		// SHADOW SYSTEM (cheap + effective)
+		// =========================================================
+
+		// main soft shadow (bottom-right)
 		drawstring(
-			[p_x - tw * 0.5,
-			 p_y - (UI_Scale() * 5)],
+			[base_x + scale * 1.2,
+			 base_y + scale * 1.2],
+			lbl,
+			txtsize,
+			'0 0 0',
+			0.65,
+			0
+		);
+
+		// subtle outline (4-direction fake glow)
+		drawstring([base_x + 1, base_y], lbl, txtsize, '0 0 0', 0.35, 0);
+		drawstring([base_x - 1, base_y], lbl, txtsize, '0 0 0', 0.35, 0);
+		drawstring([base_x, base_y + 1], lbl, txtsize, '0 0 0', 0.35, 0);
+		drawstring([base_x, base_y - 1], lbl, txtsize, '0 0 0', 0.35, 0);
+
+		// =========================================================
+		// main text
+		// =========================================================
+		drawstring(
+			base,
 			lbl,
 			txtsize,
 			(ang == 0 ? COMPASS_HI : COMPASS_FG),

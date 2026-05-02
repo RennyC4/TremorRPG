@@ -298,9 +298,14 @@ void() daynight_think =
 
     // hold longer during DAY/NIGHT, shorter during transitions
     if (timeofday == TIME_NIGHT || timeofday == TIME_DAY)
-        self.nextthink = time + 8;
+	{
+		if (timeofday == TIME_DAY)
+			self.nextthink = time + 12;
+		else
+			self.nextthink = time + 8;
+	}
     else
-        self.nextthink = time + 4;
+        self.nextthink = time + 6; // transition times between day/night
 
 	// for debugging
 	//self.nextthink = time + 0.1;
