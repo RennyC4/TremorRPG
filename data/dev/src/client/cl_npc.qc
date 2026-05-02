@@ -2,69 +2,176 @@
 // NPC Menus for dialogue / buying / selling etc are handled here
 //
 
+float(vector startpos, float max_width, string text) UI_DrawWrappedText =
+{
+	vector pos = startpos;
+
+	float len = strlen(text);
+	float i;
+
+	string line = "";
+	float lines = 0;
+
+	for (i = 0; i < len; i++)
+	{
+		string ch = substring(text, i, 1);
+
+		// handle manual newline
+		if (ch == "\n")
+		{
+			if (line != "")
+			{
+				sui_text(pos, MENU_TEXT_SMALL, line, MENU_TEXT_1, 1, 0);
+				lines += 1;
+				pos_y += UI(10);
+				line = "";
+			}
+			continue;
+		}
+
+		string test = strcat(line, ch);
+
+		string clean = StripColors(test);
+		float w = UI(stringwidth(clean, 1));
+
+		if (w > max_width && line != "")
+		{
+			// 🔥 try to break at last space
+			float j;
+			float split = -1;
+
+			for (j = strlen(line) - 1; j >= 0; j--)
+			{
+				if (substring(line, j, 1) == " ")
+				{
+					split = j;
+					break;
+				}
+			}
+
+			if (split > 0)
+			{
+				string left  = substring(line, 0, split);
+				string right = substring(line, split + 1, strlen(line));
+
+				sui_text(pos, MENU_TEXT_SMALL, left, MENU_TEXT_1, 1, 0);
+
+				lines += 1;
+				pos_y += UI(10);
+
+				line = strcat(right, ch);
+			}
+			else
+			{
+				// no space found, hard break
+				sui_text(pos, MENU_TEXT_SMALL, line, MENU_TEXT_1, 1, 0);
+
+				lines += 1;
+				pos_y += UI(10);
+
+				line = ch;
+			}
+		}
+		else
+		{
+			line = test;
+		}
+	}
+
+	if (line != "")
+	{
+		sui_text(pos, MENU_TEXT_SMALL, line, MENU_TEXT_1, 1, 0);
+		lines += 1;
+	}
+
+	return lines;
+};
+
 void() User_NPCDialogue =
 {
-	// darken screen
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
-	vector pos = [0, 0];
-	vector size = [450, 325];
+	// FRAME
+	vector pos = [UI(0), UI(0)];
+	vector size = [UI(450), UI(325)];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
 
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+	sui_border_box([0, 0], size, UI(2), MENU_BORDER, 0.3, 0);
 
-	// Display name
-	vector newpos = [2.5, 2.5];
+	// HEADER
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	string displaystat = strcat("^1", npc_name);
-	sui_text(newpos, MENU_TEXT_MEDIUM, displaystat, MENU_TEXT_1, 1, 0);
+	sui_text([UI(2.5), UI(2.5)], MENU_TEXT_MEDIUM, strcat("^1", npc_name), MENU_TEXT_1, 1, 0);
 
-	// Bottom buttons
-	newpos_y -= 5;
+	// BUTTONS
+	vector btn_small = [UI(50), UI(22.5)];
+	vector btn_large = [UI(85), UI(22.5)];
+
+	// LEFT (Leave)
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	my_button("npc_leave", newpos, [50, 22.5], "Leave", "") ? sendevent("ShutDownMenus", "") : 0;
+	if (my_button("npc_leave", [UI(2.5), UI(2.5)], btn_small, "Leave", ""))
+		sendevent("ShutDownMenus", "");
 
-	newpos_x -= 5;
+	// RIGHT (Buy/Sell/etc)
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
 
 	float buysell = getstatf(STAT_VENDOR);
+
 	if (buysell == 1)
-		my_button("npc_buy", newpos, [85, 22.5], "Buy / Sell", "") ? sendevent("PlayerShowBuySell", "") : 0;
-	else if (buysell == 2)
-		my_button("npc_bank", newpos, [85, 22.5], "Banking", "") ? sendevent("PlayerShowBanking", "") : 0;
-	else if (buysell == 3)
-		my_button("npc_wood", newpos, [85, 22.5], "Sell Lumber", "") ? sendevent("PlayerSellLumber", "") : 0;
-
-	// NPC chatter box
-	newpos = [2.5, 0]; //reset newpos
-	newpos_y += 25;
-	size_x -= 5;
-	size_y -= 50;
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_border_box(newpos, size, 2, MENU_BORDER, 0.3, 0);
-	sui_fill(newpos, size, MENU_BG_DARK, 0.75, 0);
-
-	// NPC chatter
-	newpos = [2.5, 2.5]; //reset newpos
-	newpos_y += 25;
-	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-
-	vector linepos = newpos;
-	float i, numlines = 0;
-	numlines = tokenizebyseparator(npc_dialogue, "\n");
-	for (i = 0; i < numlines; i = i + 1)
 	{
-		string line = argv(i);
-		sui_text(linepos, MENU_TEXT_SMALL, line, MENU_TEXT_1, 1, 0);
-		linepos_y += 10;
+		if (my_button("npc_buy", [UI(2.5), UI(2.5)], btn_large, "Buy / Sell", ""))
+			sendevent("PlayerShowBuySell", "");
+	}
+	else if (buysell == 2)
+	{
+		if (my_button("npc_bank", [UI(2.5), UI(2.5)], btn_large, "Banking", ""))
+			sendevent("PlayerShowBanking", "");
+	}
+	else if (buysell == 3)
+	{
+		if (my_button("npc_wood", [UI(2.5), UI(2.5)], btn_large, "Sell Lumber", ""))
+			sendevent("PlayerSellLumber", "");
 	}
 
+	// CHAT PANEL
+	vector panel_pos = [UI(2.5), UI(25)];
+	vector panel_size = size - [UI(5), UI(50)];
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_border_box(panel_pos, panel_size, UI(2), MENU_BORDER, 0.3, 0);
+	sui_fill(panel_pos, panel_size, MENU_BG_DARK, 0.75, 0);
+
+	// TEXT AREA (WITH CLIPPING)
+	sui_push_frame(panel_pos, panel_size);
+	sui_clip_to_frame();
+
+	vector linepos = [UI(2.5), UI(2.5)];
+
+	float max_width = panel_size_x - UI(5);
+
+	float i, numlines;
+	numlines = tokenizebyseparator(npc_dialogue, "\n");
+
+	for (i = 0; i < numlines; i++)
+	{
+		string line = argv(i);
+
+		float used = UI_DrawWrappedText(linepos, max_width, line);
+
+		linepos_y += used * UI(10); // 🔥 real height
+		linepos_y += UI(5);         // paragraph spacing
+	}
+
+	sui_reset_clip();
+	sui_pop_frame();
+
+	// CLOSE BUTTON
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	my_button("close", [0, 0], [15, 15], "X", "") ? sendevent("ShutDownMenus", "") : 0;
+	if (my_button("close", [UI(0), UI(0)], [UI(15), UI(15)], "X", ""))
+		sendevent("ShutDownMenus", "");
 
 	sui_pop_frame();
 };
