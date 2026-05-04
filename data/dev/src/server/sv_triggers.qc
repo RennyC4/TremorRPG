@@ -2,10 +2,6 @@
 // trigger_zone - used for when the player enters different zones (dungeons, towns, etc)
 //
 
-//
-// trigger_zone - used for when the player enters different zones (dungeons, towns, etc)
-//
-
 void() trigger_zone_touch =
 {
 	// =========================================================
@@ -54,18 +50,25 @@ void() trigger_zone_touch =
 	}
 
 	// =========================================================
+	// MAP TYPE CHECK (HMP via world.model)
+	// =========================================================
+	string mdl = world.model;
+	float len = strlen(mdl);
+	float is_hmp = (len >= 3 && substring(mdl, len - 3, 3) == "hmp");
+
+	// =========================================================
 	// MUSIC HANDLING
 	// =========================================================
-	if (other.music != self.music || other.pvp != self.pvp)
+	if (self.pvp == 2 || other.music != self.music || other.pvp != self.pvp)
 	{
 		other.music = self.music;
 
 		// -------------------------
-		// WILDERNESS (PVP = 2)
+		// WILDERNESS (PVP = 2 + HMP)
 		// -------------------------
-		if (self.pvp == 2)
+		if (self.pvp == 2 && is_hmp)
 		{
-			float r = floor(random() * 4) + 1; // 1–4
+			float r = floor(random() * 4) + 1;
 
 			string track;
 			if (r == 1) track = "sound/music/overworld/1.ogg";
@@ -78,7 +81,7 @@ void() trigger_zone_touch =
 		else
 		{
 			// -------------------------
-			// TOWN ZONE MUSIC
+			// NORMAL ZONE MUSIC
 			// -------------------------
 			float r;
 

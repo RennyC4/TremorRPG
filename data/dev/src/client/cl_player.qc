@@ -811,7 +811,6 @@ void() Player_Screen =
 		Draw_NameTag_ChatBubble();
 		if (!player_idle && health > 0)
 		{
-			Draw_HUDIcons();
 			Draw_EventLog();
 			Draw_ChatLog();
 			Draw_Health();
@@ -827,6 +826,7 @@ void() Player_Screen =
 			}
 			Compass_Draw();
 			Coords_Draw();
+			Draw_HUDIcons(); // draw hud icons last!
 			if (casting > time)
 				Draw_CastingStat();
 		}

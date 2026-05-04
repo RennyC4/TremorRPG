@@ -3997,9 +3997,9 @@
 {
 "classname" "trigger_zone"
 "zonename" "Elderfen"
-"music" "sound/music/track01.ogg"
+"music" "sound/music/town/1.ogg"
 "pvp" "0"
-"music2" "sound/music/track04.ogg"
+"music2" "sound/music/town/2.ogg"
 // brush 0
 {
 ( -1408 896 352 ) ( -1408 -1024 352 ) ( -1408 -1024 0 ) trigger [ 0 -1 0 0 ] [ 0 0 -1 0 ] 90 1 1

@@ -2,7 +2,7 @@ float menu_active;
 
 void() m_init =
 {
-	localcmd("music sound/music/track00.ogg");
+	localcmd("music sound/music/title.ogg");
 	splash_time = time + 2.5;
 	// drawfont = loadfont("", "Courier Prime Code", "12,16,24,32,48,64,72,128,256,512", -1, 0, 0);
 	drawfont = loadfont("", "fonts/trpg", "12", -1, 0, 0);

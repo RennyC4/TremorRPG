@@ -1450,7 +1450,7 @@ void(float type) PlayerSpawn =
 		self.loggedin = FALSE;
 		self.radius_candamage = FALSE;
 
-		stuffcmd (self, sprintf("music sound/music/track03.ogg\n")); // login screen music
+		stuffcmd (self, sprintf("music sound/music/login.ogg\n")); // login screen music
 	}
 	else if (type == 1) // put first time player in
 	{
