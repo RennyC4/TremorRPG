@@ -2,31 +2,43 @@
 // trigger_zone - used for when the player enters different zones (dungeons, towns, etc)
 //
 
+//
+// trigger_zone - used for when the player enters different zones (dungeons, towns, etc)
+//
+
 void() trigger_zone_touch =
 {
-	// Monsters do not cross territories or enter towns - Force runback behavior
+	// =========================================================
+	// MONSTER BEHAVIOR - prevent crossing territories
+	// =========================================================
 	if (other.flags & FL_MONSTER && other.ai_mode != AI_RUNBACK)
-    {
-        other.enemy = world;
-        other.ai_mode = AI_RUNBACK;
-        other.anistate = ANISTATE_RUN;
+	{
+		other.enemy = world;
+		other.ai_mode = AI_RUNBACK;
+		other.anistate = ANISTATE_RUN;
 
 		// clear movement states
 		other.avoid_dir = 0;
 		other.avoid_time = 0;
 		other.velocity = '0 0 0';
 
-        return; // don't process player logic
-    }
+		return; // don't process player logic
+	}
 
+	// =========================================================
+	// PLAYER VALIDATION
+	// =========================================================
 	if (other.classname != "player")
 		return;
 	if (!other.loggedin)
 		return;
 
+	// =========================================================
+	// PVP STATE HANDLING
+	// =========================================================
 	if (other.pvp != self.pvp)
 	{
-		if (!self.pvp) // remove all PVP flags when pvp = 0
+		if (!self.pvp) // entering safe zone
 		{
 			other.pvp = 0;
 			other.pvp_autoflagged = FALSE;
@@ -35,26 +47,60 @@ void() trigger_zone_touch =
 			other.pvpenable_count = 0;
 			other.pvpenable_finished = time;
 		}
-		if (other.pvp != 1)
+		else
+		{
 			other.pvp = self.pvp;
+		}
 	}
-	if (other.music != self.music)
+
+	// =========================================================
+	// MUSIC HANDLING
+	// =========================================================
+	if (other.music != self.music || other.pvp != self.pvp)
 	{
 		other.music = self.music;
 
-		if (self.music2 != "")
-			float r = random();
-		else
-			r = 0;
+		// -------------------------
+		// WILDERNESS (PVP = 2)
+		// -------------------------
+		if (self.pvp == 2)
+		{
+			float r = floor(random() * 4) + 1; // 1–4
 
-		if (r <= 0.5)
-			stuffcmd (other, sprintf("music %s\n", self.music));
+			string track;
+			if (r == 1) track = "sound/music/overworld/1.ogg";
+			else if (r == 2) track = "sound/music/overworld/2.ogg";
+			else if (r == 3) track = "sound/music/overworld/3.ogg";
+			else track = "sound/music/overworld/4.ogg";
+
+			stuffcmd(other, sprintf("music %s\n", track));
+		}
 		else
-			stuffcmd (other, sprintf("music %s\n", self.music2));
+		{
+			// -------------------------
+			// TOWN ZONE MUSIC
+			// -------------------------
+			float r;
+
+			if (self.music2 != "")
+				r = random();
+			else
+				r = 0;
+
+			if (r <= 0.5)
+				stuffcmd(other, sprintf("music %s\n", self.music));
+			else
+				stuffcmd(other, sprintf("music %s\n", self.music2));
+		}
 	}
+
+	// =========================================================
+	// ZONE NAME DISPLAY
+	// =========================================================
 	if (other.zonename != self.zonename)
 	{
 		other.zonename = self.zonename;
+
 		if (other.zonename_finished < time)
 			other.zonename_finished = time + 3; // display in csqc hud
 	}
