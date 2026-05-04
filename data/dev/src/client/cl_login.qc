@@ -162,7 +162,7 @@ void() User_LoginScreen =
 	// =========================================================
 	// BACKGROUND (FULL SCREEN - NO SCALING NEEDED)
 	// =========================================================
-	sui_pic([0,0], [g_width, g_height], "textures/login.jpg", '0.5 0.5 0.5', 1, 0);
+	sui_pic([0,0], [g_width, g_height], "textures/login.jpg", '1 1 1', 1, 0);
 
 	// =========================================================
 	// AUTOFILL
@@ -174,17 +174,6 @@ void() User_LoginScreen =
 	}
 
 	// =========================================================
-	// LOGO (GLOBAL HEADER - ABOVE EVERYTHING)
-	// =========================================================
-	vector logo_size = [UI(214), UI(90)];
-
-	vector logo_pos;
-	logo_pos_x = (g_width - logo_size_x) * 0.175;
-	logo_pos_y = UI(45);
-
-	drawpic(logo_pos, "textures/logo2.png", logo_size, '1 1 1', 1, 0);
-
-	// =========================================================
 	// MAIN PANEL (CONSISTENT UI SYSTEM)
 	// =========================================================
 	vector size = [UI(380), UI(270)];
@@ -194,6 +183,20 @@ void() User_LoginScreen =
 	pos_x = margin;
 	pos_y = (g_height - size_y) * 0.5;
 
+	// =========================================================
+	// LOGO (ANCHORED TO PANEL, NO SUI DEPENDENCY)
+	// =========================================================
+	vector logo_size = [UI(214), UI(90)];
+
+	vector logo_pos;
+	logo_pos_x = pos_x + (size_x - logo_size_x) * 0.5;
+	logo_pos_y = pos_y - logo_size_y - UI(20);
+
+	drawpic(logo_pos, "textures/logo2.png", logo_size, '1.5 1.5 1.5', 1, 0);
+
+	// =========================================================
+	// PANEL
+	// =========================================================
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_push_frame(pos, size);
 
