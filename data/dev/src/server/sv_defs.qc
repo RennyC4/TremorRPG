@@ -1907,6 +1907,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float part_vfx; // Used for particle effects on NPCs via CSQC
 .float fishing_finished;
 .float fishcast_finished;
+.string current_track;
 
 // Animation States
 .float anistate;
