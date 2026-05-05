@@ -127,12 +127,12 @@ void() User_NPCDialogue =
 	}
 	else if (buysell == 2)
 	{
-		if (my_button("npc_bank", [UI(2.5), UI(2.5)], btn_large, "Banking", ""))
+		if (my_button("npc_bank", [UI(-2.5), UI(-2.5)], btn_large, "Banking", ""))
 			sendevent("PlayerShowBanking", "");
 	}
 	else if (buysell == 3)
 	{
-		if (my_button("npc_wood", [UI(2.5), UI(2.5)], btn_large, "Sell Lumber", ""))
+		if (my_button("npc_wood", [UI(-2.5), UI(-2.5)], btn_large, "Sell Lumber", ""))
 			sendevent("PlayerSellLumber", "");
 	}
 
