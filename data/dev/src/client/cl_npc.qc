@@ -112,7 +112,7 @@ void() User_NPCDialogue =
 
 	// LEFT (Leave)
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
-	if (my_button("npc_leave", [UI(2.5), UI(2.5)], btn_small, "Leave", ""))
+	if (my_button("npc_leave", [UI(2.5), UI(-2.5)], btn_small, "Leave", ""))
 		sendevent("ShutDownMenus", "");
 
 	// RIGHT (Buy/Sell/etc)
@@ -122,7 +122,7 @@ void() User_NPCDialogue =
 
 	if (buysell == 1)
 	{
-		if (my_button("npc_buy", [UI(2.5), UI(2.5)], btn_large, "Buy / Sell", ""))
+		if (my_button("npc_buy", [UI(-2.5), UI(-2.5)], btn_large, "Buy / Sell", ""))
 			sendevent("PlayerShowBuySell", "");
 	}
 	else if (buysell == 2)
