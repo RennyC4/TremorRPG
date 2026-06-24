@@ -684,9 +684,9 @@ void() Draw_HUDIcons =
 
 void() Draw_EventLog =
 {
-	// =========================================================
-	// PANEL SIZE (scaled)
-	// =========================================================
+	// ==========
+	// PANEL SIZE
+	// ==========
 	vector pos = [0, UI(-45)];
 	vector size = [UI(230), UI(100)];
 
@@ -698,19 +698,19 @@ void() Draw_EventLog =
 
 	sui_pop_frame();
 
-	// =========================================================
-	// TEXT POSITION (fixed properly to screen bottom-left anchor)
-	// =========================================================
+	// =============
+	// TEXT POSITION
+	// =============
 	vector tpos = [
 		UI(5),
 		g_height - UI(146)
 	];
 
-	vector tsize = [UI(330), UI(100)];
+	vector tsize = [UI(230), UI(100)];
 
-	// =========================================================
-	// FONT SWITCH (unchanged logic)
-	// =========================================================
+	// ===========
+	// FONT SWITCH
+	// ===========
 	if (drawfont != drawfont2)
 		drawfont = drawfont2;
 
