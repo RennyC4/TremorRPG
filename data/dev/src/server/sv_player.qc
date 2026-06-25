@@ -339,7 +339,6 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		}
 
 		self.stamina -= 25;
-
 		self.dodgedir = whichdir;
 		//print (ftos(self.dodgedir), "\n");
 
@@ -1038,7 +1037,7 @@ void() Anistate_Handler =
 	// Tied to dodge_finished
 	if (self.anistate == ANISTATE_DODGE || self.anistate == ANISTATE_STEPDODGE)
 	{
-		if (self.dodge_finished < time)
+		if (self.dodge_finished + 0.05 < time)
 		{
 			self.anistate = ANISTATE_NONE;
 			self.dodgedir = 0;
