@@ -88,6 +88,7 @@ void(float lastlogin) User_ResumeCharacter =
         }
 
         sendevent("ResumeCharacter", "ss", LOGIN_NAME, LOGIN_PASSWORD);
+		localsound ("menu/btn_login.wav");
         return;
     }
 
@@ -108,6 +109,7 @@ void(float lastlogin) User_ResumeCharacter =
     WriteLastLogin(LOGIN_NAME, LOGIN_PASSWORD);
 
     sendevent("ResumeCharacter", "ss", LOGIN_NAME, LOGIN_PASSWORD);
+	localsound ("menu/btn_login.wav");
 };
 
 // ============================================================
@@ -133,6 +135,7 @@ void(string sendgender) User_NewCharacter =
 
     sendevent("CreateNewCharacter", "sss", LOGIN_NAME, sendgender, LOGIN_PASSWORD);
     sParms_Write();
+	localsound ("menu/btn_login.wav");
 };
 
 // ============================================================
@@ -156,26 +159,25 @@ void(int what) SetGender =
 // LOGIN SCREEN UI
 // ============================================================
 float did_autofill;
-
 void() User_LoginScreen =
 {
-	// =========================================================
-	// BACKGROUND (FULL SCREEN - NO SCALING NEEDED)
-	// =========================================================
+	// ==========
+	// BACKGROUND
+	// ==========
 	sui_pic([0,0], [g_width, g_height], "textures/login.jpg", '1 1 1', 1, 0);
 
-	// =========================================================
+	// ========
 	// AUTOFILL
-	// =========================================================
+	// ========
 	if (!did_autofill)
 	{
 		ReadLastLogin();
 		did_autofill = TRUE;
 	}
 
-	// =========================================================
-	// MAIN PANEL (CONSISTENT UI SYSTEM)
-	// =========================================================
+	// ==========
+	// MAIN PANEL
+	// ==========
 	vector size = [UI(380), UI(270)];
 	float margin = UI(40);
 
@@ -183,9 +185,9 @@ void() User_LoginScreen =
 	pos_x = margin;
 	pos_y = (g_height - size_y) * 0.5;
 
-	// =========================================================
-	// LOGO (ANCHORED TO PANEL, NO SUI DEPENDENCY)
-	// =========================================================
+	// ====
+	// LOGO
+	// ====
 	vector logo_size = [UI(214), UI(90)];
 
 	vector logo_pos;
@@ -194,9 +196,9 @@ void() User_LoginScreen =
 
 	drawpic(logo_pos, "textures/logo2.png", logo_size, '1.5 1.5 1.5', 1, 0);
 
-	// =========================================================
+	// =====
 	// PANEL
-	// =========================================================
+	// =====
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_push_frame(pos, size);
 
@@ -204,32 +206,22 @@ void() User_LoginScreen =
 	sui_fill([0,0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0,0], size, 2, MENU_BORDER, 0.3, 0);
 
-	// =========================================================
+	// ============
 	// CONTENT FLOW
-	// =========================================================
+	// ============
 	float y = UI(10);
 	vector input_size = [UI(240), UI(25)];
 
 	// ---- HEADER ----
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
-	sui_text([size_x * 0.01, y],
-		MENU_TEXT_MEDIUM,
-		"Character Information",
-		'0 1 1',
-		1,
-		0);
+	sui_text([size_x * 0.01, y], MENU_TEXT_MEDIUM, "Character Information", '0 1 1', 1, 0);
 
 	y += UI(35);
 
 	// ---- NAME ----
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-	sui_text([UI(10), y + UI(5)],
-		MENU_TEXT_SMALL,
-		"Name",
-		MENU_TEXT_MEDIUM,
-		1,
-		0);
+	sui_text([UI(10), y + UI(5)], MENU_TEXT_SMALL, "Name", MENU_TEXT_MEDIUM, 1, 0);
 
 	sui_fill([UI(80), y - UI(5)], input_size, MENU_BG_DARK, 0.75, 0);
 	text_input_control("name_entry", [UI(80), y - UI(5)], input_size, 31, LOGIN_NAME, cursor, FALSE);
@@ -238,12 +230,7 @@ void() User_LoginScreen =
 	y += UI(35);
 
 	// ---- PASSWORD ----
-	sui_text([UI(10), y + UI(5)],
-		MENU_TEXT_SMALL,
-		"Password",
-		MENU_TEXT_MEDIUM,
-		1,
-		0);
+	sui_text([UI(10), y + UI(5)], MENU_TEXT_SMALL, "Password", MENU_TEXT_MEDIUM, 1, 0);
 
 	sui_fill([UI(80), y - UI(5)], input_size, MENU_BG_DARK, 0.75, 0);
 	text_input_control("password_entry", [UI(80), y - UI(5)], input_size, 31, LOGIN_PASSWORD, cursor, TRUE);
@@ -254,31 +241,14 @@ void() User_LoginScreen =
 	// ---- LOGIN BUTTONS ----
 	float btn_h = UI(24);
 
-	my_button("login_login",
-		[0, y],
-		[size_x * 0.5, btn_h],
-		"Login", "")
-		? User_ResumeCharacter(FALSE)
-		: 0;
-
-	my_button("login_lastlogin",
-		[size_x * 0.5, y],
-		[size_x * 0.5, btn_h],
-		"Use Last Login", "")
-		? User_ResumeCharacter(TRUE)
-		: 0;
+	my_button("login_login", [0, y], [size_x * 0.5, btn_h], "Login", "") ? User_ResumeCharacter(FALSE) : 0;
+	my_button("login_lastlogin", [size_x * 0.5, y], [size_x * 0.5, btn_h], "Use Last Login", "") ? User_ResumeCharacter(TRUE) : 0;
 
 	y += UI(35);
 
 	// ---- NEW CHARACTER ----
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-
-	sui_text([size_x * 0.45, y],
-		MENU_TEXT_SMALL,
-		"New Character",
-		'0 1 1',
-		1,
-		0);
+	sui_text([size_x * 0.45, y], MENU_TEXT_SMALL, "New Character", '0 1 1', 1, 0);
 
 	y += UI(25);
 
@@ -314,14 +284,14 @@ void() User_LoginScreen =
 		? User_NewCharacter(LOGIN_GENDER)
 		: 0;
 
-	// =========================================================
+	// ===========
 	// CLOSE PANEL
-	// =========================================================
+	// ===========
 	sui_pop_frame();
 
-	// =========================================================
+	// =================
 	// DISCONNECT BUTTON
-	// =========================================================
+	// =================
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
 
 	my_button("login_quit",
@@ -331,9 +301,9 @@ void() User_LoginScreen =
 		? localcmd("disconnect\n")
 		: 0;
 
-	// =========================================================
+	// ====
 	// MOTD
-	// =========================================================
+	// ====
 	if (motd != "")
 	{
 		vector msize = UI(500, 70);

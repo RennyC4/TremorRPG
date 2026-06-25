@@ -5,7 +5,7 @@
 float(entity ePVEnt, float flChanged) Player_SendEntity;
 
 void() ClientConnect = {};
-void() CSEv_ShutDownMenus = {localsound("menu/menu_close", 4, 1);self.menu = MENU_OFF;};
+void() CSEv_ShutDownMenus = {stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav"));self.menu = MENU_OFF;};
 void(entity targ, float type) CSEv_Player_SaveChar;
 void(entity player) SendPlayerInventory;
 void(entity player) SendMagicSpells;
@@ -547,6 +547,7 @@ void() CSEv_User_TogglePVP_ =
 	if (!self.pvp)
 	{
 		sprint(self, PRINT_HIGH, "PVP: ^8Unavailable\n");
+		stuffcmd (self, sprintf("play %s\n", "menu/btn_generic.wav"));
 		return;
 	}
 
@@ -555,6 +556,7 @@ void() CSEv_User_TogglePVP_ =
 	{
 		self.pvp = 2;
 		sprint(self, PRINT_HIGH, "PVP: ^2Disabled\n");
+		stuffcmd (self, sprintf("play %s\n", "menu/btn_pvp.wav"));
 		return;
 	}
 
@@ -571,6 +573,7 @@ void() CSEv_User_TogglePVP_ =
 
 	self.pvp = 1;
 	sprint(self, PRINT_HIGH, "PVP: ^1Enabled\n");
+	stuffcmd (self, sprintf("play %s\n", "menu/btn_pvp.wav"));
 };
 
 void() CheckImpulses =

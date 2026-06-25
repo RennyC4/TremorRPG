@@ -90,6 +90,11 @@ float(string id, vector pos, vector size, string text) my_button =
 	sui_action_element([0, 0], size, id, sui_noop);
 	sui_pop_frame();
 
+	float result = sui_is_clicked(id);
+
+	if (result)
+		localsound("menu/btn_generic.wav");
+
 	return sui_is_clicked(id);
 };
 
