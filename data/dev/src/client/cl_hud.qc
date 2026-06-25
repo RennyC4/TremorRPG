@@ -1194,8 +1194,7 @@ void() UI_DrawPlayerSummary =
 		sui_text(info, MENU_TEXT_SMALL * UI_TextScale(), str, MENU_TEXT_1, 1, 0); \
 		info_y += UI_Scale()*10;
 
-	LINE(strcat("^5Level: ^7", ftos(level)));
-	LINE(strcat("^5Exp: ^7", ftos(exp), " / ", ftos(expneed)));
+	LINE(strcat("^5Level: ^7", ftos(level), strcat("  ^5Exp: ^7", ftos(exp), " / ", ftos(expneed))));
 	LINE(strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)));
 	LINE(strcat("^5Skill Points: ^7", ftos(skillpoints)))
 
@@ -1211,8 +1210,7 @@ void() UI_DrawPlayerSummary =
 	info_x -= UI_Scale()*40;
 	info_y += UI_Scale()*10;
 
-	LINE(strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"))
-	LINE(strcat("^1DPS: ^7", dpss, " (^8", dps_type, "^7)"))
+	LINE(strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)", strcat("  ^1DPS: ^7", dpss, " (^8", dps_type, "^7)")))
 
 	info_y += UI_Scale()*2;
 
@@ -1225,12 +1223,12 @@ void() UI_DrawPlayerSummary =
 	info_x -= UI_Scale()*40;
 	info_y += UI_Scale()*10;
 
-	LINE(offhand);
-	LINE(strcat("^2Blocking: ^7", ftos(blocking)))
+	LINE(strcat(offhand, " (^2+", ftos(blocking), "^7)"))
 
 	info_y += UI_Scale()*2;
 
 	LINE(strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"))
+	LINE(strcat("^5Helmet: ^7", "None", " (^2+", "0", "^7)"))
 	LINE(strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"))
 
 	info_y += UI_Scale()*10;
