@@ -2358,6 +2358,7 @@ const float AI_CHASE = 1;
 const float AI_ATTACK = 2;
 const float AI_RUNBACK = 3;
 const float AI_PATROL = 4;
+const float AI_DODGE = 5;
 
 const float FL_ALLY = 8192;
 

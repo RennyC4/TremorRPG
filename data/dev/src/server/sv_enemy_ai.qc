@@ -7,6 +7,7 @@ const float AI_CHASE = 1;
 const float AI_ATTACK = 2;
 const float AI_RUNBACK = 3;
 const float AI_PATROL = 4;
+const float AI_DODGE = 5;
 
 .float ai_mode;
 .float ai_patrolidle;
@@ -275,6 +276,30 @@ void() monster_ai_update_state =
 {
 	makevectors(self.angles);
 
+	if (self.ai_mode == AI_DODGE)
+	{
+		if (self.dodge_finished < time)
+		{
+			self.godmode_finished = time + 1; // i-frames, needs adjusting
+			self.ai_doattack = time; // remove incoming attack logic
+
+			// Pick random direction to dodge in
+			float dodgedir = ceil(random() * 4);
+			//bprint (PRINT_HIGH, "Dodge Dir: ", ftos(dodgedir), "\n");
+
+			// Dodge is over, back to fighting
+			if (self.dodge_finished < time)
+			{
+				self.ai_mode = AI_CHASE;
+				self.anistate = ANISTATE_RUN;
+			}
+		}
+
+		// Do dodge movement logic here
+		self.nextthink = time + 0.1;
+		return;
+	}
+
     // ---------------------------
     // Manual waterlevel check
     // ---------------------------
@@ -399,7 +424,6 @@ void() monster_ai_update_state =
 
 	if (self.enemy && self.enemy != world)
 		ai_move_dist_check *= 2; // double leash range when in combat
-
 
     if (self.ai_mode != AI_RUNBACK && b >= ai_move_dist_check)
     {
@@ -542,11 +566,25 @@ void() monster_ai_update_state =
 		if (self.ai_mode != AI_RUNBACK)
 			self.ai_mode = AI_CHASE;
 
-		if (self.enemy.flags & FL_CLIENT &&
-			self.enemy.classname == "player" &&
-			self.enemy.health > 0)
+		if (self.enemy.flags & FL_CLIENT && self.enemy.classname == "player" && self.enemy.health > 0)
 		{
 			dist = vlen((self.enemy.origin - self.origin));
+
+			// ---------------------------
+			// Defensive maneuvers: dodge
+			// ---------------------------
+			if ((self.enemy.melee_finished > time || self.enemy.spellani_finished > time) &&
+				 self.dodge_finished < time && infront(self.enemy) && self.dodge_chance > 0)
+			{
+				if (random() < self.dodge_chance)
+				{
+					self.ai_mode = AI_DODGE;
+					self.anistate = ANISTATE_DODGE;
+					self.dodge_finished = time + 1; // dodge lasts 1s
+					self.nextthink = time + 0.1; // refresh think
+					return; // skip attacks until block ends
+				}
+			}
 
 			// ---------------------------
 			// Defensive maneuvers: block

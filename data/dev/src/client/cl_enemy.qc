@@ -34,6 +34,25 @@ void() Monster_Animate =
 
 	speed *= frametime;
 
+	if (self.anistate == ANISTATE_DODGE)
+	{
+		if (self.frame != (self.frame = frameforname(self.modelindex, "Dodge")))
+		{
+			self.frame1time = 0; // reset timestamp
+			sound(self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
+		}
+		self.frame = frameforname(self.modelindex, "Dodge");
+
+		if (autocvar_minimap == "full" && substring(world.model, -3, 3) == "hmp")
+			speed /= 2; // fix minimap on animation speed
+
+		if (self.frame1time >= duration - 0.1)
+			self.frame1time = self.frame1time; // hold
+		else
+			self.frame1time += (speed * 2);
+		return;
+	}
+	
 	if (self.anistate == ANISTATE_BLOCK)
 	{
 		if (self.frame != (self.frame = frameforname(self.modelindex, "Block")))
@@ -46,7 +65,7 @@ void() Monster_Animate =
 		if (self.frame1time >= duration - 0.1)
 			self.frame1time = self.frame1time; // hold
 		else
-			self.frame1time += speed;
+			self.frame1time += (speed * 1.5);
 		return;
 	}
 
@@ -182,5 +201,3 @@ float(void) Monster_PreDraw =
 	
 	return PREDRAW_NEXT;
 };
-
-

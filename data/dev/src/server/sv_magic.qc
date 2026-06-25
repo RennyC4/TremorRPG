@@ -122,7 +122,7 @@ void(float damage, vector ang) Cast_Thorn =
 		return; // hit nothing
 	}
 
-	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO)
+	if (trace_ent.takedamage && trace_ent.health > 0 && trace_ent.deadflag == DEAD_NO && trace_ent.godmode_finished < time)
 	{
 		if (self.classname == "player" && trace_ent.classname == "player") // PVP checks
 		{
