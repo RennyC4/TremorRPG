@@ -1206,12 +1206,9 @@ void() UI_DrawPlayerSummary =
 
 	info_x += UI_Scale()*40;
 
-	my_button("unequip_mainhand", info, [UI_Scale()*30, UI_Scale()*10], "Unequip", "")
-		? sendevent("User_UnequipMainhand", "", 0)
-		: 0;
+	my_button("unequip_mainhand", info, [UI_Scale()*30, UI_Scale()*10], "Unequip", "") ? sendevent("User_UnequipMainhand", "", 0) : 0;
 
 	info_x -= UI_Scale()*40;
-
 	info_y += UI_Scale()*10;
 
 	LINE(strcat(mainhand, " (^8", ftos(atmin), "-", ftos(atmax), "^7)"))
@@ -1223,12 +1220,9 @@ void() UI_DrawPlayerSummary =
 
 	info_x += UI_Scale()*40;
 
-	my_button("unequip_offhand", info, [UI_Scale()*30, UI_Scale()*10], "Unequip", "")
-		? sendevent("User_UnequipOffhand", "", 0)
-		: 0;
+	my_button("unequip_offhand", info, [UI_Scale()*30, UI_Scale()*10], "Unequip", "") ? sendevent("User_UnequipOffhand", "", 0) : 0;
 
 	info_x -= UI_Scale()*40;
-
 	info_y += UI_Scale()*10;
 
 	LINE(offhand);
@@ -1377,7 +1371,7 @@ void() User_MagicScreen =
 	// SPELL PANEL
 	// =================
 	vector panel = [UI(75), 0];
-	vector row = [2.5, UI_Scale() * 2.5];
+	vector row = [0, UI_Scale() * 2.5];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(panel, [UI_Scale() * 250, UI_Scale() * 280]);
@@ -1406,9 +1400,9 @@ void() User_MagicScreen =
 		1,
 		0);
 
-	// =================
-	// SPELL LIST (FIXED FLOW)
-	// =================
+	// ==========
+	// SPELL LIST
+	// ==========
 	float i;
 
 	for (i = 0; i < spell_count; i++)
@@ -1416,35 +1410,42 @@ void() User_MagicScreen =
 		string s = spell[i];
 
 		if (!s)
-		{
-			row_y += UI_Scale() * 10;
 			continue;
-		}
 
 		string desc = strcat("desc_", string_remove_spaces(s));
 		string btn  = strcat("spell_", ftos(i));
 
-		// =========================
-		// LABEL SIDE
-		// =========================
+		// =====================
+		// LABEL
+		// =====================
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-		// text + tooltip
 		float w = stringwidth(s, 1);
-		vector label_size = [w * 8, 10];
-		sui_tooltip(desc, row, label_size, strcat("^5", s));
 
-		// =========================
-		// BUTTON SIDE
-		// =========================
+		sui_tooltip(
+			desc,
+			row + [UI(2.5), 0],
+			[w * 8, 8],
+			strcat("^5", s)
+		);
+
+		// =====================
+		// EQUIP BUTTON
+		// =====================
 		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
-		my_button(btn, row + [UI(-2.5), UI(-1)], [UI(32), UI(10)], "Equip", "") ? sendevent("EquipSpell", "s", s) : 0;
+		my_button(
+			btn,
+			row - [UI(2.5), 0],
+			[UI(32), UI(10)],
+			"Equip",
+			""
+		) ? sendevent("EquipSpell", "s", s) : 0;
 
-		// =========================
-		// ROW ADVANCE
-		// =========================
-		row_y += UI_Scale() * 10;
+		// =====================
+		// ROW SPACING
+		// =====================
+		row += [0, UI(14)];
 	}
 
 	sui_pop_frame();
