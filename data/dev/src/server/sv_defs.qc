@@ -1822,6 +1822,9 @@ const float MENU_BANKING = 7; // user banking screen
 .float sight_range; // used by monsters & npcs
 .float velocitypush_finished;
 .float dodgedir;
+.float ai_dodge; // for AI dodging
+.float dodge_angle; // for AI dodging
+.float dodge_cooldown; // for AI dodging
 .float cnt;
 .float cnt2;
 .float count;

@@ -288,7 +288,6 @@ void() CSEv_PlayerJump =
         self.stamina -= staminaCost;
 		if (self.levitate_finished < time) // do not overwrite levitation state
 			self.anistate = ANISTATE_JUMP;
-        sound(self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
     }
 };
 
@@ -355,7 +354,6 @@ void(float whichdir) CSEv_PlayerDodge_f =
 			self.godmode_finished = time + 0.2;
 			self.dodge_finished = time + 0.8;
 			self.anistate = ANISTATE_DODGE;
-			sound (self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
 		}
 
 		self.velocitypush_finished = self.dodge_finished;

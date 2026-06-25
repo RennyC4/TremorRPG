@@ -163,8 +163,6 @@ void() set_monster =
 	if (!self.attack_length)
 		self.attack_length = 64;
 
-	//self.dodge_chance = 1; // 100% DEBUGGING
-
 	makevectors(self.angles);
 	self.saveorigin = self.origin; // stash initial spawn spot
 

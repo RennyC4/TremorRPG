@@ -343,6 +343,7 @@ void() Player_Animate =
 			self.frame = frameforname(self.modelindex, "Dodge");
 			self.anim_state = ANIM_DODGE;
 			self.anim_attacking = FALSE; // turn off attack animation flag
+			sound (self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
 		}
 
 		speed = 1.5;
@@ -704,6 +705,7 @@ void() Player_Animate =
                 self.frame1time = 0;
                 self.anim_state = ANIM_JUMP;
                 self.anim_attacking = FALSE;
+				sound (self, CHAN_AUTO, "jump.wav", 1, ATTN_NORM);
             }
         }
 

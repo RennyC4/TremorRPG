@@ -191,6 +191,8 @@ float() monster_ai_move =
     float move_dist = self.speed;
     if (self.ai_mode == AI_PATROL)
         move_dist *= 0.25;
+    else if (self.ai_mode == AI_DODGE)
+        move_dist *= 0.75;
 
     vector newpos = self.origin + dir * move_dist;
 
@@ -278,24 +280,38 @@ void() monster_ai_update_state =
 
 	if (self.ai_mode == AI_DODGE)
 	{
-		if (self.dodge_finished < time)
+		if (self.dodge_finished < time && !self.ai_dodge)
 		{
-			self.godmode_finished = time + 1; // i-frames, needs adjusting
-			self.ai_doattack = time; // remove incoming attack logic
+			self.dodge_angle = self.angles_y; // store angle
+			self.godmode_finished = time + 0.5; // i-frame timer
 
-			// Pick random direction to dodge in
-			float dodgedir = ceil(random() * 4);
-			//bprint (PRINT_HIGH, "Dodge Dir: ", ftos(dodgedir), "\n");
+			self.ai_doattack = time; 		// important: remove incoming attack logic
+			self.ai_attacktriggered = TRUE; // important: remove incoming attack logic
 
-			// Dodge is over, back to fighting
-			if (self.dodge_finished < time)
-			{
-				self.ai_mode = AI_CHASE;
-				self.anistate = ANISTATE_RUN;
-			}
+			// pick random direction to dodge in
+			self.dodgedir = ceil(random() * 3); // 3 directions (0 = back, 1 = left, 2 = right)
+			if (!self.dodgedir)
+				self.angles_y -= 180; // backward
+			else if (self.dodgedir == 1)
+				self.angles_y -= 90; // left
+			else
+				self.angles_y += 90; // right
+			//
+
+			self.ai_dodge = TRUE;
+		}
+		else
+			monster_ai_move(); // dodge movement
+
+		// dodge is over, back to fighting
+		if (self.dodge_finished < time && self.ai_dodge)
+		{
+			self.angles_y = self.dodge_angle; // restore angle
+			self.ai_mode = AI_CHASE;
+			self.anistate = ANISTATE_RUN;
+			self.ai_dodge = FALSE;
 		}
 
-		// Do dodge movement logic here
 		self.nextthink = time + 0.1;
 		return;
 	}
@@ -574,15 +590,26 @@ void() monster_ai_update_state =
 			// Defensive maneuvers: dodge
 			// ---------------------------
 			if ((self.enemy.melee_finished > time || self.enemy.spellani_finished > time) &&
-				 self.dodge_finished < time && infront(self.enemy) && self.dodge_chance > 0)
+				 self.dodge_finished < time && self.dodge_cooldown < time && infront(self.enemy) && self.dodge_chance > 0)
 			{
 				if (random() < self.dodge_chance)
 				{
+					self.dodge_angle = self.angles_y;
+					self.dodgedir = floor(random() * 3);
+
+					if (!self.dodgedir)
+						self.angles_y = anglemod(self.angles_y + 180);
+					else if (self.dodgedir == 1)
+						self.angles_y = anglemod(self.angles_y - 90);
+					else
+						self.angles_y = anglemod(self.angles_y + 90);
+
 					self.ai_mode = AI_DODGE;
 					self.anistate = ANISTATE_DODGE;
-					self.dodge_finished = time + 1; // dodge lasts 1s
-					self.nextthink = time + 0.1; // refresh think
-					return; // skip attacks until block ends
+					self.dodge_finished = time + 0.8;
+					self.dodge_cooldown = time + 1.2; // prevent dodge spamming
+					self.ai_dodge = TRUE;
+					return; // skip the rest
 				}
 			}
 
