@@ -2,6 +2,98 @@
 // Monsters: Most are defined in the maps themselves (hmp / bsp)
 //
 void(entity e) NPC_CommitState;
+void() itemchest_think;
+.float lootmode; // 0 = player item chest, 1 = monster loot chest
+
+float(entity chest, string lootfile) Loot_FillChest =
+{
+    string line;
+    string item;
+    string chance_str;
+    float fh;
+    float sep;
+    float chance;
+    float dropped;
+
+    dropped = 0;
+
+    fh = fopen(strcat("ltb/", lootfile, ".ltb"), FILE_READ);
+
+    if (fh < 0)
+        return 0;
+
+    while (1)
+    {
+        line = fgets(fh);
+        if (!line)
+            break;
+
+        if (line == "")
+            continue;
+
+        sep = strstrofs(line, "%", 0);
+        if (sep < 0)
+            continue;
+
+        item = substring(line, 0, sep);
+        chance_str = substring(line, sep + 1, strlen(line));
+
+        item = strtrim(item);
+        chance = stof(strtrim(chance_str));
+
+        if (random() <= chance)
+        {
+            entity it;
+
+            it = spawn();
+            it.classname = "chestloot";
+            it.netname = item;
+            it.owner = chest;
+
+            dropped = 1;
+        }
+    }
+
+    fclose(fh);
+    return dropped;
+};
+
+void(string lootfile, vector pos) Spawn_LootChest =
+{
+    entity chest;
+    float hasloot;
+
+    // TEMP: build chest first (but don’t commit visually yet)
+    chest = spawn();
+    chest.owner = world;
+
+    chest.movetype = MOVETYPE_TOSS;
+    chest.solid = SOLID_TRIGGER;
+    chest.classname = "item";
+
+    setmodel(chest, "models/chest.glb");
+    setsize(chest, '-16 -16 -0', '16 16 16');
+    setorigin(chest, pos);
+
+    chest.velocity_z = 270;
+	chest.scale = 0.75;
+
+    chest.lootmode = 1;
+    chest.netname = lootfile;
+
+    hasloot = Loot_FillChest(chest, lootfile);
+
+    // IMPORTANT FIX
+    if (!hasloot)
+    {
+        remove(chest);
+        return;
+    }
+	sound(self, CHAN_AUTO, "item/drop.wav", 1, ATTN_NORM);
+
+    chest.think = itemchest_think;
+    chest.nextthink = time + 1;
+};
 
 void(float flIsNew) Monster_SendFlags =
 {

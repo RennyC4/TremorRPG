@@ -23,6 +23,7 @@ void() monster_respawn;
 void(vector ang) CSEv_DoAttack_Melee_v;
 void(vector ang) CSEv_DoAttack_Arrow_v;
 void(entity e) NPC_CommitState;
+void(string lootfile, vector pos) Spawn_LootChest;
 
 // range values
 float	RANGE_CLOSE				= 0;
@@ -33,19 +34,7 @@ float	RANGE_FAR				= 4;
 
 void() monster_death =
 {
-	// TODO: Loot table drop
-	string loot;
-
-    float v = fopen(strcat("ltb/", self.displayname, ".ltb"), FILE_READ);
-    if (v >= 0)
-    {
-//		bprint (PRINT_HIGH, "Loot table found\n");
-//        if (loot = fgets(v))
-//            Send_LastLogin = line;
-        fclose(v);
-    }
-//	else
-//		bprint (PRINT_HIGH, "Loot table NOT found\n");
+	Spawn_LootChest(self.displayname, self.origin);
 
 	self.angles_x = 0;
 	self.enemy = world; // reset targets
