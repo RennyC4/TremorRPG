@@ -85,6 +85,10 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_GOLD_BANK, EV_FLOAT, gold_bank);
 	clientstat(STAT_LEVITATE, EV_FLOAT, levitate_finished);
 
+	clientstat(STAT_HELMETNAME, EV_STRING, helmetname);
+	clientstat(STAT_HELMETVALUE, EV_FLOAT, helmetvalue);
+
+
 	// Job Skills
 	clientstat(STAT_MINING, EV_FLOAT, skill_mining);
 	clientstat(STAT_FISHING, EV_FLOAT, skill_fishing);

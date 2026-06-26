@@ -121,6 +121,32 @@ void(string itemname, float id) Player_EquipItem =
 		RemoveFromInventory(self, itemname, 1);
 	}
 
+	// --- HELMET EQUIP ---
+	else if (id == 3)
+	{
+		string helmetname_e = "";
+		float helmetvalue_e = 0;
+		required_level = 1;
+
+		line = fgets(v); // skip price
+		line = fgets(v); if (line) helmetname_e = line;
+		line = fgets(v); if (line) helmetvalue_e = stof(line);
+		line = fgets(v); if (line) required_level = stof(line);
+
+		if (self.level < required_level)
+		{
+			sprint(self, PRINT_HIGH, "Level requirement has not been met\n");
+			fclose(v);
+			return;
+		}
+
+		if (self.helmetname != "")
+			AddToInventory(self, self.helmetname, 1);
+		self.helmetname = helmetname_e;
+		self.helmetvalue = helmetvalue_e;
+		RemoveFromInventory(self, itemname, 1);
+	}
+
 	fclose(v);
 
 	// --- Equip sound and message ---

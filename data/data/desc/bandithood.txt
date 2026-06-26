@@ -1,0 +1,6 @@
+^2Bandit Hood^7
+
+^5Armor Power:^7 1
+
+^6Item Level:^7 1
+^6Required Level:^7 1

@@ -1911,6 +1911,8 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .float fishing_finished;
 .float fishcast_finished;
 .string current_track;
+.string helmetname;
+.float helmetvalue;
 
 // Animation States
 .float anistate;
@@ -2037,11 +2039,13 @@ const float ANISTATE_FISHIDLE = 25;
 #define STAT_PROJ_MAX 92
 #define STAT_GOLD_BANK 93
 #define STAT_LEVITATE 94
+#define STAT_HELMETNAME 95
+#define STAT_HELMETVALUE 96
 
 // Job skills
-#define STAT_MINING 95
-#define STAT_FISHING 96
-#define STAT_WOODCUTTING 97
+#define STAT_MINING 97
+#define STAT_FISHING 98
+#define STAT_WOODCUTTING 99
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001
@@ -2164,6 +2168,7 @@ const float TIME_NIGHT = 3;
 .float last_speed;
 .float last_ai_mode;
 .float last_movetype;
+.string last_helmetname;
 
 //
 //

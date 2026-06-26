@@ -378,6 +378,7 @@ void(vector ang) CSEv_DoAttack_Melee_v =
 	}
 
     damage -= targ.armorvalue;
+    damage -= targ.helmetvalue;
     damage += bs_damage;
     damage = ceil(damage);
     if (damage < 1)
@@ -525,6 +526,7 @@ void() arrow_touch =
 		if (!parry)
 		{
 			damage -= ceil(other.armorvalue);
+			damage -= ceil(other.helmetvalue);
 
 			// If still blocking and block was not handled, apply minor block reduction
 			if (check_block(self.owner, other) && other.blocking)
@@ -932,6 +934,7 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
         // Final damage application
         // -------------------------------
         dmg -= targ.armorvalue;
+        dmg -= targ.helmetvalue;
 		dmg = (ceil(dmg)); // round
         if (dmg < 1)
             dmg = 1;

@@ -410,6 +410,10 @@ void(string itemname) CSEv_UseItem_s =
 		Player_EquipItem(itemname, 2);
 	else if (itemname == "Short Bow")
 		Player_EquipItem(itemname, 2);
+		
+	// Helmets
+	if (itemname == "Bandit Hood")
+		Player_EquipItem(itemname, 3);
 };
 
 // called whenever we need to send player/client ONLY inventory data to CSQC
@@ -474,7 +478,6 @@ void() Item_Touch =
 			e = find(e, classname, "chestloot");
 		}
 
-		bprint(PRINT_HIGH, strcat(other.netname, " looted a chest.\n"));
 		remove(self);
 		return;
 	}

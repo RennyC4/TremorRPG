@@ -497,9 +497,11 @@ void() sParms_Read =
 			sparm4 = line;
 		if (line = fgets(v))
 			sparm5 = line;
+		if (line = fgets(v))
+			sparm6 = line;
 		fclose(v);
 	}
-	sendevent("SSQC_ReadsParms", "sssss", sparm1, sparm2, sparm3, sparm4, sparm5); // send sParms to SSQC
+	sendevent("SSQC_ReadsParms", "sssss", sparm1, sparm2, sparm3, sparm4, sparm5, sparm6); // send sParms to SSQC
 };
 
 // write/update sparm file
@@ -510,7 +512,8 @@ void() sParms_Write =
 	sparm3 = getstats(STAT_ARMORNAME);
 	sparm4 = getstats(STAT_SPELLEQUIPPED);
 	sparm5 = getstats(STAT_ARMORNAME);
-	
+	sparm6 = getstats(STAT_HELMETNAME);
+
 	float v = fopen("sparms", FILE_WRITE); // write sParm file
 	if (v)
 	{
@@ -520,6 +523,7 @@ void() sParms_Write =
 		fputs(v, sparm3, "\n");
 		fputs(v, sparm4, "\n");
 		fputs(v, sparm5, "\n");
+		fputs(v, sparm6, "\n");
 		fclose(v);
 	}
 };
@@ -1224,8 +1228,6 @@ void() Player_Alerts =
 
 void() Player_Think =
 {
-	//self.helmetname = "Bandit Hood"; // debug
-
 	float player_loggedin = getstatf(STAT_LOGGEDIN);
 	if (!player_loggedin)
 		return;

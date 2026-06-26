@@ -2186,7 +2186,7 @@ var float PART_MELEE_HITWALL;
 var float PART_ARROW_HITWALL;
 
 // RennyC String Parms
-string sparm1, sparm2, sparm3, sparm4, sparm5;
+string sparm1, sparm2, sparm3, sparm4, sparm5, sparm6;
 
 float framecount;
 float pauseframe;
@@ -2317,11 +2317,13 @@ const float MENU_BANKING = 7; // user banking screen
 #define STAT_PROJ_MAX 92
 #define STAT_GOLD_BANK 93
 #define STAT_LEVITATE 94
+#define STAT_HELMETNAME 95
+#define STAT_HELMETVALUE 96
 
 // Job skills
-#define STAT_MINING 95
-#define STAT_FISHING 96
-#define STAT_WOODCUTTING 97
+#define STAT_MINING 97
+#define STAT_FISHING 98
+#define STAT_WOODCUTTING 99
 
 // Inventory - Player
 #define MAX_INVENTORY 32

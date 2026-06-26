@@ -1171,7 +1171,8 @@ void(float flIsNew) Player_SendFlags =
         // EQUIPMENT
         if (self.main_hand != self.last_main_hand ||
             self.off_hand != self.last_off_hand ||
-            self.armorname != self.last_armorname)
+            self.armorname != self.last_armorname ||
+			self.helmetname != self.last_helmetname)
             flChanged |= ESF_EQUIPMENT;
 
         // ANIMATION
@@ -1632,6 +1633,7 @@ float(entity ePVEnt, float flChanged) Player_SendEntity =
         WriteString(MSG_ENTITY, self.main_hand);
         WriteString(MSG_ENTITY, self.off_hand);
         WriteString(MSG_ENTITY, self.armorname);
+		WriteString(MSG_ENTITY, self.helmetname);
     }
 
     // --- ANIMATION & ACTION STATES ---
@@ -1875,6 +1877,8 @@ void(string LOGIN_NAME, string LOGIN_GENDER, string LOGIN_PASSWORD) CSEv_CreateN
 		// default armor
 		self.armorname = "Plain Clothes";
 		self.armorvalue = 0;
+		self.helmetname = "None";
+		self.helmetvalue = 0;
 		self.pvp = FALSE;
 
 		self.spell_equipped = "None";

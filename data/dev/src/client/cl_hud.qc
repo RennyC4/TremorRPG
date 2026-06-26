@@ -1145,6 +1145,9 @@ void() UI_DrawPlayerSummary =
 	string armor = getstats(STAT_ARMORNAME);
 	float armorval = getstatf(STAT_ARMORVALUE);
 
+	string helmet = getstats(STAT_HELMETNAME);
+	float helmetval = getstatf(STAT_HELMETVALUE);
+
 	string spell = getstats(STAT_SPELLEQUIPPED);
 	float spmin = getstatf(STAT_SPELLMIN);
 	float spmax = getstatf(STAT_SPELLMAX);
@@ -1228,7 +1231,7 @@ void() UI_DrawPlayerSummary =
 	info_y += UI_Scale()*2;
 
 	LINE(strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"))
-	LINE(strcat("^5Helmet: ^7", "None", " (^2+", "0", "^7)"))
+	LINE(strcat("^5Helmet: ^7", helmet, " (^2+", ftos(helmetval), "^7)"))
 	LINE(strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"))
 
 	info_y += UI_Scale()*10;

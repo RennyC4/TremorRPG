@@ -152,6 +152,8 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     fputs(f, ftos(targ.exp_oldnext), "\n");
     fputs(f, ftos(targ.hatchet_durability), "\n");
     fputs(f, ftos(targ.pick_durability), "\n");
+    fputs(f, targ.helmetname, "\n");
+    fputs(f, ftos(targ.helmetvalue), "\n");
 
     // --- PASSWORD (LAST LINE ALWAYS) ---
 	if (targ.password != "" && targ.password != __NULL__)
@@ -420,6 +422,10 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
 	self.hatchet_durability = (upgrades_start + 2 < total_lines) ? stof(file_contents[upgrades_start + 2]) : 100;
 	// Load mining pick durability, default to 100 if missing
 	self.pick_durability = (upgrades_start + 3 < total_lines) ? stof(file_contents[upgrades_start + 3]) : 100;
+	// Load helmet name
+	self.helmetname = (upgrades_start + 4 < total_lines) ? file_contents[upgrades_start + 4] : "None";
+	// Load helmet value
+	self.helmetvalue = (upgrades_start + 5 < total_lines) ? stof(file_contents[upgrades_start + 5]) : 0;
 
     // --- Step 7: Finalize player ---
     setorigin(self, self.origin);
