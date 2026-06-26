@@ -286,7 +286,6 @@ void() monster_ai_update_state =
 		if (self.dodge_finished < time && !self.ai_dodge)
 		{
 			self.dodge_angle = self.angles_y; // store angle
-			self.godmode_finished = time + 0.5; // i-frame timer
 
 			self.ai_doattack = time; 		// important: remove incoming attack logic
 			self.ai_attacktriggered = TRUE; // important: remove incoming attack logic
@@ -611,6 +610,8 @@ void() monster_ai_update_state =
 					self.anistate = ANISTATE_DODGE;
 					self.dodge_finished = time + 0.8;
 					self.dodge_cooldown = time + 1.2; // prevent dodge spamming
+					self.godmode_finished = time + 0.5; // i-frame timer
+
 					self.ai_dodge = TRUE;
 					return; // skip the rest
 				}

@@ -414,8 +414,8 @@ void() Skeleton_ObjectDraw =
 				setmodel(self.helmet_vfx, "models/helmet0.glb");
 				if (gender == "Female")
 				{
-					self.helmet_vfx.scale = 0.88;
-					offset = '0 3 3';  // offset relative to the bone
+					self.helmet_vfx.scale = 0.935;
+					offset = '0.95 0 -2.5';  // offset relative to the bone
 				}
 			}
 		}

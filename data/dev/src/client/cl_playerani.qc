@@ -171,6 +171,10 @@ void() Skeleton_Animate =
 
 void() Player_Animate =
 {
+	float player_loggedin = getstatf(STAT_LOGGEDIN);
+	if (!player_loggedin)
+		return;
+
     float speed = 1;
     float duration = frameduration(self.modelindex, self.frame);
 
