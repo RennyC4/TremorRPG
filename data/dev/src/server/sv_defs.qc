@@ -1825,6 +1825,7 @@ const float MENU_BANKING = 7; // user banking screen
 .float ai_dodge; // for AI dodging
 .float dodge_angle; // for AI dodging
 .float dodge_cooldown; // for AI dodging
+.float dodge_checked; // for AI dodging
 .float cnt;
 .float cnt2;
 .float count;

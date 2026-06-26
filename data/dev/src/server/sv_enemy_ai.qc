@@ -591,31 +591,39 @@ void() monster_ai_update_state =
 			// ---------------------------
 			// Defensive maneuvers: dodge
 			// ---------------------------
-			if ((self.enemy.melee_finished > time || self.enemy.spellani_finished > time) &&
-				 self.dodge_finished < time && self.dodge_cooldown < time && infront(self.enemy) && self.dodge_chance > 0)
+			float attacking = (self.enemy.melee_finished > time || self.enemy.spellani_finished > time);
+
+			if (attacking && !self.dodge_checked) // Player started a new attack
 			{
-				if (random() < self.dodge_chance)
+				self.dodge_checked = TRUE;
+
+				if (self.dodge_finished < time && self.dodge_cooldown < time && infront(self.enemy) && self.dodge_chance > 0)
 				{
-					self.dodge_angle = self.angles_y;
-					self.dodgedir = floor(random() * 3);
+					if (random() < self.dodge_chance)
+					{
+						self.dodge_angle = self.angles_y;
+						self.dodgedir = floor(random() * 3);
 
-					if (!self.dodgedir)
-						self.angles_y = anglemod(self.angles_y + 180);
-					else if (self.dodgedir == 1)
-						self.angles_y = anglemod(self.angles_y - 90);
-					else
-						self.angles_y = anglemod(self.angles_y + 90);
+						if (!self.dodgedir)
+							self.angles_y = anglemod(self.angles_y + 180);
+						else if (self.dodgedir == 1)
+							self.angles_y = anglemod(self.angles_y - 90);
+						else
+							self.angles_y = anglemod(self.angles_y + 90);
 
-					self.ai_mode = AI_DODGE;
-					self.anistate = ANISTATE_DODGE;
-					self.dodge_finished = time + 0.8;
-					self.dodge_cooldown = time + 1.2; // prevent dodge spamming
-					self.godmode_finished = time + 0.5; // i-frame timer
+						self.ai_mode = AI_DODGE;
+						self.anistate = ANISTATE_DODGE;
+						self.dodge_finished = time + 0.8;
+						self.dodge_cooldown = time + 1.2;
+						self.godmode_finished = time + 0.4; // little more lee-way than player
 
-					self.ai_dodge = TRUE;
-					return; // skip the rest
+						self.ai_dodge = TRUE;
+						return;
+					}
 				}
 			}
+			else if (!attacking) // ready for the next attack
+				self.dodge_checked = FALSE;
 
 			// ---------------------------
 			// Defensive maneuvers: block
