@@ -27,7 +27,7 @@ void(entity targ, float type) CSEv_Player_SaveChar =
     if (!targ.loggedin)
         return;
 
-    string filename = strcat(targ.loginname, ".chr");
+    string filename = strcat("chr/", targ.loginname, ".chr");
     string old_music;
     string old_origin[6];
 	string old_password;
@@ -171,7 +171,7 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
     if (cvar("developer") > 0)
         return;
 
-    string add_ext = strcat(LOGIN_NAME, ".chr");
+    string add_ext = strcat("chr/", LOGIN_NAME, ".chr");
     string line;
 
     // --- Step 1: Check GUID ---
@@ -437,7 +437,7 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
 // ===================
 void(entity targ) SaveInventory =
 {
-    string filename = strcat(targ.loginname, ".chr");
+    string filename = strcat("chr/", targ.loginname, ".chr");
     float f, b;
     float i;
 

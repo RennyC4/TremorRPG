@@ -706,7 +706,7 @@ void() Draw_EventLog =
 		g_height - UI(146)
 	];
 
-	vector tsize = [UI(230), UI(100)];
+	vector tsize = [UI(228), UI(100)];
 
 	// ===========
 	// FONT SWITCH
@@ -1410,7 +1410,7 @@ void() User_MagicScreen =
 		if (!s)
 			continue;
 
-		string desc = strcat("desc_", string_remove_spaces(s));
+		string desc = strcat("desc/", string_remove_spaces(s));
 		string btn  = strcat("spell_", ftos(i));
 
 		// =====================
@@ -1536,7 +1536,7 @@ void() User_InventoryScreen =
 
 		string use_btn  = strcat("u_", item);
 		string drop_btn = strcat("d_", item);
-		string desc     = strcat("desc_", string_remove_spaces(item));
+		string desc     = strcat("desc/", string_remove_spaces(item));
 
 		string label = strcat("^5", item, " ^7[^2", ftos(inventory_count[i]), "^7]");
 

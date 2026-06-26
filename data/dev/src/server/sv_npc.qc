@@ -46,7 +46,7 @@ void() npc_use =
 	string line = "";
 
 	// grab NPC dialogue from file
-	string readfile = strcat("npc_", self.netname, "_d.txt");
+	string readfile = strcat("npc/", self.netname, "_d.txt");
 	float v = fopen(readfile, FILE_READ);
 	if (v >= 0)
 	{
@@ -70,7 +70,7 @@ void() npc_use =
 	{
 		// Grab NPC inventory from file
 		string what = "";
-		readfile = strcat("npc_", self.netname, "_i.txt");
+		readfile = strcat("npc/", self.netname, "_i.txt");
 		float b = fopen(readfile, FILE_READ);
 		if (b >= 0)
 		{

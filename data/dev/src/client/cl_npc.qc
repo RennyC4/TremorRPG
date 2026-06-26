@@ -293,7 +293,7 @@ void() User_NPCBuySell =
 			string item = inventory[i];
 			string item_disp = strcat("^5", item, " ^7[^2", ftos(inventory_count[i]), "^7]");
 			string btn_id = strcat("s_", item);
-			string desc = strcat("desc_", string_remove_spaces(item));
+			string desc = strcat("desc/", string_remove_spaces(item));
 
 			vector sell_size;
 			sell_size_x = UI(32);
@@ -337,7 +337,7 @@ void() User_NPCBuySell =
 			string item = npc_inventory[i];
 			string item_disp = strcat("^5", item, " ^7- ^3", ftos(npc_inventory_gold[i]), "^7g");
 			string btn_id = strcat("b_", item);
-			string desc = strcat("desc_", string_remove_spaces(item));
+			string desc = strcat("desc/", string_remove_spaces(item));
 
 			vector buy_size;
 			buy_size_x = UI(25);

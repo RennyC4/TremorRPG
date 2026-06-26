@@ -8,7 +8,7 @@ void(string itemname, float id) Player_EquipItem =
 {
 	string line;
 	string fix_itemname = string_tolower(string_remove_spaces(itemname));
-	string readfile = strcat("itm_", fix_itemname, ".txt");
+	string readfile = strcat("itm/", fix_itemname, ".txt");
 
 	float v = fopen(readfile, FILE_READ);
 	if (v < 0)

@@ -1809,7 +1809,7 @@ void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s =
 
 	// security check
 	string line;
-	string add_ext = strcat(LOGIN_NAME, ".chr");
+	string add_ext = strcat("chr/", LOGIN_NAME, ".chr");
 	float f = fopen(add_ext, FILE_READ);
 	if (f >= 0)
 	{
@@ -1837,7 +1837,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER, string LOGIN_PASSWORD) CSEv_CreateN
 	self.gender = LOGIN_GENDER; // Grab gender from CSQC
 	self.password = LOGIN_PASSWORD; // Grab password from CSQC
 	
-	string add_ext = strcat(self.loginname, ".chr");
+	string add_ext = strcat("chr/", self.loginname, ".chr");
 	float v = fopen(add_ext, FILE_READ);
 	if (v >= 0) // User exists
 	{

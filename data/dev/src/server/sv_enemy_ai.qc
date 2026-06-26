@@ -33,6 +33,20 @@ float	RANGE_FAR				= 4;
 
 void() monster_death =
 {
+	// TODO: Loot table drop
+	string loot;
+
+    float v = fopen(strcat("ltb/", self.displayname, ".ltb"), FILE_READ);
+    if (v >= 0)
+    {
+//		bprint (PRINT_HIGH, "Loot table found\n");
+//        if (loot = fgets(v))
+//            Send_LastLogin = line;
+        fclose(v);
+    }
+//	else
+//		bprint (PRINT_HIGH, "Loot table NOT found\n");
+
 	self.angles_x = 0;
 	self.enemy = world; // reset targets
 	self.velocity = '0 0 0'; // slide fix
