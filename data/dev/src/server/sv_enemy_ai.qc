@@ -409,29 +409,40 @@ void() monster_ai_update_state =
             }
         }
 
-        // Detect players
-        for (entity targ = world; (targ = find(targ, classname, "player"));)
-        {
-		if (vlen((targ.origin - self.origin)) <= self.sight_range &&
-		    targ.deadflag != DEAD_DEAD &&
-		    visible(targ) &&
-		    infront_stealth(targ, self) &&
-		    targ.bonfire == FALSE &&
-		    !(targ.flags & FL_NOTARGET))
-            {
-                if (self.noise)
-                    sound(self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
+		for (entity targ = world; (targ = find(targ, classname, "player"));)
+		{
+			float lvl_diff = targ.level - self.level;
 
-                self.enemy = targ;
-                self.ai_mode = AI_CHASE;
-                self.anistate = ANISTATE_RUN;
+			if (lvl_diff >= 20) // ignore players 20 levels above mine
+				continue;
 
-                targ.incombat = TRUE;
-                targ.incombat_finished = time + 15;
-                string eventlog_print = (strcat("^1You engage in combat!\n"));
-                stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
-            }
-        }
+			float sight_mult = 1.0;
+			if (lvl_diff > 0)
+			{
+				sight_mult = 1.0 - (lvl_diff * 0.05); // -5% per player level above monster level
+				if (sight_mult < 0)
+					sight_mult = 0;
+			}
+
+			float effective_sight = self.sight_range * sight_mult;
+
+			if (vlen((targ.origin - self.origin)) <= effective_sight && targ.deadflag != DEAD_DEAD && visible(targ) && infront_stealth(targ, self) &&
+			targ.bonfire == FALSE && !(targ.flags & FL_NOTARGET))
+			{
+				if (self.noise)
+					sound(self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
+
+				self.enemy = targ;
+				self.ai_mode = AI_CHASE;
+				self.anistate = ANISTATE_RUN;
+
+				targ.incombat = TRUE;
+				targ.incombat_finished = time + 15;
+
+				string eventlog_print = "^1You engage in combat!\n";
+				stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
+			}
+		}
     }
 
     // ---------------------------
