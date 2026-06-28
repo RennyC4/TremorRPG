@@ -140,7 +140,7 @@ void(string itemname, float id) Player_EquipItem =
 			return;
 		}
 
-		if (self.helmetname != "")
+		if (self.helmetname != "None")
 			AddToInventory(self, self.helmetname, 1);
 		self.helmetname = helmetname_e;
 		self.helmetvalue = helmetvalue_e;

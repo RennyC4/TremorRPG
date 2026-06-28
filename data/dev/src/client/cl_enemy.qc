@@ -191,6 +191,8 @@ void() Monster_Animate =
 
 float(void) Monster_PreDraw =
 {
+	self.angles_x = 0; // don't show pitch, however server side is fine
+
 	// interpolate stuff first to get proper angles/origin
 	entity_interpolate(self);
 	// animate and set objects after to get correct bone origins/angles

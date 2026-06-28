@@ -287,9 +287,6 @@ void() monster_ai_update_state =
 		{
 			self.dodge_angle = self.angles_y; // store angle
 
-			self.ai_doattack = time; 		// important: remove incoming attack logic
-			self.ai_attacktriggered = TRUE; // important: remove incoming attack logic
-
 			// pick random direction to dodge in
 			self.dodgedir = ceil(random() * 3); // 3 directions (0 = back, 1 = left, 2 = right)
 			if (!self.dodgedir)
@@ -308,9 +305,12 @@ void() monster_ai_update_state =
 		// dodge is over, back to fighting
 		if (self.dodge_finished < time && self.ai_dodge)
 		{
+			self.ai_attacktriggered = TRUE; 	// important: remove incoming attack logic
+			self.ai_doattack = time - 0.25; 	// important: remove incoming attack logic
+
 			self.angles_y = self.dodge_angle; // restore angle
 			self.ai_mode = AI_CHASE;
-			self.anistate = ANISTATE_RUN;
+			self.anistate = ANISTATE_NONE;
 			self.ai_dodge = FALSE;
 		}
 
@@ -708,9 +708,9 @@ void() monster_ai_update_state =
 					self.ai_attacktriggered = FALSE;
 				}
 			}
-
-			PitchToTarget();
 		}
+
+		PitchToTarget();
 
 		// ---------------------------
 		// Movement
