@@ -151,7 +151,7 @@ void() trigger_zone =
 // changelevel- move players between maps
 //
 
-void() trigger_changeleveel_touch =
+void() trigger_changelevel_touch =
 {
 	if (other.classname != "player")
 		return;
@@ -165,11 +165,11 @@ void() trigger_changeleveel_touch =
 
 void() trigger_changelevel =
 {
-	return; // Remove when map cluster on Linux is fixed
+	//return; // Remove when map cluster on Linux is fixed
 
 	self.modelindex = 0;
 	self.solid = SOLID_TRIGGER;
-	self.touch = trigger_changeleveel_touch;
+	self.touch = trigger_changelevel_touch;
 
 	setmodel (self, self.model);
 	self.movetype = MOVETYPE_NONE;
