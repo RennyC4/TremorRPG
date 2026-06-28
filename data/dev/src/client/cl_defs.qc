@@ -2186,7 +2186,7 @@ var float PART_MELEE_HITWALL;
 var float PART_ARROW_HITWALL;
 
 // RennyC String Parms
-string sparm1, sparm2, sparm3, sparm4, sparm5, sparm6;
+string sparm1, sparm2, sparm3, sparm4, sparm5;
 
 float framecount;
 float pauseframe;

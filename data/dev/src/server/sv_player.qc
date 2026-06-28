@@ -13,7 +13,7 @@ void() ClientKill = {};
 void() SetNewParms = {};
 void(float elapsedtime) SV_PausedTic = {};
 void() info_player_start = {};
-void(string LOGIN_NAME) CSEv_ResumeCharacter_s;
+void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss;
 
 #define player_dimension_hit 1
 #define player_dimension_solid 2
@@ -28,7 +28,7 @@ void(string reads1, string reads2, string reads3, string reads4, string reads5) 
 	self.off_hand = reads2;
 	self.armorname = reads3;
 	self.spell_equipped = reads4;
-	self.armorname = reads5;
+	self.helmetname = reads5;
 };
 
 void() WipeParms =
@@ -1793,7 +1793,7 @@ void() ClientDisconnect =
 // Saving / Loading / Map Transfer / Character creation
 //
 
-void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s = 
+void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacterMapTransfer_ss = 
 {
 	if (cvar("developer") > 0)
 		return;
@@ -1806,8 +1806,9 @@ void(string LOGIN_NAME) CSEv_ResumeCharacterMapTransfer_s =
 	}
 
 	self.loginname = LOGIN_NAME;
+	self.password = LOGIN_PASSWORD;
 	self.netname = LOGIN_NAME;
-	CSEv_ResumeCharacter_s(self.loginname);
+	CSEv_ResumeCharacter_ss(self.loginname, self.password);
 
 	// security check
 	string line;

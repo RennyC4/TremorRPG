@@ -1,6 +1,7 @@
 // Character login screen / creation / map transfer
 
 string Send_LastLogin;
+string Send_Password;
 void() sParms_Write;
 
 // ============================================================
@@ -15,13 +16,16 @@ void() User_ResumeCharacter_MapTransfer =
     {
         if (line = fgets(v))
             Send_LastLogin = line;
+        if (line = fgets(v))
+            Send_Password = line;
         fclose(v);
     }
 
     if (Send_LastLogin)
-        sendevent("ResumeCharacterMapTransfer", "s", Send_LastLogin);
+        sendevent("ResumeCharacterMapTransfer", "ss", Send_LastLogin, Send_Password);
 
     LOGIN_NAME = Send_LastLogin;
+	LOGIN_PASSWORD = Send_Password;
 };
 
 // ===============
