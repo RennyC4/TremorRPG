@@ -135,7 +135,7 @@ float(entity ePVEnt, float flChanged) Monster_SendEntity =
 
     if (flChanged & ESF_ANGLES)
     {
-        WriteCoord(MSG_ENTITY, self.angles_x);
+        //WriteCoord(MSG_ENTITY, self.angles_x);
         WriteCoord(MSG_ENTITY, self.angles_y);
         WriteCoord(MSG_ENTITY, self.angles_z);
     }

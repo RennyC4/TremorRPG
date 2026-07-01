@@ -813,7 +813,7 @@ void(float flIsNew) CSQC_Ent_Update =
 
 		if (deltaFlags & ESF_ANGLES)
 		{
-			self.angles_x = readcoord();
+			//self.angles_x = readcoord();
 			self.angles_y = readcoord();
 			self.angles_z = readcoord();
 		}

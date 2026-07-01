@@ -45,13 +45,20 @@ void() ally_ai_move = {};
 // main ally ai execution function
 void() ally_ai_update_state =
 {
-	for (entity b = world; (b = find(b, classname, "player"));) // stare at players
+	self.goalentity = world;
+
+	for (entity b = findradius(self.origin, self.sight_range); b; b = b.chain)
 	{
-		if (vlen(b.origin - self.origin) < self.sight_range && visible(b))
-			self.goalentity = b;
-		else
-			self.goalentity = world;
+		if (b.classname != "player")
+			continue;
+
+		if (!visible(b))
+			continue;
+
+		self.goalentity = b;
+		break; // Face the first visible player found
 	}
+
 	TurnToTarget(10);
 };
 

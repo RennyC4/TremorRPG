@@ -409,39 +409,62 @@ void() monster_ai_update_state =
             }
         }
 
-		for (entity targ = world; (targ = find(targ, classname, "player"));)
+		// Detect nearby players
+		for (entity targ = findradius(self.origin, self.sight_range); targ; targ = targ.chain)
 		{
+			if (targ.classname != "player")
+				continue;
+
 			float lvl_diff = targ.level - self.level;
 
-			if (lvl_diff >= 20) // ignore players 20 levels above mine
+			// Ignore players 20+ levels above the monster
+			if (lvl_diff >= 20)
 				continue;
 
 			float sight_mult = 1.0;
 			if (lvl_diff > 0)
 			{
-				sight_mult = 1.0 - (lvl_diff * 0.05); // -5% per player level above monster level
+				sight_mult = 1.0 - (lvl_diff * 0.05); // -5% per level
 				if (sight_mult < 0)
 					sight_mult = 0;
 			}
 
 			float effective_sight = self.sight_range * sight_mult;
 
-			if (vlen((targ.origin - self.origin)) <= effective_sight && targ.deadflag != DEAD_DEAD && visible(targ) && infront_stealth(targ, self) &&
-			targ.bonfire == FALSE && !(targ.flags & FL_NOTARGET))
-			{
-				if (self.noise)
-					sound(self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
+			// findradius() already filtered by max sight_range, but higher level
+			// players have a smaller effective detection radius.
+			if (vlen(targ.origin - self.origin) > effective_sight)
+				continue;
 
-				self.enemy = targ;
-				self.ai_mode = AI_CHASE;
-				self.anistate = ANISTATE_RUN;
+			if (targ.deadflag == DEAD_DEAD)
+				continue;
 
-				targ.incombat = TRUE;
-				targ.incombat_finished = time + 15;
+			if (!visible(targ))
+				continue;
 
-				string eventlog_print = "^1You engage in combat!\n";
-				stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
-			}
+			if (!infront_stealth(targ, self))
+				continue;
+
+			if (targ.bonfire == TRUE)
+				continue;
+
+			if (targ.flags & FL_NOTARGET)
+				continue;
+
+			if (self.noise)
+				sound(self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
+
+			self.enemy = targ;
+			self.ai_mode = AI_CHASE;
+			self.anistate = ANISTATE_RUN;
+
+			targ.incombat = TRUE;
+			targ.incombat_finished = time + 15;
+
+			string eventlog_print = "^1You engage in combat!\n";
+			stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
+
+			break; // Stop after acquiring the first valid target
 		}
     }
 
