@@ -93,11 +93,12 @@ float(string id, vector pos, vector size, string image, string label) my_button_
 	// TOOL-TIP
 	if (hovered)
 	{
-		vector tip_size = [32, 12];
+		vector tip_size = [40, 12]; // TODO: Make x scale with text size
 		vector tip_pos;
 
 		// center above button
-		tip_pos_x = (size_x * 0.5) - (tip_size_x * 0.5);
+		//tip_pos_x = (size_x * 0.5) - (tip_size_x * 0.5);
+		tip_pos_x = (size_x * 0.01) - (tip_size_x * 0.01);
 		tip_pos_y = -tip_size_y - 12;
 
 		sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
