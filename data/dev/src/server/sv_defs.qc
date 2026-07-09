@@ -1795,6 +1795,7 @@ const float MENU_BANKING = 7; // user banking screen
 .float zonename_finished; // display on csqc hud
 .float melee_finished;
 .string displayname; // display on csqc hud
+.string loottable; // loot table look up
 .float respawn_finished; // monster respawn time
 .float speed;
 .entity oldenemy;

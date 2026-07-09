@@ -34,7 +34,8 @@ float	RANGE_FAR				= 4;
 
 void() monster_death =
 {
-	Spawn_LootChest(self.displayname, self.origin);
+	if (self.loottable != "")
+		Spawn_LootChest(self.loottable, self.origin);
 
 	self.angles_x = 0;
 	self.enemy = world; // reset targets

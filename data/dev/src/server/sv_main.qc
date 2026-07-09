@@ -220,7 +220,7 @@ void() worldspawn =
     string line, temp;
 
     f = fopen("motd.txt", FILE_READ);
-    if (f)
+    if (f > 0)
     {
         motd = ""; // clear previous MOTD, if any
         while ((line = fgets(f)))
@@ -228,7 +228,10 @@ void() worldspawn =
         fclose(f);
     }
     else
+	{
         motd = "";
+		print ("Optional: motd not set\n");
+	}
 };
 
 //
