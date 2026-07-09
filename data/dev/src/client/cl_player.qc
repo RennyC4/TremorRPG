@@ -14,13 +14,6 @@ void() FootstepThink;
 .float attack_finished;
 .float respawn_finished;
 
-.entity lantern_vfx;
-.entity weapon_vfx;
-.entity offhand_vfx;
-.entity arrow_vfx;
-.entity armor_vfx;
-.entity helmet_vfx;
-
 string nightskybox = "skyworld_star";
 string dayskybox = "";
 const float TIME_DAWN = 0;
@@ -103,7 +96,6 @@ void() Skeleton_ObjectDraw =
 			//
 			// Models to draw
 			//
-
 			string lname = string_tolower(self.main_hand); // case insensitivity
 
 			if (!self.bonfire)
@@ -146,7 +138,6 @@ void() Skeleton_ObjectDraw =
 						{
 							if (camera_gdist > 24) // Normal distance: show armor
 							{
-
 								self.weapon_vfx.drawmask = MASK_ENGINE;
 								self.weapon_vfx.renderflags &= ~RF_EXTERNALMODEL;
 							}
@@ -1228,6 +1219,17 @@ void() Player_Think =
 	if (!player_loggedin)
 		return;
 
+	// update doll equips
+	if (doll_weapon != self.main_hand)
+		doll_weapon  = self.main_hand;
+	if (doll_offhand != self.off_hand)
+		doll_offhand  = self.off_hand;
+	if (doll_armor != self.armorname)
+		doll_armor  = self.armorname;
+	if (doll_helmet != self.helmetname)
+		doll_helmet  = self.helmetname;
+	//
+	
 	if (self.flags & FL_ONGROUND)
 		PlayerOnGround = TRUE;
 	else

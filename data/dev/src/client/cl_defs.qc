@@ -2407,6 +2407,14 @@ float LockOn_CycleToggle; // same
 .float fade_speed;
 .float was_alive;
 
+// for player and doll weapons/armor equips
+.entity lantern_vfx;
+.entity weapon_vfx;
+.entity offhand_vfx;
+.entity arrow_vfx;
+.entity armor_vfx;
+.entity helmet_vfx;
+
 // Animation States, typically used for other players server -> client stuff
 .float anistate;
 const float ANISTATE_NONE = 0;

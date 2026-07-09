@@ -945,8 +945,6 @@ void() Draw_Exp =
 
 void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
 {
-    clearscene();
-
     vector pad = [UI(4), UI(4)];
 
     vector vp_min = pos + pad;
@@ -957,17 +955,96 @@ void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
 
     setviewprop(VF_DRAWWORLD, FALSE);
     setviewprop(VF_ANGLES, '0 0 0');
-
     setviewprop(VF_AFOV, 25);
-
     setviewprop(VF_ORIGIN, [zoom, 0, 0]);
 
     addentity(ent);
-    renderscene();
 };
 
 entity doll;
-void() Skeleton_ObjectDraw;
+string doll_weapon;
+string doll_offhand;
+string doll_armor;
+string doll_helmet;
+
+void() Doll_ObjectDraw =
+{
+	vector org, ang, offset;
+	string gender = getstats(STAT_GENDER);
+	if (!doll.skeletonindex)
+	{
+		doll.skeletonindex = skel_create(doll.modelindex);
+		doll.frame = frameforname(doll.modelindex, "Idle");
+	}
+	skel_build(doll.skeletonindex, doll, doll.modelindex, 0, 0, 0, 1);
+
+	if (doll_weapon != "" && doll_weapon != "Unarmed")
+	{
+		if (!doll.weapon_vfx)
+		{
+			doll.weapon_vfx = spawn();
+			doll.weapon_vfx.owner = doll;
+		}
+		else
+		{
+			string lname = string_tolower(doll_weapon); // case insensitivity
+
+			// Misc
+			if (doll_weapon == "Hatchet")
+				setmodel(doll.weapon_vfx, "models/hatchet0.glb");
+			if (doll_weapon == "Mining Pick")
+				setmodel(doll.weapon_vfx, "models/pick0.glb");
+			if (doll_weapon == "Fishing Rod")
+				setmodel(doll.weapon_vfx, "models/fishrod.glb");
+
+			// Swords
+			if (doll_weapon == "Broken Sword")
+				setmodel(doll.weapon_vfx, "models/sword0.glb");
+			if (doll_weapon == "Short Sword")
+				setmodel(doll.weapon_vfx, "models/sword1.glb");
+
+			// Daggers
+			if (doll_weapon == "Rusty Dagger")
+				setmodel(doll.weapon_vfx, "models/dagger0.glb");
+
+			// Clubs
+			if (doll_weapon == "Wood Club")
+				setmodel(doll.weapon_vfx, "models/club0.glb");
+
+			// Arrows
+			if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+				setmodel(doll.weapon_vfx, "models/quiver.glb");
+
+			//
+			// Draw it
+			//
+			if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+				org = gettaginfo(doll, gettagindex(doll, "mixamorig:Spine1"));			
+			else			
+				org = gettaginfo(doll, gettagindex(doll, "mixamorig:RightHand"));
+
+			if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+				org = gettaginfo(doll, gettagindex(doll, "mixamorig:Spine1"));			
+			else
+				org = gettaginfo(doll, gettagindex(doll, "mixamorig:RightHand"));
+
+			offset = '0 0 0';  // offset relative to the bone
+			if (gender == "Female")
+				offset = '0 10 0';
+
+			// local offset into world space
+			org += v_forward * offset_x;
+			org += v_right   * offset_y;
+			org += v_up      * offset_z;
+			doll.weapon_vfx.origin = org;
+
+			// angles
+			ang = vectoangles(v_forward, v_up);
+			doll.weapon_vfx.angles = ang;
+		}
+	}
+};
+
 void(vector pos) Draw_3DPDoll =
 {
 	vector size = [150, 250];
@@ -998,9 +1075,9 @@ void(vector pos) Draw_3DPDoll =
 
         setorigin(doll, '0 0 0');
 		doll.angles_y -= 180;
-
-		doll.frame = frameforname(doll.modelindex, "Idle");
 	}
+
+	Doll_ObjectDraw();
 
 	doll.angles_y += 50 * frametime;
 	if (gender == "Female")
@@ -1009,7 +1086,18 @@ void(vector pos) Draw_3DPDoll =
 		doll.frame1time += frametime;
 
 	vector size = [UI(175), UI(275)];
-	entdraw(doll, pos, size, -245);
+	clearscene();
+	if (doll.weapon_vfx)
+	{
+		doll.weapon_vfx.abslight = 500; // new lighting level
+		entdraw(doll.weapon_vfx, pos, size, -245);
+		addentity(doll.weapon_vfx);
+	}
+
+	entdraw(doll, pos, size, -245); // draw main character last
+	addentity(doll);
+
+	renderscene();
 };
 
 //==============================================================
