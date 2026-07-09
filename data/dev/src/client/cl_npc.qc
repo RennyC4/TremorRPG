@@ -16,14 +16,16 @@ float(vector startpos, float max_width, string text) UI_DrawWrappedText =
 	{
 		string ch = substring(text, i, 1);
 
-		// handle manual newline
+		// Manual newline
 		if (ch == "\n")
 		{
 			if (line != "")
 			{
 				sui_text(pos, MENU_TEXT_SMALL, line, MENU_TEXT_1, 1, 0);
+
 				lines += 1;
 				pos_y += UI(10);
+
 				line = "";
 			}
 			continue;
@@ -31,50 +33,55 @@ float(vector startpos, float max_width, string text) UI_DrawWrappedText =
 
 		string test = strcat(line, ch);
 
-		string clean = StripColors(test);
-		float w = UI(stringwidth(clean, 1));
-
-		if (w > max_width && line != "")
+		if (UI(stringwidth(StripColors(test), 1)) <= max_width)
 		{
-			// 🔥 try to break at last space
-			float j;
-			float split = -1;
+			line = test;
+			continue;
+		}
 
-			for (j = strlen(line) - 1; j >= 0; j--)
+		// Overflow. Find the last space.
+		float split = -1;
+		float j;
+
+		for (j = strlen(line) - 1; j >= 0; j--)
+		{
+			if (substring(line, j, 1) == " ")
 			{
-				if (substring(line, j, 1) == " ")
-				{
-					split = j;
-					break;
-				}
+				split = j;
+				break;
 			}
+		}
 
-			if (split > 0)
-			{
-				string left  = substring(line, 0, split);
-				string right = substring(line, split + 1, strlen(line));
+		if (split >= 0)
+		{
+			string left  = substring(line, 0, split);
+			string right = substring(line, split + 1,
+                         strlen(line) - split - 1);
+			//string right = substring(line, split + 1, strlen(line));
 
-				sui_text(pos, MENU_TEXT_SMALL, left, MENU_TEXT_1, 1, 0);
+			sui_text(pos, MENU_TEXT_SMALL, left, MENU_TEXT_1, 1, 0);
 
-				lines += 1;
-				pos_y += UI(10);
+			lines += 1;
+			pos_y += UI(10);
 
-				line = strcat(right, ch);
-			}
-			else
-			{
-				// no space found, hard break
-				sui_text(pos, MENU_TEXT_SMALL, line, MENU_TEXT_1, 1, 0);
+			// Start next line with the text after the split.
+			line = right;
 
-				lines += 1;
-				pos_y += UI(10);
-
-				line = ch;
-			}
+			// Re-process the current character on the new line.
+			i--;
 		}
 		else
 		{
-			line = test;
+			// No spaces at all, hard wrap.
+			sui_text(pos, MENU_TEXT_SMALL, line, MENU_TEXT_1, 1, 0);
+
+			lines += 1;
+			pos_y += UI(10);
+
+			line = "";
+
+			// Re-process current character.
+			i--;
 		}
 	}
 
@@ -149,8 +156,7 @@ void() User_NPCDialogue =
 	sui_clip_to_frame();
 
 	vector linepos = [UI(2.5), UI(2.5)];
-
-	float max_width = panel_size_x - UI(5);
+	float max_width = 36 * UI_Scale();
 
 	float i, numlines;
 	numlines = tokenizebyseparator(npc_dialogue, "\n");
