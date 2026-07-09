@@ -293,7 +293,7 @@ void() Skeleton_ObjectDraw =
 	}
 
 	//
-	// Draw armor
+	// draw armor
 	//
 
 	if (self.armorname != "" && self.armorname != "Plain Clothes")
