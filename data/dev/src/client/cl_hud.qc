@@ -1098,15 +1098,24 @@ void() UI_DrawPlayerSummary =
 	// =================
 	vector header = [UI_Scale()*3.5, UI_Scale()*5];
 
+	string headertext = strcat("^5Level ", ftos(level), " ^7", gender, " ^1", name);
+	string exptext = strcat("^5Experience: ^7", ftos(exp), " / ", ftos(expneed));
+
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_text(header + [0,1], MENU_TEXT_MEDIUM * UI_TextScale() * UI_TextScale(), strcat(gender, " ^1", name), MENU_TEXT_SHADOW, 1, 0);
-	sui_text(header, MENU_TEXT_MEDIUM * UI_TextScale() * UI_TextScale(), strcat(gender, " ^1", name), MENU_TEXT_1, 1, 0);
+
+	// Shadow
+	sui_text(header + [0,1], MENU_TEXT_MEDIUM * UI_TextScale() * UI_TextScale(), headertext, MENU_TEXT_SHADOW, 1, 0);
+	sui_text(header + [0, UI_Scale()*14 + 1], MENU_TEXT_SMALL * UI_TextScale() * 0.85, exptext, MENU_TEXT_SHADOW, 1, 0);
+
+	// Text
+	sui_text(header, MENU_TEXT_MEDIUM * UI_TextScale() * UI_TextScale(), headertext, MENU_TEXT_1, 1, 0);
+	sui_text(header + [0, UI_Scale()*14], MENU_TEXT_SMALL * UI_TextScale() * 0.85, exptext, MENU_TEXT_2, 1, 0);
 
 	// =================
 	// MODEL
 	// =================
 	
-	vector modelpos = [UI(25), UI(25)];
+	vector modelpos = [UI(2.5), UI(25)];
 	vector modelsz = [UI(125), UI(150)];
 
 	sui_border_box(modelpos, modelsz, 2, MENU_BORDER, 0.3, 0);
@@ -1125,18 +1134,21 @@ void() UI_DrawPlayerSummary =
 		sui_text(info, MENU_TEXT_SMALL * UI_TextScale(), str, MENU_TEXT_1, 1, 0); \
 		info_y += UI_Scale()*10;
 
-	LINE(strcat("^5Level: ^7", ftos(level), strcat("  ^5Exp: ^7", ftos(exp), " / ", ftos(expneed))));
-	LINE(strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)));
 	LINE(strcat("^5Skill Points: ^7", ftos(skillpoints)))
+	LINE(strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)));
 
 	info_y += UI_Scale()*2;
 
+	//
 	// Equipment
+	//
+	
+	// Main hand
 	sui_text(info, MENU_TEXT_SMALL * UI_TextScale(), "^5Main Hand", MENU_TEXT_1, 1, 0);
 
 	info_x += UI_Scale()*40;
 
-	my_button("unequip_mainhand", info, [UI_Scale()*30, UI_Scale()*10], "Unequip", "") ? sendevent("User_UnequipMainhand", "", 0) : 0;
+	my_button("unequip_mainhand", info, [UI_Scale()*35, UI_Scale()*10], "Unequip", "") ? sendevent("User_UnequipMainhand", "", 0) : 0;
 
 	info_x -= UI_Scale()*40;
 	info_y += UI_Scale()*10;
@@ -1145,11 +1157,12 @@ void() UI_DrawPlayerSummary =
 
 	info_y += UI_Scale()*2;
 
+	// Off hand
 	sui_text(info, MENU_TEXT_SMALL * UI_TextScale(), "^5Off Hand", MENU_TEXT_1, 1, 0);
 
 	info_x += UI_Scale()*40;
 
-	my_button("unequip_offhand", info, [UI_Scale()*30, UI_Scale()*10], "Unequip", "") ? sendevent("User_UnequipOffhand", "", 0) : 0;
+	my_button("unequip_offhand", info, [UI_Scale()*35, UI_Scale()*10], "Unequip", "") ? sendevent("User_UnequipOffhand", "", 0) : 0;
 
 	info_x -= UI_Scale()*40;
 	info_y += UI_Scale()*10;
@@ -1158,15 +1171,34 @@ void() UI_DrawPlayerSummary =
 
 	info_y += UI_Scale()*2;
 
-	LINE(strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"))
+	// Armor
+	sui_text(info, MENU_TEXT_SMALL * UI_TextScale(), "^5Armor", MENU_TEXT_1, 1, 0);
+
+	info_x += UI_Scale()*40;
+
 	my_button("unequip_armor", info, [UI_Scale()*35, UI_Scale()*10], "Unequip", "") ? sendevent("User_UnequipArmor", "", 0) : 0;
-	
+
+	info_x -= UI_Scale()*40;
 	info_y += UI_Scale()*10;
 
-	LINE(strcat("^5Helmet: ^7", helmet, " (^2+", ftos(helmetval), "^7)"))
+	LINE(strcat(armor, " (^2+", ftos(armorval), "^7)"))
+
+	info_y += UI_Scale()*2;
+
+
+	// Helmet
+	sui_text(info, MENU_TEXT_SMALL * UI_TextScale(), "^5Helmet", MENU_TEXT_1, 1, 0);
+
+	info_x += UI_Scale()*40;
+
 	my_button("unequip_helmet", info, [UI_Scale()*35, UI_Scale()*10], "Unequip", "") ? sendevent("User_UnequipHelmet", "", 0) : 0;
 
-	info_y += UI_Scale()*15;
+	info_x -= UI_Scale()*40;
+	info_y += UI_Scale()*10;
+
+	LINE(strcat(helmet, " (^2+", ftos(helmetval), "^7)"))
+
+	info_y += UI_Scale()*5;
 
 	LINE(strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"))
 
