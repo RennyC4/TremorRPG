@@ -1046,134 +1046,139 @@ void() Doll_ObjectDraw =
 			ang = vectoangles(v_forward, v_up);
 			doll.weapon_vfx.angles = ang;
 		}
+	}
+	else
+		setmodel(doll.weapon_vfx, __NULL__);
 
-		//
-		// draw offhand
-		//
+	//
+	// draw offhand
+	//
 
-		if (doll_offhand != "" && doll_offhand != "Empty")
+	if (doll_offhand != "" && doll_offhand != "Empty")
+	{
+		if (!doll.offhand_vfx)
 		{
-			if (!doll.offhand_vfx)
-			{
-				doll.offhand_vfx = spawn();
-				doll.offhand_vfx.owner = doll;
-				doll.offhand_vfx.drawmask = MASK_VIEWMODEL;
-			}
-			else
-			{
-				//
-				// Models to draw
-				//
-
-				// Shields
-				if (doll_offhand == "Broken Buckler")
-					setmodel(doll.offhand_vfx, "models/shield0.glb");
-				if (doll_offhand == "Flimsy Buckler")
-					setmodel(doll.offhand_vfx, "models/shield1.glb");
-
-				// Bows
-				if (doll_offhand == "Short Bow")
-					setmodel(doll.offhand_vfx, "models/bow0.glb");
-
-				org = gettaginfo(doll, gettagindex(doll, "mixamorig:LeftHand"));
-				offset = '0 0 0';  // offset relative to the bone
-
-				// local offset into world space
-				org += v_forward * offset_x;
-				org += v_right   * offset_y;
-				org += v_up      * offset_z;
-
-				doll.offhand_vfx.origin = org;
-
-				// angles
-				ang = vectoangles(v_forward, v_up);
-				doll.offhand_vfx.angles = ang;
-			}
-		}
-
-		//
-		// draw armor
-		//
-		
-		if (!doll.armor_vfx)
-		{
-			doll.armor_vfx = spawn();
-			doll.armor_vfx.owner = doll;
+			doll.offhand_vfx = spawn();
+			doll.offhand_vfx.owner = doll;
+			doll.offhand_vfx.drawmask = MASK_VIEWMODEL;
 		}
 		else
 		{
-			org = gettaginfo(doll, gettagindex(doll, "mixamorig:Spine2"));
-			offset = '0 0 0';  // offset relative to the bone
-
 			//
 			// Models to draw
 			//
 
-			// Chest armor
-			if (doll_armor == "Padded Armor")
-			{
-				setmodel(doll.armor_vfx, "models/armor0.glb");
-				if (gender == "Female")
-				{
-					doll.armor_vfx.scale = 0.88;
-					offset = '0 3 3';  // offset relative to the bone
-				}
-			}
+			// Shields
+			if (doll_offhand == "Broken Buckler")
+				setmodel(doll.offhand_vfx, "models/shield0.glb");
+			if (doll_offhand == "Flimsy Buckler")
+				setmodel(doll.offhand_vfx, "models/shield1.glb");
+
+			// Bows
+			if (doll_offhand == "Short Bow")
+				setmodel(doll.offhand_vfx, "models/bow0.glb");
+
+			org = gettaginfo(doll, gettagindex(doll, "mixamorig:LeftHand"));
+			offset = '0 0 0';  // offset relative to the bone
 
 			// local offset into world space
 			org += v_forward * offset_x;
 			org += v_right   * offset_y;
 			org += v_up      * offset_z;
 
-			doll.armor_vfx.origin = org;
+			doll.offhand_vfx.origin = org;
 
 			// angles
 			ang = vectoangles(v_forward, v_up);
-			doll.armor_vfx.angles = ang;
+			doll.offhand_vfx.angles = ang;
 		}
-		
+	}
+	else
+		setmodel(doll.offhand_vfx, __NULL__);
+
+
+	//
+	// draw armor
+	//
+	
+	if (!doll.armor_vfx)
+	{
+		doll.armor_vfx = spawn();
+		doll.armor_vfx.owner = doll;
+	}
+	else
+	{
+		org = gettaginfo(doll, gettagindex(doll, "mixamorig:Spine2"));
+		offset = '0 0 0';  // offset relative to the bone
+
 		//
-		// Draw helmet
+		// Models to draw
 		//
 
-		if (doll_helmet != "")
+		// Chest armor
+		if (doll_armor == "Padded Armor")
 		{
-			if (!doll.helmet_vfx)
+			setmodel(doll.armor_vfx, "models/armor0.glb");
+			if (gender == "Female")
 			{
-				doll.helmet_vfx = spawn();
-				doll.helmet_vfx.owner = doll;
-				doll.helmet_vfx.worldlight = TRUE;
+				doll.armor_vfx.scale = 0.88;
+				offset = '0 3 3';  // offset relative to the bone
 			}
-			else
+		}
+
+		// local offset into world space
+		org += v_forward * offset_x;
+		org += v_right   * offset_y;
+		org += v_up      * offset_z;
+
+		doll.armor_vfx.origin = org;
+
+		// angles
+		ang = vectoangles(v_forward, v_up);
+		doll.armor_vfx.angles = ang;
+	}
+		
+	//
+	// Draw helmet
+	//
+
+	if (doll_helmet != "")
+	{
+		if (!doll.helmet_vfx)
+		{
+			doll.helmet_vfx = spawn();
+			doll.helmet_vfx.owner = doll;
+			doll.helmet_vfx.worldlight = TRUE;
+		}
+		else
+		{
+			org = gettaginfo(doll, gettagindex(doll, "mixamorig:Head"));
+			offset = '0 0 0';  // offset relative to the bone
+
+			//
+			// Models to draw
+			//
+
+			if (doll_helmet == "Bandit Hood")
 			{
-				org = gettaginfo(doll, gettagindex(doll, "mixamorig:Head"));
-				offset = '0 0 0';  // offset relative to the bone
-
-				//
-				// Models to draw
-				//
-
-				if (doll_helmet == "Bandit Hood")
+				setmodel(doll.helmet_vfx, "models/helmet0.glb");
+				if (gender == "Female")
 				{
-					setmodel(doll.helmet_vfx, "models/helmet0.glb");
-					if (gender == "Female")
-					{
-						doll.helmet_vfx.scale = 0.935;
-						offset = '0.95 0 -2.5';  // offset relative to the bone
-					}
+					doll.helmet_vfx.scale = 0.935;
+					offset = '0.95 0 -2.5';  // offset relative to the bone
 				}
-				
-				// local offset into world space
-				org += v_forward * offset_x;
-				org += v_right   * offset_y;
-				org += v_up      * offset_z;
-
-				doll.helmet_vfx.origin = org;
-
-				// angles
-				ang = vectoangles(v_forward, v_up);
-				doll.helmet_vfx.angles = ang;
 			}
+			
+			// local offset into world space
+			org += v_forward * offset_x;
+			org += v_right   * offset_y;
+			org += v_up      * offset_z;
+
+			doll.helmet_vfx.origin = org;
+
+			// angles
+			ang = vectoangles(v_forward, v_up);
+			doll.helmet_vfx.angles = ang;
 		}
 	}
 };
@@ -1437,7 +1442,7 @@ void() UI_DrawPlayerSummary =
 	// =================
 	// INFO
 	// =================
-	vector info = [UI_Scale()*2, UI_Scale()*20];
+	vector info = [UI_Scale()*3, UI_Scale()*20];
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
 
@@ -1480,6 +1485,9 @@ void() UI_DrawPlayerSummary =
 
 	LINE(strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"))
 	LINE(strcat("^5Helmet: ^7", helmet, " (^2+", ftos(helmetval), "^7)"))
+
+	info_y += UI_Scale()*10;
+
 	LINE(strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"))
 
 	info_y += UI_Scale()*10;
