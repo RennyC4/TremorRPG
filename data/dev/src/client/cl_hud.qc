@@ -760,48 +760,39 @@ void() Draw_Health =
 	float h = getstatf(STAT_HEALTH);
 	float hmax = getstatf(STAT_MAXHEALTH);
 
-	// =========================================================
-	// POSITION (scaled)
-	// =========================================================
-	vector pos = [UI(30), g_height - UI(38)];
+	string htext = strcat(FloatToIntString(h), "/", ftos(hmax));
 
-	// =========================================================
-	// BAR (scaled)
-	// =========================================================
+	// Label
+	vector tpos = [UI(10), g_height - UI(36)];
+
+	drawstring(tpos + [UI(1), UI(1)], "Health", MENU_TEXT_SMALL, '0 0 0', 1, 0);
+	drawstring(tpos, "^1Health", MENU_TEXT_SMALL, '1 1 1', 1, 0);
+
+
+	// Bar
+	vector hbarpos = [UI(70), g_height - UI(38)];
 	vector hbar_size = [UI(100), UI(8)];
-	vector hbarpos = pos;
 
 	drawfill(hbarpos + [UI(1), UI(1)], hbar_size, '0.5 0 0', 0.35, 0);
 
-	hbar_size_x = (h / hmax) * hbar_size_x;
-	drawfill(hbarpos + [UI(1), UI(1)], hbar_size, '0.5 0 0', 1, 0);
+	vector fill = hbar_size;
+	fill_x = (h / hmax) * fill_x;
 
-	// =========================================================
-	// TEXT (scaled spacing)
-	// =========================================================
-	string h1 = FloatToIntString(h);
-	string h2 = ftos(hmax);
+	drawfill(hbarpos + [UI(1), UI(1)], fill, '0.5 0 0', 1, 0);
 
-	vector tpos = [0, g_height - UI(36)];
 
-	drawstring(tpos + [UI(1), UI(1)], "Health", '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, "^1Health", '8 8 0', '1 1 1', 1, 0);
+	// Center value on bar
+	float text_width = stringwidth(htext, FALSE, MENU_TEXT_SMALL);
 
-	tpos_x += UI(40);
+	vector vpos = [
+		hbarpos_x + (hbar_size_x - text_width) * 0.5,
+		g_height - UI(37)
+	];
 
-	drawstring(tpos + [UI(1), UI(1)], h1, '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, h1, '8 8 0', '1 1 1', 1, 0);
-
-	tpos_x += UI(25);
-
-	drawstring(tpos + [UI(1), UI(1)], "/", '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, "/", '8 8 0', '1 1 1', 1, 0);
-
-	tpos_x += UI(20);
-
-	drawstring(tpos + [UI(1), UI(1)], h2, '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, h2, '8 8 0', '1 1 1', 1, 0);
+	drawstring(vpos + [UI(1), UI(1)], htext, MENU_TEXT_SMALL, '0 0 0', 1, 0);
+	drawstring(vpos, htext, MENU_TEXT_SMALL, '1 1 1', 1, 0);
 };
+
 
 //
 // Draw Mana
@@ -812,49 +803,55 @@ void() Draw_Mana =
 	float m = getstatf(STAT_MANA);
 	float mmax = getstatf(STAT_MAXMANA);
 
-	vector pos = [UI(30), g_height - UI(28)];
+	string mtext = strcat(FloatToIntString(m), "/", ftos(mmax));
 
+
+	// Label
+	vector tpos = [UI(10), g_height - UI(26)];
+
+	drawstring(tpos + [UI(1), UI(1)], "Mana", MENU_TEXT_SMALL, '0 0 0', 1, 0);
+	drawstring(tpos, "^4Mana", MENU_TEXT_SMALL, '1 1 1', 1, 0);
+
+
+	// Bar
+	vector mbarpos = [UI(70), g_height - UI(28)];
 	vector mbar_size = [UI(100), UI(8)];
-	vector mbarpos = pos;
 
 	drawfill(mbarpos + [UI(1), UI(1)], mbar_size, '0 0 0.5', 0.35, 0);
 
-	mbar_size_x = (m / mmax) * mbar_size_x;
-	drawfill(mbarpos + [UI(1), UI(1)], mbar_size, '0 0 0.5', 1, 0);
+	vector fill = mbar_size;
+	fill_x = (m / mmax) * fill_x;
 
-	string m1 = FloatToIntString(m);
-	string m2 = ftos(mmax);
+	drawfill(mbarpos + [UI(1), UI(1)], fill, '0 0 0.5', 1, 0);
 
-	vector tpos = [0, g_height - UI(26)];
 
-	drawstring(tpos + [UI(1), UI(1)], "Mana", '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, "^4Mana", '8 8 0', '1 1 1', 1, 0);
+	// Center value on bar
+	float text_width = stringwidth(mtext, FALSE, MENU_TEXT_SMALL);
 
-	tpos_x += UI(40);
+	vector vpos = [
+		mbarpos_x + (mbar_size_x - text_width) * 0.5,
+		g_height - UI(27)
+	];
 
-	drawstring(tpos + [UI(1), UI(1)], m1, '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, m1, '8 8 0', '1 1 1', 1, 0);
+	drawstring(vpos + [UI(1), UI(1)], mtext, MENU_TEXT_SMALL, '0 0 0', 1, 0);
+	drawstring(vpos, mtext, MENU_TEXT_SMALL, '1 1 1', 1, 0);
 
-	tpos_x += UI(25);
-
-	drawstring(tpos + [UI(1), UI(1)], "/", '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, "/", '8 8 0', '1 1 1', 1, 0);
-
-	tpos_x += UI(20);
-
-	drawstring(tpos + [UI(1), UI(1)], m2, '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, m2, '8 8 0', '1 1 1', 1, 0);
 
 	// Spell name
 	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
+
 	if (disp_magicspell != "")
 	{
-		tpos_x += UI(50);
+		vector spos = [
+			mbarpos_x + mbar_size_x + UI(8),
+			g_height - UI(26)
+		];
 
-		drawstring(tpos + [UI(1), UI(1)], disp_magicspell, '8 8 0', '0 0 0', 1, 0);
-		drawstring(tpos, disp_magicspell, '8 8 0', '0 .75 .75', 1, 0);
+		drawstring(spos + [UI(1), UI(1)], disp_magicspell, MENU_TEXT_SMALL, '0 0 0', 1, 0);
+		drawstring(spos, disp_magicspell, MENU_TEXT_SMALL, '0 .75 .75', 1, 0);
 	}
 };
+
 
 //
 // Draw Stamina
@@ -865,47 +862,38 @@ void() Draw_Stamina =
 	float s = getstatf(STAT_STAMINA);
 	float smax = 100;
 
-	vector pos = [UI(30), g_height - UI(18)];
+	string stext = strcat(sprintf("%.1f", s), "/", ftos(smax));
 
+
+	// Label
+	vector tpos = [UI(10), g_height - UI(16)];
+
+	drawstring(tpos + [UI(1), UI(1)], "Stamina", MENU_TEXT_SMALL, '0 0 0', 1, 0);
+	drawstring(tpos, "^2Stamina", MENU_TEXT_SMALL, '1 1 1', 1, 0);
+
+
+	// Bar
+	vector sbarpos = [UI(70), g_height - UI(18)];
 	vector sbar_size = [UI(100), UI(8)];
-	vector sbarpos = pos;
 
 	drawfill(sbarpos + [UI(1), UI(1)], sbar_size, '0 0.5 0', 0.35, 0);
 
-	sbar_size_x = (s / smax) * sbar_size_x;
-	drawfill(sbarpos + [UI(1), UI(1)], sbar_size, '0 0.5 0', 1, 0);
+	vector fill = sbar_size;
+	fill_x = (s / smax) * fill_x;
 
-	string s1 = ftos(s);
-	string s2 = ftos(smax);
-	string dispfix_stamina = sprintf("%.1f", s);
+	drawfill(sbarpos + [UI(1), UI(1)], fill, '0 0.5 0', 1, 0);
 
-	vector tpos = [0, g_height - UI(16)];
 
-	drawstring(tpos + [UI(1), UI(1)], "Stamina", '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, "^2Stamina", '8 8 0', '1 1 1', 1, 0);
+	// Center value on bar
+	float text_width = stringwidth(stext, FALSE, MENU_TEXT_SMALL);
 
-	tpos_x += UI(40);
+	vector vpos = [
+		sbarpos_x + (sbar_size_x - text_width) * 0.5,
+		g_height - UI(17)
+	];
 
-	if (s < 100)
-	{
-		drawstring(tpos + [UI(1), UI(1)], dispfix_stamina, '8 8 0', '0 0 0', 1, 0);
-		drawstring(tpos, dispfix_stamina, '8 8 0', '1 1 1', 1, 0);
-	}
-	else
-	{
-		drawstring(tpos + [UI(1), UI(1)], s1, '8 8 0', '0 0 0', 1, 0);
-		drawstring(tpos, s1, '8 8 0', '1 1 1', 1, 0);
-	}
-
-	tpos_x += UI(25);
-
-	drawstring(tpos + [UI(1), UI(1)], "/", '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, "/", '8 8 0', '1 1 1', 1, 0);
-
-	tpos_x += UI(20);
-
-	drawstring(tpos + [UI(1), UI(1)], s2, '8 8 0', '0 0 0', 1, 0);
-	drawstring(tpos, s2, '8 8 0', '1 1 1', 1, 0);
+	drawstring(vpos + [UI(1), UI(1)], stext, MENU_TEXT_SMALL, '0 0 0', 1, 0);
+	drawstring(vpos, stext, MENU_TEXT_SMALL, '1 1 1', 1, 0);
 };
 
 //
@@ -933,13 +921,28 @@ void() Draw_Exp =
 
     // Full bar background
     vector full_size = [bar_width, bar_height, 0];
-    drawfill(pos, full_size, '0 0 0', 0.35, 0); // dark background
+    drawfill(pos, full_size, '0 0 0', 0.35, 0);
 
     // Filled exp portion
     vector fill_size = [bar_width * ratio, bar_height, 0];
-    drawfill(pos, fill_size, '1 1 0', 0.25, 0); // yellow exp fill
-};
+    drawfill(pos, fill_size, '1 1 0', 0.25, 0);
 
+    // Experience text
+    string exp_text = strcat(ftos(e), " / ", ftos(e2));
+
+    float text_width = stringwidth(exp_text, FALSE, MENU_TEXT_SMALL);
+
+    vector text_pos;
+    text_pos_x = (bar_width - text_width) * 0.5;
+    text_pos_y = pos_y - UI(1);
+    text_pos_z = 0;
+
+    // Shadow
+    drawstring(text_pos + [UI(1), UI(1)], exp_text, MENU_TEXT_SMALL, '0 0 0', 1, 0);
+
+    // Text
+    drawstring(text_pos, exp_text, MENU_TEXT_SMALL, '1 1 1', 1, 0);
+};
 //==============================================================
 // Character Skills / Magic / Inventory screens
 //==============================================================

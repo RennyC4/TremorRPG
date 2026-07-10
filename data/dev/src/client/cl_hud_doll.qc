@@ -17,7 +17,7 @@ void(entity ent, vector pos, vector canvas_size, float zoom) entdraw =
     setviewprop(VF_AFOV, 25);
     setviewprop(VF_ORIGIN, [zoom, 0, 0]);
 
-    addentity(ent);
+    //addentity(ent);
 };
 
 entity doll;
@@ -47,6 +47,9 @@ void() Doll_ObjectDraw =
 		{
 			doll.weapon_vfx = spawn();
 			doll.weapon_vfx.owner = doll;
+			doll.weapon_vfx.drawflags = 7; // override engine lighting
+			doll.weapon_vfx.abslight = 500; // new lighting level
+			
 		}
 		else
 		{
@@ -75,18 +78,14 @@ void() Doll_ObjectDraw =
 				setmodel(doll.weapon_vfx, "models/club0.glb");
 
 			// Arrows
-			if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+			float is_arrow = (strstrofs(lname, "arrow", 0) != -1);
+			if (is_arrow) // check if this is an arrow-type item
 				setmodel(doll.weapon_vfx, "models/quiver.glb");
 
 			//
 			// Draw it
 			//
-			if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
-				org = gettaginfo(doll, gettagindex(doll, "mixamorig:Spine1"));			
-			else			
-				org = gettaginfo(doll, gettagindex(doll, "mixamorig:RightHand"));
-
-			if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+			if (is_arrow) // check if this is an arrow-type item
 				org = gettaginfo(doll, gettagindex(doll, "mixamorig:Spine1"));			
 			else
 				org = gettaginfo(doll, gettagindex(doll, "mixamorig:RightHand"));
@@ -122,7 +121,8 @@ void() Doll_ObjectDraw =
 		{
 			doll.offhand_vfx = spawn();
 			doll.offhand_vfx.owner = doll;
-			doll.offhand_vfx.drawmask = MASK_VIEWMODEL;
+			doll.offhand_vfx.drawflags = 7; // override engine lighting
+			doll.offhand_vfx.abslight = 500; // new lighting level
 		}
 		else
 		{
@@ -172,6 +172,8 @@ void() Doll_ObjectDraw =
 		{
 			doll.armor_vfx = spawn();
 			doll.armor_vfx.owner = doll;
+			doll.armor_vfx.drawflags = 7; // override engine lighting
+			doll.armor_vfx.abslight = 500; // new lighting level
 		}
 		else
 		{
@@ -186,6 +188,8 @@ void() Doll_ObjectDraw =
 			if (doll_armor == "Padded Armor")
 			{
 				setmodel(doll.armor_vfx, "models/armor0.glb");
+
+				doll.armor_vfx.scale = 1;
 				if (gender == "Female")
 				{
 					doll.armor_vfx.scale = 0.88;
@@ -221,7 +225,8 @@ void() Doll_ObjectDraw =
 		{
 			doll.helmet_vfx = spawn();
 			doll.helmet_vfx.owner = doll;
-			doll.helmet_vfx.worldlight = TRUE;
+			doll.helmet_vfx.drawflags = 7; // override engine lighting
+			doll.helmet_vfx.abslight = 500; // new lighting level
 		}
 		else
 		{
@@ -301,38 +306,31 @@ void(vector pos) Draw_3DPDoll =
 	else
 		doll.frame1time += frametime;
 
-	vector size = [UI(175), UI(275)];
+	size = [UI(175), UI(275)];
 
 	// Draw equippables
 	clearscene();
+
 	if (doll.weapon_vfx)
 	{
-		doll.weapon_vfx.drawflags = 7; // override engine lighting
-		doll.weapon_vfx.abslight = 500; // new lighting level
 		entdraw(doll.weapon_vfx, pos, size, -245);
 		addentity(doll.weapon_vfx);
 	}
 
 	if (doll.offhand_vfx)
 	{
-		doll.offhand_vfx.drawflags = 7; // override engine lighting
-		doll.offhand_vfx.abslight = 500; // new lighting level
 		entdraw(doll.offhand_vfx, pos, size, -245);
 		addentity(doll.offhand_vfx);
 	}
 
 	if (doll.armor_vfx)
 	{
-		doll.armor_vfx.drawflags = 7; // override engine lighting
-		doll.armor_vfx.abslight = 500; // new lighting level
 		entdraw(doll.armor_vfx, pos, size, -245);
 		addentity(doll.armor_vfx);
 	}
 	
 	if (doll.helmet_vfx)
 	{
-		doll.helmet_vfx.drawflags = 7; // override engine lighting
-		doll.helmet_vfx.abslight = 500; // new lighting level
 		entdraw(doll.helmet_vfx, pos, size, -245);
 		addentity(doll.helmet_vfx);
 	}

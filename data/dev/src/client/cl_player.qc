@@ -123,7 +123,8 @@ void() Skeleton_ObjectDraw =
 					setmodel(self.weapon_vfx, "models/club0.glb");
 
 				// Arrows
-				if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+				float is_arrow = (strstrofs(lname, "arrow", 0) != -1);
+				if (is_arrow) // check if this is an arrow-type item
 				{
 					// prevent player model intrusion
 					if (self.entnum == player_localentnum)
@@ -191,7 +192,7 @@ void() Skeleton_ObjectDraw =
 			//
 			//
 
-			if (strstrofs(lname, "arrow", 0) != -1) // check if this is an arrow-type item
+			if (is_arrow) // check if this is an arrow-type item
 				org = gettaginfo(self, gettagindex(self, "mixamorig:Spine1"));			
 			else
 				org = gettaginfo(self, gettagindex(self, "mixamorig:RightHand"));
