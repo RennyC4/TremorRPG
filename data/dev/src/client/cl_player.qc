@@ -383,7 +383,7 @@ void() Skeleton_ObjectDraw =
 	// Draw helmet
 	//
 
-	if (self.helmetname != "")
+	if (self.helmetname != "None")
 	{
 		if (!self.helmet_vfx)
 		{

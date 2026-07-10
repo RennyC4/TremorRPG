@@ -107,7 +107,10 @@ void() Doll_ObjectDraw =
 		}
 	}
 	else
-		setmodel(doll.weapon_vfx, __NULL__);
+	{
+		if (doll.weapon_vfx)
+			setmodel(doll.weapon_vfx, __NULL__);
+	}
 
 	//
 	// draw offhand
@@ -153,7 +156,10 @@ void() Doll_ObjectDraw =
 		}
 	}
 	else
-		setmodel(doll.offhand_vfx, __NULL__);
+	{
+		if (doll.offhand_vfx)
+			setmodel(doll.offhand_vfx, __NULL__);
+	}
 
 
 	//
@@ -200,7 +206,10 @@ void() Doll_ObjectDraw =
 		}
 	}
 	else
-		setmodel(doll.armor_vfx, __NULL__);
+	{
+		if (doll.armor_vfx)
+			setmodel(doll.armor_vfx, __NULL__);
+	}
 
 	//
 	// Draw helmet
@@ -246,7 +255,10 @@ void() Doll_ObjectDraw =
 		}
 	}
 	else
-		setmodel(doll.helmet_vfx, __NULL__);
+	{
+		if (doll.helmet_vfx)
+			setmodel(doll.helmet_vfx, __NULL__);
+	}
 };
 
 void(vector pos) Draw_3DPDoll =
