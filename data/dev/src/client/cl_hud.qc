@@ -1159,13 +1159,18 @@ void() UI_DrawPlayerSummary =
 	info_y += UI_Scale()*2;
 
 	LINE(strcat("^5Armor: ^7", armor, " (^2+", ftos(armorval), "^7)"))
-	LINE(strcat("^5Helmet: ^7", helmet, " (^2+", ftos(helmetval), "^7)"))
-
+	my_button("unequip_armor", info, [UI_Scale()*35, UI_Scale()*10], "Unequip", "") ? sendevent("User_UnequipArmor", "", 0) : 0;
+	
 	info_y += UI_Scale()*10;
+
+	LINE(strcat("^5Helmet: ^7", helmet, " (^2+", ftos(helmetval), "^7)"))
+	my_button("unequip_helmet", info, [UI_Scale()*35, UI_Scale()*10], "Unequip", "") ? sendevent("User_UnequipHelmet", "", 0) : 0;
+
+	info_y += UI_Scale()*15;
 
 	LINE(strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"))
 
-	info_y += UI_Scale()*10;
+	info_y += UI_Scale()*5;
 
 	LINE(strcat("^1Reaper Marks: ^7", ftos(reapermarks)))
 

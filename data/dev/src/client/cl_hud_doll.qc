@@ -159,49 +159,54 @@ void() Doll_ObjectDraw =
 	//
 	// draw armor
 	//
-	
-	if (!doll.armor_vfx)
+
+	if (doll_armor != "Plain Clothes")
 	{
-		doll.armor_vfx = spawn();
-		doll.armor_vfx.owner = doll;
+		if (!doll.armor_vfx)
+		{
+			doll.armor_vfx = spawn();
+			doll.armor_vfx.owner = doll;
+		}
+		else
+		{
+			org = gettaginfo(doll, gettagindex(doll, "mixamorig:Spine2"));
+			offset = '0 0 0';  // offset relative to the bone
+
+			//
+			// Models to draw
+			//
+
+			// Chest armor
+			if (doll_armor == "Padded Armor")
+			{
+				setmodel(doll.armor_vfx, "models/armor0.glb");
+				if (gender == "Female")
+				{
+					doll.armor_vfx.scale = 0.88;
+					offset = '0 3 3';  // offset relative to the bone
+				}
+			}
+
+			// local offset into world space
+			org += v_forward * offset_x;
+			org += v_right   * offset_y;
+			org += v_up      * offset_z;
+
+			doll.armor_vfx.origin = org;
+
+			// angles
+			ang = vectoangles(v_forward, v_up);
+			doll.armor_vfx.angles = ang;
+		}
 	}
 	else
-	{
-		org = gettaginfo(doll, gettagindex(doll, "mixamorig:Spine2"));
-		offset = '0 0 0';  // offset relative to the bone
+		setmodel(doll.armor_vfx, __NULL__);
 
-		//
-		// Models to draw
-		//
-
-		// Chest armor
-		if (doll_armor == "Padded Armor")
-		{
-			setmodel(doll.armor_vfx, "models/armor0.glb");
-			if (gender == "Female")
-			{
-				doll.armor_vfx.scale = 0.88;
-				offset = '0 3 3';  // offset relative to the bone
-			}
-		}
-
-		// local offset into world space
-		org += v_forward * offset_x;
-		org += v_right   * offset_y;
-		org += v_up      * offset_z;
-
-		doll.armor_vfx.origin = org;
-
-		// angles
-		ang = vectoangles(v_forward, v_up);
-		doll.armor_vfx.angles = ang;
-	}
-		
 	//
 	// Draw helmet
 	//
 
-	if (doll_helmet != "")
+	if (doll_helmet != "None")
 	{
 		if (!doll.helmet_vfx)
 		{
@@ -240,6 +245,8 @@ void() Doll_ObjectDraw =
 			doll.helmet_vfx.angles = ang;
 		}
 	}
+	else
+		setmodel(doll.helmet_vfx, __NULL__);
 };
 
 void(vector pos) Draw_3DPDoll =

@@ -87,7 +87,8 @@ void(string itemname, float id) Player_EquipItem =
 			return;
 		}
 
-		AddToInventory(self, self.armorname, 1);
+		if (self.armorname != "Plain Clothes") // Don't put starter item back in players inventory
+			AddToInventory(self, self.armorname, 1);
 		self.armorname = armorname_e;
 		self.armorvalue = armorvalue_e;
 		RemoveFromInventory(self, itemname, 1);
@@ -303,4 +304,40 @@ void() CSEv_User_UnequipOffhand_ =
 
 	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
 	sprint(self, PRINT_HIGH, strcat("Off hand unequipped\n"));
+};
+
+void() CSEv_User_UnequipArmor_ =
+{
+	if (self.armorname == "Plain Clothes")
+	{
+		sprint(self, PRINT_HIGH, "Armor is unequipped already\n");
+		return;
+	}
+
+	if (self.armorname != "Plain Clothes") // do not add starter item
+		AddToInventory(self, self.armorname, 1); // add old item back to inventory
+
+	self.armorname = "Plain Clothes";
+	self.armorvalue = 0;
+
+	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
+	sprint(self, PRINT_HIGH, strcat("Armor unequipped\n"));
+};
+
+void() CSEv_User_UnequipHelmet_ =
+{
+	if (self.helmetname == "None")
+	{
+		sprint(self, PRINT_HIGH, "Helmet is unequipped already\n");
+		return;
+	}
+
+	if (self.helmetname != "None") // do not put "none" in users inventory
+		AddToInventory(self, self.helmetname, 1); // add old item back to inventory
+
+	self.helmetname = "None";
+	self.helmetvalue = 0;
+
+	stuffcmd (self, sprintf("play %s\n", "item/equip.wav")); // sound
+	sprint(self, PRINT_HIGH, strcat("Helmet unequipped\n"));
 };
