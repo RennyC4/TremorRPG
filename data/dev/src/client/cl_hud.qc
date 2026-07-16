@@ -780,7 +780,6 @@ void() Draw_Health =
 
 	drawfill(hbarpos + [UI(1), UI(1)], fill, '0.5 0 0', 1, 0);
 
-
 	// Center value on bar
 	float text_width = stringwidth(htext, FALSE, MENU_TEXT_SMALL);
 

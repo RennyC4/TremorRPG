@@ -15,6 +15,7 @@ void() SpectatorConnect = {sprint(self, PRINT_HIGH, "Spectator mode is not suppo
 void() info_null ={};
 
 void() spawn_daynight;
+void() spawn_cleanup;
 
 //called for each frame that QC runs
 void() StartFrame = {};
@@ -88,6 +89,7 @@ void() SSQC_SendValuesToCSQC =
 	clientstat(STAT_HELMETNAME, EV_STRING, helmetname);
 	clientstat(STAT_HELMETVALUE, EV_FLOAT, helmetvalue);
 
+	clientstat(STAT_MUSIC, EV_FLOAT, music);
 
 	// Job Skills
 	clientstat(STAT_MINING, EV_FLOAT, skill_mining);
@@ -204,7 +206,9 @@ void() worldspawn =
 	precache_sound ("magic/casting.wav");
 
 	SSQC_SendValuesToCSQC();
-	spawn_daynight();
+
+	spawn_daynight(); // day/night entity
+	spawn_cleanup(); // 24 hour restart entity cleanup
 	
 	// additional cvar setup
 	registercvar("sv_multilogin", "0");
@@ -316,6 +320,18 @@ void() daynight_think =
 
 	// for debugging
 	//self.nextthink = time + 0.1;
+};
+
+// restarts .hmp every 24 hours
+void() cleanup_think = {localcmd("restart\n");};
+void() spawn_cleanup =
+{
+	if (substring(world.model, -3, 3) != "hmp")
+		return;
+
+	entity cleanup = spawn();
+	cleanup.think = cleanup_think;
+	cleanup.nextthink = time + 86400; // 24 hour auto-restart
 };
 
 void() spawn_daynight =

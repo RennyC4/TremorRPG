@@ -380,9 +380,6 @@ void(entity targ, float type) CSEv_Player_SaveChar =
 	// INVENTORY
 	// ========================================================
 
-	dprint(strcat("MAX INVENTORY = ", ftos(MAX_INVENTORY), "\n"));
-	dprint(strcat("INV COUNT = ", ftos(targ.inv_count), "\n"));
-	
 	SaveSection(f, "INVENTORY");
 
 	for (i = 0; i < targ.inv_count; i++)
@@ -794,7 +791,7 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
 			if (save_lines[i][0] == '[')
 				break;
 
-			if (self.spell_count >= 64)
+			if (self.spell_count > MAX_SPELLS)
 				break;
 
 			self.spell[self.spell_count] =

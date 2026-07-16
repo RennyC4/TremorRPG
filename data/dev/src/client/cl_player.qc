@@ -1214,6 +1214,24 @@ void() Player_Alerts =
 		lowmana_warned = FALSE;
 };
 
+void() Player_Music =
+{
+	float music = getstatf(STAT_MUSIC);
+
+	if (music == 0) // stop music
+	{
+	}
+	else if (music == 1) // elderfen music
+	{
+	}
+	else if (music == 2) // exploration tracks (randomly picked)
+	{
+	}
+	else // in-combat music
+	{
+	}
+};
+
 void() Player_Think =
 {
 	float player_loggedin = getstatf(STAT_LOGGEDIN);
@@ -1242,6 +1260,7 @@ void() Player_Think =
 		return;
 
 	Player_Alerts(); // sounds
+	Player_Music();
 
 	float levitating = (self.levitate_finished > time);
 	float melee = (self.melee_finished > time);

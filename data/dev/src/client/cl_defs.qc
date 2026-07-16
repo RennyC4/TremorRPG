@@ -2319,11 +2319,12 @@ const float MENU_BANKING = 7; // user banking screen
 #define STAT_LEVITATE 94
 #define STAT_HELMETNAME 95
 #define STAT_HELMETVALUE 96
+#define STAT_MUSIC 97
 
 // Job skills
-#define STAT_MINING 97
-#define STAT_FISHING 98
-#define STAT_WOODCUTTING 99
+#define STAT_MINING 98
+#define STAT_FISHING 99
+#define STAT_WOODCUTTING 100
 
 // Inventory - Player
 #define MAX_INVENTORY 32

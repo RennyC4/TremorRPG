@@ -77,6 +77,12 @@ void() trigger_zone_touch =
 		if (other.zonename_finished < time)
 			other.zonename_finished = time + 3;
 	}
+
+	// =========================================================
+	// MUSIC HANDLER
+	// =========================================================
+	if (other.music != self.music)
+		other.music = self.music;
 };
 
 void() trigger_zone =
