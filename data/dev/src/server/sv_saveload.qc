@@ -1,371 +1,744 @@
 //
-//	Saveload.qc - Character saving & Loading functions
+//	Saveload.qc - New Character Save System
+//
+//	Format:
+//
+//	KEY=VALUE
+//
+//	Example:
+//
+//	LEVEL=5
+//	MAIN_HAND=Short Sword
+//
+//	Sections:
+//
+//	[CHARACTER]
+//	[STATS]
+//	[EQUIPMENT]
+//	[SKILLS]
+//	[INVENTORY]
+//	[SPELLS]
+//	[SECURITY]
 //
 
 float(entity targ, string itemname, float count) AddToInventory;
 void(float type) PlayerSpawn;
 
-#define inventory_start 44
-#define spells_start 45
+// ============================================================
+// PASSWORD
+// ============================================================
 
 string EncodePassword(string username, string password)
 {
-	string salt = strcat(username, ":TremorSalt_v1:"); // Build a user salt
-	string hash = digest_hex("SHA2-256", salt, password); // Initial hash
+	string salt = strcat(username, ":TremorSalt_v1:");
+	string hash = digest_hex("SHA2-256", salt, password);
 
-	for (float i = 0; i < 1000; i++) // Iterate to slow down brute force
+	for (float i = 0; i < 1000; i++)
 		hash = digest_hex("SHA2-256", salt, hash);
 
 	return hash;
 }
 
 // ============================================================
-// SAVE CHARACTER (Corrected)
+// FILE WRITE HELPERS
 // ============================================================
-void(entity targ, float type) CSEv_Player_SaveChar =
+
+void(float f, string key, string value) SaveString =
 {
-    if (!targ.loggedin)
-        return;
+	fputs(f, strcat(key, "=", value), "\n");
+};
 
-    string filename = strcat("chr/", targ.loginname, ".chr");
-    string old_music;
-    string old_origin[6];
-	string old_password;
-    float f, i;
+void(float f, string key, float value) SaveFloat =
+{
+	fputs(f, strcat(key, "=", ftos(value)), "\n");
+};
 
-    // --- Step 1: Preserve old file data for backward compatibility ---
-    f = fopen(filename, FILE_READ);
-    if (f >= 0)
-    {
-        string line;
-        fgets(f); // guid
-        fgets(f); // loginname
-        fgets(f); // gender
-        old_music = fgets(f);
-
-        fgets(f); // zonename
-        for (i = 0; i < 6; i++)
-            old_origin[i] = fgets(f);
-
-        fclose(f);
-    }
-
-	// Read entire file to capture last line (password)
-	string last_line;
-
-	f = fopen(filename, FILE_READ);
-	if (f >= 0)
-	{
-		while (1)
-		{
-			line = fgets(f);
-			if (line == __NULL__)
-				break;
-
-			last_line = line; // keep updating until last valid line
-		}
-
-		fclose(f);
-		old_password = last_line;
-	} 
-
-	// --- Step 2: Open file for writing ---
-    f = fopen(filename, FILE_WRITE);
-    if (f < 0) return;
-
-    // --- BASIC STATS ---
-    fputs(f, targ.guid, "\n");
-    fputs(f, targ.loginname, "\n");
-    fputs(f, targ.gender, "\n");
-    fputs(f, (old_music != __NULL__) ? old_music : targ.music, "\n");
-    fputs(f, targ.zonename, "\n");
-
-    // Origin + angles
-    if (!type)
-    {
-        fputs(f, ftos(targ.origin_x), "\n");
-        fputs(f, ftos(targ.origin_y), "\n");
-        fputs(f, ftos(targ.origin_z), "\n");
-        fputs(f, ftos(targ.angles_x), "\n");
-        fputs(f, ftos(targ.angles_y), "\n");
-        fputs(f, ftos(targ.angles_z), "\n");
-    }
-    else
-    {
-        for (i = 0; i < 6; i++)
-            fputs(f, old_origin[i], "\n");
-    }
-
-    // --- STATS ---
-    float stats[] = {
-        targ.health, targ.max_health, targ.mana, targ.max_mana, targ.level,
-        targ.skillpoints, targ.exp, targ.exp_next, targ.gold, targ.attack_power_min,
-        targ.attack_power_max, targ.attack_speed, targ.attack_type, targ.attack_stamina,
-        targ.attack_length
-    };
-    for (i = 0; i < 15; i++)
-        fputs(f, ftos(stats[i]), "\n");
-
-    fputs(f, targ.main_hand, "\n");
-    fputs(f, targ.off_hand, "\n");
-    fputs(f, targ.armorname, "\n");
-    fputs(f, ftos(targ.armorvalue), "\n");
-    fputs(f, ftos(targ.pvp), "\n");
-    fputs(f, ftos(targ.pvpenable_count), "\n");
-    fputs(f, ftos(targ.pvp_autoflagged), "\n");
-    fputs(f, ftos(targ.blockvalue), "\n");
-    fputs(f, targ.spell_equipped, "\n");
-    fputs(f, ftos(targ.spell_power_min), "\n");
-    fputs(f, ftos(targ.spell_power_max), "\n");
-    fputs(f, ftos(targ.projectile_power_min), "\n");
-    fputs(f, ftos(targ.projectile_power_max), "\n");
-
-    // --- SKILLS ---
-    float skills[] = {
-        targ.skill_unarmed, targ.skill_slash, targ.skill_pierce, targ.skill_bash,
-        targ.skill_stealth, targ.skill_backstab, targ.skill_offensivemagic, targ.skill_defensivemagic,
-        targ.skill_neutralmagic, targ.skill_endurance, targ.skill_spellresist, targ.skill_archery,
-        targ.skill_healthregen, targ.skill_manaregen, targ.skill_haggle, targ.skill_climb,
-        targ.skill_swim, targ.skill_acrobatic, targ.skill_mining, targ.skill_fishing,
-        targ.skill_woodcutting
-    };
-    for (i = 0; i < 21; i++)
-        fputs(f, ftos(skills[i]), "\n");
-
-    // --- INVENTORY ---
-    fputs(f, "#INVENTORY_START\n");
-    fputs(f, ftos(targ.inv_count), "\n");
-    for (i = 0; i < targ.inv_count; i++)
-    {
-        fputs(f, targ.inventory[i], "\n");
-        fputs(f, ftos(targ.inventory_count[i]), "\n");
-    }
-
-    // --- SPELLS ---
-    fputs(f, "#SPELLS_START\n");
-    fputs(f, ftos(targ.spell_count), "\n");
-    for (i = 0; i < targ.spell_count; i++)
-        fputs(f, targ.spell[i], "\n");
-
-    // --- UPGRADES (always save current in-memory values) ---
-    fputs(f, ftos(targ.gold_bank), "\n");
-    fputs(f, ftos(targ.exp_oldnext), "\n");
-    fputs(f, ftos(targ.hatchet_durability), "\n");
-    fputs(f, ftos(targ.pick_durability), "\n");
-    fputs(f, targ.helmetname, "\n");
-    fputs(f, ftos(targ.helmetvalue), "\n");
-
-    // --- PASSWORD (LAST LINE ALWAYS) ---
-	if (targ.password != "" && targ.password != __NULL__)
-		fputs(f, EncodePassword(targ.loginname, targ.password), "\n");
-	else
-		fputs(f, EncodePassword(targ.loginname, old_password), "\n");
-
-    fclose(f);
-    sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
+void(float f, string section) SaveSection =
+{
+	fputs(f, strcat("\n[", section, "]"), "\n");
 };
 
 // ============================================================
-// RESUME/LOAD CHARACTER
+// FILE PARSER
 // ============================================================
-void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
+
+string save_lines[4096];
+float save_line_count;
+
+// Load file into memory
+float(string filename) LoadCharacterFile =
 {
-    if (cvar("developer") > 0)
-        return;
+	float f;
+	string line;
 
-    string add_ext = strcat("chr/", LOGIN_NAME, ".chr");
-    string line;
+	save_line_count = 0;
 
-    // --- Step 1: Check GUID ---
-	string file_guid;
+	f = fopen(filename, FILE_READ);
 
-	float f = fopen(add_ext, FILE_READ);
-	if (f >= 0)
+	if (f < 0)
+		return FALSE;
+
+	while ((line = fgets(f)))
 	{
-		self.guid = infokey(self, INFOKEY_P_GUID);
-		file_guid = fgets(f); // store it only
-		fclose(f);
+		save_lines[save_line_count] = line;
+		save_line_count++;
+
+		if (save_line_count >= 4096)
+			break;
 	}
 
-	float guid_missing;
-	if (file_guid == "" || file_guid == __NULL__)
-		guid_missing = 1;
-	else
-		guid_missing = 0;
+	fclose(f);
+	return TRUE;
+};
 
-    // --- Step 2: Prevent multiple logins ---
-    if (cvar("sv_multilogin") == 0)
-    {
-        for (entity targ = world; (targ = find(targ, classname, "player")); )
-        {
-            if (targ != self && targ.guid == self.guid)
-            {
-                sprint(self, PRINT_HIGH, "You cannot run multiple instances of Tremor RPG on the same server\n");
-                dropclient(self);
-            }
-        }
-    }
+// ============================================================
+// VALUE LOOKUP
+// ============================================================
 
-    // --- Step 3: Read the entire file dynamically ---
-    float v = fopen(add_ext, FILE_READ);
-    if (v < 0)
-    {
-        sprint(self, PRINT_HIGH, "Character doesn't exist\n");
-        return;
-    }
+string(string key) ReadSaveString =
+{
+	float i;
+	string prefix;
 
-    string file_contents[2048];
-    float total_lines = 0;
-    float inv_count_line = -1;
-    float spell_count_line = -1;
+	prefix = strcat(key, "=");
 
-    while ((line = fgets(v)))
-    {
-        file_contents[total_lines] = line;
 
-        if (line == "#INVENTORY_START")
-            inv_count_line = total_lines + 1;
-        if (line == "#SPELLS_START")
-            spell_count_line = total_lines + 1;
-
-        total_lines++;
-    }
-    fclose(v);
-
-    // --- Safe fallbacks for old files ---
-    if (inv_count_line < 0) inv_count_line = total_lines;       // points to end of file
-    if (spell_count_line < 0) spell_count_line = total_lines;   // points to end of file
-
-    // ======================================================
-    // PASSWORD VALIDATION (FAIL FAST BEFORE APPLYING STATE)
-    // ======================================================
-    float upgrades_start = spell_count_line + 1; // base assumption
-
-    // We derive password line safely from file end structure
-    // (password is always last line in your save format)
-	string file_password = "";
-
-	for (float i = total_lines - 1; i >= 0; i--)
+	for (i = 0; i < save_line_count; i++)
 	{
-		if (file_contents[i] != "")
+		if (substring(save_lines[i], 0, strlen(prefix)) == prefix)
+			return substring(save_lines[i], strlen(prefix), 999);
+	}
+
+
+	return "";
+};
+
+float(string key, float default_value) ReadSaveFloat =
+{
+	string value;
+
+	value = ReadSaveString(key);
+
+	if (value == "")
+		return default_value;
+
+	return stof(value);
+};
+
+// ============================================================
+// SECTION FINDING
+// ============================================================
+
+float(string section) FindSection =
+{
+	float i;
+	string name;
+
+	name = strcat("[", section, "]");
+
+	for (i = 0; i < save_line_count; i++)
+	{
+		if (save_lines[i] == name)
+			return i;
+	}
+
+	return -1;
+};
+
+// ============================================================
+// PASSWORD CHECK
+// ============================================================
+
+string() ReadPassword =
+{
+	return ReadSaveString("PASSWORD");
+};
+
+// ============================================================
+// SAVE CHARACTER
+// ============================================================
+void(entity targ, float type) CSEv_Player_SaveChar =
+{
+	if (!targ.loggedin)
+		return;
+
+	string filename;
+	float f;
+	float i;
+
+	string old_origin_x;
+	string old_origin_y;
+	string old_origin_z;
+
+	string old_angle_x;
+	string old_angle_y;
+	string old_angle_z;
+
+	filename = strcat("chr/", targ.loginname, ".chr");
+
+	// ========================================================
+	// Preserve old position when type == 1
+	// ========================================================
+
+	if (type)
+	{
+		if (LoadCharacterFile(filename))
 		{
-			file_password = file_contents[i];
-			break;
+			old_origin_x = ReadSaveString("ORIGIN_X");
+			old_origin_y = ReadSaveString("ORIGIN_Y");
+			old_origin_z = ReadSaveString("ORIGIN_Z");
+
+			old_angle_x = ReadSaveString("ANGLE_X");
+			old_angle_y = ReadSaveString("ANGLE_Y");
+			old_angle_z = ReadSaveString("ANGLE_Z");
+		}
+
+		// Safety fallback for missing old saves
+
+		if (old_origin_x == "")
+			old_origin_x = ftos(targ.origin_x);
+
+		if (old_origin_y == "")
+			old_origin_y = ftos(targ.origin_y);
+
+		if (old_origin_z == "")
+			old_origin_z = ftos(targ.origin_z);
+
+
+		if (old_angle_x == "")
+			old_angle_x = ftos(targ.angles_x);
+
+		if (old_angle_y == "")
+			old_angle_y = ftos(targ.angles_y);
+
+		if (old_angle_z == "")
+			old_angle_z = ftos(targ.angles_z);
+	}
+
+	f = fopen(filename, FILE_WRITE);
+	if (f < 0)
+		return;
+
+	// ========================================================
+	// CHARACTER
+	// ========================================================
+
+	SaveSection(f, "CHARACTER");
+
+	SaveString(f, "GUID", targ.guid);
+	SaveString(f, "LOGINNAME", targ.loginname);
+	SaveString(f, "GENDER", targ.gender);
+
+	SaveFloat(f, "MUSIC", targ.music);
+	SaveString(f, "ZONE", targ.zonename);
+
+	// ========================================================
+	// POSITION
+	// ========================================================
+
+	if (!type)
+	{
+		SaveFloat(f, "ORIGIN_X", targ.origin_x);
+		SaveFloat(f, "ORIGIN_Y", targ.origin_y);
+		SaveFloat(f, "ORIGIN_Z", targ.origin_z);
+
+		SaveFloat(f, "ANGLE_X", targ.angles_x);
+		SaveFloat(f, "ANGLE_Y", targ.angles_y);
+		SaveFloat(f, "ANGLE_Z", targ.angles_z);
+	}
+	else
+	{
+		SaveString(f, "ORIGIN_X", old_origin_x);
+		SaveString(f, "ORIGIN_Y", old_origin_y);
+		SaveString(f, "ORIGIN_Z", old_origin_z);
+
+		SaveString(f, "ANGLE_X", old_angle_x);
+		SaveString(f, "ANGLE_Y", old_angle_y);
+		SaveString(f, "ANGLE_Z", old_angle_z);
+	}
+
+	// ========================================================
+	// STATS
+	// ========================================================
+
+	SaveSection(f, "STATS");
+
+	SaveFloat(f, "HEALTH", targ.health);
+	SaveFloat(f, "MAX_HEALTH", targ.max_health);
+
+	SaveFloat(f, "MANA", targ.mana);
+	SaveFloat(f, "MAX_MANA", targ.max_mana);
+
+	SaveFloat(f, "LEVEL", targ.level);
+	SaveFloat(f, "SKILLPOINTS", targ.skillpoints);
+
+	SaveFloat(f, "EXP", targ.exp);
+	SaveFloat(f, "EXP_NEXT", targ.exp_next);
+	SaveFloat(f, "EXP_OLDNEXT", targ.exp_oldnext);
+
+	SaveFloat(f, "GOLD", targ.gold);
+	SaveFloat(f, "BANK_GOLD", targ.gold_bank);
+
+
+	SaveFloat(f, "ATTACK_POWER_MIN", targ.attack_power_min);
+	SaveFloat(f, "ATTACK_POWER_MAX", targ.attack_power_max);
+	SaveFloat(f, "ATTACK_SPEED", targ.attack_speed);
+	SaveFloat(f, "ATTACK_TYPE", targ.attack_type);
+	SaveFloat(f, "ATTACK_STAMINA", targ.attack_stamina);
+	SaveFloat(f, "ATTACK_LENGTH", targ.attack_length);
+
+	SaveFloat(f, "BLOCK_VALUE", targ.blockvalue);
+
+
+	SaveFloat(f, "PVP", targ.pvp);
+	SaveFloat(f, "PVP_ENABLE_COUNT", targ.pvpenable_count);
+	SaveFloat(f, "PVP_AUTOFLAGGED", targ.pvp_autoflagged);
+
+
+	SaveString(f, "SPELL_EQUIPPED", targ.spell_equipped);
+
+	SaveFloat(f, "SPELL_POWER_MIN", targ.spell_power_min);
+	SaveFloat(f, "SPELL_POWER_MAX", targ.spell_power_max);
+
+	SaveFloat(f, "PROJECTILE_POWER_MIN", targ.projectile_power_min);
+	SaveFloat(f, "PROJECTILE_POWER_MAX", targ.projectile_power_max);
+
+	// ========================================================
+	// EQUIPMENT
+	// ========================================================
+
+	SaveSection(f, "EQUIPMENT");
+
+	SaveString(f, "MAIN_HAND", targ.main_hand);
+	SaveString(f, "OFF_HAND", targ.off_hand);
+
+	SaveString(f, "ARMOR", targ.armorname);
+	SaveFloat(f, "ARMOR_VALUE", targ.armorvalue);
+
+	SaveString(f, "HELMET", targ.helmetname);
+	SaveFloat(f, "HELMET_VALUE", targ.helmetvalue);
+
+	// future-proof slots
+	// NOTE: I'll add this later
+
+	/*
+	SaveString(f, "BOOTS", targ.boots);
+	SaveString(f, "GLOVES", targ.gloves);
+
+	SaveString(f, "RING1", targ.ring1);
+	SaveString(f, "RING2", targ.ring2);
+
+	SaveString(f, "AMULET", targ.amulet);
+	*/
+
+	// ========================================================
+	// TOOLS
+	// ========================================================
+
+	SaveSection(f, "TOOLS");
+
+	SaveFloat(f, "HATCHET_DURABILITY", targ.hatchet_durability);
+	SaveFloat(f, "PICK_DURABILITY", targ.pick_durability);
+
+	// ========================================================
+	// SKILLS
+	// ========================================================
+
+	SaveSection(f, "SKILLS");
+
+	SaveFloat(f, "UNARMED", targ.skill_unarmed);
+	SaveFloat(f, "SLASH", targ.skill_slash);
+	SaveFloat(f, "PIERCE", targ.skill_pierce);
+	SaveFloat(f, "BASH", targ.skill_bash);
+
+	SaveFloat(f, "STEALTH", targ.skill_stealth);
+	SaveFloat(f, "BACKSTAB", targ.skill_backstab);
+
+	SaveFloat(f, "OFFENSIVE_MAGIC", targ.skill_offensivemagic);
+	SaveFloat(f, "DEFENSIVE_MAGIC", targ.skill_defensivemagic);
+	SaveFloat(f, "NEUTRAL_MAGIC", targ.skill_neutralmagic);
+
+	SaveFloat(f, "ENDURANCE", targ.skill_endurance);
+	SaveFloat(f, "SPELL_RESIST", targ.skill_spellresist);
+
+	SaveFloat(f, "ARCHERY", targ.skill_archery);
+
+	SaveFloat(f, "HEALTH_REGEN", targ.skill_healthregen);
+	SaveFloat(f, "MANA_REGEN", targ.skill_manaregen);
+
+	SaveFloat(f, "HAGGLE", targ.skill_haggle);
+
+	SaveFloat(f, "CLIMB", targ.skill_climb);
+	SaveFloat(f, "SWIM", targ.skill_swim);
+	SaveFloat(f, "ACROBATIC", targ.skill_acrobatic);
+
+	SaveFloat(f, "MINING", targ.skill_mining);
+	SaveFloat(f, "FISHING", targ.skill_fishing);
+	SaveFloat(f, "WOODCUTTING", targ.skill_woodcutting);
+
+	// ========================================================
+	// INVENTORY
+	// ========================================================
+
+	dprint(strcat("MAX INVENTORY = ", ftos(MAX_INVENTORY), "\n"));
+	dprint(strcat("INV COUNT = ", ftos(targ.inv_count), "\n"));
+	
+	SaveSection(f, "INVENTORY");
+
+	for (i = 0; i < targ.inv_count; i++)
+	{
+		if (targ.inventory[i] != "")
+		{
+			fputs(f,strcat(targ.inventory[i], "=", ftos(targ.inventory_count[i])), "\n");
 		}
 	}
 
+	// ========================================================
+	// SPELLS
+	// ========================================================
+	SaveSection(f, "SPELLS");
+
+	for (i = 0; i < targ.spell_count; i++)
+	{
+		if (targ.spell[i] != "")
+			fputs(f, targ.spell[i], "\n");
+	}
+
+	// ========================================================
+	// SECURITY
+	// ========================================================
+
+	SaveSection(f, "SECURITY");
+
+	if (targ.password != "" && targ.password != __NULL__)
+	{
+		SaveString(f, "PASSWORD", EncodePassword(targ.loginname, targ.password));
+	}
+
+	fclose(f);
+
+	sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
+};
+
+// ============================================================
+// LOAD CHARACTER
+// ============================================================
+
+void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
+{
+	if (cvar("developer") > 0)
+		return;
+
+	float i;
+
+	string filename;
+	string file_password;
+	string encoded_password;
+
+	filename = strcat("chr/", LOGIN_NAME, ".chr");
+
+	// ========================================================
+	// LOAD FILE
+	// ========================================================
+
+	if (!LoadCharacterFile(filename))
+	{
+		sprint(self, PRINT_HIGH, "Character doesn't exist\n");
+		return;
+	}
+
+	// ========================================================
+	// GUID CHECK
+	// ========================================================
+
+	string file_guid;
+	file_guid = ReadSaveString("GUID");
+
+	self.guid = infokey(self, INFOKEY_P_GUID);
+
+	if (cvar("sv_multilogin") == 0)
+	{
+		entity targ;
+
+		for (targ = world; (targ = find(targ, classname, "player")); )
+		{
+			if (targ != self && targ.guid == self.guid)
+			{
+				sprint(self, PRINT_HIGH, "You cannot run multiple instances of Tremor RPG on the same server\n");
+				dropclient(self);
+				return;
+			}
+		}
+	}
+
+	// ========================================================
+	// PASSWORD
+	// ========================================================
+
+	file_password = ReadSaveString("PASSWORD");
+
 	if (file_password != "")
 	{
-		string encoded_input;
-		encoded_input = EncodePassword(LOGIN_NAME, LOGIN_PASSWORD);
+		encoded_password = EncodePassword(LOGIN_NAME, LOGIN_PASSWORD);
 
-		// CASE 1: correct password
-		if (file_password == encoded_input)
+		if (encoded_password == file_password)
 		{
 			self.password = LOGIN_PASSWORD;
 		}
 		else
 		{
-			// CASE 2: GUID fallback OR missing GUID (legacy file)
-			if ((file_guid == self.guid) || guid_missing)
-			{
-				if (LOGIN_PASSWORD != "" && LOGIN_PASSWORD != __NULL__)
-				{
-					sprint(self, PRINT_HIGH, "^3Password accepted - updating account security\n");
-
-					self.password = LOGIN_PASSWORD;
-
-					// IMPORTANT: bind GUID if missing
-					if (guid_missing)
-						file_guid = self.guid;
-
-					CSEv_Player_SaveChar(self, 1);
-				}
-				else
-				{
-					sprint(self, PRINT_HIGH, "^1Cannot set empty password\n");
-					return;
-				}
-			}
-			else
-			{
-				sprint(self, PRINT_HIGH, "^1Incorrect password\n");
-				return;
-			}
+			sprint(self, PRINT_HIGH, "^1Incorrect password\n");
+			return;
 		}
 	}
-    // --- Step 3: Parse stats & skills (fixed lines) ---
-    self.netname = self.loginname = (total_lines > 1) ? file_contents[1] : LOGIN_NAME;
-    self.gender = (total_lines > 2) ? file_contents[2] : "Male";
-    self.music = (total_lines > 3) ? file_contents[3] : "";
-    self.zonename = (total_lines > 4) ? file_contents[4] : "";
+	else
+	{
+		if (LOGIN_PASSWORD == "")
+		{
+			sprint(self, PRINT_HIGH, "^1Password required\n");
+			return;
+		}
+		self.password = LOGIN_PASSWORD;
+	}
 
-    if (!self.loggedin)
-    {
-        self.origin_x = (total_lines > 5) ? stof(file_contents[5]) : 0;
-        self.origin_y = (total_lines > 6) ? stof(file_contents[6]) : 0;
-        self.origin_z = (total_lines > 7) ? stof(file_contents[7]) : 0;
-        self.angles_x = (total_lines > 8) ? stof(file_contents[8]) : 0;
-        self.angles_y = (total_lines > 9) ? stof(file_contents[9]) : 0;
-        self.angles_z = (total_lines > 10) ? stof(file_contents[10]) : 0;
-    }
+	// ========================================================
+	// CHARACTER
+	// ========================================================
 
-    self.health = (total_lines > 11) ? stof(file_contents[11]) : 100;
-    if (self.health < 1) self.health = 1;
-    self.max_health = (total_lines > 12) ? stof(file_contents[12]) : 100;
-    self.mana = (total_lines > 13) ? stof(file_contents[13]) : 50;
-    self.max_mana = (total_lines > 14) ? stof(file_contents[14]) : 50;
-    self.level = (total_lines > 15) ? stof(file_contents[15]) : 1;
-    self.skillpoints = (total_lines > 16) ? stof(file_contents[16]) : 0;
-    self.exp = (total_lines > 17) ? stof(file_contents[17]) : 0;
-    self.exp_next = (total_lines > 18) ? stof(file_contents[18]) : 100;
-    self.gold = (total_lines > 19) ? stof(file_contents[19]) : 0;
-    self.attack_power_min = (total_lines > 20) ? stof(file_contents[20]) : 1;
-    self.attack_power_max = (total_lines > 21) ? stof(file_contents[21]) : 1;
-    self.attack_speed = (total_lines > 22) ? stof(file_contents[22]) : 1;
-    self.attack_type = (total_lines > 23) ? stof(file_contents[23]) : 0;
-    self.attack_stamina = (total_lines > 24) ? stof(file_contents[24]) : 0;
-    self.attack_length = (total_lines > 25) ? stof(file_contents[25]) : 1;
-    self.main_hand = (total_lines > 26) ? file_contents[26] : "";
-    self.off_hand = (total_lines > 27) ? file_contents[27] : "";
-    self.armorname = (total_lines > 28) ? file_contents[28] : "";
-    self.armorvalue = (total_lines > 29) ? stof(file_contents[29]) : 0;
-    self.pvp = (total_lines > 30) ? stof(file_contents[30]) : 0;
-    self.pvpenable_count = (total_lines > 31) ? stof(file_contents[31]) : 0;
-    self.pvp_autoflagged = (total_lines > 32) ? stof(file_contents[32]) : 0;
-    self.blockvalue = (total_lines > 33) ? stof(file_contents[33]) : 0;
-    self.spell_equipped = (total_lines > 34) ? file_contents[34] : "";
-    self.spell_power_min = (total_lines > 35) ? stof(file_contents[35]) : 0;
-    self.spell_power_max = (total_lines > 36) ? stof(file_contents[36]) : 0;
-    self.projectile_power_min = (total_lines > 37) ? stof(file_contents[37]) : 0;
-    self.projectile_power_max = (total_lines > 38) ? stof(file_contents[38]) : 0;
+	self.netname = self.loginname = ReadSaveString("LOGINNAME");
+	self.gender = ReadSaveString("GENDER");
+	self.music = ReadSaveFloat("MUSIC",0);
+	self.zonename = ReadSaveString("ZONE");
 
-    // skills (lines 39–59)
-    self.skill_unarmed = (total_lines > 39) ? stof(file_contents[39]) : 0;
-    self.skill_slash = (total_lines > 40) ? stof(file_contents[40]) : 0;
-    self.skill_pierce = (total_lines > 41) ? stof(file_contents[41]) : 0;
-    self.skill_bash = (total_lines > 42) ? stof(file_contents[42]) : 0;
-    self.skill_stealth = (total_lines > 43) ? stof(file_contents[43]) : 0;
-    self.skill_backstab = (total_lines > 44) ? stof(file_contents[44]) : 0;
-    self.skill_offensivemagic = (total_lines > 45) ? stof(file_contents[45]) : 0;
-    self.skill_defensivemagic = (total_lines > 46) ? stof(file_contents[46]) : 0;
-    self.skill_neutralmagic = (total_lines > 47) ? stof(file_contents[47]) : 0;
-    self.skill_endurance = (total_lines > 48) ? stof(file_contents[48]) : 0;
-    self.skill_spellresist = (total_lines > 49) ? stof(file_contents[49]) : 0;
-    self.skill_archery = (total_lines > 50) ? stof(file_contents[50]) : 0;
-    self.skill_healthregen = (total_lines > 51) ? stof(file_contents[51]) : 0;
-    self.skill_manaregen = (total_lines > 52) ? stof(file_contents[52]) : 0;
-    self.skill_haggle = (total_lines > 53) ? stof(file_contents[53]) : 0;
-    self.skill_climb = (total_lines > 54) ? stof(file_contents[54]) : 0;
-    self.skill_swim = (total_lines > 55) ? stof(file_contents[55]) : 0;
-    self.skill_acrobatic = (total_lines > 56) ? stof(file_contents[56]) : 0;
-    self.skill_mining = (total_lines > 57) ? stof(file_contents[57]) : 0;
-    self.skill_fishing = (total_lines > 58) ? stof(file_contents[58]) : 0;
-    self.skill_woodcutting = (total_lines > 59) ? stof(file_contents[59]) : 0;
+	if (!self.loggedin)
+	{
+		self.origin_x =
+			ReadSaveFloat("ORIGIN_X",0);
 
-	// --- Step 4: Load inventory safely ---
+		self.origin_y =
+			ReadSaveFloat("ORIGIN_Y",0);
 
-	// Clear inventory before loading
+		self.origin_z =
+			ReadSaveFloat("ORIGIN_Z",0);
+
+
+		self.angles_x =
+			ReadSaveFloat("ANGLE_X",0);
+
+		self.angles_y =
+			ReadSaveFloat("ANGLE_Y",0);
+
+		self.angles_z =
+			ReadSaveFloat("ANGLE_Z",0);
+	}
+
+	// ========================================================
+	// STATS
+	// ========================================================
+
+	self.health =
+		ReadSaveFloat("HEALTH",100);
+
+	if (self.health < 1)
+		self.health = 1;
+
+	self.max_health =
+		ReadSaveFloat("MAX_HEALTH",100);
+
+	self.mana =
+		ReadSaveFloat("MANA",50);
+
+	self.max_mana =
+		ReadSaveFloat("MAX_MANA",50);
+
+	self.level =
+		ReadSaveFloat("LEVEL",1);
+
+	self.skillpoints =
+		ReadSaveFloat("SKILLPOINTS",0);
+
+	self.exp =
+		ReadSaveFloat("EXP",0);
+
+	self.exp_next =
+		ReadSaveFloat("EXP_NEXT",100);
+
+	self.exp_oldnext =
+		ReadSaveFloat("EXP_OLDNEXT", self.exp_next);
+
+	self.gold =
+		ReadSaveFloat("GOLD",0);
+
+	self.gold_bank =
+		ReadSaveFloat("BANK_GOLD",0);
+
+	// Combat
+	self.attack_power_min =
+		ReadSaveFloat("ATTACK_POWER_MIN",1);
+
+	self.attack_power_max =
+		ReadSaveFloat("ATTACK_POWER_MAX",1);
+
+	self.attack_speed =
+		ReadSaveFloat("ATTACK_SPEED",1);
+
+	self.attack_type =
+		ReadSaveFloat("ATTACK_TYPE",0);
+
+	self.attack_stamina =
+		ReadSaveFloat("ATTACK_STAMINA",0);
+
+	self.attack_length =
+		ReadSaveFloat("ATTACK_LENGTH",1);
+
+	self.blockvalue =
+		ReadSaveFloat("BLOCK_VALUE",0);
+
+	// PVP
+	self.pvp =
+		ReadSaveFloat("PVP",0);
+
+	self.pvpenable_count =
+		ReadSaveFloat("PVP_ENABLE_COUNT",0);
+
+	self.pvp_autoflagged =
+		ReadSaveFloat("PVP_AUTOFLAGGED",0);
+
+	// Magic
+	self.spell_equipped =
+		ReadSaveString("SPELL_EQUIPPED");
+
+	self.spell_power_min =
+		ReadSaveFloat("SPELL_POWER_MIN",0);
+
+	self.spell_power_max =
+		ReadSaveFloat("SPELL_POWER_MAX",0);
+
+
+	self.projectile_power_min =
+		ReadSaveFloat("PROJECTILE_POWER_MIN",0);
+
+	self.projectile_power_max =
+		ReadSaveFloat("PROJECTILE_POWER_MAX",0);
+
+	// ========================================================
+	// EQUIPMENT
+	// ========================================================
+
+	self.main_hand =
+		ReadSaveString("MAIN_HAND");
+
+	self.off_hand =
+		ReadSaveString("OFF_HAND");
+
+	self.armorname =
+		ReadSaveString("ARMOR");
+
+	self.armorvalue =
+		ReadSaveFloat("ARMOR_VALUE",0);
+
+	self.helmetname =
+		ReadSaveString("HELMET");
+
+	self.helmetvalue =
+		ReadSaveFloat("HELMET_VALUE",0);
+
+	// Future slots
+	/*
+	self.boots =
+		ReadSaveString("BOOTS");
+
+	self.gloves =
+		ReadSaveString("GLOVES");
+
+	self.ring1 =
+		ReadSaveString("RING1");
+
+	self.ring2 =
+		ReadSaveString("RING2");
+
+	self.amulet =
+		ReadSaveString("AMULET");
+	*/
+
+	// Tools
+	self.hatchet_durability =
+		ReadSaveFloat("HATCHET_DURABILITY",100);
+
+	self.pick_durability =
+		ReadSaveFloat("PICK_DURABILITY",100);
+
+	// ========================================================
+	// SKILLS
+	// ========================================================
+
+	self.skill_unarmed =
+		ReadSaveFloat("UNARMED",0);
+
+	self.skill_slash =
+		ReadSaveFloat("SLASH",0);
+
+	self.skill_pierce =
+		ReadSaveFloat("PIERCE",0);
+
+	self.skill_bash =
+		ReadSaveFloat("BASH",0);
+
+	self.skill_stealth =
+		ReadSaveFloat("STEALTH",0);
+
+	self.skill_backstab =
+		ReadSaveFloat("BACKSTAB",0);
+
+	self.skill_offensivemagic =
+		ReadSaveFloat("OFFENSIVE_MAGIC",0);
+
+	self.skill_defensivemagic =
+		ReadSaveFloat("DEFENSIVE_MAGIC",0);
+
+	self.skill_neutralmagic =
+		ReadSaveFloat("NEUTRAL_MAGIC",0);
+
+	self.skill_endurance =
+		ReadSaveFloat("ENDURANCE",0);
+
+	self.skill_spellresist =
+		ReadSaveFloat("SPELL_RESIST",0);
+
+	self.skill_archery =
+		ReadSaveFloat("ARCHERY",0);
+
+	self.skill_healthregen =
+		ReadSaveFloat("HEALTH_REGEN",0);
+
+	self.skill_manaregen =
+		ReadSaveFloat("MANA_REGEN",0);
+
+	self.skill_haggle =
+		ReadSaveFloat("HAGGLE",0);
+
+	self.skill_climb =
+		ReadSaveFloat("CLIMB",0);
+
+	self.skill_swim =
+		ReadSaveFloat("SWIM",0);
+
+	self.skill_acrobatic =
+		ReadSaveFloat("ACROBATIC",0);
+
+	self.skill_mining =
+		ReadSaveFloat("MINING",0);
+
+	self.skill_fishing =
+		ReadSaveFloat("FISHING",0);
+
+	self.skill_woodcutting =
+		ReadSaveFloat("WOODCUTTING",0);
+
+	// ========================================================
+	// INVENTORY
+	// ========================================================
+
 	self.inv_count = 0;
 	for (float i = 0; i < MAX_INVENTORY; i++)
 	{
@@ -373,142 +746,147 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
 		self.inventory_count[i] = 0;
 	}
 
-	self.read_inv_count = (inv_count_line < total_lines) ? stof(file_contents[inv_count_line]) : 0;
-	if (self.read_inv_count > 64) 
+	float start;
+	string item;
+	float qty;
+
+	start = FindSection("INVENTORY");
+
+	if (start >= 0)
 	{
-		self.read_inv_count = 64; 
-		sprint(self, PRINT_HIGH, "Inventory truncated to 64 items\n");
+		for (i = start + 1; i < save_line_count; i++)
+		{
+			if (save_lines[i] == "[SPELLS]")
+				break;
+
+			if (save_lines[i] == "")
+				continue;
+
+			float split;
+
+			split = strstrofs(save_lines[i], "=", 0);
+
+			if (split < 0)
+				continue;
+
+			item = substring(save_lines[i], 0, split);
+
+			qty = stof(substring(save_lines[i], split + 1, 999));
+
+			AddToInventory(self, item, qty);
+		}
 	}
 
-	string what = "";
-	float i;
-	for (i = 0; i < self.read_inv_count && (inv_count_line + 1 + (i*2)) < total_lines && i < 64; i++)
+	// ========================================================
+	// SPELLS
+	// ========================================================
+
+	self.spell_count = 0;
+	start = FindSection("SPELLS");
+
+	if (start >= 0)
 	{
-		what = file_contents[inv_count_line + 1 + (i * 2)];
-		float qty = (inv_count_line + 2 + (i*2) < total_lines) ? stof(file_contents[inv_count_line + 2 + (i * 2)]) : 0;
-		if (qty > 0)  // Only add real quantities
-			AddToInventory(self, what, qty);
+		for (i = start + 1; i < save_line_count; i++)
+		{
+			if (save_lines[i] == "")
+				continue;
+
+			if (save_lines[i][0] == '[')
+				break;
+
+			if (self.spell_count >= 64)
+				break;
+
+			self.spell[self.spell_count] =
+				save_lines[i];
+
+			self.spell_count++;
+		}
 	}
 
-	// --- Step 4b: Assign equipped items AFTER inventory is restored ---
-	self.main_hand = (total_lines > 26) ? file_contents[26] : "";
-	self.off_hand = (total_lines > 27) ? file_contents[27] : "";
-	self.armorname = (total_lines > 28) ? file_contents[28] : "";
-	self.armorvalue = (total_lines > 29) ? stof(file_contents[29]) : 0;
-	self.pvp = (total_lines > 30) ? stof(file_contents[30]) : 0;
-	self.pvpenable_count = (total_lines > 31) ? stof(file_contents[31]) : 0;
-	self.pvp_autoflagged = (total_lines > 32) ? stof(file_contents[32]) : 0;
-	self.blockvalue = (total_lines > 33) ? stof(file_contents[33]) : 0;
-	self.spell_equipped = (total_lines > 34) ? file_contents[34] : "";
-	self.spell_power_min = (total_lines > 35) ? stof(file_contents[35]) : 0;
-	self.spell_power_max = (total_lines > 36) ? stof(file_contents[36]) : 0;
-	self.projectile_power_min = (total_lines > 37) ? stof(file_contents[37]) : 0;
-	self.projectile_power_max = (total_lines > 38) ? stof(file_contents[38]) : 0;
+	// ========================================================
+	// FINALIZE
+	// ========================================================
 
-    // --- Step 5: Load spells safely ---
-    self.spell_count = (spell_count_line < total_lines) ? stof(file_contents[spell_count_line]) : 0;
-    if (self.spell_count > 64) { self.spell_count = 64; sprint(self, PRINT_HIGH, "Spell list truncated to 64 spells\n"); }
+	setorigin(self,self.origin);
+	self.fixangle = TRUE;
+	self.displayname = self.loginname;
+	self.stamina = 100;
 
-    for (i = 0; i < self.spell_count && (spell_count_line + 1 + i) < total_lines && i < 64; i++)
-        self.spell[i] = file_contents[spell_count_line + 1 + i];
+	PlayerSpawn(1);
 
-	// --- Step 6: Load upgrades safely ---
-	upgrades_start = spell_count_line + self.spell_count + 1;
-	// Load gold bank, default to 0 if missing
-	self.gold_bank = (upgrades_start < total_lines) ? stof(file_contents[upgrades_start]) : 0;
-	// Load old next exp, default to self.exp_next if missing
-	self.exp_oldnext = (upgrades_start + 1 < total_lines) ? stof(file_contents[upgrades_start + 1]) : self.exp_next;
-	// Load hatchet durability, default to 100 if missing
-	self.hatchet_durability = (upgrades_start + 2 < total_lines) ? stof(file_contents[upgrades_start + 2]) : 100;
-	// Load mining pick durability, default to 100 if missing
-	self.pick_durability = (upgrades_start + 3 < total_lines) ? stof(file_contents[upgrades_start + 3]) : 100;
-	// Load helmet name
-	self.helmetname = (upgrades_start + 4 < total_lines) ? file_contents[upgrades_start + 4] : "None";
-	// Load helmet value
-	self.helmetvalue = (upgrades_start + 5 < total_lines) ? stof(file_contents[upgrades_start + 5]) : 0;
-
-    // --- Step 7: Finalize player ---
-    setorigin(self, self.origin);
-    self.fixangle = TRUE;
-    self.displayname = self.loginname;
-    self.stamina = 100;
-
-    PlayerSpawn(1);
-
-    sprint(self, PRINT_HIGH, strcat(self.loginname, " character resumed\n"));
+	sprint(self, PRINT_HIGH, strcat(self.loginname, " character resumed\n"));
 };
 
-// ===================
-// SAVE INVENTORY ONLY + (backwards-compatible)
-// ===================
+// ============================================================
+// SAVE INVENTORY ONLY
+// ============================================================
+
 void(entity targ) SaveInventory =
 {
-    string filename = strcat("chr/", targ.loginname, ".chr");
-    float f, b;
-    float i;
+	string filename;
+	float f;
+	float i;
+	float inventory_section;
+	float next_section;
 
-    f = fopen(filename, FILE_READ);
-    if (f < 0) return;
+	filename = strcat("chr/", targ.loginname, ".chr");
 
-    string file_contents[2048];
-    float total_lines = 0;
-    float inv_start = -1;
-    float spell_start = -1;
-    string line;
+	if (!LoadCharacterFile(filename))
+		return;
 
-    while ((line = fgets(f)))
-    {
-        file_contents[total_lines] = line;
-        if (line == "#INVENTORY_START") inv_start = total_lines;
-        if (line == "#SPELLS_START") spell_start = total_lines;
-        total_lines++;
-    }
-    fclose(f);
+	inventory_section = FindSection("INVENTORY");
 
-    if (inv_start < 0) inv_start = 0;
-    if (spell_start < 0) spell_start = inv_start + 2;
+	if (inventory_section < 0)
+		return;
 
-    // Preserve upgrades
-    float upgrades_start = spell_start + 1 + targ.spell_count;
+	// Find next section after inventory
+	next_section = save_line_count;
 
-    b = fopen(filename, FILE_WRITE);
-    if (b < 0) return;
-
-    // Write all lines before inventory
-    for (i = 0; i < inv_start; i++)
-        fputs(b, file_contents[i], "\n");
-
-    // Write inventory
-    fputs(b, "#INVENTORY_START\n");
-    fputs(b, ftos(targ.inv_count), "\n");
-    for (i = 0; i < targ.inv_count; i++)
-    {
-        fputs(b, targ.inventory[i], "\n");
-        fputs(b, ftos(targ.inventory_count[i]), "\n");
-    }
-
-    // Write spells
-    fputs(b, "#SPELLS_START\n");
-    fputs(b, ftos(targ.spell_count), "\n");
-    for (i = 0; i < targ.spell_count; i++)
-        fputs(b, targ.spell[i], "\n");
-
-    // Write upgrades (current in-memory values)
-    fputs(b, ftos(targ.gold_bank), "\n");
-    fputs(b, ftos(targ.exp_oldnext), "\n");
-    fputs(b, ftos(targ.hatchet_durability), "\n");
-	fputs(b, ftos(targ.pick_durability), "\n");
-
-	// Write remaining lines EXCEPT last line (password)
-	for (i = upgrades_start + 3; i < total_lines - 1; i++)
+	for (i = inventory_section + 1; i < save_line_count; i++)
 	{
-		if (strlen(file_contents[i]) > 0)
-			fputs(b, file_contents[i], "\n");
+		if (substring(save_lines[i],0,1) == "[")
+		{
+			next_section = i;
+			break;
+		}
 	}
 
-	// ALWAYS re-append original password as final line
-	if (total_lines > 0)
-		fputs(b, file_contents[total_lines - 1], "\n");
+	f = fopen(filename, FILE_WRITE);
+	if (f < 0)
+		return;
 
-    fclose(b);
+	// ========================================================
+	// Write everything before inventory
+	// ========================================================
+
+	for (i = 0; i < inventory_section; i++)
+	{
+		fputs(f, save_lines[i], "\n");
+	}
+
+	// ========================================================
+	// Write inventory
+	// ========================================================
+
+	fputs(f, "[INVENTORY]\n");
+
+	for (i = 0; i < targ.inv_count; i++)
+	{
+		if (targ.inventory[i] != "")
+		{
+			fputs(f, strcat(targ.inventory[i], "=", ftos(targ.inventory_count[i])), "\n");
+		}
+	}
+
+	// ========================================================
+	// Restore everything after inventory
+	// ========================================================
+
+	for (i = next_section; i < save_line_count; i++)
+	{
+		fputs(f, save_lines[i], "\n");
+	}
+
+	fclose(f);
 };

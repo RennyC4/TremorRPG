@@ -715,7 +715,7 @@ void() Draw_EventLog =
 	if (drawfont != drawfont2)
 		drawfont = drawfont2;
 
-	con_draw("event", tpos, tsize, UI(12));
+	con_draw("event", tpos, (tsize - 1), UI(12));
 
 	if (drawfont != drawfont1)
 		drawfont = drawfont1;
@@ -760,7 +760,7 @@ void() Draw_Health =
 	float h = getstatf(STAT_HEALTH);
 	float hmax = getstatf(STAT_MAXHEALTH);
 
-	string htext = strcat(FloatToIntString(h), "/", ftos(hmax));
+	string htext = strcat(FloatToIntString(h), " / ", ftos(hmax));
 
 	// Label
 	vector tpos = [UI(10), g_height - UI(36)];
@@ -803,8 +803,7 @@ void() Draw_Mana =
 	float m = getstatf(STAT_MANA);
 	float mmax = getstatf(STAT_MAXMANA);
 
-	string mtext = strcat(FloatToIntString(m), "/", ftos(mmax));
-
+	string mtext = strcat(FloatToIntString(m), " / ", ftos(mmax));
 
 	// Label
 	vector tpos = [UI(10), g_height - UI(26)];
@@ -862,15 +861,13 @@ void() Draw_Stamina =
 	float s = getstatf(STAT_STAMINA);
 	float smax = 100;
 
-	string stext = strcat(sprintf("%.1f", s), "/", ftos(smax));
-
+	string stext = strcat(FloatToIntString(s), " / ", ftos(smax));
 
 	// Label
 	vector tpos = [UI(10), g_height - UI(16)];
 
 	drawstring(tpos + [UI(1), UI(1)], "Stamina", MENU_TEXT_SMALL, '0 0 0', 1, 0);
 	drawstring(tpos, "^2Stamina", MENU_TEXT_SMALL, '1 1 1', 1, 0);
-
 
 	// Bar
 	vector sbarpos = [UI(70), g_height - UI(18)];
@@ -882,7 +879,6 @@ void() Draw_Stamina =
 	fill_x = (s / smax) * fill_x;
 
 	drawfill(sbarpos + [UI(1), UI(1)], fill, '0 0.5 0', 1, 0);
-
 
 	// Center value on bar
 	float text_width = stringwidth(stext, FALSE, MENU_TEXT_SMALL);

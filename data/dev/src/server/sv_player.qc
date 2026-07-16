@@ -1453,7 +1453,7 @@ void(float type) PlayerSpawn =
 
 		stuffcmd (self, sprintf("music sound/music/login.ogg\n")); // login screen music
 	}
-	else if (type == 1) // put first time player in
+	else if (type == 1) // new or resumed character entry
 	{
 		self.flags |= FL_CLIENT;
 		self.classname = "player";
@@ -1488,7 +1488,7 @@ void(float type) PlayerSpawn =
 		bprint(PRINT_HIGH, self.netname);
 		bprint(PRINT_HIGH, " enters the zone\n");
 
-		stuffcmd (self, sprintf("music %s\n", self.music));
+		stuffcmd (self, sprintf("stopmusic\n")); // stop music playback, CSQC handles the rest
 	}
 	else if (type == 2) // map transition spawn
 	{	
@@ -1524,13 +1524,10 @@ void(float type) PlayerSpawn =
 		bprint(PRINT_HIGH, self.netname);
 		bprint(PRINT_HIGH, " enters the zone\n");
 
-
 		setorigin(self, spawn_spot.origin + '0 0 1');
 		self.angles = spawn_spot.angles;
 		self.fixangle = TRUE;
 		self.velocity = '0 0 0';
-
-		stuffcmd (self, sprintf("stopmusic\n")); // stop music
 	}
 	else // respawning from death
 	{
@@ -1570,7 +1567,6 @@ void(float type) PlayerSpawn =
 		self.fixangle = TRUE;
 		self.velocity = '0 0 0';
 
-		stuffcmd (self, sprintf("music %s\n", self.music));
 		CSEv_Player_SaveChar(self, 0); // full save on respawn
 	}
 };
@@ -1793,7 +1789,7 @@ void() ClientDisconnect =
 // Saving / Loading / Map Transfer / Character creation
 //
 
-void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacterMapTransfer_ss = 
+void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacterMapTransfer_ss =
 {
 	if (cvar("developer") > 0)
 		return;
@@ -1825,7 +1821,7 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacterMapTransfer_s
 			return;
 		}
 	}
-	self.music = ""; // clear after load so music is loaded properly
+	self.music = 0; // null track on entry
 	self.zonename = ""; // clear after load
 	PlayerSpawn(2);
 	SetCheckParms(); // grab and restore parms AFTER character is resumed
@@ -1839,6 +1835,7 @@ void(string LOGIN_NAME, string LOGIN_GENDER, string LOGIN_PASSWORD) CSEv_CreateN
 	self.loginname = LOGIN_NAME; // Grab login name from CSQC
 	self.gender = LOGIN_GENDER; // Grab gender from CSQC
 	self.password = LOGIN_PASSWORD; // Grab password from CSQC
+	self.music = 0; // default, trigger sets this up
 	
 	string add_ext = strcat("chr/", self.loginname, ".chr");
 	float v = fopen(add_ext, FILE_READ);

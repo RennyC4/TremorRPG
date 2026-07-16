@@ -1789,8 +1789,7 @@ const float MENU_BANKING = 7; // user banking screen
 .vector saveorigin; // used for monsters / allies to save their inital spawn location and patrol near it
 .vector idealangles;
 .float turn_speed; // how fast monsters/npcs can turn
-.string music; // what track to play for the client
-.string music2; // randomized second track to play for the client
+.float music; // what track to play for the client
 .string zonename; // name of zone player is in
 .float zonename_finished; // display on csqc hud
 .float melee_finished;

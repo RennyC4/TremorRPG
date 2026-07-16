@@ -40,13 +40,11 @@ void() trigger_zone_touch =
 	// STATE SNAPSHOT
 	// =========================================================
 	float old_pvp = other.pvp;
-	string old_music = other.music;
 
 	float was_overworld = (old_pvp == 2);
 	float is_overworld  = (self.pvp == 2 && is_hmp);
 
 	float pvp_changed = (old_pvp != self.pvp);
-	float music_changed = (old_music != self.music);
 	float overworld_changed = (was_overworld != is_overworld);
 
 	// =========================================================
@@ -66,61 +64,6 @@ void() trigger_zone_touch =
 		else
 		{
 			other.pvp = self.pvp;
-		}
-	}
-
-	// =========================================================
-	// MUSIC HANDLING
-	// =========================================================
-	if (music_changed || overworld_changed || pvp_changed)
-	{
-		// -------------------------
-		// WILDERNESS (OVERWORLD)
-		// -------------------------
-		if (is_overworld)
-		{
-			// only trigger when ENTERING overworld
-			if (!was_overworld)
-			{
-				float r = floor(random() * 4) + 1;
-
-				string track;
-				if (r == 1) track = "sound/music/overworld/1.ogg";
-				else if (r == 2) track = "sound/music/overworld/2.ogg";
-				else if (r == 3) track = "sound/music/overworld/3.ogg";
-				else track = "sound/music/overworld/4.ogg";
-
-				// prevent restarting same track
-				if (other.current_track != track)
-				{
-					other.current_track = track;
-					stuffcmd(other, sprintf("music %s\n", track));
-				}
-			}
-
-			// mark overworld state
-			other.music = "overworld";
-		}
-		else
-		{
-			// -------------------------
-			// NORMAL ZONE MUSIC
-			// -------------------------
-			string track;
-
-			if (self.music2 != "" && random() > 0.5)
-				track = self.music2;
-			else
-				track = self.music;
-
-			// prevent restarting same track
-			if (other.current_track != track)
-			{
-				other.current_track = track;
-				stuffcmd(other, sprintf("music %s\n", track));
-			}
-
-			other.music = self.music;
 		}
 	}
 
