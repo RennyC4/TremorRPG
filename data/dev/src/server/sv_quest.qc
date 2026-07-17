@@ -123,11 +123,11 @@ void() Quest_LoadAll =
 
 	entity q;
 
-	f = fopen("quests/index.txt", FILE_READ);
+	f = fopen("quest/index.txt", FILE_READ);
 
 	if (!f)
 	{
-		dprint("^1Quest_LoadAll: Unable to open quests/index.txt\n");
+		dprint("^1Quest_LoadAll: Unable to open quest/index.txt\n");
 		return;
 	}
 
@@ -144,7 +144,7 @@ void() Quest_LoadAll =
 		if (substring(line, 0, 1) == "#")
 			continue;
 
-		filename = strcat("quests/", line, ".qst");
+		filename = strcat("quest/", line, ".qst");
 
 		q = spawn();
 		q.classname = "quest_definition";
