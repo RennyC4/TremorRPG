@@ -16,6 +16,7 @@ void() info_null ={};
 
 void() spawn_daynight;
 void() spawn_cleanup;
+void() Quest_LoadAll;
 
 //called for each frame that QC runs
 void() StartFrame = {};
@@ -209,7 +210,8 @@ void() worldspawn =
 
 	spawn_daynight(); // day/night entity
 	spawn_cleanup(); // 24 hour restart entity cleanup
-	
+	Quest_LoadAll();
+
 	// additional cvar setup
 	registercvar("sv_multilogin", "0");
 	registercvar("sv_expdmultiplier", "0");

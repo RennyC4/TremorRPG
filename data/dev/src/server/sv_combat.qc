@@ -656,7 +656,10 @@ void(entity targ, entity attacker) DoDeath =
     if (targ.flags & FL_MONSTER)
     {
 		if (attacker.classname == "player") // Only reward players
+		{
 			MonsterReward(targ, attacker);
+			Quest_Event(attacker, "kill", targ.monster_id); // quest system update
+		}
     }
 
     // PVP KILL

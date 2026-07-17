@@ -11,6 +11,7 @@ server/sv_enemy_ai.qc
 server/sv_enemy.qc
 server/sv_ally_ai.qc
 server/sv_ally.qc
+server/sv_quest.qc
 server/sv_combat.qc
 server/sv_magic.qc
 server/sv_triggers.qc

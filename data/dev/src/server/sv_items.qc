@@ -230,7 +230,7 @@ void(float id, string itemname) CSEv_Player_UseItem_fs =
 			stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 			sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
 
-			string eventlog_print = (strcat(itemname, " used\n"));
+			eventlog_print = (strcat(itemname, " used\n"));
 			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 
 			RemoveFromInventory(self, itemname, 1);	
@@ -254,7 +254,7 @@ void(float id, string itemname) CSEv_Player_UseItem_fs =
 			self.stamina = 100;
 
 		stuffcmd (self, sprintf("play %s\n", "eat.wav")); // sound
-		string eventlog_print = (strcat("^5", itemname, ":^2 +5 HP +5 Stam"));
+		eventlog_print = (strcat("^5", itemname, ":^2 +5 HP +5 Stam"));
 		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 
 		RemoveFromInventory(self, itemname, 1);

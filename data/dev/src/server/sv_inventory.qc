@@ -530,7 +530,7 @@ void() Item_Touch =
         if (amount <= 0)
             amount = 1;
 
-        string eventlog_print = strcat("Acquired ", ftos(amount), " ", self.netname, "\n");
+        eventlog_print = strcat("Acquired ", ftos(amount), " ", self.netname, "\n");
         stuffcmd(other, sprintf("conecho event %s\n", eventlog_print));
 
         sound(other, CHAN_AUTO, "item/get.wav", 1, ATTN_NORM);

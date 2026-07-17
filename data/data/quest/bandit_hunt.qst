@@ -1,0 +1,18 @@
+id=bandit_hunt
+name=Bandit Problem
+description=Kill 10 bandits roaming the wilderness
+zone=elderfen
+
+type=kill
+target=bandit
+count=10
+
+repeatable=0
+level=1
+
+reward_exp=250
+reward_gold=100
+reward_item=Health Potion
+reward_item_count=1
+
+next=bandit_leader

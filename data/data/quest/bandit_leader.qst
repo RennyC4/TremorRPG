@@ -1,0 +1,18 @@
+id=bandit_leader
+name=Bandit Leader
+description=Find and defeat the Bandit Leader threatening Elderfen
+zone=Elderfen
+
+type=kill
+target=bandit_leader
+count=1
+
+repeatable=0
+level=10
+
+requires=bandit_hunt
+
+reward_exp=500
+reward_gold=250
+reward_item=Mana Potion
+reward_item_count=1

@@ -404,6 +404,7 @@ void(entity targ, float type) CSEv_Player_SaveChar =
 	fclose(f);
 
 	sprint(targ, PRINT_HIGH, strcat(targ.loginname, " character saved\n"));
+	Quest_SavePlayer(self);
 };
 
 // ============================================================
@@ -725,7 +726,7 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
 	// ========================================================
 
 	self.inv_count = 0;
-	for (float i = 0; i < MAX_INVENTORY; i++)
+	for (i = 0; i < MAX_INVENTORY; i++)
 	{
 		self.inventory[i] = "";
 		self.inventory_count[i] = 0;
@@ -801,6 +802,7 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
 	PlayerSpawn(1);
 
 	sprint(self, PRINT_HIGH, strcat(self.loginname, " character resumed\n"));
+	Quest_LoadPlayer(self);
 };
 
 // ============================================================
