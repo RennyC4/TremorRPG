@@ -176,6 +176,10 @@ void(float id, string itemname) CSEv_Player_UseItem_fs =
 
 			stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 			sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
+
+			string eventlog_print = (strcat(itemname, " used\n"));
+			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+
 			RemoveFromInventory(self, itemname, 1);
 		}
 		else
@@ -225,6 +229,10 @@ void(float id, string itemname) CSEv_Player_UseItem_fs =
 
 			stuffcmd (self, sprintf("play %s\n", "drink.wav")); // sound
 			sprint(self, PRINT_HIGH, strcat(itemname, " used\n"));
+
+			string eventlog_print = (strcat(itemname, " used\n"));
+			stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
+
 			RemoveFromInventory(self, itemname, 1);	
 		}
 		else

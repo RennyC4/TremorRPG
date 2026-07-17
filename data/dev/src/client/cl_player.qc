@@ -14,7 +14,7 @@ void() FootstepThink;
 .float attack_finished;
 .float respawn_finished;
 
-string nightskybox = "skyworld_star";
+string nightskybox = "night";
 string dayskybox = "";
 const float TIME_DAWN = 0;
 const float TIME_DAY = 1;
