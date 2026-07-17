@@ -1263,9 +1263,10 @@ void() PlayerPostThink =
 		self.manapot_finished = time + 0.1; // how fast to tick`
 	}
 
+	// not in combat
 	if (!self.incombat)
 	{
-		// Non-combat health regeneration
+		// health regeneration
 		if (self.healthregen_finished < time)
 		{
 			calc = 60 - (self.skill_healthregen * 0.25);
@@ -1275,8 +1276,19 @@ void() PlayerPostThink =
 				self.health = self.max_health;
 			self.healthregen_finished = time + calc;
 		}
+		if (self.music == MUSIC_COMBAT) // not in combat, return to previous music
+		{
+			if (self.music != self.old_music)
+				self.music = self.old_music;
+		}
 	}
-	// Mana regeneration
+	else // players incombat
+	{
+		if (self.music != MUSIC_COMBAT)
+			self.music = MUSIC_COMBAT;
+	}
+
+	// mana regeneration
 	if (self.manaregen_finished < time)
 	{
 		calc = 60 - (self.skill_manaregen * 0.25);
@@ -1287,7 +1299,7 @@ void() PlayerPostThink =
 		self.manaregen_finished = time + calc;
 	}
 
-	// Stamina regeneration
+	// stamina regeneration
 	if (self.staminaregen_finished < time)
 	{
 		if (!self.blocking)

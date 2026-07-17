@@ -1790,6 +1790,7 @@ const float MENU_BANKING = 7; // user banking screen
 .vector idealangles;
 .float turn_speed; // how fast monsters/npcs can turn
 .float music; // what track to play for the client
+.float old_music; // store old track
 .string zonename; // name of zone player is in
 .float zonename_finished; // display on csqc hud
 .float melee_finished;
@@ -2048,6 +2049,12 @@ const float ANISTATE_FISHIDLE = 25;
 #define STAT_MINING 98
 #define STAT_FISHING 99
 #define STAT_WOODCUTTING 100
+
+// Music defs
+#define MUSIC_NONE       0
+#define MUSIC_ELDERFEN   1
+#define MUSIC_EXPLORE    2
+#define MUSIC_COMBAT     3
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001

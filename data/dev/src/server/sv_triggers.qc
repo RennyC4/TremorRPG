@@ -81,7 +81,11 @@ void() trigger_zone_touch =
 	// =========================================================
 	// MUSIC HANDLER
 	// =========================================================
-	if (other.music != self.music)
+
+	if (other.old_music != other.music)
+		other.old_music = other.music; // stash old track
+
+	if (other.music != self.music)	
 		other.music = self.music;
 };
 

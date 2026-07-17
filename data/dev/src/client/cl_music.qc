@@ -47,7 +47,6 @@ string elderfen_tracks[2] =
 	"music/town/2.ogg"
 };
 
-
 #define EXPLORATION_TRACK_COUNT 4
 string exploration_tracks[4] =
 {
@@ -57,12 +56,11 @@ string exploration_tracks[4] =
 	"music/overworld/4.ogg"
 };
 
-
 #define COMBAT_TRACK_COUNT 2
 string combat_tracks[2] =
 {
-	"music/combat1.ogg",
-	"music/combat2.ogg"
+	"music/combat/1.ogg",
+	"music/combat/2.ogg"
 };
 
 //
