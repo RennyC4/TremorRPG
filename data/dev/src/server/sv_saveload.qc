@@ -102,13 +102,11 @@ string(string key) ReadSaveString =
 
 	prefix = strcat(key, "=");
 
-
 	for (i = 0; i < save_line_count; i++)
 	{
 		if (substring(save_lines[i], 0, strlen(prefix)) == prefix)
 			return substring(save_lines[i], strlen(prefix), 999);
 	}
-
 
 	return "";
 };
@@ -143,15 +141,6 @@ float(string section) FindSection =
 	}
 
 	return -1;
-};
-
-// ============================================================
-// PASSWORD CHECK
-// ============================================================
-
-string() ReadPassword =
-{
-	return ReadSaveString("PASSWORD");
 };
 
 // ============================================================
@@ -473,7 +462,6 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
 	// ========================================================
 
 	file_password = ReadSaveString("PASSWORD");
-
 	if (file_password != "")
 	{
 		encoded_password = EncodePassword(LOGIN_NAME, LOGIN_PASSWORD);

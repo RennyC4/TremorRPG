@@ -479,6 +479,7 @@ void() sParms_Read =
 	if (v)
 	{
 		if (line = fgets(v)) // skip first line
+		if (line = fgets(v)) // skip second line
 		if (line = fgets(v))
 			sparm1 = line;
 		if (line = fgets(v))
@@ -497,24 +498,28 @@ void() sParms_Read =
 // write/update sparm file
 void() sParms_Write =
 {
-	sparm1 = getstats(STAT_MAINHAND);
-	sparm2 = getstats(STAT_OFFHAND);
-	sparm3 = getstats(STAT_ARMORNAME);
-	sparm4 = getstats(STAT_SPELLEQUIPPED);
-	sparm5 = getstats(STAT_HELMETNAME);
+    sparm1 = getstats(STAT_MAINHAND);
+    sparm2 = getstats(STAT_OFFHAND);
+    sparm3 = getstats(STAT_ARMORNAME);
+    sparm4 = getstats(STAT_SPELLEQUIPPED);
+    sparm5 = getstats(STAT_HELMETNAME);
 
-	float v = fopen("sparms", FILE_WRITE); // write sParm file
-	if (v)
-	{
-		fputs(v, LOGIN_NAME, "\n");
-		fputs(v, sparm1, "\n");
-		fputs(v, sparm2, "\n");
-		fputs(v, sparm3, "\n");
-		fputs(v, sparm4, "\n");
-		fputs(v, sparm5, "\n");
-		fclose(v);
-	}
-};
+    float v = fopen("sparms", FILE_WRITE);
+
+    if (v)
+    {
+        fputs(v, LOGIN_NAME, "\n");
+        fputs(v, LOGIN_PASSWORD, "\n");   // <-- add this back
+
+        fputs(v, sparm1, "\n");
+        fputs(v, sparm2, "\n");
+        fputs(v, sparm3, "\n");
+        fputs(v, sparm4, "\n");
+        fputs(v, sparm5, "\n");
+
+        fclose(v);
+    }
+}
 
 // open and wipe sParm file
 void() sParms_Wipe =

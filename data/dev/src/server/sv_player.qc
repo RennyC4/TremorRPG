@@ -1821,7 +1821,6 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacterMapTransfer_s
 			return;
 		}
 	}
-	self.music = 0; // null track on entry
 	self.zonename = ""; // clear after load
 	PlayerSpawn(2);
 	SetCheckParms(); // grab and restore parms AFTER character is resumed
@@ -1835,7 +1834,6 @@ void(string LOGIN_NAME, string LOGIN_GENDER, string LOGIN_PASSWORD) CSEv_CreateN
 	self.loginname = LOGIN_NAME; // Grab login name from CSQC
 	self.gender = LOGIN_GENDER; // Grab gender from CSQC
 	self.password = LOGIN_PASSWORD; // Grab password from CSQC
-	self.music = 0; // default, trigger sets this up
 	
 	string add_ext = strcat("chr/", self.loginname, ".chr");
 	float v = fopen(add_ext, FILE_READ);
