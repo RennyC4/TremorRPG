@@ -968,7 +968,7 @@ void(float flIsNew) CSQC_Ent_Update =
 		self.origin_y = readcoord();
 		self.origin_z = readcoord();
 		setorigin(self, self.origin);
-		ambientsound(self.origin, "bonfire2.wav", 1, ATTN_STATIC);
+		ambientsound(self.origin, "bonfire2.wav", 0.5, ATTN_STATIC);
 	}
 	
 	//
