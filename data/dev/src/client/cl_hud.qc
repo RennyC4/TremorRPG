@@ -1,6 +1,42 @@
 //
 // Player HUD
 //
+
+//
+// Quest Log Data
+//
+
+#define QUEST_LOCKED    0
+#define QUEST_AVAILABLE 1
+#define QUEST_ACTIVE    2
+#define QUEST_COMPLETE  3
+#define QUEST_TURNEDIN  4
+
+#define MAX_QUESTS 64
+
+float quest_count;
+float quest_selected;
+
+struct questinfo
+{
+	string id;
+	string name;
+	string description;
+
+	float status;
+
+	float progress;
+	float needed;
+
+	float reward_exp;
+	float reward_gold;
+
+	string reward_item;
+	float reward_item_count;
+};
+
+struct questinfo quest_log[MAX_QUESTS];
+
 void(vector pos) Draw_3DPDoll;
 string(string s) StripColors;
 
@@ -1567,6 +1603,72 @@ void() User_InventoryScreen =
 };
 
 //
+// Quest Description Word Wrap
+//
+string quest_wrap_lines[32];
+
+//
+// Quest Description Word Wrap
+//
+
+float(string text, float max_width, float font_size) UI_WrapQuestDescription =
+{
+    float count;
+    float token_count;
+    float i;
+
+    string word;
+    string line;
+
+
+    count = 0;
+    line = "";
+
+
+    token_count = tokenize(text);
+
+
+    for (i = 0; i < token_count; i++)
+    {
+        word = argv(i);
+
+
+        if (line == "")
+        {
+            line = word;
+            continue;
+        }
+
+
+        if (stringwidth(strcat(line, " ", word), font_size, TRUE) > max_width)
+        {
+            quest_wrap_lines[count] = line;
+            count++;
+
+            line = word;
+        }
+        else
+        {
+            line = strcat(line, " ", word);
+        }
+    }
+
+
+    if (line != "")
+    {
+        quest_wrap_lines[count] = line;
+        count++;
+    }
+
+
+    return count;
+};
+
+//
+// Quest Log Screen
+//
+
+//
 // Quest Log Screen
 //
 void() User_QuestLogScreen =
@@ -1575,21 +1677,41 @@ void() User_QuestLogScreen =
     if (hp <= 0)
         return;
 
+
+    //
+    // Background
+    //
+
     vector scrsz = [g_width, g_height];
     drawfill('0 0', scrsz, '0 0 0', 0.65);
 
 
+    //
+    // Main Window
+    //
+
     vector pos = [0,0];
     vector size = [UI(450), UI(325)];
 
-    sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+    sui_set_align([SUI_ALIGN_CENTER,SUI_ALIGN_CENTER]);
     sui_push_frame(pos,size);
 
     sui_fill([0,0], size, MENU_BG, 0.75,0);
-    sui_border_box([0,0],size,2,MENU_BORDER,0.3,0);
+    sui_border_box([0,0], size,2,MENU_BORDER,0.3,0);
 
 
-    // title
+    //
+    // Safety selection
+    //
+
+    if (quest_selected >= quest_count)
+        quest_selected = 0;
+
+
+
+    //
+    // Title
+    //
 
     sui_set_align([SUI_ALIGN_CENTER,SUI_ALIGN_START]);
 
@@ -1603,10 +1725,330 @@ void() User_QuestLogScreen =
     );
 
 
-    // quest list here
+    //
+    // LEFT PANEL
+    //
+
+    vector list_pos = [UI(10),UI(35)];
+    vector list_size = [UI(150),UI(250)];
 
 
-    my_button("close",
+    sui_set_align([SUI_ALIGN_START,SUI_ALIGN_START]);
+
+    sui_push_frame(list_pos,list_size);
+
+    sui_fill([0,0],list_size,MENU_BG_DARK,0.5,0);
+    sui_border_box([0,0],list_size,1,MENU_BORDER,0.3,0);
+
+
+    //
+    // Header
+    //
+
+    sui_text(
+        [UI(5),UI(5)],
+        MENU_TEXT_SMALL * UI_TextScale(),
+        strcat("^5Quests (",ftos(quest_count),")"),
+        MENU_TEXT_1,
+        1,
+        0
+    );
+
+
+    vector row = [UI(5),UI(22)];
+
+    float i;
+
+    for(i = 0; i < quest_count; i++)
+    {
+        string color;
+
+
+        switch(quest_log[i].status)
+        {
+            case QUEST_ACTIVE:
+                color = "^2";
+                break;
+
+            case QUEST_COMPLETE:
+                color = "^3";
+                break;
+
+            case QUEST_AVAILABLE:
+                color = "^5";
+                break;
+
+            default:
+                color = "^7";
+        }
+
+
+        //
+        // Highlight selected quest
+        //
+
+        if(i == quest_selected)
+        {
+            sui_fill(
+                row-[UI(2),UI(1)],
+                [UI(140),UI(13)],
+                '0.35 0.3 0',
+                0.5,
+                0
+            );
+        }
+
+
+        my_button(
+            strcat("quest_",ftos(i)),
+            row,
+            [UI(140),UI(12)],
+            strcat(color,quest_log[i].name),
+            ""
+        )
+        ? quest_selected = i
+        : 0;
+
+
+        row_y += UI(14);
+    }
+
+
+    sui_pop_frame();
+
+
+
+    //
+    // RIGHT PANEL
+    //
+
+    vector detail_pos = [UI(170),UI(35)];
+    vector detail_size = [UI(265),UI(250)];
+
+
+    sui_push_frame(detail_pos,detail_size);
+
+    sui_fill([0,0],detail_size,MENU_BG_DARK,0.5,0);
+    sui_border_box([0,0],detail_size,1,MENU_BORDER,0.3,0);
+
+
+
+    if(quest_count > 0 && quest_selected < quest_count)
+    {
+        struct questinfo q = quest_log[quest_selected];
+
+
+        vector text = [UI(8),UI(6)];
+
+        sui_set_align([SUI_ALIGN_START,SUI_ALIGN_START]);
+
+
+        //
+        // Quest name
+        //
+
+        sui_text(
+            text,
+            MENU_TEXT_MEDIUM * UI_TextScale(),
+            strcat("^5",q.name),
+            MENU_TEXT_1,
+            1,
+            0
+        );
+
+
+        text_y += UI(18);
+
+
+        //
+        // Divider
+        //
+
+        sui_fill(
+            [UI(5),text_y],
+            [UI(250),1],
+            MENU_BORDER,
+            0.5,
+            0
+        );
+
+
+        text_y += UI(8);
+
+
+
+        //
+        // Status
+        //
+
+        string status;
+        string status_color;
+
+
+        switch(q.status)
+        {
+            case QUEST_ACTIVE:
+                status = "In Progress";
+                status_color = "^2";
+                break;
+
+            case QUEST_COMPLETE:
+                status = "Complete";
+                status_color = "^3";
+                break;
+
+            case QUEST_AVAILABLE:
+                status = "Available";
+                status_color = "^5";
+                break;
+
+            default:
+                status = "Unknown";
+                status_color = "^7";
+        }
+
+
+        sui_text(
+            text,
+            MENU_TEXT_SMALL * UI_TextScale(),
+            strcat("^7Status: ",status_color,status),
+            MENU_TEXT_1,
+            1,
+            0
+        );
+
+
+        text_y += UI(14);
+
+
+
+        //
+        // Objective
+        //
+
+        sui_text(
+            text,
+            MENU_TEXT_SMALL * UI_TextScale(),
+            strcat(
+                "^7Progress: ",
+                ftos(q.progress),
+                " / ",
+                ftos(q.needed)
+            ),
+            MENU_TEXT_1,
+            1,
+            0
+        );
+
+
+        text_y += UI(18);
+
+
+
+        //
+        // Description
+        //
+
+        sui_text(
+            text,
+            MENU_TEXT_SMALL * UI_TextScale(),
+            "^5Description",
+            MENU_TEXT_1,
+            1,
+            0
+        );
+
+
+        text_y += UI(12);
+
+
+        sui_text(
+            text,
+            MENU_TEXT_SMALL * UI_TextScale(),
+            q.description,
+            MENU_TEXT_1,
+            1,
+            0
+        );
+
+
+        text_y += UI(55);
+
+
+
+        //
+        // Rewards
+        //
+
+        sui_text(
+            text,
+            MENU_TEXT_SMALL * UI_TextScale(),
+            "^3Rewards",
+            MENU_TEXT_1,
+            1,
+            0
+        );
+
+
+        text_y += UI(14);
+
+
+        sui_text(
+            text,
+            MENU_TEXT_SMALL * UI_TextScale(),
+            strcat("^7EXP: ^5",ftos(q.reward_exp)),
+            MENU_TEXT_1,
+            1,
+            0
+        );
+
+
+        text_y += UI(12);
+
+
+        sui_text(
+            text,
+            MENU_TEXT_SMALL * UI_TextScale(),
+            strcat("^7Gold: ^8",ftos(q.reward_gold)),
+            MENU_TEXT_1,
+            1,
+            0
+        );
+
+
+        if(q.reward_item != "")
+        {
+            text_y += UI(12);
+
+            sui_text(
+                text,
+                MENU_TEXT_SMALL * UI_TextScale(),
+                strcat(
+                    "^7Item: ^5",
+                    q.reward_item,
+                    " x",
+                    ftos(q.reward_item_count)
+                ),
+                MENU_TEXT_1,
+                1,
+                0
+            );
+        }
+    }
+
+
+    sui_pop_frame();
+
+
+
+    //
+    // Close
+    //
+
+    sui_set_align([SUI_ALIGN_END,SUI_ALIGN_START]);
+
+    my_button(
+        "close",
         [0,0],
         [UI(15),UI(15)],
         "X",

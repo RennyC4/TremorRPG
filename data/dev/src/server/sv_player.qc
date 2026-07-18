@@ -474,7 +474,7 @@ void() CSEv_PlayerShowStats =
 		self.menu = MENU_OFF;
 		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
 	}
-	else if (self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_OFF)
+	else if (self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_QUESTLOG || self.menu == MENU_OFF)
 	{
 		if (self.menu == MENU_OFF)
 			stuffcmd (self, sprintf("play %s\n", "menu/menu_open.wav")); // sound
@@ -496,7 +496,7 @@ void() CSEv_PlayerShowInventory =
 		self.menu = MENU_OFF;
 		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
 	}
-	else if (self.menu == MENU_CHARACTER || self.menu == MENU_MAGIC || self.menu == MENU_OFF)
+	else if (self.menu == MENU_CHARACTER || self.menu == MENU_MAGIC || self.menu == MENU_QUESTLOG || self.menu == MENU_OFF)
 	{
 		if (self.menu == MENU_OFF)
 			stuffcmd (self, sprintf("play %s\n", "menu/menu_open.wav")); // sound
@@ -518,7 +518,7 @@ void() CSEv_PlayerShowMagic =
 		self.menu = MENU_OFF;
 		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav")); // sound
 	}
-	else if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_OFF)
+	else if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_QUESTLOG || self.menu == MENU_OFF)
 	{
 		if (self.menu == MENU_OFF)
 			stuffcmd (self, sprintf("play %s\n", "menu/menu_open.wav")); // sound

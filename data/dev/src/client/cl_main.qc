@@ -649,6 +649,30 @@ const float CSQC_READSPARM = 9;
 const float CSQC_WIPESPARM = 10;
 const float CSQC_SAY = 11;
 const float CSQC_SAY_NEARBY = 12;
+const float CSQC_QUESTINFO = 13;
+
+//
+// Quest log - client side
+//
+
+#define MAX_QUESTS 64
+
+float quest_count;
+
+string quest_id[MAX_QUESTS];
+string quest_name[MAX_QUESTS];
+string quest_description[MAX_QUESTS];
+
+float quest_status[MAX_QUESTS];
+
+float quest_progress[MAX_QUESTS];
+float quest_needed[MAX_QUESTS];
+
+float quest_reward_exp[MAX_QUESTS];
+float quest_reward_gold[MAX_QUESTS];
+
+string quest_reward_item[MAX_QUESTS];
+float quest_reward_item_count[MAX_QUESTS];
 
 void() CSQC_Parse_Event =
 {
@@ -736,7 +760,70 @@ void() CSQC_Parse_Event =
 			localsound("misc/talk.wav");
 		}
 	}
+	if (event == CSQC_QUESTINFO)
+	{
+		float count;
+		float h;
 
+		count = readbyte();
+
+		quest_count = count;
+
+		//
+		// Clear old quests
+		//
+
+		for (h = 0; h < MAX_QUESTS; h++)
+		{
+			quest_log[h].id = "";
+			quest_log[h].name = "";
+			quest_log[h].description = "";
+
+			quest_log[h].status = QUEST_LOCKED;
+
+			quest_log[h].progress = 0;
+			quest_log[h].needed = 0;
+
+			quest_log[h].reward_exp = 0;
+			quest_log[h].reward_gold = 0;
+
+			quest_log[h].reward_item = "";
+			quest_log[h].reward_item_count = 0;
+		}
+
+
+		//
+		// Read quests
+		//
+
+		for (h = 0; h < count; h++)
+		{
+			quest_log[h].id = readstring();
+			quest_log[h].name = readstring();
+			quest_log[h].description = readstring();
+
+			quest_log[h].status = readbyte();
+
+			quest_log[h].progress = readfloat();
+			quest_log[h].needed = readfloat();
+
+			quest_log[h].reward_exp = readfloat();
+			quest_log[h].reward_gold = readfloat();
+
+			quest_log[h].reward_item = readstring();
+			quest_log[h].reward_item_count = readfloat();
+
+
+			print(sprintf(
+				"^3Quest:^7 %s | %s | %g/%g | Status %g\n",
+				quest_log[h].id,
+				quest_log[h].name,
+				quest_log[h].progress,
+				quest_log[h].needed,
+				quest_log[h].status
+			));
+		}
+	}
 };
 
 .vector prediction_error;

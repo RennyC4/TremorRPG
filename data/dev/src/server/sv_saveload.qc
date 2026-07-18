@@ -803,6 +803,7 @@ void(string LOGIN_NAME, string LOGIN_PASSWORD) CSEv_ResumeCharacter_ss =
 
 	sprint(self, PRINT_HIGH, strcat(self.loginname, " character resumed\n"));
 	Quest_LoadPlayer(self);
+	Quest_SendLog(self);
 };
 
 // ============================================================

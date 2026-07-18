@@ -83,6 +83,7 @@ float(entity player, string id) Quest_CanTurnIn;
 float(entity player, string id) Quest_IsActive;
 float(entity player, string id) Quest_IsCompleted;
 
+void(entity player) Quest_SendLog; // CSQC
 //
 // Helpers
 //
@@ -107,6 +108,100 @@ float(entity player, string id) Quest_IsCompleted =
 		return FALSE;
 
 	return player.player_quest_status[slot] == QUEST_TURNEDIN;
+};
+
+//
+// Send quest log to CSQC
+//
+
+void(entity player) Quest_SendLog =
+{
+	float i;
+	float send_count;
+	entity q;
+
+	if (player.classname != "player")
+		return;
+
+	//
+	// Count quests that should appear in the quest log
+	//
+
+	send_count = 0;
+
+	for (i = 0; i < player.player_quest_count; i++)
+	{
+		if (player.player_quest_status[i] == QUEST_TURNEDIN)
+			continue;
+
+		send_count++;
+	}
+
+	//
+	// Send packet
+	//
+
+	msg_entity = player;
+
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_QUESTINFO);
+
+	//
+	// Quest count
+	//
+
+	if (send_count > 64)
+		send_count = 64;
+
+	WriteByte(MSG_MULTICAST, send_count);
+
+	//
+	// Quest data
+	//
+
+	for (i = 0; i < player.player_quest_count; i++)
+	{
+		//
+		// Don't send completed history
+		//
+
+		if (player.player_quest_status[i] == QUEST_TURNEDIN)
+			continue;
+
+		q = Quest_PlayerDefinition(player, i);
+
+		if (!q)
+			continue;
+
+		//
+		// Quest information
+		//
+
+		WriteString(MSG_MULTICAST, q.quest_id);
+		WriteString(MSG_MULTICAST, q.quest_name);
+		WriteString(MSG_MULTICAST, q.quest_description);
+
+		//
+		// Status / progress
+		//
+
+		WriteByte(MSG_MULTICAST, player.player_quest_status[i]);
+
+		WriteFloat(MSG_MULTICAST, player.player_quest_progress[i]);
+		WriteFloat(MSG_MULTICAST, q.quest_count);
+
+		//
+		// Rewards
+		//
+
+		WriteFloat(MSG_MULTICAST, q.reward_exp);
+		WriteFloat(MSG_MULTICAST, q.reward_gold);
+
+		WriteString(MSG_MULTICAST, q.reward_item);
+		WriteFloat(MSG_MULTICAST, q.reward_item_count);
+	}
+
+	multicast(player.origin, MULTICAST_ONE_R);
 };
 
 //
@@ -466,9 +561,12 @@ void(entity player, string id) Quest_Accept =
 	player.player_quest_status[slot] = QUEST_ACTIVE;
 	player.player_quest_progress[slot] = 0;
 
-	player.player_quest_count++;
+	//player.player_quest_count++;
+	if (slot == player.player_quest_count)
+		player.player_quest_count++;
 
 	Quest_SavePlayer(player);
+	Quest_SendLog(player);
 
 	dprint(sprintf("^2Quest Accepted:^7 %s\n", q.quest_name));
 
@@ -521,6 +619,7 @@ void(entity player, string id) Quest_Unlock =
 	player.player_quest_count++;
 
 	Quest_SavePlayer(player);
+	//Quest_SendLog(player);
 	dprint(sprintf("^2Quest Available:^7 %s\n", q.quest_name));
 };
 
@@ -644,6 +743,7 @@ void(entity player, string id) Quest_TurnIn =
 	//
 
 	Quest_SavePlayer(player);
+	Quest_SendLog(player);
 
 	//
 	// Feedback
@@ -729,6 +829,7 @@ void(entity player, string type, string target) Quest_Event =
 	//
 
 	Quest_SavePlayer(player);
+	Quest_SendLog(player);
 };
 
 //

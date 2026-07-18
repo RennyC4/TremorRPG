@@ -1,6 +1,6 @@
 id=bandit_hunt
 name=Bandit Problem
-description=Kill 10 bandits roaming the wilderness
+description=I've been asked by Sarzac to kill 10 bandits roaming the wilderness in order to set an example to stay back from Elderfen
 zone=elderfen
 
 type=kill
@@ -12,7 +12,7 @@ level=1
 
 reward_exp=250
 reward_gold=100
-reward_item=Health Potion
+reward_item=Bandit Hood
 reward_item_count=1
 
 next=bandit_leader
