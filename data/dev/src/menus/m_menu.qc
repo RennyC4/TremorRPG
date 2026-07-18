@@ -147,6 +147,7 @@ name_command bindlist[] =
 	{ "Quick Menu: Skills", "show_character" },
 	{ "Quick Menu: Inventory", "show_inventory" },
 	{ "Quick Menu: Magic", "show_magic" },
+	{ "Quick Menu: Quest Log", "show_questlog" },
 	{ "Sneak", "toggle_crouch" },
 	{ "Use", "+button3" },
 	{ "Block", "+button4" },

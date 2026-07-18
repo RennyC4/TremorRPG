@@ -142,6 +142,7 @@ noref void() CSQC_WorldLoaded =
 	registercommand("show_character", "Displays character information screen\n");
 	registercommand("show_inventory", "Displays inventory information screen\n");
 	registercommand("show_magic", "Displays magic information screen\n");
+	registercommand("show_questlog", "Displays quest log information screen\n");
 	registercommand("toggle_crouch", "Crouching & sneaking\n");
 	registercommand("toggle_camera", "3rd person camera toggle\n");
 	registercommand("+use", "Use what is in front of player\n");
@@ -385,6 +386,15 @@ float(string strCommand) CSQC_ConsoleCommand =
 		else cursor_mode = FALSE;
 
 		sendevent("PlayerShowMagic", "");
+	}
+	if (argv(0) == "show_questlog")
+	{
+		// turn off cursor mode if user closes menu by quick command
+		player_menu = getstatf(STAT_MENU);
+		if (!player_menu) cursor_mode = TRUE;
+		else cursor_mode = FALSE;
+
+		sendevent("PlayerShowQuestLog", "");
 	}
 	if (argv(0) == "toggle_camera") // send camera mode to SSQC for various reasons
 	{

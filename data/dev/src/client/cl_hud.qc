@@ -662,6 +662,12 @@ void() Draw_HUDIcons =
 		? sendevent("PlayerShowInventory", "")
 		: 0;
 
+	pos_x += UI(38);
+
+	my_button_gfx("button_questlog", pos, size, "progs/questlog.png", "Quest Log")
+		? sendevent("PlayerShowQuestLog", "")
+		: 0;
+
 	// =========================================================
 	// TOP LEFT BUTTONS (System / PvP)
 	// =========================================================
@@ -938,6 +944,7 @@ void() Draw_Exp =
     // Text
     drawstring(text_pos, exp_text, MENU_TEXT_SMALL, '1 1 1', 1, 0);
 };
+
 //==============================================================
 // Character Skills / Magic / Inventory screens
 //==============================================================
@@ -1557,4 +1564,56 @@ void() User_InventoryScreen =
 		: 0;
 
 	sui_pop_frame();
+};
+
+//
+// Quest Log Screen
+//
+void() User_QuestLogScreen =
+{
+    float hp = getstatf(STAT_HEALTH);
+    if (hp <= 0)
+        return;
+
+    vector scrsz = [g_width, g_height];
+    drawfill('0 0', scrsz, '0 0 0', 0.65);
+
+
+    vector pos = [0,0];
+    vector size = [UI(450), UI(325)];
+
+    sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+    sui_push_frame(pos,size);
+
+    sui_fill([0,0], size, MENU_BG, 0.75,0);
+    sui_border_box([0,0],size,2,MENU_BORDER,0.3,0);
+
+
+    // title
+
+    sui_set_align([SUI_ALIGN_CENTER,SUI_ALIGN_START]);
+
+    sui_text(
+        [0,UI(5)],
+        MENU_TEXT_MEDIUM * UI_TextScale(),
+        "^2Quest Log",
+        MENU_TEXT_1,
+        1,
+        0
+    );
+
+
+    // quest list here
+
+
+    my_button("close",
+        [0,0],
+        [UI(15),UI(15)],
+        "X",
+        "")
+        ? sendevent("ShutDownMenus","")
+        : 0;
+
+
+    sui_pop_frame();
 };

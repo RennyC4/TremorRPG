@@ -314,7 +314,7 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		return;
 	if (!(self.flags & FL_ONGROUND))
 		return;
-	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_BANKING)
+	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_BANKING || self.menu == MENU_QUESTLOG)
 		return;
 
 	if (self.stamina >= 25)
@@ -525,6 +525,29 @@ void() CSEv_PlayerShowMagic =
 		else
 			stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav")); // sound
 		self.menu = MENU_MAGIC;
+	}
+};
+
+// called from CSQC ("show_questlog" console command + button)
+void() CSEv_PlayerShowQuestLog = 
+{
+	if (self.deadflag != DEAD_NO)
+		return;
+
+	if (self.menu == MENU_QUESTLOG)
+	{
+		self.menushut_finished = time + 0.2; // prevent +attack misfire
+		self.menu = MENU_OFF;
+		stuffcmd (self, sprintf("play %s\n", "menu/menu_close.wav"));
+	}
+	else if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC ||  self.menu == MENU_OFF)
+	{
+		if (self.menu == MENU_OFF)
+			stuffcmd (self, sprintf("play %s\n", "menu/menu_open.wav"));
+		else
+			stuffcmd (self, sprintf("play %s\n", "menu/menu_next.wav"));
+
+		self.menu = MENU_QUESTLOG;
 	}
 };
 

@@ -125,7 +125,7 @@ void() Quest_LoadAll =
 
 	f = fopen("quest/index.txt", FILE_READ);
 
-	if (!f)
+	if (f < 0)
 	{
 		dprint("^1Quest_LoadAll: Unable to open quest/index.txt\n");
 		return;
@@ -190,7 +190,7 @@ void(entity q, string filename) Quest_Load =
 	string value;
 
 	f = fopen(filename, FILE_READ);
-	if (!f)
+	if (f < 0)
 	{
 		dprint(sprintf("^1Quest_Load: Unable to open %s\n", filename));
 		return;
@@ -749,7 +749,7 @@ void(entity player) Quest_SavePlayer =
 	filename = strcat("chr/", player.loginname, ".qst");
 
 	f = fopen(filename, FILE_WRITE);
-	if (!f)
+	if (f < 0)
 	{
 		dprint(sprintf("^1Quest_SavePlayer: Unable to open %s\n", filename));
 		return;
@@ -787,7 +787,7 @@ void(entity player) Quest_LoadPlayer =
 
 	f = fopen(filename, FILE_READ);
 
-	if (!f)
+	if (f < 0)
 		return; // No quest file yet
 
 	//

@@ -788,7 +788,13 @@ void() Player_Screen =
 		{
 			User_NPCBanking();
 		}
-		
+		if (player_menu == MENU_QUESTLOG)
+		{
+			Draw_EventLog();
+			User_QuestLogScreen();
+			Draw_HUDIcons();
+			Draw_ToolTip(); // tool tips draw over everything else
+		}		
 	}
 	else // Regular gameplay
 	{
