@@ -51,6 +51,27 @@ void(entity player, entity npc) NPC_LoadQuestOptions =
 	available = NPC_HasAvailableQuest(npc, player);
 	turnin = NPC_HasTurnInQuest(npc, player);
 
+	entity q;
+
+	player.npc_available_name = "";
+	player.npc_turnin_name = "";
+
+	if (available)
+	{
+		q = Quest_Find(available);
+
+		if (q)
+			player.npc_available_name = q.quest_name;
+	}
+
+	if (turnin)
+	{
+		q = Quest_Find(turnin);
+
+		if (q)
+			player.npc_turnin_name = q.quest_name;
+	}
+
 	player.npc_available_quest = available;
 	player.npc_turnin_quest = turnin;
 
@@ -64,6 +85,20 @@ void(entity player, entity npc) NPC_LoadQuestOptions =
 	if (turnin)
 		dprint(sprintf("^3 Turn In:^7 %s\n", turnin));
 	*/
+};
+
+void(string id) CSEv_QuestAccept_s =
+{
+//	string id;
+//	id = readstring();
+	Quest_Accept(self, id);
+};
+
+void(string id) CSEv_QuestTurnIn_s =
+{
+//	string id;
+//	id = readstring();
+	Quest_TurnIn(self, id);
 };
 
 void() npc_use =
@@ -144,7 +179,10 @@ void() npc_use =
 	WriteString(MSG_MULTICAST, self.netname);
 	WriteString(MSG_MULTICAST, self.npc_dialog);
 	WriteString(MSG_MULTICAST, self.user.npc_available_quest);
+	WriteString(MSG_MULTICAST, self.user.npc_available_name);
+
 	WriteString(MSG_MULTICAST, self.user.npc_turnin_quest);
+	WriteString(MSG_MULTICAST, self.user.npc_turnin_name);
 	multicast(self.origin, MULTICAST_ONE_R);
 
 	self.user.menu = MENU_DIALOGUE;

@@ -661,7 +661,14 @@ void() CSQC_Parse_Event =
 		npc_name = readstring();
 		npc_dialogue = readstring();
 		npc_available_quest = readstring();
+		npc_available_name = readstring();
 		npc_turnin_quest = readstring();
+		npc_turnin_name = readstring();
+
+		// debugging
+		/*
+		print(sprintf("^5NPC UI Quest Data:^7 %s / %s\n", npc_available_quest, npc_turnin_quest));
+		*/
 	}
 	// inventory update from an NPC
 	if (event == CSQC_INVENTORY_NPC)

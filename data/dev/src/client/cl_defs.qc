@@ -2348,6 +2348,8 @@ string npc_name;
 string npc_dialogue;
 string npc_available_quest;
 string npc_turnin_quest;
+string npc_available_name;
+string npc_turnin_name;
 
 // Tooltips
 vector tt_pos;

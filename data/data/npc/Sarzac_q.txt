@@ -1,0 +1,2 @@
+offer=bandit_hunt
+turnin=bandit_hunt

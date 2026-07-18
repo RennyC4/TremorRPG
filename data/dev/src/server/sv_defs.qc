@@ -1798,6 +1798,8 @@ const float MENU_BANKING = 7; // user banking screen
 .string monster_id; // for quest lookups
 .string npc_available_quest;
 .string npc_turnin_quest;
+.string npc_available_name;
+.string npc_turnin_name;
 .string loottable; // loot table look up
 .float respawn_finished; // monster respawn time
 .float speed;
