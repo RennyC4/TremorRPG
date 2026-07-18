@@ -658,7 +658,7 @@ void(entity targ, entity attacker) DoDeath =
 		if (attacker.classname == "player") // Only reward players
 		{
 			MonsterReward(targ, attacker);
-			Quest_Event(attacker, "kill", targ.monster_id); // quest system update
+			Quest_Event(attacker, "kill", strtolower(targ.monster_id)); // quest system update
 		}
     }
 

@@ -76,6 +76,8 @@ void() trigger_zone_touch =
 
 		if (other.zonename_finished < time)
 			other.zonename_finished = time + 3;
+
+		Quest_Event(other, "visit", self.zonename); // quest event tracker
 	}
 
 	// =========================================================

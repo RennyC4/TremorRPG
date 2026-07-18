@@ -2,6 +2,8 @@
 // Trees and their stats concerning wood working
 //
 
+.string tree_id;
+
 #define LUMBER_BASE_VALUE 5
 #define LUMBER_LEVEL1_SKILL 15
 #define LUMBER_LEVEL1_BONUS 7
@@ -275,7 +277,7 @@ void() DoJob_Hatchet =
             trace_ent.solid = SOLID_NOT;
             trace_ent.takedamage = DAMAGE_NO;
 
-			Quest_Event(self, "chop", "wood");
+			Quest_Event(self, "chop", strtolower(trace_ent.tree_id));
 
             trace_ent.think = tree_remove;
             trace_ent.nextthink = time + 0.25;
@@ -305,6 +307,7 @@ void() misc_tree =
 	self.mdl = "models/tree.glb";
 	self.level = 1;
 	self.deadflag = DEAD_DEAD; // Prevent thorn and other spells from hitting me
+	self.tree_id = "tree1";
 
 	setmodel(self, "models/tree.glb");
 	setsize(self, [-16, -16, 0], [16, 16, 100]);
@@ -336,7 +339,8 @@ void() misc_tree2 =
 	self.mdl = "models/tree2.glb";
 	self.level = 0;
 	self.deadflag = DEAD_DEAD; // Prevent thorn and other spells from hitting me
-
+	self.tree_id = "tree2";
+	
 	setmodel(self, "models/tree2.glb");
 	setsize(self, [-12, -12, 0], [12, 12, 100]);
 

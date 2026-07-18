@@ -237,7 +237,7 @@ void() DoJob_Pick =
 
 		if (trace_ent.health <= 0)
 		{
-			Quest_Event(self, "mine", trace_ent.ore_id);
+			Quest_Event(self, "mine", strtolower(trace_ent.ore_id));
 			trace_ent.think = ore_remove;
 			trace_ent.nextthink = time + 0.25;
 		}

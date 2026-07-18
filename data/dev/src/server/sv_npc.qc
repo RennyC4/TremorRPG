@@ -182,7 +182,7 @@ void() npc_use =
 	multicast(self.origin, MULTICAST_ONE_R);
 
 	self.user.menu = MENU_DIALOGUE;
-	Quest_Event(self.user, "talk", self.netname); // quest update tracking
+	Quest_Event(self.user, "talk", strtolower(self.netname)); // quest update tracking
 	stuffcmd (self.user, sprintf("play %s\n", "menu/menu_open.wav"));
 };
 
