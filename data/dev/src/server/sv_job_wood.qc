@@ -274,7 +274,9 @@ void() DoJob_Hatchet =
         {
             trace_ent.solid = SOLID_NOT;
             trace_ent.takedamage = DAMAGE_NO;
-        
+
+			Quest_Event(self, "chop", "wood");
+
             trace_ent.think = tree_remove;
             trace_ent.nextthink = time + 0.25;
         }

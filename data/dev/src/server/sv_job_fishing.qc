@@ -158,6 +158,7 @@ void() Fishing_Bobber_SearchNode =
 			}
 
 			AddToInventory(self.owner, item_name, 1);
+			Quest_Event(self.owner, "fish", strtolower(item_name)); // quest tracking
 
 			string eventlog_print = strcat("^4Fishing:^2 You caught ", item_name, "!");
 			stuffcmd(self.owner, sprintf("conecho event %s\n", eventlog_print));

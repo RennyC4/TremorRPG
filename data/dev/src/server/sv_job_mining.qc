@@ -4,6 +4,7 @@
 
 .float ore_idle_expire;
 .float ore_nodrop;
+.string ore_id;
 void() ore_remove;
 
 void() mining_ore_think =
@@ -236,6 +237,7 @@ void() DoJob_Pick =
 
 		if (trace_ent.health <= 0)
 		{
+			Quest_Event(self, "mine", trace_ent.ore_id);
 			trace_ent.think = ore_remove;
 			trace_ent.nextthink = time + 0.25;
 		}
@@ -262,10 +264,19 @@ void() misc_ore_copper =
 	self.health = 0;
 	self.max_health = 6 + floor(random() * 4);
 	self.alpha = 0;
-	self.level = 0;
 	self.deadflag = DEAD_DEAD;
 	self.angles_y = random()*360;
-	self.mdl = "models/ore_copper.glb";
+
+	if (!self.level)
+	{
+		self.mdl = "models/ore_copper.glb";
+		self.ore_id = "copper";
+	}
+	else
+	{
+		self.mdl = "models/ore_iron.glb"; // todo: add iron ore + model
+		self.ore_id = "iron";
+	}
 
 	setsize(self, [-16, -16, 0], [16, 16, 48]);
 
