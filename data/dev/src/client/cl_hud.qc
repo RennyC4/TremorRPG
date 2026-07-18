@@ -1603,74 +1603,10 @@ void() User_InventoryScreen =
 };
 
 //
-// Quest Description Word Wrap
-//
-string quest_wrap_lines[32];
-
-//
-// Quest Description Word Wrap
-//
-
-float(string text, float max_width, float font_size) UI_WrapQuestDescription =
-{
-    float count;
-    float token_count;
-    float i;
-
-    string word;
-    string line;
-
-
-    count = 0;
-    line = "";
-
-
-    token_count = tokenize(text);
-
-
-    for (i = 0; i < token_count; i++)
-    {
-        word = argv(i);
-
-
-        if (line == "")
-        {
-            line = word;
-            continue;
-        }
-
-
-        if (stringwidth(strcat(line, " ", word), font_size, TRUE) > max_width)
-        {
-            quest_wrap_lines[count] = line;
-            count++;
-
-            line = word;
-        }
-        else
-        {
-            line = strcat(line, " ", word);
-        }
-    }
-
-
-    if (line != "")
-    {
-        quest_wrap_lines[count] = line;
-        count++;
-    }
-
-
-    return count;
-};
-
-//
 // Quest Log Screen
 //
+float(vector startpos, float max_width, string text) UI_DrawWrappedText;
 
-//
-// Quest Log Screen
-//
 void() User_QuestLogScreen =
 {
     float hp = getstatf(STAT_HEALTH);
@@ -1949,32 +1885,17 @@ void() User_QuestLogScreen =
         // Description
         //
 
-        sui_text(
-            text,
-            MENU_TEXT_SMALL * UI_TextScale(),
-            "^5Description",
-            MENU_TEXT_1,
-            1,
-            0
-        );
+		float desc_lines;
 
+		desc_lines = UI_DrawWrappedText(
+			text,
+			UI(35),
+			q.description
+		);
 
-        text_y += UI(12);
+		text_y += desc_lines * UI(10);
 
-
-        sui_text(
-            text,
-            MENU_TEXT_SMALL * UI_TextScale(),
-            q.description,
-            MENU_TEXT_1,
-            1,
-            0
-        );
-
-
-        text_y += UI(55);
-
-
+		text_y += UI(55);
 
         //
         // Rewards
