@@ -89,11 +89,13 @@ void(entity player, entity npc) NPC_LoadQuestOptions =
 
 void(string id) CSEv_QuestAccept_s =
 {
+	self.menu = MENU_OFF;
 	Quest_Accept(self, id);
 };
 
 void(string id) CSEv_QuestTurnIn_s =
 {
+	self.menu = MENU_OFF;
 	Quest_TurnIn(self, id);
 };
 
@@ -165,6 +167,8 @@ void() npc_use =
 	else if (self.type == 2)
 		self.user.npc_vendor = 3; // Sell wood button
 
+	Quest_Event(self.user, "talk", strtolower(self.netname)); // quest update tracking
+
 	// Open player NPC window, load available quests
 	// *warning* Load Quest before sending packet!
 	NPC_LoadQuestOptions(self.user, self);
@@ -182,7 +186,6 @@ void() npc_use =
 	multicast(self.origin, MULTICAST_ONE_R);
 
 	self.user.menu = MENU_DIALOGUE;
-	Quest_Event(self.user, "talk", strtolower(self.netname)); // quest update tracking
 	stuffcmd (self.user, sprintf("play %s\n", "menu/menu_open.wav"));
 };
 

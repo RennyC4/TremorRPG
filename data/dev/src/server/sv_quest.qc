@@ -395,6 +395,9 @@ void(entity player, string id) Quest_Accept =
 	float i;
 	float slot = -1;
 
+	if (player.classname != "player")
+		return;
+
 	q = Quest_Find(id);
 
 	if (!q)
@@ -481,6 +484,9 @@ void(entity player, string id) Quest_Unlock =
 	entity q;
 	float slot;
 
+	if (player.classname != "player")
+		return;
+
 	q = Quest_Find(id);
 	if (!q)
 	{
@@ -529,6 +535,9 @@ void(entity player, string id) Quest_Unlock =
 float(entity player, string id) Quest_CanTurnIn =
 {
 	float slot;
+
+	if (player.classname != "player")
+		return;
 
 	//
 	// Find player's quest
@@ -601,7 +610,7 @@ void(entity player, string id) Quest_TurnIn =
 	//
 
 	if (q.reward_gold > 0)
-		player.gold = player.gold + q.reward_gold;
+		GiveGold(player, world, q.reward_gold, q.reward_gold);
 
 	//
 	// Give item reward
@@ -610,7 +619,11 @@ void(entity player, string id) Quest_TurnIn =
 	if (q.reward_item)
 	{
 		if (q.reward_item_count > 0)
+		{
 			AddToInventory(player, q.reward_item, q.reward_item_count);
+			string eventlog_print = strcat("Acquired ", ftos(q.reward_item_count), " ", q.reward_item, "\n");
+			stuffcmd(player, sprintf("conecho event %s\n", eventlog_print));
+		}
 	}
 
 	//
@@ -656,6 +669,9 @@ void(entity player, string type, string target) Quest_Event =
 
 	float i;
 	float progress;
+
+	if (player.classname != "player")
+		return;
 
 	for (i = 0; i < player.player_quest_count; i++)
 	{
@@ -727,7 +743,10 @@ void(entity player) Quest_SavePlayer =
 	string filename;
 	string line;
 
-	filename = strcat("chr/", player.netname, ".qst");
+	if (player.classname != "player")
+		return;
+	
+	filename = strcat("chr/", player.loginname, ".qst");
 
 	f = fopen(filename, FILE_WRITE);
 	if (!f)
@@ -764,7 +783,7 @@ void(entity player) Quest_LoadPlayer =
 	float pos1;
 	float pos2;
 
-	filename = strcat("chr/", player.netname, ".qst");
+	filename = strcat("chr/", player.loginname, ".qst");
 
 	f = fopen(filename, FILE_READ);
 

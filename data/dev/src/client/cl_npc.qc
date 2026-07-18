@@ -112,14 +112,12 @@ void() User_NPCDialogue =
 	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
 	sui_border_box([0, 0], size, UI(2), MENU_BORDER, 0.3, 0);
 
-
 	//
 	// HEADER
 	//
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_text([UI(2.5), UI(2.5)], MENU_TEXT_MEDIUM, strcat("^1", npc_name), MENU_TEXT_1, 1, 0);
-
 
 	//
 	// QUEST SPACE
@@ -132,14 +130,12 @@ void() User_NPCDialogue =
 	if (npc_available_quest != "" || npc_turnin_quest != "")
 		quest_space = UI(50);
 
-
 	//
 	// BUTTONS
 	//
 
 	vector btn_small = [UI(50), UI(22.5)];
 	vector btn_large = [UI(85), UI(22.5)];
-
 
 	//
 	// LEFT (Leave)
@@ -149,7 +145,6 @@ void() User_NPCDialogue =
 
 	if (my_button("npc_leave", [UI(2.5), UI(-2.5)], btn_small, "Leave", ""))
 		sendevent("ShutDownMenus", "");
-
 
 	//
 	// RIGHT (Buy/Sell/etc)
@@ -175,7 +170,6 @@ void() User_NPCDialogue =
 			sendevent("PlayerSellLumber", "");
 	}
 
-
 	//
 	// CHAT PANEL
 	//
@@ -183,11 +177,9 @@ void() User_NPCDialogue =
 	vector panel_pos = [UI(2.5), UI(25)];
 	vector panel_size = size - [UI(5), UI(50)] - [0, quest_space];
 
-
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 	sui_border_box(panel_pos, panel_size, UI(2), MENU_BORDER, 0.3, 0);
 	sui_fill(panel_pos, panel_size, MENU_BG_DARK, 0.75, 0);
-
 
 	//
 	// TEXT AREA (WITH CLIPPING)
@@ -197,9 +189,7 @@ void() User_NPCDialogue =
 	sui_clip_to_frame();
 
 	vector linepos = [UI(2.5), UI(2.5)];
-
 	float max_width = 36 * UI_Scale();
-
 	float i, numlines;
 
 	numlines = tokenizebyseparator(npc_dialogue, "\n");
@@ -217,21 +207,19 @@ void() User_NPCDialogue =
 	sui_reset_clip();
 	sui_pop_frame();
 
-
 	//
 	// QUEST BUTTONS
 	//
 
 	if (npc_available_quest != "" || npc_turnin_quest != "")
 	{
-		vector quest_pos = [UI(5), size_y - UI(45)];
+		vector quest_pos = [UI(2.5), size_y - UI(75)];
 
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-
 		if (npc_available_quest != "")
 		{
-			if (my_button("npc_accept_quest", quest_pos, [UI(150), UI(22.5)], strcat("^2! ", npc_available_name), ""))
+			if (my_button("npc_accept_quest", quest_pos, [UI(150), UI(22.5)], strcat("^2! ^7", npc_available_name), ""))
 			{
 				sendevent("QuestAccept", "s", npc_available_quest);
 			}
