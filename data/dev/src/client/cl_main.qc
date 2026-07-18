@@ -791,7 +791,6 @@ void() CSQC_Parse_Event =
 			quest_log[h].reward_item_count = 0;
 		}
 
-
 		//
 		// Read quests
 		//
@@ -813,15 +812,8 @@ void() CSQC_Parse_Event =
 			quest_log[h].reward_item = readstring();
 			quest_log[h].reward_item_count = readfloat();
 
-
-			print(sprintf(
-				"^3Quest:^7 %s | %s | %g/%g | Status %g\n",
-				quest_log[h].id,
-				quest_log[h].name,
-				quest_log[h].progress,
-				quest_log[h].needed,
-				quest_log[h].status
-			));
+			// debugging
+			//print(sprintf("^3Quest:^7 %s | %s | %g/%g | Status %g\n", quest_log[h].id, quest_log[h].name, quest_log[h].progress, quest_log[h].needed, quest_log[h].status));
 		}
 	}
 };

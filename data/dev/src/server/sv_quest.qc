@@ -264,7 +264,7 @@ void() Quest_LoadAll =
 			continue;
 		}
 
-		dprint(sprintf("^2Loaded Quest:^7 %s\n", q.quest_id));
+		//dprint(sprintf("^2Loaded Quest:^7 %s\n", q.quest_id));
 	}
 
 	fclose(f);
@@ -568,8 +568,6 @@ void(entity player, string id) Quest_Accept =
 	Quest_SavePlayer(player);
 	Quest_SendLog(player);
 
-	dprint(sprintf("^2Quest Accepted:^7 %s\n", q.quest_name));
-
 	centerprint(player, sprintf("Quest Accepted\n\n%s", q.quest_name));
 };
 
@@ -749,7 +747,6 @@ void(entity player, string id) Quest_TurnIn =
 	// Feedback
 	//
 
-	dprint(sprintf("^2Quest Completed:^7 %s\n", q.quest_name));
 	centerprint(player, sprintf("Quest Complete\n\n%s", q.quest_name));
 };
 
@@ -815,12 +812,7 @@ void(entity player, string type, string target) Quest_Event =
 		if (progress >= quest.quest_count)
 		{
 			player.player_quest_status[i] = QUEST_COMPLETE;
-			dprint(sprintf("^2Quest Complete:^7 %s\n", quest.quest_name));
 			centerprint(player, sprintf("Quest Complete\n\n%s", quest.quest_name));
-		}
-		else
-		{
-			dprint(sprintf("^2Quest Progress:^7 %s %g/%g\n", quest.quest_name, progress, quest.quest_count));
 		}
 	}
 
