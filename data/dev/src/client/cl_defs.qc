@@ -2346,6 +2346,8 @@ string current_spell;
 // NPC dialogue
 string npc_name;
 string npc_dialogue;
+string npc_available_quest;
+string npc_turnin_quest;
 
 // Tooltips
 vector tt_pos;

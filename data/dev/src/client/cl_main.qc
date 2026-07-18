@@ -660,6 +660,8 @@ void() CSQC_Parse_Event =
 	{
 		npc_name = readstring();
 		npc_dialogue = readstring();
+		npc_available_quest = readstring();
+		npc_turnin_quest = readstring();
 	}
 	// inventory update from an NPC
 	if (event == CSQC_INVENTORY_NPC)

@@ -1796,6 +1796,8 @@ const float MENU_BANKING = 7; // user banking screen
 .float melee_finished;
 .string displayname; // display on csqc hud
 .string monster_id; // for quest lookups
+.string npc_available_quest;
+.string npc_turnin_quest;
 .string loottable; // loot table look up
 .float respawn_finished; // monster respawn time
 .float speed;
