@@ -222,6 +222,7 @@ void() User_NPCDialogue =
 			if (my_button("npc_accept_quest", quest_pos, [UI(150), UI(22.5)], strcat("^2! ^7", npc_available_name), ""))
 			{
 				sendevent("QuestAccept", "s", npc_available_quest);
+				localsound ("q_acpt.wav");
 			}
 
 			quest_pos_y += UI(25);
@@ -233,6 +234,7 @@ void() User_NPCDialogue =
 			if (my_button("npc_turnin_quest", quest_pos, [UI(150), UI(22.5)], strcat("^3?^7 ", npc_turnin_name), ""))
 			{
 				sendevent("QuestTurnIn", "s", npc_turnin_quest);
+				localsound ("q_cmplt.wav");
 			}
 		}
 	}

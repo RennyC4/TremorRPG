@@ -1922,6 +1922,7 @@ float FALL_LAVA_MUL       = 0.25;  // lava cushions
 .string current_track;
 .string helmetname;
 .float helmetvalue;
+.entity npc_last_talk;
 
 // Animation States
 .float anistate;

@@ -15,28 +15,54 @@ string(entity npc, entity player) NPC_HasTurnInQuest;
 void(entity player, entity npc) NPC_LoadQuestOptions;
 
 //
-// Helper function
+// Helper functions
 //
+
+void(entity npc) NPC_LoadDialogue =
+{
+	string contents = "";
+	string line = "";
+	string filename;
+	float f;
+
+	filename = strcat("npc/", npc.netname, "_d.txt");
+
+	f = fopen(filename, FILE_READ);
+
+	if (f < 0)
+	{
+		npc.npc_dialog = "";
+		return;
+	}
+
+	while ((line = fgets(f)))
+		contents = strcat(contents, line, "\n");
+
+	fclose(f);
+
+	npc.npc_dialog = contents;
+};
 
 void(entity npc, entity player) NPC_SendDialogue =
 {
-    NPC_LoadQuestOptions(player, npc);
+	if (npc.npc_dialog == "")
+		npc.npc_dialog = "I have nothing to say.";
+	
+	NPC_LoadQuestOptions(player, npc);
 
-    msg_entity = player;
+	msg_entity = player;
 
-    WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
-    WriteByte(MSG_MULTICAST, CSQC_NPCINFO);
+	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
+	WriteByte(MSG_ONE, CSQC_NPCINFO);
 
-    WriteString(MSG_MULTICAST, npc.netname);
-    WriteString(MSG_MULTICAST, npc.npc_dialog);
+	WriteString(MSG_ONE, npc.netname);
+	WriteString(MSG_ONE, npc.npc_dialog);
 
-    WriteString(MSG_MULTICAST, player.npc_available_quest);
-    WriteString(MSG_MULTICAST, player.npc_available_name);
+	WriteString(MSG_ONE, player.npc_available_quest);
+	WriteString(MSG_ONE, player.npc_available_name);
 
-    WriteString(MSG_MULTICAST, player.npc_turnin_quest);
-    WriteString(MSG_MULTICAST, player.npc_turnin_name);
-
-    multicast(npc.origin, MULTICAST_ONE_R);
+	WriteString(MSG_ONE, player.npc_turnin_quest);
+	WriteString(MSG_ONE, player.npc_turnin_name);
 };
 
 //
@@ -69,63 +95,56 @@ void(entity player, entity npc) NPC_LoadQuestOptions =
 {
 	string available;
 	string turnin;
-
-	player.npc_available_quest = "";
-	player.npc_turnin_quest = "";
-
-	available = NPC_HasAvailableQuest(npc, player);
-	turnin = NPC_HasTurnInQuest(npc, player);
-
 	entity q;
 
+
+	player.npc_available_quest = "";
 	player.npc_available_name = "";
+
+	player.npc_turnin_quest = "";
 	player.npc_turnin_name = "";
 
-	if (available)
+
+	available = NPC_HasAvailableQuest(npc, player);
+
+	if (available != "")
 	{
 		q = Quest_Find(available);
 
 		if (q)
+		{
+			player.npc_available_quest = available;
 			player.npc_available_name = q.quest_name;
+		}
 	}
 
-	if (turnin)
+
+	turnin = NPC_HasTurnInQuest(npc, player);
+
+	if (turnin != "")
 	{
 		q = Quest_Find(turnin);
 
 		if (q)
+		{
+			player.npc_turnin_quest = turnin;
 			player.npc_turnin_name = q.quest_name;
+		}
 	}
-
-	player.npc_available_quest = available;
-	player.npc_turnin_quest = turnin;
-
-	// Debugging
-	/*
-	dprint(sprintf("^5NPC Quest Check:^7 %s\n", npc.netname));
-
-	if (available)
-		dprint(sprintf("^2 Available:^7 %s\n", available));
-
-	if (turnin)
-		dprint(sprintf("^3 Turn In:^7 %s\n", turnin));
-	*/
 };
 
 void(string id) CSEv_QuestAccept_s =
 {
-    Quest_Accept(self, id);
-
-    NPC_LoadQuestOptions(self, self.enemy);
-    NPC_SendDialogue(self.enemy, self);    // we'll make this helper
+	Quest_Accept(self, id);
+	if (self.npc_last_talk)
+		NPC_SendDialogue(self.npc_last_talk, self);
 };
 
 void(string id) CSEv_QuestTurnIn_s =
 {
-    Quest_TurnIn(self, id);
-
-    NPC_LoadQuestOptions(self, self.enemy);
-    NPC_SendDialogue(self.enemy, self);
+	Quest_TurnIn(self, id);
+	if (self.npc_last_talk)
+		NPC_SendDialogue(self.npc_last_talk, self);
 };
 
 void() npc_use =
@@ -135,27 +154,8 @@ void() npc_use =
 	if (self.user.menu != MENU_OFF)
 		return;
 
+	self.user.npc_last_talk = self;
 	self.user.velocity = [0, 0];
-
-	string contents = "";
-	string line = "";
-
-	// grab NPC dialogue from file
-	string readfile = strcat("npc/", self.netname, "_d.txt");
-	float v = fopen(readfile, FILE_READ);
-	if (v >= 0)
-	{
-		while ((line = fgets(v)))
-			contents = strcat(contents, line, "\n");
-		self.npc_dialog = contents;
-	}
-	else
-	{
-		// Not all NPC's wish to talk, keep it in debug print however
-		print("Possible error: NPC dialogue file not found -> ", self.netname, "\n");
-		return;
-	}
-	fclose(v);
 
 	DeleteInventory(self); // clear any inventory first, fixes gold doubling
 
@@ -163,7 +163,8 @@ void() npc_use =
 	{
 		// Grab NPC inventory from file
 		string what = "";
-		readfile = strcat("npc/", self.netname, "_i.txt");
+		string line = "";
+		string readfile = strcat("npc/", self.netname, "_i.txt");
 		float b = fopen(readfile, FILE_READ);
 		if (b >= 0)
 		{
@@ -198,24 +199,8 @@ void() npc_use =
 
 	Quest_Event(self.user, "talk", strtolower(self.netname)); // quest update tracking
 
-	// Open player NPC window, load available quests
-	// *warning* Load Quest before sending packet!
-	NPC_LoadQuestOptions(self.user, self);
-	
+	// Open player NPC window
 	NPC_SendDialogue(self, self.user);
-	/*
-	msg_entity = self.user;
-	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
-	WriteByte(MSG_MULTICAST, CSQC_NPCINFO); // custom opcode for "open npc dialog"
-	WriteString(MSG_MULTICAST, self.netname);
-	WriteString(MSG_MULTICAST, self.npc_dialog);
-	WriteString(MSG_MULTICAST, self.user.npc_available_quest);
-	WriteString(MSG_MULTICAST, self.user.npc_available_name);
-
-	WriteString(MSG_MULTICAST, self.user.npc_turnin_quest);
-	WriteString(MSG_MULTICAST, self.user.npc_turnin_name);
-	multicast(self.origin, MULTICAST_ONE_R);
-	*/
 
 	self.user.menu = MENU_DIALOGUE;
 	stuffcmd (self.user, sprintf("play %s\n", "menu/menu_open.wav"));
@@ -244,14 +229,19 @@ void(entity npc) NPC_LoadQuests =
 {
 	float f;
 	string line;
-
 	string filename;
 
+	// Prevent duplicates if called again
+	npc.npc_quests = "";
+	npc.npc_turnins = "";
+
 	filename = strcat("npc/", npc.netname, "_q.txt");
+
 	f = fopen(filename, FILE_READ);
 
 	if (f < 0)
 		return;
+
 
 	while ((line = fgets(f)))
 	{
@@ -260,14 +250,21 @@ void(entity npc) NPC_LoadQuests =
 		if (line == "")
 			continue;
 
+
 		if (substring(line, 0, 6) == "offer=")
 		{
-			npc.npc_quests = strcat(npc.npc_quests, substring(line, 6, strlen(line)), "\n");
+			npc.npc_quests =
+				strcat(npc.npc_quests,
+				substring(line, 6, strlen(line)),
+				"\n");
 		}
 
 		else if (substring(line, 0, 7) == "turnin=")
 		{
-			npc.npc_turnins = strcat(npc.npc_turnins, substring(line, 7, strlen(line)), "\n");
+			npc.npc_turnins =
+				strcat(npc.npc_turnins,
+				substring(line, 7, strlen(line)),
+				"\n");
 		}
 	}
 
@@ -360,18 +357,24 @@ void() set_npc =
 
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_STEP;
+
 	if (!self.max_health)
 		self.health = 1;
 	else
 		self.health = self.max_health;
+
 	self.takedamage = DAMAGE_NO;
 	self.classname = "npc";
+
+	// Load NPC data once
+	NPC_LoadDialogue(self);
 	NPC_LoadQuests(self);
+
 	self.th_use = npc_use;
 	self.view_ofs = '0 0 48';
 
 	setmodel(self, self.model);
-	setsize(self, [-16, -16, 0], [16, 16, 56]);
+	setsize(self, [-16,-16,0], [16,16,56]);
 
 	droptofloor();
 
