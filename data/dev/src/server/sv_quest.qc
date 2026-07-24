@@ -590,8 +590,6 @@ void(entity player, string id) Quest_Accept =
 
 	Quest_SavePlayer(player);
 	Quest_SendLog(player);
-
-	centerprint(player, sprintf("Quest Accepted\n\n%s", q.quest_name));
 };
 
 //

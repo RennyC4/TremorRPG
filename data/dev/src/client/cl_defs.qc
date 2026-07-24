@@ -2253,6 +2253,16 @@ const float MENU_BANKING = 7; // user banking screen
 const float MENU_QUESTLOG = 8; // user quest log screen
 
 //
+// Quest notification
+//
+
+string quest_notify_image;
+float quest_notify_time;
+string quest_notify_name;
+float quest_notify_time;
+string quest_notify_image;
+
+//
 // Grab stats from SSQC 
 //
 

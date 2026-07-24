@@ -929,6 +929,8 @@ void() Player_Screen =
 		else
 			setcursormode(TRUE,"gfx/xhair", [5, 5], cvar("vid_conautoscale")); // enable mouse by user
 	}
+
+	Draw_QuestNotification();
 };
 
 float SERVER_FRAME_INTERVAL = 0.05;

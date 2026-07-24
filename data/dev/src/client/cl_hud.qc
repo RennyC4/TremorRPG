@@ -2,7 +2,10 @@
 // Player HUD
 //
 
+// Protos
 float(vector startpos, float max_width, string text) UI_DrawWrappedText;
+void(vector pos) Draw_3DPDoll;
+string(string s) StripColors;
 
 //
 // Quest Log Data
@@ -38,9 +41,6 @@ struct questinfo
 };
 
 struct questinfo quest_log[MAX_QUESTS];
-
-void(vector pos) Draw_3DPDoll;
-string(string s) StripColors;
 
 float() UI_Scale =
 {
@@ -1815,4 +1815,41 @@ void() User_QuestLogScreen =
     my_button("close", [0,0], [UI(15),UI(15)], "X", "") ? sendevent("ShutDownMenus",""): 0;
 
     sui_pop_frame();
+};
+
+//
+// Quest Notification
+//
+
+void() Draw_QuestNotification =
+{
+	if (quest_notify_time <= time)
+		return;
+
+	float alpha;
+
+	if (quest_notify_time - time < 1)
+		alpha = quest_notify_time - time;
+	else
+		alpha = 1;
+
+	vector size;
+	size_x = UI(300);
+	size_y = UI(200);
+
+	vector pos;
+	pos_x = (g_width - size_x) * 0.5;
+	pos_y = UI(75);
+
+	drawpic(pos, quest_notify_image, size, '1 1 1', alpha, 0);
+
+	//
+	// Quest name
+	//
+
+	vector textpos;
+
+	textpos_x = g_width * 0.435;
+	textpos_y = pos_y + size_y + UI(8);
+	drawstring(textpos, strcat("Accepted ^3", quest_notify_name), '16 16 0', '1 1 1', alpha, 0 );
 };

@@ -650,6 +650,7 @@ const float CSQC_WIPESPARM = 10;
 const float CSQC_SAY = 11;
 const float CSQC_SAY_NEARBY = 12;
 const float CSQC_QUESTINFO = 13;
+const float CSQC_QUEST_NOTIFY = 14;
 
 //
 // Quest log - client side
@@ -815,6 +816,13 @@ void() CSQC_Parse_Event =
 			// debugging
 			//print(sprintf("^3Quest:^7 %s | %s | %g/%g | Status %g\n", quest_log[h].id, quest_log[h].name, quest_log[h].progress, quest_log[h].needed, quest_log[h].status));
 		}
+	}
+	if (event == CSQC_QUEST_NOTIFY)
+	{
+		quest_notify_image = readstring();
+		quest_notify_name = readstring();
+
+		quest_notify_time = time + 6;
 	}
 };
 

@@ -135,7 +135,21 @@ void(entity player, entity npc) NPC_LoadQuestOptions =
 
 void(string id) CSEv_QuestAccept_s =
 {
+	entity q;
+
 	Quest_Accept(self, id);
+	q = Quest_Find(id);
+
+	msg_entity = self;
+	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
+	WriteByte(MSG_ONE, CSQC_QUEST_NOTIFY);
+	WriteString(MSG_ONE, "progs/q_acpt.png"); // TODO: Optimize this, strings = expensive
+
+	if (q)
+		WriteString(MSG_ONE, q.quest_name);
+	else
+		WriteString(MSG_ONE, "");
+
 	if (self.npc_last_talk)
 		NPC_SendDialogue(self.npc_last_talk, self);
 };
