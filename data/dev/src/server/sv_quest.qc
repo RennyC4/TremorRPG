@@ -131,6 +131,9 @@ void(entity player) Quest_SendLog =
 
 	for (i = 0; i < player.player_quest_count; i++)
 	{
+		if (player.player_quest_status[i] == QUEST_AVAILABLE)
+			continue;
+
 		if (player.player_quest_status[i] == QUEST_TURNEDIN)
 			continue;
 
@@ -164,6 +167,9 @@ void(entity player) Quest_SendLog =
 		//
 		// Don't send completed history
 		//
+
+		if (player.player_quest_status[i] == QUEST_AVAILABLE)
+			continue;
 
 		if (player.player_quest_status[i] == QUEST_TURNEDIN)
 			continue;
@@ -473,11 +479,28 @@ float(entity player, string id) Quest_CanOffer =
 	// Already knows about it?
 	//
 
-	if (Quest_PlayerHas(player, id) >= 0)
+	float slot;
+
+	slot = Quest_PlayerHas(player, id);
+
+	if (slot >= 0)
+	{
+		//
+		// Already unlocked but not accepted yet?
+		//
+
+		if (player.player_quest_status[slot] == QUEST_AVAILABLE)
+			return TRUE;
+
+		//
+		// Already active, complete, or turned in.
+		//
+
 		return FALSE;
+	}
 
 	return TRUE;
-};
+};	
 
 //
 // Accept quest

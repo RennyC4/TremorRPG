@@ -1675,23 +1675,23 @@ void() User_QuestLogScreen =
     {
         string color;
 
-        switch(quest_log[i].status)
-        {
-            case QUEST_ACTIVE:
-                color = "^2";
-                break;
+		switch(quest_log[i].status)
+		{
+			case QUEST_ACTIVE:
+				color = "^3"; // Yellow - in progress
+				break;
 
-            case QUEST_COMPLETE:
-                color = "^3";
-                break;
+			case QUEST_COMPLETE:
+				color = "^2"; // Green - completed
+				break;
 
-            case QUEST_AVAILABLE:
-                color = "^5";
-                break;
+			case QUEST_AVAILABLE:
+				color = "^5"; // Blue (or keep your current choice)
+				break;
 
-            default:
-                color = "^7";
-        }
+			default:
+				color = "^7"; // White
+		}
 
         //
         // Highlight selected quest
@@ -1750,12 +1750,12 @@ void() User_QuestLogScreen =
         {
             case QUEST_ACTIVE:
                 status = "In Progress";
-                status_color = "^2";
+                status_color = "^3";
                 break;
 
             case QUEST_COMPLETE:
                 status = "Complete";
-                status_color = "^3";
+                status_color = "^2";
                 break;
 
             case QUEST_AVAILABLE:
@@ -1783,7 +1783,7 @@ void() User_QuestLogScreen =
         //
 
 		float desc_lines;
-		desc_lines = UI_DrawWrappedText(text, UI(35), q.description);
+		desc_lines = UI_DrawWrappedText(text, UI(22), q.description);
 		text_y += desc_lines * UI(10);
 		text_y += UI(55);
 
@@ -1791,13 +1791,13 @@ void() User_QuestLogScreen =
         // Rewards
         //
 
-        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), "^3Rewards", MENU_TEXT_1, 1, 0);
+        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), "^6Rewards", MENU_TEXT_1, 1, 0);
         text_y += UI(14);
 
-        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7EXP: ^5",ftos(q.reward_exp)), MENU_TEXT_1, 1, 0);
+        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7EXP: ^2",ftos(q.reward_exp)), MENU_TEXT_1, 1, 0);
         text_y += UI(12);
 
-        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Gold: ^8",ftos(q.reward_gold)), MENU_TEXT_1, 1, 0);
+        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Gold: ^3",ftos(q.reward_gold)), MENU_TEXT_1, 1, 0);
         if (q.reward_item != "")
         {
             text_y += UI(12);

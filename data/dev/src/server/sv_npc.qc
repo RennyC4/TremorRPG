@@ -15,6 +15,31 @@ string(entity npc, entity player) NPC_HasTurnInQuest;
 void(entity player, entity npc) NPC_LoadQuestOptions;
 
 //
+// Helper function
+//
+
+void(entity npc, entity player) NPC_SendDialogue =
+{
+    NPC_LoadQuestOptions(player, npc);
+
+    msg_entity = player;
+
+    WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+    WriteByte(MSG_MULTICAST, CSQC_NPCINFO);
+
+    WriteString(MSG_MULTICAST, npc.netname);
+    WriteString(MSG_MULTICAST, npc.npc_dialog);
+
+    WriteString(MSG_MULTICAST, player.npc_available_quest);
+    WriteString(MSG_MULTICAST, player.npc_available_name);
+
+    WriteString(MSG_MULTICAST, player.npc_turnin_quest);
+    WriteString(MSG_MULTICAST, player.npc_turnin_name);
+
+    multicast(npc.origin, MULTICAST_ONE_R);
+};
+
+//
 // NPC_CommitState - Networking, mostly used for monsters / npcs
 //
 
@@ -89,14 +114,18 @@ void(entity player, entity npc) NPC_LoadQuestOptions =
 
 void(string id) CSEv_QuestAccept_s =
 {
-	self.menu = MENU_OFF;
-	Quest_Accept(self, id);
+    Quest_Accept(self, id);
+
+    NPC_LoadQuestOptions(self, self.enemy);
+    NPC_SendDialogue(self.enemy, self);    // we'll make this helper
 };
 
 void(string id) CSEv_QuestTurnIn_s =
 {
-	self.menu = MENU_OFF;
-	Quest_TurnIn(self, id);
+    Quest_TurnIn(self, id);
+
+    NPC_LoadQuestOptions(self, self.enemy);
+    NPC_SendDialogue(self.enemy, self);
 };
 
 void() npc_use =
@@ -173,6 +202,8 @@ void() npc_use =
 	// *warning* Load Quest before sending packet!
 	NPC_LoadQuestOptions(self.user, self);
 	
+	NPC_SendDialogue(self, self.user);
+	/*
 	msg_entity = self.user;
 	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
 	WriteByte(MSG_MULTICAST, CSQC_NPCINFO); // custom opcode for "open npc dialog"
@@ -184,6 +215,7 @@ void() npc_use =
 	WriteString(MSG_MULTICAST, self.user.npc_turnin_quest);
 	WriteString(MSG_MULTICAST, self.user.npc_turnin_name);
 	multicast(self.origin, MULTICAST_ONE_R);
+	*/
 
 	self.user.menu = MENU_DIALOGUE;
 	stuffcmd (self.user, sprintf("play %s\n", "menu/menu_open.wav"));
