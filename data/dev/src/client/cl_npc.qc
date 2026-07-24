@@ -230,7 +230,7 @@ void() User_NPCDialogue =
 
 		if (npc_turnin_quest != "")
 		{
-			if (my_button("npc_turnin_quest", quest_pos, [UI(150), UI(22.5)], strcat("^3? ", npc_turnin_name), ""))
+			if (my_button("npc_turnin_quest", quest_pos, [UI(150), UI(22.5)], strcat("^3?^7 ", npc_turnin_name), ""))
 			{
 				sendevent("QuestTurnIn", "s", npc_turnin_quest);
 			}
