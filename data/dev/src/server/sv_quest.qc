@@ -772,13 +772,12 @@ void(entity player, string id) Quest_TurnIn =
 };
 
 //
-// Quest event handler
+// Quest Event Handler
 //
+// Called when a gameplay event happens
 // Examples:
-//
-// Quest_Event(player, "kill", "bandit");
-// Quest_Event(player, "fish", "trout");
-// Quest_Event(player, "mine", "iron");
+//   Quest_Event(player, "kill", "bandit");
+//   Quest_Event(player, "collect", "herb");
 //
 
 void(entity player, string type, string target) Quest_Event =
@@ -787,9 +786,19 @@ void(entity player, string type, string target) Quest_Event =
 
 	float i;
 	float progress;
+	float changed;
+
+	if (!player)
+		return;
 
 	if (player.classname != "player")
 		return;
+
+	changed = FALSE;
+
+	//
+	// Check active quests
+	//
 
 	for (i = 0; i < player.player_quest_count; i++)
 	{
@@ -800,10 +809,16 @@ void(entity player, string type, string target) Quest_Event =
 		if (player.player_quest_status[i] != QUEST_ACTIVE)
 			continue;
 
+
+		//
+		// Get quest definition
+		//
+
 		quest = Quest_PlayerDefinition(player, i);
 
 		if (!quest)
 			continue;
+
 
 		//
 		// Does event match quest?
@@ -811,38 +826,63 @@ void(entity player, string type, string target) Quest_Event =
 
 		if (quest.quest_type != type)
 			continue;
+
 		if (quest.quest_target != target)
 			continue;
+
 
 		//
 		// Increase progress
 		//
 
 		progress = player.player_quest_progress[i];
+
 		progress = progress + 1;
+
+
+		//
+		// Clamp progress
+		//
 
 		if (progress > quest.quest_count)
 			progress = quest.quest_count;
 
+
 		player.player_quest_progress[i] = progress;
+		changed = TRUE;
+
 
 		//
-		// Completed?
+		// Quest complete?
 		//
 
 		if (progress >= quest.quest_count)
 		{
 			player.player_quest_status[i] = QUEST_COMPLETE;
-			centerprint(player, sprintf("Quest Complete\n\n%s", quest.quest_name));
+
+
+			//
+			// Completion popup
+			//
+
+			msg_entity = player;
+
+			WriteByte(MSG_ONE, SVC_CGAMEPACKET);
+			WriteByte(MSG_ONE, CSQC_QUEST_COMPLETE);
+			WriteString(MSG_ONE, quest.quest_name);
 		}
 	}
 
+
 	//
-	// Save changes
+	// Update client and save
 	//
 
-	Quest_SavePlayer(player);
-	Quest_SendLog(player);
+	if (changed)
+	{
+		Quest_SavePlayer(player);
+		Quest_SendLog(player);
+	}
 };
 
 //

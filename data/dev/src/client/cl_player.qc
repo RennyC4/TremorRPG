@@ -930,7 +930,8 @@ void() Player_Screen =
 			setcursormode(TRUE,"gfx/xhair", [5, 5], cvar("vid_conautoscale")); // enable mouse by user
 	}
 
-	Draw_QuestNotification();
+	Draw_QuestAccepted();
+	Draw_QuestComplete();
 };
 
 float SERVER_FRAME_INTERVAL = 0.05;

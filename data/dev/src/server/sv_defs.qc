@@ -1723,7 +1723,8 @@ const float CSQC_WIPESPARM = 10;
 const float CSQC_SAY = 11;
 const float CSQC_SAY_NEARBY = 12;
 const float CSQC_QUESTINFO = 13;
-const float CSQC_QUEST_NOTIFY = 14;
+const float CSQC_QUEST_NOTIFY = 14; // accept quest
+const float CSQC_QUEST_COMPLETE = 15; // finish quest
 
 // Function defs
 .void()		th_die;

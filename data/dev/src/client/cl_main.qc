@@ -650,7 +650,8 @@ const float CSQC_WIPESPARM = 10;
 const float CSQC_SAY = 11;
 const float CSQC_SAY_NEARBY = 12;
 const float CSQC_QUESTINFO = 13;
-const float CSQC_QUEST_NOTIFY = 14;
+const float CSQC_QUEST_NOTIFY = 14; // accept quest
+const float CSQC_QUEST_COMPLETE = 15; // finish quest
 
 //
 // Quest log - client side
@@ -823,6 +824,14 @@ void() CSQC_Parse_Event =
 		quest_notify_name = readstring();
 
 		quest_notify_time = time + 6;
+	}
+	if (event == CSQC_QUEST_COMPLETE)
+	{
+		quest_complete_name = readstring();
+
+		quest_complete_time = time + 6;
+		quest_complete_alpha = 1;
+		localsound("q_cmplt.wav");
 	}
 };
 
