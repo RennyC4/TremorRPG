@@ -1879,7 +1879,7 @@ void() Draw_QuestComplete =
 	pos_x = (g_width - size_x) * 0.5;
 	pos_y = UI(75);
 
-	drawpic(pos, quest_notify_image, size, '1 1 1', alpha, 0);
+	drawpic(pos, "progs/q_cmplt.png", size, '1 1 1', alpha, 0);
 
 	//
 	// Quest name

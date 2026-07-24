@@ -2260,7 +2260,6 @@ string quest_notify_image;
 float quest_notify_time;
 string quest_notify_name;
 float quest_notify_time;
-string quest_notify_image;
 
 string quest_complete_name;
 string quest_complete_text;
