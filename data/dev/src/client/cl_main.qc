@@ -780,7 +780,7 @@ void() CSQC_Parse_Event =
 			quest_log[h].id = "";
 			quest_log[h].name = "";
 			quest_log[h].description = "";
-			quest_log[i].objective = "";
+			quest_log[h].objective = "";
 
 			quest_log[h].status = QUEST_LOCKED;
 
@@ -803,7 +803,7 @@ void() CSQC_Parse_Event =
 			quest_log[h].id = readstring();
 			quest_log[h].name = readstring();
 			quest_log[h].description = readstring();
-			quest_log[i].objective = readstring();
+			quest_log[h].objective = readstring();
 
 			quest_log[h].status = readbyte();
 

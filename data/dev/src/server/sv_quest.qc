@@ -27,6 +27,8 @@ entity quest_list;
 .string quest_objective;
 
 .string quest_zone;
+.string quest_giver;
+.string quest_turnin;
 
 .string quest_type;
 .string quest_target;
@@ -187,7 +189,11 @@ void(entity player) Quest_SendLog =
 		WriteString(MSG_MULTICAST, q.quest_id);
 		WriteString(MSG_MULTICAST, q.quest_name);
 		WriteString(MSG_MULTICAST, q.quest_description);
-		WriteString(MSG_MULTICAST, q.quest_objective);
+
+		if (player.player_quest_status[i] == QUEST_COMPLETE)
+			WriteString(MSG_MULTICAST, sprintf("Return to %s", q.quest_turnin));
+		else
+			WriteString(MSG_MULTICAST, q.quest_objective);
 
 		//
 		// Status / progress
@@ -330,6 +336,12 @@ void(entity q, string filename) Quest_Load =
 	
 		else if (key == "name")
 			q.quest_name = value;
+
+		else if (key == "giver")
+			q.quest_giver = value;
+
+		else if (key == "turnin")
+			q.quest_turnin = value;
 
 		else if (key == "description")
 			q.quest_description = value;

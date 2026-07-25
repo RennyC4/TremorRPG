@@ -4,6 +4,10 @@ name=Bandit Leader
 objective=Kill the Bandit Leader
 
 description=Find and defeat the Bandit Leader threatening Elderfen
+
+giver=Sarzac
+turnin=Sarzac
+
 zone=Elderfen
 
 type=kill

@@ -203,7 +203,11 @@ void() User_QuestLogScreen =
         // Objective
         //
 
-        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Progress: ", ftos(q.progress), " / ", ftos(q.needed)), MENU_TEXT_1, 1, 0);
+        if (q.status == QUEST_COMPLETE)
+			sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Objective: ", "^2", q.objective), MENU_TEXT_1, 1, 0);
+		else
+			sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Progress: ", ftos(q.progress), " / ", ftos(q.needed)), MENU_TEXT_1, 1, 0);
+
         text_y += UI(18);
 
         //
@@ -457,7 +461,6 @@ void() Draw_QuestTracker =
 
         color = "^3";
 
-        //progress = strcat(color, ftos(rint(quest_log[i].progress)), " / ", ftos(rint(needed)));
 		progress = strcat(color, quest_log[i].objective, " ", ftos(rint(quest_log[i].progress)), " / ", ftos(rint(needed)));
 
         drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], progress, MENU_TEXT_SMALL, '1 1 1', alpha, 0);
@@ -486,7 +489,7 @@ void() Draw_QuestTracker =
 
         y += UI(16);
 
-        drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], "^2Complete", MENU_TEXT_SMALL, '1 1 1', alpha, 0);
+        drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], strcat("^2", quest_log[i].objective), MENU_TEXT_SMALL, '1 1 1', alpha, 0);
 
         y += UI(22);
     }
