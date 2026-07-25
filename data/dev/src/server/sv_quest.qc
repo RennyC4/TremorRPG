@@ -24,6 +24,7 @@ entity quest_list;
 
 .string quest_name;
 .string quest_description;
+.string quest_objective;
 
 .string quest_zone;
 
@@ -186,6 +187,7 @@ void(entity player) Quest_SendLog =
 		WriteString(MSG_MULTICAST, q.quest_id);
 		WriteString(MSG_MULTICAST, q.quest_name);
 		WriteString(MSG_MULTICAST, q.quest_description);
+		WriteString(MSG_MULTICAST, q.quest_objective);
 
 		//
 		// Status / progress
@@ -331,6 +333,9 @@ void(entity q, string filename) Quest_Load =
 
 		else if (key == "description")
 			q.quest_description = value;
+
+		else if (key == "objective")
+			q.quest_objective = value;
 
 		else if (key == "zone")
 			q.quest_zone = value;

@@ -1,5 +1,8 @@
 id=bandit_hunt
 name=Bandit Problem
+
+objective=Kill Bandits
+
 description=I've been asked by Sarzac to kill 10 bandits roaming the wilderness in order to set an example to stay back from Elderfen
 zone=elderfen
 

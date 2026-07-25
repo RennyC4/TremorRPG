@@ -1,5 +1,8 @@
 id=bandit_leader
 name=Bandit Leader
+
+objective=Kill the Bandit Leader
+
 description=Find and defeat the Bandit Leader threatening Elderfen
 zone=Elderfen
 

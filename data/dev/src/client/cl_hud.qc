@@ -26,6 +26,7 @@ struct questinfo
 {
 	string id;
 	string name;
+	string objective;
 	string description;
 
 	float status;

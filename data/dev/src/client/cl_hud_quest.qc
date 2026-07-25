@@ -457,7 +457,8 @@ void() Draw_QuestTracker =
 
         color = "^3";
 
-        progress = strcat(color, ftos(rint(quest_log[i].progress)), " / ", ftos(rint(needed)));
+        //progress = strcat(color, ftos(rint(quest_log[i].progress)), " / ", ftos(rint(needed)));
+		progress = strcat(color, quest_log[i].objective, " ", ftos(rint(quest_log[i].progress)), " / ", ftos(rint(needed)));
 
         drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], progress, MENU_TEXT_SMALL, '1 1 1', alpha, 0);
 
