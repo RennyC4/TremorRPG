@@ -1,4 +1,37 @@
 //
+// Estimate string width for drawstring alignment
+//
+
+float(string text, float size) UI_StringWidth =
+{
+    float i;
+    float width;
+
+    width = 0;
+
+    for (i = 0; i < strlen(text); i++)
+    {
+        //
+        // Skip Quake color codes
+        //
+
+        if (substring(text, i, 1) == "^")
+        {
+            i++;
+            continue;
+        }
+
+        //
+        // Quake console font is roughly 8 pixels per character
+        //
+
+        width += size * 0.5;
+    }
+
+    return width;
+};
+
+//
 // Quest Log Screen
 //
 
@@ -239,14 +272,21 @@ void() Draw_QuestAccepted =
 	drawpic(pos, quest_notify_image, size, '1 1 1', alpha, 0);
 
 	//
-	// Quest name
+	// Notification text
 	//
 
+	string text;
+	float width;
 	vector textpos;
 
-	textpos_x = g_width * 0.435;
+	text = strcat("Accepted ^3", quest_notify_name);
+
+	width = UI_StringWidth(text, UI(16));
+
+	textpos_x = pos_x + (size_x - width) * 0.5;
 	textpos_y = pos_y + size_y + UI(8);
-	drawstring(textpos, strcat("Accepted ^3", quest_notify_name), '16 16 0', '1 1 1', alpha, 0);
+
+	drawstring(textpos, text, '16 16 0', '1 1 1', alpha, 0);
 };
 
 //
@@ -276,15 +316,21 @@ void() Draw_QuestComplete =
 	drawpic(pos, "progs/q_cmplt.png", size, '1 1 1', alpha, 0);
 
 	//
-	// Quest name
+	// Notification text
 	//
 
+	string text;
+	float width;
 	vector textpos;
 
-	textpos_x = g_width * 0.435;
+	text = strcat("Completed ^3", quest_complete_name);
+
+	width = UI_StringWidth(text, UI(16));
+
+	textpos_x = pos_x + (size_x - width) * 0.5;
 	textpos_y = pos_y + size_y + UI(8);
 
-	drawstring(textpos, strcat("Completed ^2", quest_complete_name), '16 16 0', '1 1 1', alpha, 0);
+	drawstring(textpos, text, '16 16 0', '1 1 1', alpha, 0);
 };
 
 //

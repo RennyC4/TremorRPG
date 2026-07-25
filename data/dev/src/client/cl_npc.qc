@@ -228,7 +228,6 @@ void() User_NPCDialogue =
 			quest_pos_y += UI(25);
 		}
 
-
 		if (npc_turnin_quest != "")
 		{
 			if (my_button("npc_turnin_quest", quest_pos, [UI(150), UI(22.5)], strcat("^3?^7 ", npc_turnin_name), ""))

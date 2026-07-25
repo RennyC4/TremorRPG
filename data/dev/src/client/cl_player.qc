@@ -778,7 +778,11 @@ void() Player_Screen =
 			Draw_ToolTip(); // tool tips draw over everything else
 		}
 		if (player_menu == MENU_DIALOGUE)
+		{
+			QuestTracker_Update(); // must be called before Draw_QuestTracker
+			Draw_QuestTracker();
 			User_NPCDialogue();
+		}
 		if (player_menu == MENU_BUYSELL)
 		{
 			User_NPCBuySell();

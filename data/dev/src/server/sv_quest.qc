@@ -717,6 +717,13 @@ void(entity player, string id) Quest_TurnIn =
 	}
 
 	//
+	// Update event box before quest rewards are given
+	//
+
+	string eventlog_print = strcat("^3", q.quest_name, " completed\n");
+	stuffcmd(player, sprintf("conecho event %s\n", eventlog_print));
+
+	//
 	// Give experience
 	//
 
@@ -738,6 +745,7 @@ void(entity player, string id) Quest_TurnIn =
 	{
 		if (q.reward_item_count > 0)
 		{
+			stuffcmd (player, sprintf("play %s\n", "item/get.wav")); // sound
 			AddToInventory(player, q.reward_item, q.reward_item_count);
 			string eventlog_print = strcat("Acquired ", ftos(q.reward_item_count), " ", q.reward_item, "\n");
 			stuffcmd(player, sprintf("conecho event %s\n", eventlog_print));
@@ -765,10 +773,14 @@ void(entity player, string id) Quest_TurnIn =
 	Quest_SendLog(player);
 
 	//
-	// Feedback
+	// Completion popup
 	//
 
-	centerprint(player, sprintf("Quest Complete\n\n%s", q.quest_name));
+	msg_entity = player;
+
+	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
+	WriteByte(MSG_ONE, CSQC_QUEST_COMPLETE);
+	WriteString(MSG_ONE, q.quest_name);
 };
 
 //
@@ -859,17 +871,6 @@ void(entity player, string type, string target) Quest_Event =
 		if (progress >= quest.quest_count)
 		{
 			player.player_quest_status[i] = QUEST_COMPLETE;
-
-
-			//
-			// Completion popup
-			//
-
-			msg_entity = player;
-
-			WriteByte(MSG_ONE, SVC_CGAMEPACKET);
-			WriteByte(MSG_ONE, CSQC_QUEST_COMPLETE);
-			WriteString(MSG_ONE, quest.quest_name);
 		}
 	}
 
