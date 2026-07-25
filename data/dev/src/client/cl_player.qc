@@ -814,6 +814,8 @@ void() Player_Screen =
 		Draw_NameTag_ChatBubble();
 		if (!player_idle && health > 0)
 		{
+			QuestTracker_Update(); // must be called before Draw_QuestTracker
+			Draw_QuestTracker();
 			Draw_EventLog();
 			Draw_ChatLog();
 			Draw_Health();
