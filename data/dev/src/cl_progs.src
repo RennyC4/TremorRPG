@@ -23,6 +23,7 @@ client/cl_sui.qc
 client/cl_lockon.qc
 client/cl_hud.qc
 client/cl_hud_doll.qc
+client/cl_hud_quest.qc
 client/cl_login.qc
 client/cl_npc.qc
 client/cl_music.qc
