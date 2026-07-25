@@ -444,9 +444,9 @@ void() Draw_QuestTracker =
 	string collapse_text;
 
 	if (quest_tracker_collapsed)
-		collapse_text = "[ + ]";
+		collapse_text = " + ";
 	else
-		collapse_text = "[ - ]";
+		collapse_text = " - ";
 
 	my_button("quest_tracker_collapse", pos + [size_x - UI(28), UI(4)], [UI(20), UI(12)], collapse_text, "") ? quest_tracker_collapsed = !quest_tracker_collapsed : 0;
 
