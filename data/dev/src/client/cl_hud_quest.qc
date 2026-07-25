@@ -343,6 +343,7 @@ void() Draw_QuestComplete =
 
 float quest_tracker_alpha[64];
 float quest_tracker_target[64];
+float quest_tracker_collapsed;
 
 void() QuestTracker_Update =
 {
@@ -423,7 +424,11 @@ void() Draw_QuestTracker =
     //
 
     size_x = quest_tracker_width;
-    size_y = UI(30) + (visible * UI(38));
+
+	if (quest_tracker_collapsed)
+		size_y = UI(20);
+	else
+		size_y = UI(30) + (visible * UI(38));
 
     pos_x = g_width - size_x - UI(8);
     pos_y = UI(180);
@@ -432,7 +437,23 @@ void() Draw_QuestTracker =
 
     drawstring(pos + [quest_tracker_padding, UI(8), 0], "^3Quests", MENU_TEXT_SMALL, '1 1 1', 1, 0);
 
+	//
+	// Collapse button
+	//
+
+	string collapse_text;
+
+	if (quest_tracker_collapsed)
+		collapse_text = "[ + ]";
+	else
+		collapse_text = "[ - ]";
+
+	my_button("quest_tracker_collapse", pos + [size_x - UI(28), UI(4)], [UI(20), UI(12)], collapse_text, "") ? quest_tracker_collapsed = !quest_tracker_collapsed : 0;
+
     y = UI(28);
+
+	if (quest_tracker_collapsed)
+		return;
 
     //
     // PASS 1
