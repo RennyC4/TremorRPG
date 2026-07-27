@@ -797,8 +797,12 @@ void() Player_Screen =
 			Draw_EventLog();
 			User_QuestLogScreen();
 			Draw_HUDIcons();
-			Draw_ToolTip(); // tool tips draw over everything else
 		}		
+		if (player_menu == MENU_QUESTPREVIEW)
+		{
+			User_NPCQuestPreview();
+		}		
+
 	}
 	else // Regular gameplay
 	{

@@ -94,6 +94,136 @@ float(vector startpos, float max_width, string text) UI_DrawWrappedText =
 	return lines;
 };
 
+//
+// Quest Preview Window
+//
+
+void() User_NPCQuestPreview =
+{
+	vector scrsz = [g_width, g_height];
+	drawfill('0 0', scrsz, '0 0 0', 0.65);
+
+	//
+	// FRAME
+	//
+
+	vector pos = [UI(0), UI(0)];
+	vector size = [UI(450), UI(350)];
+
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	sui_push_frame(pos, size);
+
+	sui_fill([0, 0], size, MENU_BG, 0.85, 0);
+	sui_border_box([0, 0], size, UI(2), MENU_BORDER, 0.3, 0);
+
+	//
+	// HEADER
+	//
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+	sui_text([UI(5), UI(5)], MENU_TEXT_MEDIUM, strcat("^2Quest: ^7", quest_preview_name), MENU_TEXT_1, 1, 0);
+
+	//
+	// QUEST DESCRIPTION PANEL
+	//
+
+	vector panel_pos = [UI(5), UI(40)];
+	vector panel_size = [size_x - UI(10), UI(145)];
+
+	sui_border_box(panel_pos, panel_size, UI(2), MENU_BORDER, 0.3, 0);
+	sui_fill(panel_pos, panel_size, MENU_BG_DARK, 0.75, 0);
+
+	//
+	// DESCRIPTION TEXT
+	//
+
+	sui_push_frame(panel_pos, panel_size);
+	sui_clip_to_frame();
+
+	vector text_pos = [UI(5), UI(5)];
+	float max_width = 38 * UI_Scale();
+
+	float used = UI_DrawWrappedText(text_pos, max_width, quest_preview_description);
+
+	text_pos_y += used * UI(10);
+
+	//
+	// OBJECTIVE
+	//
+
+	text_pos_y += UI(8);
+
+	UI_DrawWrappedText(text_pos, max_width, strcat("^3Objective:^7 ", quest_preview_objective));
+
+	sui_reset_clip();
+	sui_pop_frame();
+
+	//
+	// REWARDS PANEL
+	//
+
+	vector reward_pos = [UI(5), UI(195)];
+	vector reward_size = [size_x - UI(10), UI(70)];
+
+	sui_border_box(reward_pos, reward_size, UI(2), MENU_BORDER, 0.3, 0);
+	sui_fill(reward_pos, reward_size, MENU_BG_DARK, 0.75, 0);
+
+	sui_text([UI(10), UI(200)], MENU_TEXT_SMALL, "^5Rewards", MENU_TEXT_1, 1, 0);
+
+	//
+	// REWARD TEXT
+	//
+
+	vector reward_text_pos = [UI(10), UI(220)];
+	sui_text(reward_text_pos, MENU_TEXT_SMALL, strcat("^7Experience: ^2", ftos(quest_preview_reward_exp)), MENU_TEXT_1, 1, 0);
+
+	reward_text_pos_y += UI(12);
+
+	sui_text(reward_text_pos, MENU_TEXT_SMALL, strcat("^7Gold: ^3", ftos(quest_preview_reward_gold)), MENU_TEXT_1, 1, 0);
+
+	if (quest_preview_reward_item != "")
+	{
+		reward_text_pos_y += UI(12);
+
+		string item_text;
+		item_text = strcat("^7Item: ^5", quest_preview_reward_item);
+
+		if (quest_preview_reward_item_count > 1)
+			item_text = strcat(item_text, " x", ftos(quest_preview_reward_item_count));
+
+		sui_text(reward_text_pos, MENU_TEXT_SMALL, item_text, MENU_TEXT_1, 1, 0);
+	}
+
+	//
+	// LEVEL REQUIREMENT
+	//
+
+	sui_text([UI(300), UI(200)], MENU_TEXT_SMALL, strcat("^7Level: ^3", ftos(quest_preview_level)), MENU_TEXT_1, 1, 0);
+
+	//
+	// BUTTONS
+	//
+
+	vector btn_size = [UI(90), UI(25)];
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
+
+	if (my_button("quest_accept", [UI(5), UI(-5)], btn_size, "Accept", ""))
+	{
+		sendevent("QuestAccept", "s", quest_preview_id);
+		localsound("q_acpt.wav");
+	}
+
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
+
+	if (my_button("quest_decline", [UI(-5), UI(-5)], btn_size, "Decline", ""))
+	{
+		sendevent("QuestPreviewCancel", "");
+		localsound("menu/menu_next.wav");
+	}
+
+	sui_pop_frame();
+};
+
 void() User_NPCDialogue =
 {
 	vector scrsz = [g_width, g_height];
@@ -219,10 +349,11 @@ void() User_NPCDialogue =
 
 		if (npc_available_quest != "")
 		{
-			if (my_button("npc_accept_quest", quest_pos, [UI(150), UI(22.5)], strcat("^2! ^7", npc_available_name), ""))
+			
+			if (my_button("npc_preview_quest", quest_pos, [UI(150), UI(22.5)], strcat("^2! ^7", npc_available_name), ""))
 			{
-				sendevent("QuestAccept", "s", npc_available_quest);
-				localsound ("q_acpt.wav");
+				localsound("menu/menu_next.wav");
+				sendevent("QuestPreview", "s", npc_available_quest);
 			}
 
 			quest_pos_y += UI(25);
@@ -231,9 +362,7 @@ void() User_NPCDialogue =
 		if (npc_turnin_quest != "")
 		{
 			if (my_button("npc_turnin_quest", quest_pos, [UI(150), UI(22.5)], strcat("^3?^7 ", npc_turnin_name), ""))
-			{
 				sendevent("QuestTurnIn", "s", npc_turnin_quest);
-			}
 		}
 	}
 

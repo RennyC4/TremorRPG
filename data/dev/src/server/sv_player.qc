@@ -242,7 +242,7 @@ void() CSEv_PlayerJump =
     if (!(self.flags & FL_ONGROUND))
         return;
     if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || 
-        self.menu == MENU_MAGIC || self.menu == MENU_BANKING)
+        self.menu == MENU_MAGIC || self.menu == MENU_BANKING || self.menu == MENU_QUESTLOG)
         return;
 
     // Skill-based calculations
@@ -314,7 +314,8 @@ void(float whichdir) CSEv_PlayerDodge_f =
 		return;
 	if (!(self.flags & FL_ONGROUND))
 		return;
-	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_BANKING || self.menu == MENU_QUESTLOG)
+	if (self.menu == MENU_CHARACTER || self.menu == MENU_INVENTORY || self.menu == MENU_MAGIC || self.menu == MENU_BANKING
+	|| self.menu == MENU_QUESTLOG)
 		return;
 
 	if (self.stamina >= 25)
@@ -1101,8 +1102,8 @@ void() PlayerPreThink =
 	if (self.stagger_finished < time)
 	{
 		// attack / dodge / magic commitment / npc interaction menus
-		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.menu == MENU_BANKING ||
-			self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time
+		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.menu == MENU_BANKING
+			|| self.menu == MENU_QUESTLOG || self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time
 			|| self.dodge_finished > time || self.fishcast_finished > time || self.fishing_finished > time)
 			self.maxspeed = 1;
 		else

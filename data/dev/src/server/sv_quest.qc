@@ -148,8 +148,17 @@ void(entity player, string id) Quest_SendPreview =
 
 	WriteString(MSG_ONE, q.reward_item);
 	WriteFloat(MSG_ONE, q.reward_item_count);
+};
 
-	self.menu = MENU_QUESTCHOICE;
+void(string id) CSEv_QuestPreview_s =
+{
+	Quest_SendPreview(self, id);
+	self.menu = MENU_QUESTPREVIEW;
+};
+
+void() CSEv_QuestPreviewCancel =
+{
+	self.menu = MENU_DIALOGUE;
 };
 
 //

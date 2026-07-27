@@ -152,6 +152,8 @@ void(string id) CSEv_QuestAccept_s =
 
 	if (self.npc_last_talk)
 		NPC_SendDialogue(self.npc_last_talk, self);
+	
+	self.menu = MENU_DIALOGUE;
 };
 
 void(string id) CSEv_QuestTurnIn_s =
