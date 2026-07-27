@@ -180,17 +180,17 @@ void() CSQC_DayNight_Update =
 	{
 		float light;
 
-		c.drawflags = 7;
+		c.drawflags |= 7;
 		if (timeofday == TIME_DAY)
-			light = 1;
+			light = -500;
 		else if (timeofday == TIME_NIGHT)
 			light = 225;
 		else if (timeofday == TIME_DAWN)
-			light = 140;
+			light = 1;
 		else
 			light = 190;
 
-		c.abslight = 255 - light;
+		c.abslight = 255 - light; // invert
 	}
 };
 

@@ -290,11 +290,11 @@ void() daynight_think =
 		{
 			c.drawflags |= 7;
 			if (timeofday == TIME_DAY)
-				c.abslight = 1;
+				c.abslight = -500;
 			else if (timeofday == TIME_NIGHT)
 				c.abslight = 225;
 			else if (timeofday == TIME_DAWN)
-				c.abslight = 140;
+				c.abslight = 1;
 			else // dusk
 				c.abslight = 190;
 		}
