@@ -182,7 +182,7 @@ void() CSQC_DayNight_Update =
 
 		c.drawflags |= 7;
 		if (timeofday == TIME_DAY)
-			light = -500;
+			light = -200;
 		else if (timeofday == TIME_NIGHT)
 			light = 225;
 		else if (timeofday == TIME_DAWN)
@@ -652,6 +652,7 @@ const float CSQC_SAY_NEARBY = 12;
 const float CSQC_QUESTINFO = 13;
 const float CSQC_QUEST_NOTIFY = 14; // accept quest
 const float CSQC_QUEST_COMPLETE = 15; // finish quest
+const float CSQC_QUEST_PREVIEW = 16; // preview quest accept/decline
 
 //
 // Quest log - client side
@@ -834,6 +835,21 @@ void() CSQC_Parse_Event =
 		quest_complete_time = time + 6;
 		quest_complete_alpha = 1;
 		localsound("q_cmplt.wav");
+	}
+	if (event == CSQC_QUEST_PREVIEW)
+	{
+		quest_preview_id = readstring();
+		quest_preview_name = readstring();
+		quest_preview_description = readstring();
+		quest_preview_objective = readstring();
+
+		quest_preview_level = readfloat();
+
+		quest_preview_reward_exp = readfloat();
+		quest_preview_reward_gold = readfloat();
+
+		quest_preview_reward_item = readstring();
+		quest_preview_reward_item_count = readfloat();
 	}
 };
 

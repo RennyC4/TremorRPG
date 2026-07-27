@@ -1725,6 +1725,7 @@ const float CSQC_SAY_NEARBY = 12;
 const float CSQC_QUESTINFO = 13;
 const float CSQC_QUEST_NOTIFY = 14; // accept quest
 const float CSQC_QUEST_COMPLETE = 15; // finish quest
+const float CSQC_QUEST_PREVIEW = 16; // preview quest accept/decline
 
 // Function defs
 .void()		th_die;
@@ -1778,6 +1779,7 @@ const float MENU_BUYSELL = 5; // for NPC interaction
 const float MENU_MAGIC = 6; // user magic screen
 const float MENU_BANKING = 7; // user banking screen
 const float MENU_QUESTLOG = 8; // user quest log screen
+const float MENU_QUESTCHOICE = 9; // for NPC interaction
 
 .float button3_pressed;
 

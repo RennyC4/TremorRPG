@@ -2251,6 +2251,7 @@ const float MENU_BUYSELL = 5; // for NPC interaction
 const float MENU_MAGIC = 6; // user magic screen
 const float MENU_BANKING = 7; // user banking screen
 const float MENU_QUESTLOG = 8; // user quest log screen
+const float MENU_QUESTCHOICE = 9; // for NPC interaction
 
 //
 // Quest notification
@@ -2266,6 +2267,23 @@ string quest_complete_text;
 
 float quest_complete_time;
 float quest_complete_alpha;
+
+//
+// quest preview
+//
+
+string quest_preview_id;
+string quest_preview_name;
+string quest_preview_description;
+string quest_preview_objective;
+
+float quest_preview_level;
+
+float quest_preview_reward_exp;
+float quest_preview_reward_gold;
+
+string quest_preview_reward_item;
+float quest_preview_reward_item_count;
 
 //
 // Grab stats from SSQC 

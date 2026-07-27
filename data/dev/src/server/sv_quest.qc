@@ -87,6 +87,8 @@ float(entity player, string id) Quest_IsActive;
 float(entity player, string id) Quest_IsCompleted;
 
 void(entity player) Quest_SendLog; // CSQC
+void(entity player, string id) Quest_SendPreview;
+
 //
 // Helpers
 //
@@ -111,6 +113,43 @@ float(entity player, string id) Quest_IsCompleted =
 		return FALSE;
 
 	return player.player_quest_status[slot] == QUEST_TURNEDIN;
+};
+
+//
+// Send quest preview (accept/decline)
+//
+
+void(entity player, string id) Quest_SendPreview =
+{
+	entity q;
+
+	if (player.classname != "player")
+		return;
+
+	q = Quest_Find(id);
+
+	if (!q)
+		return;
+
+	msg_entity = player;
+
+	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
+	WriteByte(MSG_ONE, CSQC_QUEST_PREVIEW);
+
+	WriteString(MSG_ONE, q.quest_id);
+	WriteString(MSG_ONE, q.quest_name);
+	WriteString(MSG_ONE, q.quest_description);
+	WriteString(MSG_ONE, q.quest_objective);
+
+	WriteFloat(MSG_ONE, q.quest_level);
+
+	WriteFloat(MSG_ONE, q.reward_exp);
+	WriteFloat(MSG_ONE, q.reward_gold);
+
+	WriteString(MSG_ONE, q.reward_item);
+	WriteFloat(MSG_ONE, q.reward_item_count);
+
+	self.menu = MENU_QUESTCHOICE;
 };
 
 //
