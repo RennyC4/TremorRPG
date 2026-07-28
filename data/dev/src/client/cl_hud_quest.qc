@@ -147,95 +147,118 @@ void() User_QuestLogScreen =
     sui_border_box([0,0],detail_size,1,MENU_BORDER,0.3,0);
 
     if (quest_count > 0 && quest_selected < quest_count)
-    {
-        struct questinfo q = quest_log[quest_selected];
-        vector text = [UI(8),UI(6)];
+	{
+		float q;
+		float objective;
 
-        sui_set_align([SUI_ALIGN_START,SUI_ALIGN_START]);
-
-        //
-        // Quest name
-        //
-
-        sui_text(text, MENU_TEXT_MEDIUM * UI_TextScale(), strcat("^5",q.name), MENU_TEXT_1, 1, 0);
-        text_y += UI(18);
-
-        //
-        // Divider
-        //
-
-        sui_fill([UI(5),text_y], [UI(250),1], MENU_BORDER, 0.5, 0);
-        text_y += UI(8);
-
-        //
-        // Status
-        //
-
-        string status;
-        string status_color;
-
-        switch(q.status)
-        {
-            case QUEST_ACTIVE:
-                status = "In Progress";
-                status_color = "^3";
-                break;
-
-            case QUEST_COMPLETE:
-                status = "Complete";
-                status_color = "^2";
-                break;
-
-            case QUEST_AVAILABLE:
-                status = "Available";
-                status_color = "^5";
-                break;
-
-            default:
-                status = "Unknown";
-                status_color = "^7";
-        }
-
-        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Status: ",status_color,status), MENU_TEXT_1, 1, 0);
-        text_y += UI(14);
-
-        //
-        // Objective
-        //
-
-        if (q.status == QUEST_COMPLETE)
-			sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Objective: ", "^2", q.objective), MENU_TEXT_1, 1, 0);
-		else
-			sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Progress: ", ftos(q.progress), " / ", ftos(q.needed)), MENU_TEXT_1, 1, 0);
-
-        text_y += UI(18);
-
-        //
-        // Description
-        //
+		string status;
+		string status_color;
 
 		float desc_lines;
-		desc_lines = UI_DrawWrappedText(text, UI(22), q.description);
+
+		q = quest_selected;
+
+		vector text = [UI(8),UI(6)];
+
+		sui_set_align([SUI_ALIGN_START,SUI_ALIGN_START]);
+
+
+		//
+		// Quest name
+		//
+
+		sui_text(text, MENU_TEXT_MEDIUM * UI_TextScale(), strcat("^5", quest_log[q].name), MENU_TEXT_1, 1, 0);
+		text_y += UI(18);
+
+		//
+		// Divider
+		//
+
+		sui_fill([UI(5),text_y], [UI(250),1], MENU_BORDER, 0.5, 0);
+		text_y += UI(8);
+
+		//
+		// Status
+		//
+
+		switch(quest_log[q].status)
+		{
+			case QUEST_ACTIVE:
+				status = "In Progress";
+				status_color = "^3";
+				break;
+
+			case QUEST_COMPLETE:
+				status = "Complete";
+				status_color = "^2";
+				break;
+
+			case QUEST_AVAILABLE:
+				status = "Available";
+				status_color = "^5";
+				break;
+
+			default:
+				status = "Unknown";
+				status_color = "^7";
+		}
+
+		sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Status: ", status_color, status), MENU_TEXT_1, 1, 0);
+
+		text_y += UI(14);
+
+		//
+		// Objectives
+		//
+
+		sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), "^6Objectives", MENU_TEXT_1, 1, 0);
+
+		text_y += UI(14);
+
+		for (objective = 0; objective < quest_log[q].objective_count; objective++)
+		{
+			string objective_color;
+
+			if (quest_log[q].objective_progress[objective] >= quest_log[q].objective_needed[objective])
+				objective_color = "^2";
+			else
+				objective_color = "^3";
+
+			sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat(objective_color, quest_log[q].objective_text[objective], " ^7", ftos(quest_log[q].objective_progress[objective]), "/", ftos(quest_log[q].objective_needed[objective])), MENU_TEXT_1, 1, 0);
+			text_y += UI(14);
+		}
+
+		text_y += UI(6);
+
+		//
+		// Description
+		//
+
+		desc_lines = UI_DrawWrappedText(text, UI(22), quest_log[q].description);
+
 		text_y += desc_lines * UI(10);
-		text_y += UI(55);
+		text_y += UI(20);
 
-        //
-        // Rewards
-        //
+		//
+		// Rewards
+		//
 
-        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), "^6Rewards", MENU_TEXT_1, 1, 0);
-        text_y += UI(14);
+		sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), "^6Rewards", MENU_TEXT_1, 1, 0);
 
-        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7EXP: ^2",ftos(q.reward_exp)), MENU_TEXT_1, 1, 0);
-        text_y += UI(12);
+		text_y += UI(14);
 
-        sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Gold: ^3",ftos(q.reward_gold)), MENU_TEXT_1, 1, 0);
-        if (q.reward_item != "")
-        {
-            text_y += UI(12);
-            sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Item: ^5", q.reward_item, " x", ftos(q.reward_item_count)), MENU_TEXT_1, 1, 0);
-        }
-    }
+		sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7EXP: ^2", ftos(quest_log[q].reward_exp)), MENU_TEXT_1, 1, 0);
+
+		text_y += UI(12);
+
+		sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Gold: ^3", ftos(quest_log[q].reward_gold)), MENU_TEXT_1, 1, 0);
+
+		if (quest_log[q].reward_item != "")
+		{
+			text_y += UI(12);
+			sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Item: ^5", quest_log[q].reward_item, " x", ftos(quest_log[q].reward_item_count)), MENU_TEXT_1, 1, 0);
+		}
+	}
 
     sui_pop_frame();
 
@@ -476,15 +499,20 @@ void() Draw_QuestTracker =
 
         y += UI(16);
 
-        needed = quest_log[i].needed;
-        if (needed < 1)
-            needed = 1;
+		float objective;
+		for (objective = 0; objective < quest_log[i].objective_count; objective++)
+		{
+			color = "^3";
 
-        color = "^3";
+			if (quest_log[i].objective_progress[objective] >= quest_log[i].objective_needed[objective])
+				color = "^2";
 
-		progress = strcat(color, quest_log[i].objective, " ", ftos(rint(quest_log[i].progress)), " / ", ftos(rint(needed)));
+			progress = strcat(color, quest_log[i].objective_text[objective], " ", ftos(rint(quest_log[i].objective_progress[objective])), " / ", ftos(rint(quest_log[i].objective_needed[objective])));
 
-        drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], progress, MENU_TEXT_SMALL, '1 1 1', alpha, 0);
+			drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], progress, MENU_TEXT_SMALL, '1 1 1', alpha, 0);
+
+			y += UI(14);
+		}
 
         y += UI(22);
     }
@@ -510,8 +538,14 @@ void() Draw_QuestTracker =
 
         y += UI(16);
 
-        drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], strcat("^2", quest_log[i].objective), MENU_TEXT_SMALL, '1 1 1', alpha, 0);
+		float objective;
+		for (objective = 0; objective < quest_log[i].objective_count; objective++)
+		{
+			drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], strcat("^2", quest_log[i].objective_text[objective]), MENU_TEXT_SMALL, '1 1 1', alpha, 0);
 
-        y += UI(22);
+			y += UI(14);
+		}
+
+		y += UI(8);
     }
 };

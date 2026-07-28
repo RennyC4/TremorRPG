@@ -767,9 +767,9 @@ void() CSQC_Parse_Event =
 	{
 		float count;
 		float h;
+		float p;
 
 		count = readbyte();
-
 		quest_count = count;
 
 		//
@@ -781,12 +781,17 @@ void() CSQC_Parse_Event =
 			quest_log[h].id = "";
 			quest_log[h].name = "";
 			quest_log[h].description = "";
-			quest_log[h].objective = "";
+
+			quest_log[h].objective_count = 0;
+
+			for (p = 0; p < MAX_QUEST_OBJECTIVES; p++)
+			{
+				quest_log[h].objective_text[p] = "";
+				quest_log[h].objective_progress[p] = 0;
+				quest_log[h].objective_needed[p] = 0;
+			}
 
 			quest_log[h].status = QUEST_LOCKED;
-
-			quest_log[h].progress = 0;
-			quest_log[h].needed = 0;
 
 			quest_log[h].reward_exp = 0;
 			quest_log[h].reward_gold = 0;
@@ -804,21 +809,38 @@ void() CSQC_Parse_Event =
 			quest_log[h].id = readstring();
 			quest_log[h].name = readstring();
 			quest_log[h].description = readstring();
-			quest_log[h].objective = readstring();
+
+			//
+			// Objectives
+			//
+
+			quest_log[h].objective_count = readbyte();
+
+			if (quest_log[h].objective_count > MAX_QUEST_OBJECTIVES)
+				quest_log[h].objective_count = MAX_QUEST_OBJECTIVES;
+
+			for (p = 0; p < quest_log[h].objective_count; p++)
+			{
+				quest_log[h].objective_text[p] = readstring();
+				quest_log[h].objective_progress[p] = readfloat();
+				quest_log[h].objective_needed[p] = readfloat();
+			}
+
+			//
+			// Status
+			//
 
 			quest_log[h].status = readbyte();
 
-			quest_log[h].progress = readfloat();
-			quest_log[h].needed = readfloat();
+			//
+			// Rewards
+			//
 
 			quest_log[h].reward_exp = readfloat();
 			quest_log[h].reward_gold = readfloat();
 
 			quest_log[h].reward_item = readstring();
 			quest_log[h].reward_item_count = readfloat();
-
-			// debugging
-			//print(sprintf("^3Quest:^7 %s | %s | %g/%g | Status %g\n", quest_log[h].id, quest_log[h].name, quest_log[h].progress, quest_log[h].needed, quest_log[h].status));
 		}
 	}
 	if (event == CSQC_QUEST_NOTIFY)

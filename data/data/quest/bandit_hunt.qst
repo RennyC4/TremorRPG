@@ -1,8 +1,6 @@
 id=bandit_hunt
 name=Bandit Problem
 
-objective=Kill Bandits
-
 description=I've been asked by Sarzac to kill 10 bandits roaming the wilderness in order to set an example to stay back from Elderfen
 
 giver=Sarzac
@@ -10,9 +8,7 @@ turnin=Sarzac
 
 zone=elderfen
 
-type=kill
-target=bandit
-count=10
+objective=kill,bandit,10,Kill bandits
 
 repeatable=0
 level=1

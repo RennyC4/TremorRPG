@@ -14,44 +14,35 @@ float(entity targ, string itemname, float count) AddToInventory;
 #define QUEST_COMPLETE  3
 #define QUEST_TURNEDIN  4
 
+#define MAX_QUESTS 64
+#define MAX_QUEST_OBJECTIVES 8
+
 //
 // Quest definition fields
 //
 
 entity quest_list;
-
 .string quest_id;
-
 .string quest_name;
 .string quest_description;
 .string quest_objective;
-
 .string quest_zone;
 .string quest_giver;
 .string quest_turnin;
-
 .string quest_type;
 .string quest_target;
-
 .float quest_count;
 .float quest_repeatable;
 .float quest_level;
-
 .float reward_exp;
 .float reward_gold;
-
 .string reward_item;
 .float reward_item_count;
-
 .string next_quest;
 .string required_quest;
-
 .string quest_filename;
-
 .float quest_index;
-
 .entity quest_next;
-
 
 //
 // Player quest fields
@@ -61,7 +52,25 @@ entity quest_list;
 
 .string player_quest_id[64];
 .float player_quest_status[64];
+.float player_quest_objective_progress[512];
+
+//
+// Legacy single progress (can remove later)
+//
 .float player_quest_progress[64];
+
+//
+// Quest objectives
+//
+
+.entity quest_objectives;
+.entity objective_next;
+
+.string objective_type;
+.string objective_target;
+.string objective_text;
+
+.float objective_count;
 
 //
 // Quest prototypes
@@ -93,6 +102,12 @@ void(entity player, string id) Quest_SendPreview;
 // Helpers
 //
 
+// Convert quest/objective pair into a single array index
+float(float quest, float objective) Quest_ObjectiveIndex =
+{
+	return (quest * 8) + objective;
+};
+
 float(entity player, string id) Quest_IsActive =
 {
 	float slot;
@@ -113,6 +128,77 @@ float(entity player, string id) Quest_IsCompleted =
 		return FALSE;
 
 	return player.player_quest_status[slot] == QUEST_TURNEDIN;
+};
+
+//
+// Add objective to quest
+//
+
+void(entity q, string value) Quest_AddObjective =
+{
+	entity obj;
+	entity last;
+
+	string type;
+	string target;
+	string count;
+	string text;
+
+	float p1;
+	float p2;
+	float p3;
+
+	//
+	// Find commas
+	//
+
+	p1 = strstrofs(value, ",", 0);
+	if (p1 < 0)
+		return;
+
+	p2 = strstrofs(value, ",", p1 + 1);
+	if (p2 < 0)
+		return;
+
+	p3 = strstrofs(value, ",", p2 + 1);
+	if (p3 < 0)
+		return;
+
+	//
+	// Split fields
+	//
+
+	type = strtrim(substring(value, 0, p1));
+	target = strtrim(substring(value, p1 + 1, p2 - p1 - 1));
+	count = strtrim(substring(value, p2 + 1, p3 - p2 - 1));
+	text = strtrim(substring(value, p3 + 1, strlen(value) - p3));
+
+	//
+	// Create objective
+	//
+
+	obj = spawn();
+
+	obj.objective_type = strtolower(type);
+	obj.objective_target = strtolower(target);
+	obj.objective_count = stof(count);
+	obj.objective_text = text;
+
+	//
+	// Append
+	//
+
+	if (!q.quest_objectives)
+		q.quest_objectives = obj;
+	else
+	{
+		last = q.quest_objectives;
+
+		while (last.objective_next)
+			last = last.objective_next;
+
+		last.objective_next = obj;
+	}
 };
 
 //
@@ -169,7 +255,11 @@ void(entity player) Quest_SendLog =
 {
 	float i;
 	float send_count;
+	float obj_count;
+	float objective;
+
 	entity q;
+	entity obj;
 
 	if (player.classname != "player")
 		return;
@@ -179,7 +269,6 @@ void(entity player) Quest_SendLog =
 	//
 
 	send_count = 0;
-
 	for (i = 0; i < player.player_quest_count; i++)
 	{
 		if (player.player_quest_status[i] == QUEST_AVAILABLE)
@@ -196,9 +285,8 @@ void(entity player) Quest_SendLog =
 	//
 
 	msg_entity = player;
-
-	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
-	WriteByte(MSG_MULTICAST, CSQC_QUESTINFO);
+	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
+	WriteByte(MSG_ONE, CSQC_QUESTINFO);
 
 	//
 	// Quest count
@@ -207,7 +295,7 @@ void(entity player) Quest_SendLog =
 	if (send_count > 64)
 		send_count = 64;
 
-	WriteByte(MSG_MULTICAST, send_count);
+	WriteByte(MSG_ONE, send_count);
 
 	//
 	// Quest data
@@ -216,12 +304,11 @@ void(entity player) Quest_SendLog =
 	for (i = 0; i < player.player_quest_count; i++)
 	{
 		//
-		// Don't send completed history
+		// Don't send unavailable/history quests
 		//
 
 		if (player.player_quest_status[i] == QUEST_AVAILABLE)
 			continue;
-
 		if (player.player_quest_status[i] == QUEST_TURNEDIN)
 			continue;
 
@@ -231,36 +318,53 @@ void(entity player) Quest_SendLog =
 			continue;
 
 		//
-		// Quest information
+		// Basic quest information
 		//
 
-		WriteString(MSG_MULTICAST, q.quest_id);
-		WriteString(MSG_MULTICAST, q.quest_name);
-		WriteString(MSG_MULTICAST, q.quest_description);
-
-		if (player.player_quest_status[i] == QUEST_COMPLETE)
-			WriteString(MSG_MULTICAST, sprintf("Return to %s", q.quest_turnin));
-		else
-			WriteString(MSG_MULTICAST, q.quest_objective);
+		WriteString(MSG_ONE, q.quest_id);
+		WriteString(MSG_ONE, q.quest_name);
+		WriteString(MSG_ONE, q.quest_description);
 
 		//
-		// Status / progress
+		// Objectives
 		//
 
-		WriteByte(MSG_MULTICAST, player.player_quest_status[i]);
+		obj_count = 0;
 
-		WriteFloat(MSG_MULTICAST, player.player_quest_progress[i]);
-		WriteFloat(MSG_MULTICAST, q.quest_count);
+		for (obj = q.quest_objectives; obj; obj = obj.objective_next)
+			obj_count++;
+
+		if (obj_count > 8)
+			obj_count = 8;
+
+		WriteByte(MSG_ONE, obj_count);
+
+		objective = 0;
+
+		for (obj = q.quest_objectives; obj && objective < obj_count; obj = obj.objective_next)
+		{
+			WriteString(MSG_ONE, obj.objective_text);
+			WriteFloat(MSG_ONE, player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)]);
+			WriteFloat(MSG_ONE, obj.objective_count);
+
+			objective++;
+		}
+
+		//
+		// Status
+		//
+
+		WriteByte(MSG_ONE, player.player_quest_status[i]);
 
 		//
 		// Rewards
 		//
 
-		WriteFloat(MSG_MULTICAST, q.reward_exp);
-		WriteFloat(MSG_MULTICAST, q.reward_gold);
+		WriteFloat(MSG_ONE, q.reward_exp);
+		WriteFloat(MSG_ONE, q.reward_gold);
 
-		WriteString(MSG_MULTICAST, q.reward_item);
-		WriteFloat(MSG_MULTICAST, q.reward_item_count);
+		WriteString(MSG_ONE, q.reward_item);
+		WriteFloat(MSG_ONE, q.reward_item_count);
 	}
 
 	multicast(player.origin, MULTICAST_ONE_R);
@@ -281,7 +385,6 @@ void() Quest_LoadAll =
 	entity q;
 
 	f = fopen("quest/index.txt", FILE_READ);
-
 	if (f < 0)
 	{
 		dprint("^1Quest_LoadAll: Unable to open quest/index.txt\n");
@@ -326,12 +429,12 @@ void() Quest_LoadAll =
 			continue;
 		}
 
+		// Show loaded quests (debugging)
 		//dprint(sprintf("^2Loaded Quest:^7 %s\n", q.quest_id));
 	}
 
 	fclose(f);
 };
-
 
 //
 // Load a single quest definition
@@ -395,7 +498,7 @@ void(entity q, string filename) Quest_Load =
 			q.quest_description = value;
 
 		else if (key == "objective")
-			q.quest_objective = value;
+			Quest_AddObjective(q, value);
 
 		else if (key == "zone")
 			q.quest_zone = value;
@@ -454,10 +557,9 @@ void(entity q, string filename) Quest_Load =
 	if (!q.quest_name)
 		dprint(sprintf("^1Quest %s missing name\n", q.quest_id));
 
-	if (!q.quest_type)
-		dprint(sprintf("^1Quest %s missing type\n", q.quest_id));
+	if (!q.quest_objectives)
+		dprint(sprintf("^1Quest %s has no objectives\n", q.quest_id));
 };
-
 
 //
 // Find quest by ID
@@ -550,17 +652,11 @@ float(entity player, string id) Quest_CanOffer =
 
 	if (slot >= 0)
 	{
-		//
 		// Already unlocked but not accepted yet?
-		//
-
 		if (player.player_quest_status[slot] == QUEST_AVAILABLE)
 			return TRUE;
 
-		//
 		// Already active, complete, or turned in.
-		//
-
 		return FALSE;
 	}
 
@@ -582,7 +678,6 @@ void(entity player, string id) Quest_Accept =
 		return;
 
 	q = Quest_Find(id);
-
 	if (!q)
 	{
 		dprint(sprintf("^1Quest_Accept: Quest not found: %s\n", id));
@@ -649,7 +744,6 @@ void(entity player, string id) Quest_Accept =
 	player.player_quest_status[slot] = QUEST_ACTIVE;
 	player.player_quest_progress[slot] = 0;
 
-	//player.player_quest_count++;
 	if (slot == player.player_quest_count)
 		player.player_quest_count++;
 
@@ -704,7 +798,6 @@ void(entity player, string id) Quest_Unlock =
 
 	Quest_SavePlayer(player);
 	//Quest_SendLog(player);
-	dprint(sprintf("^2Quest Available:^7 %s\n", q.quest_name));
 };
 
 //
@@ -860,18 +953,20 @@ void(entity player, string id) Quest_TurnIn =
 void(entity player, string type, string target) Quest_Event =
 {
 	entity quest;
+	entity obj;
 
 	float i;
-	float progress;
+	float objective;
+	float complete;
 	float changed;
+	float updated;
 
 	if (!player)
 		return;
-
 	if (player.classname != "player")
 		return;
 
-	changed = FALSE;
+	updated = FALSE;
 
 	//
 	// Check active quests
@@ -879,72 +974,94 @@ void(entity player, string type, string target) Quest_Event =
 
 	for (i = 0; i < player.player_quest_count; i++)
 	{
-		//
-		// Only active quests
-		//
+		changed = FALSE;
+
 
 		if (player.player_quest_status[i] != QUEST_ACTIVE)
 			continue;
 
-
-		//
-		// Get quest definition
-		//
 
 		quest = Quest_PlayerDefinition(player, i);
 
 		if (!quest)
 			continue;
 
+		// Debugging
+		/*
+		dprint(sprintf("^5Quest_Event: %s loaded\n", quest.quest_id));
 
-		//
-		// Does event match quest?
-		//
-
-		if (quest.quest_type != type)
-			continue;
-
-		if (quest.quest_target != target)
-			continue;
-
-
-		//
-		// Increase progress
-		//
-
-		progress = player.player_quest_progress[i];
-
-		progress = progress + 1;
-
-
-		//
-		// Clamp progress
-		//
-
-		if (progress > quest.quest_count)
-			progress = quest.quest_count;
-
-
-		player.player_quest_progress[i] = progress;
-		changed = TRUE;
-
-
-		//
-		// Quest complete?
-		//
-
-		if (progress >= quest.quest_count)
+		for (obj = quest.quest_objectives; obj; obj = obj.objective_next)
 		{
-			player.player_quest_status[i] = QUEST_COMPLETE;
+			dprint(sprintf("^5Objective: type=%s target=%s count=%g\n",
+				obj.objective_type,
+				obj.objective_target,
+				obj.objective_count
+			));
 		}
-	}
+		*/
+		// Debugging
 
+		//
+		// Find matching objective
+		//
+
+		objective = 0;
+
+		for (obj = quest.quest_objectives; obj; obj = obj.objective_next)
+		{
+			if (strcmp(obj.objective_type, type))
+			{
+				objective++;
+				continue;
+			}
+
+			if (strcmp(obj.objective_target, target))
+			{
+				objective++;
+				continue;
+			}
+
+			player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)]++;
+
+			if (player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] > obj.objective_count)
+				player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] = obj.objective_count;
+
+			changed = TRUE;
+			updated = TRUE;
+
+			break;
+		}
+
+		if (!changed)
+			continue;
+
+		//
+		// Check if all objectives are complete
+		//
+
+		complete = TRUE;
+		objective = 0;
+
+		for (obj = quest.quest_objectives; obj; obj = obj.objective_next)
+		{
+			if (player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] < obj.objective_count)
+			{
+				complete = FALSE;
+				break;
+			}
+
+			objective++;
+		}
+
+		if (complete)
+			player.player_quest_status[i] = QUEST_COMPLETE;
+	}
 
 	//
 	// Update client and save
 	//
 
-	if (changed)
+	if (updated)
 	{
 		Quest_SavePlayer(player);
 		Quest_SendLog(player);
@@ -959,16 +1076,21 @@ void(entity player) Quest_SavePlayer =
 {
 	float f;
 	float i;
+	float objective;
+
+	entity quest;
+	entity obj;
 
 	string filename;
 	string line;
+	string progress;
 
 	if (player.classname != "player")
 		return;
-	
-	filename = strcat("chr/", player.loginname, ".qst");
 
+	filename = strcat("chr/", player.loginname, ".qst");
 	f = fopen(filename, FILE_WRITE);
+
 	if (f < 0)
 	{
 		dprint(sprintf("^1Quest_SavePlayer: Unable to open %s\n", filename));
@@ -976,9 +1098,43 @@ void(entity player) Quest_SavePlayer =
 	}
 
 	fputs(f, "#QUESTS\n");
+
 	for (i = 0; i < player.player_quest_count; i++)
 	{
-		line = sprintf("%s|%g|%g\n", player.player_quest_id[i], player.player_quest_status[i], player.player_quest_progress[i]);
+		quest = Quest_PlayerDefinition(player, i);
+
+		if (!quest)
+			continue;
+
+		//
+		// Build objective progress string
+		//
+
+		progress = "";
+		objective = 0;
+
+		for (obj = quest.quest_objectives; obj; obj = obj.objective_next)
+		{
+			if (progress != "")
+				progress = strcat(progress, ",");
+
+			progress = strcat(progress, ftos(player.player_quest_objective_progress[(i * MAX_QUEST_OBJECTIVES) + objective]));
+
+			objective++;
+		}
+
+		//
+		// Save:
+		// quest_id|status|objective1,objective2,...
+		//
+
+		line = sprintf(
+			"%s|%g|%s\n",
+			player.player_quest_id[i],
+			player.player_quest_status[i],
+			progress
+		);
+
 		fputs(f, line);
 	}
 
@@ -993,18 +1149,26 @@ void(entity player) Quest_LoadPlayer =
 {
 	float f;
 
+	float objective;
+	float start;
+	float end;
+	float slot;
+
 	string filename;
 	string line;
 
 	string id;
 	string status;
 	string progress;
+	string value;
 
 	float pos1;
 	float pos2;
+	float comma;
+
+	entity quest;
 
 	filename = strcat("chr/", player.loginname, ".qst");
-
 	f = fopen(filename, FILE_READ);
 
 	if (f < 0)
@@ -1020,10 +1184,14 @@ void(entity player) Quest_LoadPlayer =
 	{
 		line = strtrim(line);
 
+
 		if (line == "")
 			continue;
 
+		//
 		// Ignore comments
+		//
+
 		if (substring(line, 0, 1) == "#")
 			continue;
 
@@ -1034,10 +1202,12 @@ void(entity player) Quest_LoadPlayer =
 		//
 
 		pos1 = strstrofs(line, "|", 0);
+
 		if (pos1 < 0)
 			continue;
 
 		pos2 = strstrofs(line, "|", pos1 + 1);
+
 		if (pos2 < 0)
 			continue;
 
@@ -1049,14 +1219,16 @@ void(entity player) Quest_LoadPlayer =
 		// Validate quest exists
 		//
 
-		if (!Quest_Exists(id))
+		quest = Quest_Find(id);
+
+		if (!quest)
 		{
 			dprint(sprintf("^3Unknown quest in save:^7 %s\n", id));
 			continue;
 		}
 
 		//
-		// Add quest
+		// Quest limit
 		//
 
 		if (player.player_quest_count >= 64)
@@ -1065,12 +1237,44 @@ void(entity player) Quest_LoadPlayer =
 			break;
 		}
 
-		player.player_quest_id[player.player_quest_count] = id;
-		player.player_quest_status[player.player_quest_count] = stof(status);
-		player.player_quest_progress[player.player_quest_count] = stof(progress);
+		//
+		// Add quest
+		//
 
+		slot = player.player_quest_count;
+
+		player.player_quest_id[slot] = id;
+		player.player_quest_status[slot] = stof(status);
+
+		//
+		// Load objective progress
+		//
+
+		objective = 0;
+		start = 0;
+
+		while (objective < MAX_QUEST_OBJECTIVES)
+		{
+			comma = strstrofs(progress, ",", start);
+
+			if (comma < 0)
+				value = substring(progress, start, strlen(progress));
+			else
+				value = substring(progress, start, comma);
+
+			if (value != "")
+				player.player_quest_objective_progress[Quest_ObjectiveIndex(slot, objective)] = stof(value);
+
+			objective++;
+
+			if (comma < 0)
+				break;
+
+			start = comma + 1;
+		}
+
+		// Increase quest count
 		player.player_quest_count++;
 	}
-
 	fclose(f);
 };

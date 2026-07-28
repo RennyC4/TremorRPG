@@ -22,17 +22,21 @@ string(string s) StripColors;
 float quest_count;
 float quest_selected;
 
+#define MAX_QUEST_OBJECTIVES 8
+
 struct questinfo
 {
 	string id;
 	string name;
-	string objective;
 	string description;
 
-	float status;
+	float objective_count;
 
-	float progress;
-	float needed;
+	string objective_text[MAX_QUEST_OBJECTIVES];
+	float objective_progress[MAX_QUEST_OBJECTIVES];
+	float objective_needed[MAX_QUEST_OBJECTIVES];
+
+	float status;
 
 	float reward_exp;
 	float reward_gold;
@@ -40,6 +44,7 @@ struct questinfo
 	string reward_item;
 	float reward_item_count;
 };
+
 
 struct questinfo quest_log[MAX_QUESTS];
 float tracker_alpha;

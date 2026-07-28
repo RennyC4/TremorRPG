@@ -1,18 +1,14 @@
 id=bandit_leader
 name=Bandit Leader
 
-objective=Kill the Bandit Leader
+objective=kill,bandit_leader,1,Kill the Bandit Leader
 
 description=Find and defeat the Bandit Leader threatening Elderfen
 
 giver=Sarzac
 turnin=Sarzac
 
-zone=Elderfen
-
-type=kill
-target=bandit_leader
-count=1
+zone=elderfen
 
 repeatable=0
 level=10
