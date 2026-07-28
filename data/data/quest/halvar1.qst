@@ -1,0 +1,21 @@
+id=halvar1
+name=Starting out: Wood cutting
+
+description=Halvar has asked me to cut down 5 dead trees to start off on my lumber jack trade, he seems to lack any faith in me as of now ...
+
+giver=Halvar
+turnin=Halvar
+
+zone=elderfen
+
+objective=wood,tree2,5,Cut down dead trees
+
+repeatable=0
+level=1
+
+reward_exp=150
+reward_gold=75
+reward_item=
+reward_item_count=0
+
+next=

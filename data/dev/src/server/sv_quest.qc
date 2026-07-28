@@ -208,6 +208,7 @@ void(entity q, string value) Quest_AddObjective =
 void(entity player, string id) Quest_SendPreview =
 {
 	entity q;
+	entity obj;
 
 	if (player.classname != "player")
 		return;
@@ -225,7 +226,18 @@ void(entity player, string id) Quest_SendPreview =
 	WriteString(MSG_ONE, q.quest_id);
 	WriteString(MSG_ONE, q.quest_name);
 	WriteString(MSG_ONE, q.quest_description);
-	WriteString(MSG_ONE, q.quest_objective);
+
+	//
+	// First objective text
+	//
+
+	obj = q.quest_objectives;
+
+	if (obj)
+		WriteString(MSG_ONE, obj.objective_text);
+	else
+		WriteString(MSG_ONE, "");
+
 
 	WriteFloat(MSG_ONE, q.quest_level);
 

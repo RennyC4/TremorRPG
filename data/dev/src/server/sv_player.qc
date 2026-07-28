@@ -1103,7 +1103,7 @@ void() PlayerPreThink =
 	{
 		// attack / dodge / magic commitment / npc interaction menus
 		if (self.melee_finished > time || self.menu == MENU_DIALOGUE || self.menu == MENU_BUYSELL || self.menu == MENU_BANKING
-			|| self.menu == MENU_QUESTLOG || self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time
+			|| self.cast_finished > time || self.spellani_finished > time || self.potion_use_finished > time
 			|| self.dodge_finished > time || self.fishcast_finished > time || self.fishing_finished > time)
 			self.maxspeed = 1;
 		else
