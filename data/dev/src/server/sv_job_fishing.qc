@@ -148,9 +148,13 @@ void() Fishing_Bobber_SearchNode =
 			if (random() < success_chance)
 			{
 				if (targ.level == 0)
+				{
 					item_name = "Small Fish";
+				}
 				else
 					item_name = "Small Fish"; // fallback (or higher tier later)
+
+				Quest_Event(self.owner, "fish", strtolower(item_name)); // quest tracking
 			}
 			else // junk list, all these items are garbage
 			{
@@ -158,7 +162,6 @@ void() Fishing_Bobber_SearchNode =
 			}
 
 			AddToInventory(self.owner, item_name, 1);
-			Quest_Event(self.owner, "fish", strtolower(item_name)); // quest tracking
 
 			string eventlog_print = strcat("^4Fishing:^2 You caught ", item_name, "!");
 			stuffcmd(self.owner, sprintf("conecho event %s\n", eventlog_print));
