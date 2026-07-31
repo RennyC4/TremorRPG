@@ -1,0 +1,21 @@
+id=keldran2
+name=Starting out: Mining
+
+description=Keldran is asking me to learn the ropes for mining ore, he's asked me to mine 10 copper ores and return to him
+
+giver=Keldran
+turnin=Keldran
+
+zone=elderfen
+
+objective=mine,copper ore,10,Mine 10 copper ore veins
+
+repeatable=0
+level=1
+
+reward_exp=150
+reward_gold=75
+reward_item=
+reward_item_count=0
+
+next=

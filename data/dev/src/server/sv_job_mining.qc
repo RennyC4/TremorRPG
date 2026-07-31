@@ -4,7 +4,6 @@
 
 .float ore_idle_expire;
 .float ore_nodrop;
-.string ore_id;
 void() ore_remove;
 
 void() mining_ore_think =
@@ -30,10 +29,8 @@ void() mining_oredrop =
 	ore.modelflags = MF_ROTATE;
 	ore.count = 1;
 
-	if (self.level == 0)
-	{
-		ore.netname = "Copper Ore";
-	}
+	if (self.netname)
+		ore.netname = self.netname;
 
 	setmodel(ore, self.mdl);
 	setsize(ore, '-16 -16 -0', '16 16 16');
@@ -190,7 +187,7 @@ void() DoJob_Pick =
 
 	particle_org = trace_endpos - v_forward * 16;
 
-	if (trace_ent.classname == "ore_copper")
+	if (trace_ent.classname == "copper ore")
 	{
 		float required = 0;
 		float skill = self.skill_mining;
@@ -237,7 +234,7 @@ void() DoJob_Pick =
 
 		if (trace_ent.health <= 0)
 		{
-			Quest_Event(self, "mine", strtolower(trace_ent.ore_id));
+			Quest_Event(self, "mine", strtolower(trace_ent.classname));
 			trace_ent.think = ore_remove;
 			trace_ent.nextthink = time + 0.25;
 		}
@@ -258,7 +255,7 @@ void() misc_ore_copper =
 	precache_sound("orebreak.wav");
 
 	self.worldlight = TRUE;
-	self.classname = "ore_copper";
+	self.classname = "copper ore";
 	self.solid = SOLID_NOT;
 	self.takedamage = DAMAGE_NO;
 	self.health = 0;
@@ -266,17 +263,8 @@ void() misc_ore_copper =
 	self.alpha = 0;
 	self.deadflag = DEAD_DEAD;
 	self.angles_y = random()*360;
-
-	if (!self.level)
-	{
-		self.mdl = "models/ore_copper.glb";
-		self.ore_id = "copper";
-	}
-	else
-	{
-		self.mdl = "models/ore_iron.glb"; // todo: add iron ore + model
-		self.ore_id = "iron";
-	}
+	self.mdl = "models/ore_copper.glb";
+	self.netname = "Copper Ore"; // for item grab
 
 	setsize(self, [-16, -16, 0], [16, 16, 48]);
 
