@@ -1,9 +1,9 @@
-50
-Fishing Rod
-0
-1
-1
-2.5
-10
-0
-1
+price=50
+name=Fishing Rod
+attack_type=0
+attack_power_min=1
+attack_power_max=1
+attack_speed=2.5
+attack_stamina=10
+attack_length=0
+required_level=1

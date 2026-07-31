@@ -1,4 +1,4 @@
-100
-Padded Armor
-4
-3
+price=100
+name=Padded Armor
+armor=4
+required_level=3

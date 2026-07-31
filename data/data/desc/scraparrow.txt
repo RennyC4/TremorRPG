@@ -4,5 +4,5 @@
 ^5Power:^7 4 - 7
 ^5Stamina Use:^7 25
 
-^6Item Level:^7 0
-^6Required Level:^7 0
+^6Item Level:^7 1
+^6Required Level:^7 1

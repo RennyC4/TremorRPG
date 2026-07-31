@@ -146,8 +146,23 @@ void(string itemname) CSEv_PlayerSellItem_s =
 	float v = fopen(readfile, FILE_READ);
 	if (v >= 0)
 	{
-		if (line = fgets(v))
-			price = stof(line); // grab price from item file
+		string line;
+		float price = 0;
+
+		while ((line = fgets(v)))
+		{
+			string key;
+			string value;
+
+			key = Item_Key(line);
+			value = Item_Value(line);
+
+			if (key == "price")
+			{
+				price = stof(value);
+				break; // We found it, no need to keep reading.
+			}
+		}
 		fclose(v);
 	}
 	else

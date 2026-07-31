@@ -1,4 +1,4 @@
-5
-Bandit Hood
-1
-1
+price=5
+name=Bandit Hood
+armor=1
+required_level=1

@@ -1,2 +1,1 @@
-1
-Old Boot
+price=1

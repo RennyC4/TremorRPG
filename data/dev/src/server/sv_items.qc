@@ -4,6 +4,38 @@
 
 void(entity player, string itemname, float count) RemoveFromInventory;
 
+//
+// Helper(s)
+//
+
+string(string line) Item_Value =
+{
+    float p;
+
+    p = strstrofs(line, "=", 0);
+
+    if (p == -1)
+        return "";
+
+    return substring(line, p + 1, strlen(line));
+};
+
+string(string line) Item_Key =
+{
+    float p;
+
+    p = strstrofs(line, "=", 0);
+
+    if (p == -1)
+        return "";
+
+    return strtolower(substring(line, 0, p));
+};
+
+//
+//
+//
+
 void(string itemname, float id) Player_EquipItem =
 {
 	string line;
@@ -29,16 +61,36 @@ void(string itemname, float id) Player_EquipItem =
 		float attack_length_e = 0;
 		float required_level = 1;
 
-		// sequential read
-		line = fgets(v); // skip price
-		line = fgets(v); if (line) main_hand_e = line;
-		line = fgets(v); if (line) attack_type_e = stof(line);
-		line = fgets(v); if (line) attack_power_min_e = stof(line);
-		line = fgets(v); if (line) attack_power_max_e = stof(line);
-		line = fgets(v); if (line) attack_speed_e = stof(line);
-		line = fgets(v); if (line) attack_stamina_e = stof(line);
-		line = fgets(v); if (line) attack_length_e = stof(line);
-		line = fgets(v); if (line) required_level = stof(line);
+		// read txt
+		while ((line = fgets(v)))
+		{
+			string key;
+			string value;
+
+			key = Item_Key(line);
+			value = Item_Value(line);
+
+			if (key == "price")
+			{
+				// ignored when equipping
+			}
+			else if (key == "name")
+				main_hand_e = value;
+			else if (key == "attack_type")
+				attack_type_e = stof(value);
+			else if (key == "attack_power_min")
+				attack_power_min_e = stof(value);
+			else if (key == "attack_power_max")
+				attack_power_max_e = stof(value);
+			else if (key == "attack_speed")
+				attack_speed_e = stof(value);
+			else if (key == "attack_stamina")
+				attack_stamina_e = stof(value);
+			else if (key == "attack_length")
+				attack_length_e = stof(value);
+			else if (key == "required_level")
+				required_level = stof(value);
+		}
 
 		if (self.level < required_level)
 		{
@@ -75,10 +127,21 @@ void(string itemname, float id) Player_EquipItem =
 		float armorvalue_e = 0;
 		required_level = 1;
 
-		line = fgets(v); // skip price
-		line = fgets(v); if (line) armorname_e = line;
-		line = fgets(v); if (line) armorvalue_e = stof(line);
-		line = fgets(v); if (line) required_level = stof(line);
+		while ((line = fgets(v)))
+		{
+			string key;
+			string value;
+
+			key = Item_Key(line);
+			value = Item_Value(line);
+
+			if (key == "name")
+				armorname_e = value;
+			else if (key == "armor")
+				armorvalue_e = stof(value);
+			else if (key == "required_level")
+				required_level = stof(value);
+		}
 
 		if (self.level < required_level)
 		{
@@ -101,13 +164,25 @@ void(string itemname, float id) Player_EquipItem =
 		float blockvalue_e = 0;
 		required_level = 1;
 
-		line = fgets(v); // skip price
-		line = fgets(v); if (line) off_hand_e = line;
-		line = fgets(v); if (line) blockvalue_e = stof(line);
-		line = fgets(v); if (line) required_level = stof(line);
+		while ((line = fgets(v)))
+		{
+			string key;
+			string value;
 
-		line = fgets(v); if (line) self.projectile_power_min = stof(line); else self.projectile_power_min = 0;
-		line = fgets(v); if (line) self.projectile_power_max = stof(line); else self.projectile_power_max = 0;
+			key = Item_Key(line);
+			value = Item_Value(line);
+
+			if (key == "name")
+				off_hand_e = value;
+			else if (key == "block")
+				blockvalue_e = stof(value);
+			else if (key == "required_level")
+				required_level = stof(value);
+			else if (key == "projectile_power_min")
+				self.projectile_power_min = stof(value);
+			else if (key == "projectile_power_max")
+				self.projectile_power_max = stof(value);
+		}
 
 		if (self.level < required_level)
 		{
@@ -129,10 +204,21 @@ void(string itemname, float id) Player_EquipItem =
 		float helmetvalue_e = 0;
 		required_level = 1;
 
-		line = fgets(v); // skip price
-		line = fgets(v); if (line) helmetname_e = line;
-		line = fgets(v); if (line) helmetvalue_e = stof(line);
-		line = fgets(v); if (line) required_level = stof(line);
+		while ((line = fgets(v)))
+		{
+			string key;
+			string value;
+
+			key = Item_Key(line);
+			value = Item_Value(line);
+
+			if (key == "name")
+				helmetname_e = value;
+			else if (key == "armor")
+				helmetvalue_e = stof(value);
+			else if (key == "required_level")
+				required_level = stof(value);
+		}
 
 		if (self.level < required_level)
 		{
@@ -274,8 +360,8 @@ void() CSEv_User_UnequipMainhand_ =
     string lname = string_tolower(self.main_hand); // case-insensitive check
 
     // strstrofs() returns -1 if not found, so we check for != -1 directly
-    if (strstrofs(lname, "arrow", 0) == -1)
-        AddToInventory(self, self.main_hand, 1); // Only re-add to inventory if it's NOT an arrow-type item
+	if (strstrofs(lname, "arrow", 0) == -1)
+		AddToInventory(self, self.main_hand, 1); // Only re-add to inventory if it's NOT an arrow-type item
 
     // Reset combat stats to unarmed
     self.attack_power_min = 1;

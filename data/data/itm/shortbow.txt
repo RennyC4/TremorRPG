@@ -1,6 +1,6 @@
-30
-Short Bow
-0
-0
-1
-3
+price=30
+name=Short Bow
+block=0
+required_level=1
+projectile_power_min=1
+projectile_power_max=3

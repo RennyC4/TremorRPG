@@ -1,9 +1,9 @@
-10
-Broken Sword
-1
-2
-6
-1.2
-25
-64
-0
+price=10
+name=Broken Sword
+attack_type=1
+attack_power_min=2
+attack_power_max=6
+attack_speed=1.2
+attack_stamina=25
+attack_length=75
+required_level=1

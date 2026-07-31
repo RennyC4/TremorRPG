@@ -1,9 +1,9 @@
-5
-Wood Club
-3
-4
-7
-1.5
-40
-75
-0
+price=5
+name=Wood Club
+attack_type=3
+attack_power_min=4
+attack_power_max=7
+attack_speed=1.5
+attack_stamina=40
+attack_length=95
+required_level=0

@@ -1,4 +1,4 @@
-7
-Broken Buckler
-4
-0
+price=10
+name=Broken Buckler
+block=4
+required_level=1

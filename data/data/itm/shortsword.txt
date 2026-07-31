@@ -1,9 +1,9 @@
-25
-Short Sword
-1
-4
-7
-1
-25
-64
-2
+price=25
+name=Short Sword
+attack_type=1
+attack_power_min=4
+attack_power_max=7
+attack_speed=1
+attack_stamina=25
+attack_length=64
+required_level=1

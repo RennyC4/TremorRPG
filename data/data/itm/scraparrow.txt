@@ -1,9 +1,9 @@
-1
-Scrap Arrow
-4
-4
-7
-1
-25
-0
-0
+price=1
+name=Scrap Arrow
+attack_type=4
+attack_power_min=4
+attack_power_max=7
+attack_speed=1
+attack_stamina=25
+attack_length=0
+required_level=1

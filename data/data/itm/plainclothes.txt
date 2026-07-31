@@ -1,4 +1,4 @@
-5
-Plain Clothes
-0
-0
+price=5
+name=Plain Clothes
+armor=0
+required_level=1
