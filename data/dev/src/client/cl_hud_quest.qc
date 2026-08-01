@@ -405,66 +405,99 @@ void() QuestTracker_Update =
 // Quest Tracker
 //
 
+//
+// Quest Tracker
+//
+
 void() Draw_QuestTracker =
 {
 	float quest_tracker_enabled = TRUE;
 
-    float quest_tracker_width = UI(180);
-    float quest_tracker_padding = UI(6);
+	float quest_tracker_width = UI(180);
+	float quest_tracker_padding = UI(6);
 
-    float i;
-    float y;
-    float visible;
-    float needed;
-    float alpha;
-    float offset;
+	float i;
+	float y;
+	float visible;
+	float alpha;
+	float offset;
+	float objective;
 
-    vector pos;
-    vector size;
+	vector pos;
+	vector size;
 
-    string color;
-    string progress;
+	string color;
+	string progress;
+	string collapse_text;
 
-    if (!quest_tracker_enabled)
-        return;
+	if (!quest_tracker_enabled)
+		return;
 
-    //
-    // Count visible quests
-    //
+	//
+	// Count visible quests
+	//
 
-    visible = 0;
-    for (i = 0; i < quest_count; i++)
-    {
-        if (quest_tracker_alpha[i] > 0)
-            visible++;
-    }
+	visible = 0;
+	for (i = 0; i < quest_count; i++)
+	{
+		if (quest_tracker_alpha[i] > 0)
+			visible++;
+	}
 
-    if (!visible)
-        return;
+	if (!visible)
+		return;
 
-    //
-    // Dynamic panel size
-    //
+	//
+	// Dynamic panel size
+	//
 
-    size_x = quest_tracker_width;
+	size_x = quest_tracker_width;
 
 	if (quest_tracker_collapsed)
 		size_y = UI(20);
 	else
-		size_y = UI(30) + (visible * UI(38));
+	{
+		size_y = UI(22);
 
-    pos_x = g_width - size_x - UI(8);
-    pos_y = UI(180);
+		for (i = 0; i < quest_count; i++)
+		{
+			if (quest_tracker_alpha[i] <= 0)
+				continue;
 
-    drawfill(pos, size, '0 0 0', 0.25);
+			if (quest_log[i].status != QUEST_ACTIVE &&
+				quest_log[i].status != QUEST_COMPLETE)
+				continue;
 
-    drawstring(pos + [quest_tracker_padding, UI(8), 0], "^3Quests", MENU_TEXT_SMALL, '1 1 1', 1, 0);
+			size_y += UI(12);
+
+			for (objective = 0; objective < quest_log[i].objective_count; objective++)
+				size_y += UI(8);
+
+			size_y += UI(8);
+		}
+	}
+
+	pos_x = g_width - size_x - UI(8);
+	pos_y = UI(180);
+
+	pos = [pos_x, pos_y, 0];
+	size = [size_x, size_y, 0];
+
+	//
+	// Background
+	//
+
+	drawfill(pos, size, '0 0 0', 0.25);
+
+	//
+	// Header
+	//
+
+	drawstring(pos + [quest_tracker_padding, UI(8), 0], "^3Quests", MENU_TEXT_SMALL, '1 1 1', 1, 0);
 
 	//
 	// Collapse button
 	//
-
-	string collapse_text;
 
 	if (quest_tracker_collapsed)
 		collapse_text = " + ";
@@ -473,33 +506,32 @@ void() Draw_QuestTracker =
 
 	my_button("quest_tracker_collapse", pos + [size_x - UI(28), UI(4)], [UI(20), UI(12)], collapse_text, "") ? quest_tracker_collapsed = !quest_tracker_collapsed : 0;
 
-    y = UI(28);
-
 	if (quest_tracker_collapsed)
 		return;
 
-    //
-    // PASS 1
-    // Draw ACTIVE quests first
-    //
+	y = UI(22);
 
-    for (i = 0; i < quest_count; i++)
-    {
-        if (quest_log[i].status != QUEST_ACTIVE)
-            continue;
+	//
+	// PASS 1
+	// Draw ACTIVE quests first
+	//
 
-        alpha = quest_tracker_alpha[i];
+	for (i = 0; i < quest_count; i++)
+	{
+		if (quest_log[i].status != QUEST_ACTIVE)
+			continue;
 
-        if (alpha <= 0)
-            continue;
+		alpha = quest_tracker_alpha[i];
 
-        offset = (1 - alpha) * UI(10);
+		if (alpha <= 0)
+			continue;
 
-        drawstring(pos + [quest_tracker_padding + offset, y, 0], strcat("^7", quest_log[i].name), MENU_TEXT_SMALL, '1 1 1', alpha, 0);
+		offset = (1 - alpha) * UI(10);
 
-        y += UI(16);
+		drawstring(pos + [quest_tracker_padding + offset, y, 0], strcat("^7", quest_log[i].name), MENU_TEXT_SMALL, '1 1 1', alpha, 0);
 
-		float objective;
+		y += UI(12);
+
 		for (objective = 0; objective < quest_log[i].objective_count; objective++)
 		{
 			color = "^3";
@@ -511,41 +543,39 @@ void() Draw_QuestTracker =
 
 			drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], progress, MENU_TEXT_SMALL, '1 1 1', alpha, 0);
 
-			y += UI(14);
-		}
-
-        y += UI(22);
-    }
-
-    //
-    // PASS 2
-    // Draw COMPLETED quests
-    //
-
-    for (i = 0; i < quest_count; i++)
-    {
-        if (quest_log[i].status != QUEST_COMPLETE)
-            continue;
-
-        alpha = quest_tracker_alpha[i];
-
-        if (alpha <= 0)
-            continue;
-
-        offset = (1 - alpha) * UI(10);
-
-        drawstring(pos + [quest_tracker_padding + offset, y, 0], strcat("^2", quest_log[i].name), MENU_TEXT_SMALL, '1 1 1', alpha, 0);
-
-        y += UI(16);
-
-		float objective;
-		for (objective = 0; objective < quest_log[i].objective_count; objective++)
-		{
-			drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], strcat("^2", quest_log[i].objective_text[objective]), MENU_TEXT_SMALL, '1 1 1', alpha, 0);
-
-			y += UI(14);
+			y += UI(8);
 		}
 
 		y += UI(8);
-    }
+	}
+
+	//
+	// PASS 2
+	// Draw COMPLETED quests
+	//
+
+	for (i = 0; i < quest_count; i++)
+	{
+		if (quest_log[i].status != QUEST_COMPLETE)
+			continue;
+
+		alpha = quest_tracker_alpha[i];
+
+		if (alpha <= 0)
+			continue;
+
+		offset = (1 - alpha) * UI(10);
+
+		drawstring(pos + [quest_tracker_padding + offset, y, 0], strcat("^2", quest_log[i].name), MENU_TEXT_SMALL, '1 1 1', alpha, 0);
+
+		y += UI(12);
+
+		for (objective = 0; objective < quest_log[i].objective_count; objective++)
+		{
+			drawstring(pos + [quest_tracker_padding + UI(14) + offset, y, 0], strcat("^2", quest_log[i].objective_text[objective]), MENU_TEXT_SMALL, '1 1 1', alpha, 0);
+			y += UI(8);
+		}
+
+		y += UI(4);
+	}
 };

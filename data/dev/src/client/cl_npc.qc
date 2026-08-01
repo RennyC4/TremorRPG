@@ -234,7 +234,7 @@ void() User_NPCDialogue =
 	//
 
 	vector pos = [UI(0), UI(0)];
-	vector size = [UI(450), UI(325)];
+	vector size = [UI(450), UI(375)];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
 	sui_push_frame(pos, size);
@@ -250,17 +250,6 @@ void() User_NPCDialogue =
 	sui_text([UI(2.5), UI(2.5)], MENU_TEXT_MEDIUM, strcat("^1", npc_name), MENU_TEXT_1, 1, 0);
 
 	//
-	// QUEST SPACE
-	//
-
-	float quest_space;
-
-	quest_space = 0;
-
-	if (npc_available_quest != "" || npc_turnin_quest != "")
-		quest_space = UI(50);
-
-	//
 	// BUTTONS
 	//
 
@@ -268,7 +257,7 @@ void() User_NPCDialogue =
 	vector btn_large = [UI(85), UI(22.5)];
 
 	//
-	// LEFT (Leave)
+	// BOTTOM BUTTONS
 	//
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
@@ -276,14 +265,9 @@ void() User_NPCDialogue =
 	if (my_button("npc_leave", [UI(2.5), UI(-2.5)], btn_small, "Leave", ""))
 		sendevent("ShutDownMenus", "");
 
-	//
-	// RIGHT (Buy/Sell/etc)
-	//
-
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
 
 	float buysell = getstatf(STAT_VENDOR);
-
 	if (buysell == 1)
 	{
 		if (my_button("npc_buy", [UI(-2.5), UI(-2.5)], btn_large, "Buy / Sell", ""))
@@ -301,34 +285,45 @@ void() User_NPCDialogue =
 	}
 
 	//
-	// CHAT PANEL
+	// DIALOGUE PANEL
 	//
 
-	vector panel_pos = [UI(2.5), UI(25)];
-	vector panel_size = size - [UI(5), UI(50)] - [0, quest_space];
+	vector dialogue_pos;
+	vector dialogue_size;
+
+	dialogue_pos = [UI(2.5), UI(25)];
+	dialogue_size_x = size_x - UI(5);
+	dialogue_size_y = UI(130);
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-	sui_border_box(panel_pos, panel_size, UI(2), MENU_BORDER, 0.3, 0);
-	sui_fill(panel_pos, panel_size, MENU_BG_DARK, 0.75, 0);
+	sui_border_box(dialogue_pos, dialogue_size, UI(2), MENU_BORDER, 0.3, 0);
+
+	sui_fill(dialogue_pos, dialogue_size, MENU_BG_DARK, 0.75, 0);
 
 	//
-	// TEXT AREA (WITH CLIPPING)
+	// DIALOGUE TEXT
 	//
 
-	sui_push_frame(panel_pos, panel_size);
+	sui_push_frame(dialogue_pos, dialogue_size);
 	sui_clip_to_frame();
 
-	vector linepos = [UI(2.5), UI(2.5)];
-	float max_width = 36 * UI_Scale();
-	float i, numlines;
+	vector linepos;
+	linepos = [UI(2.5), UI(2.5)];
 
+	float max_width;
+	max_width = 36 * UI_Scale();
+
+	float i;
+	float numlines;
 	numlines = tokenizebyseparator(npc_dialogue, "\n");
 
 	for (i = 0; i < numlines; i++)
 	{
-		string line = argv(i);
+		string line;
+		line = argv(i);
 
-		float used = UI_DrawWrappedText(linepos, max_width, line);
+		float used;
+		used = UI_DrawWrappedText(linepos, max_width, line);
 
 		linepos_y += used * UI(10);
 		linepos_y += UI(5);
@@ -338,50 +333,74 @@ void() User_NPCDialogue =
 	sui_pop_frame();
 
 	//
-	// QUEST BUTTONS
+	// QUEST PANEL
 	//
 
-	if (npc_available_quest != "" || npc_turnin_quest != "")
+	float quest_count;
+
+	quest_count = npc_available_count + npc_turnin_count;
+	if (quest_count > 0)
 	{
-		vector quest_pos = [UI(2.5), size_y - UI(75)];
+		vector quest_pos;
+		vector quest_size;
 
-		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+		quest_pos = [UI(2.5), UI(165)];
 
-		if (npc_available_quest != "")
+		quest_size_x = size_x - UI(5);
+		quest_size_y = UI(150);
+
+		sui_border_box(quest_pos, quest_size, UI(2), MENU_BORDER, 0.3, 0);
+		sui_fill(quest_pos, quest_size, MENU_BG_DARK, 0.75, 0);
+
+		//
+		// QUEST LIST
+		//
+
+		vector item_pos;
+		sui_list_view_begin("npc_quest_list", [quest_pos_x + UI(2), quest_pos_y + UI(2)], [quest_size_x - UI(4), quest_size_y - UI(4)], [UI(180), UI(25)], quest_count, npc_quest_scroll, [UI(8), UI(8)]);
+
+		while ((i = sui_list_item(item_pos)) >= 0)
 		{
-			
-			if (my_button("npc_preview_quest", quest_pos, [UI(150), UI(22.5)], strcat("^2! ^7", npc_available_name), ""))
+			//
+			// AVAILABLE QUESTS
+			//
+
+			if (i < npc_available_count)
 			{
-				localsound("menu/menu_next.wav");
-				sendevent("QuestPreview", "s", npc_available_quest);
+				if (my_button(strcat("npc_offer_", ftos(i)), item_pos, [UI(180), UI(22.5)], strcat("^2! ^7", npc_available_name[i]), ""))
+				{
+					localsound("menu/menu_next.wav");
+					sendevent("QuestPreview", "s", npc_available_id[i]);
+				}
 			}
 
-			quest_pos_y += UI(25);
+			//
+			// TURN INS
+			//
+
+			else
+			{
+				float turn_index;
+				turn_index = i - npc_available_count;
+
+				if (my_button(strcat("npc_turnin_", ftos(turn_index)), item_pos, [UI(180), UI(22.5)], strcat("^3?^7 ", npc_turnin_name[turn_index]), ""))
+				{
+					localsound("q_acpt.wav");
+					sendevent("QuestTurnIn", "s", npc_turnin_id[turn_index]);
+				}
+			}
 		}
 
-		if (npc_turnin_quest != "")
-		{
-			if (my_button("npc_turnin_quest", quest_pos, [UI(150), UI(22.5)], strcat("^3?^7 ", npc_turnin_name), ""))
-				sendevent("QuestTurnIn", "s", npc_turnin_quest);
-		}
+		sui_list_view_end();
 	}
-
 
 	//
 	// CLOSE BUTTON
 	//
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-
-	if (my_button("close",
-		[UI(0), UI(0)],
-		[UI(15), UI(15)],
-		"X",
-		""))
-	{
+	if (my_button("close", [UI(0), UI(0)], [UI(15), UI(15)], "X", ""))
 		sendevent("ShutDownMenus", "");
-	}
-
 
 	sui_pop_frame();
 };

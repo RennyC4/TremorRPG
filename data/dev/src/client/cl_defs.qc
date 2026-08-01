@@ -2380,10 +2380,18 @@ string current_spell;
 // NPC dialogue
 string npc_name;
 string npc_dialogue;
-string npc_available_quest;
-string npc_turnin_quest;
-string npc_available_name;
-string npc_turnin_name;
+
+// NPC quests
+float npc_available_count;
+float npc_turnin_count;
+
+string npc_available_id[32];
+string npc_available_name[32];
+
+string npc_turnin_id[32];
+string npc_turnin_name[32];
+
+vector npc_quest_scroll;
 
 // Tooltips
 vector tt_pos;

@@ -692,20 +692,67 @@ void() CSQC_Parse_Event =
             inventory_count[i] = readfloat();
         }
 	}
+	//
 	// NPC interaction update
+	//
+
 	if (event == CSQC_NPCINFO)
 	{
+		float b;
+
 		npc_name = readstring();
 		npc_dialogue = readstring();
-		npc_available_quest = readstring();
-		npc_available_name = readstring();
-		npc_turnin_quest = readstring();
-		npc_turnin_name = readstring();
 
-		// debugging
-		/*
-		print(sprintf("^5NPC UI Quest Data:^7 %s / %s\n", npc_available_quest, npc_turnin_quest));
-		*/
+		//
+		// Available quests
+		//
+
+		npc_available_count = readbyte();
+
+		if (npc_available_count > 32)
+			npc_available_count = 32;
+
+		for (b = 0; b < npc_available_count; b++)
+		{
+			npc_available_id[b] = readstring();
+			npc_available_name[b] = readstring();
+		}
+
+		//
+		// Clear unused slots
+		//
+
+		for (; b < 32; b++)
+		{
+			npc_available_id[b] = "";
+			npc_available_name[b] = "";
+		}
+
+		//
+		// Turn-in quests
+		//
+
+		npc_turnin_count = readbyte();
+		if (npc_turnin_count > 32)
+			npc_turnin_count = 32;
+
+		for (b = 0; b < npc_turnin_count; b++)
+		{
+			npc_turnin_id[b] = readstring();
+			npc_turnin_name[b] = readstring();
+		}
+
+		//
+		// Clear unused slots
+		//
+
+		for (; b < 32; b++)
+		{
+			npc_turnin_id[b] = "";
+			npc_turnin_name[b] = "";
+		}
+
+		print(sprintf("NPC quests: Available %g / Turnins %g\n", npc_available_count, npc_turnin_count)); // debugging
 	}
 	// inventory update from an NPC
 	if (event == CSQC_INVENTORY_NPC)

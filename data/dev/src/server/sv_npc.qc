@@ -10,9 +10,8 @@ void() npc_ai_think;
 .string npc_quests;
 .string npc_turnins;
 
-string(entity npc, entity player) NPC_HasAvailableQuest;
-string(entity npc, entity player) NPC_HasTurnInQuest;
-void(entity player, entity npc) NPC_LoadQuestOptions;
+float(entity npc, entity player) NPC_CountAvailableQuests;
+float(entity npc, entity player) NPC_CountTurnInQuests;
 
 //
 // Helper functions
@@ -45,24 +44,183 @@ void(entity npc) NPC_LoadDialogue =
 
 void(entity npc, entity player) NPC_SendDialogue =
 {
+	string line;
+	string id;
+	float pos;
+	float available_count;
+	float turnin_count;
+	entity q;
+
 	if (npc.npc_dialog == "")
 		npc.npc_dialog = "I have nothing to say.";
-	
-	NPC_LoadQuestOptions(player, npc);
+
+	//
+	// Count available quests
+	//
+
+	available_count = NPC_CountAvailableQuests(npc, player);
+
+	//
+	// Count turn-ins
+	//
+
+	turnin_count = NPC_CountTurnInQuests(npc, player);
+
+	//
+	// Send packet
+	//
 
 	msg_entity = player;
 
 	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
 	WriteByte(MSG_ONE, CSQC_NPCINFO);
 
+	//
+	// Basic NPC information
+	//
+
 	WriteString(MSG_ONE, npc.netname);
 	WriteString(MSG_ONE, npc.npc_dialog);
 
-	WriteString(MSG_ONE, player.npc_available_quest);
-	WriteString(MSG_ONE, player.npc_available_name);
+	//
+	// Available quests
+	//
 
-	WriteString(MSG_ONE, player.npc_turnin_quest);
-	WriteString(MSG_ONE, player.npc_turnin_name);
+	WriteByte(MSG_ONE, available_count);
+
+	line = npc.npc_quests;
+	while (line != "")
+	{
+		pos = strstrofs(line, "\n", 0);
+
+		if (pos >= 0)
+		{
+			id = substring(line, 0, pos);
+			line = substring(line, pos + 1, strlen(line));
+		}
+		else
+		{
+			id = line;
+			line = "";
+		}
+
+
+		id = strtolower(id);
+
+
+		if (Quest_CanOffer(player, id))
+		{
+			q = Quest_Find(id);
+
+			if (q)
+			{
+				WriteString(MSG_ONE, q.quest_id);
+				WriteString(MSG_ONE, q.quest_name);
+			}
+		}
+	}
+
+	//
+	// Turn-in quests
+	//
+
+	WriteByte(MSG_ONE, turnin_count);
+
+	line = npc.npc_turnins;
+	while (line != "")
+	{
+		pos = strstrofs(line, "\n", 0);
+
+		if (pos >= 0)
+		{
+			id = substring(line, 0, pos);
+			line = substring(line, pos + 1, strlen(line));
+		}
+		else
+		{
+			id = line;
+			line = "";
+		}
+
+		id = strtolower(id);
+		if (Quest_CanTurnIn(player, id))
+		{
+			q = Quest_Find(id);
+
+			if (q)
+			{
+				WriteString(MSG_ONE, q.quest_id);
+				WriteString(MSG_ONE, q.quest_name);
+			}
+		}
+	}
+};
+
+float(entity npc, entity player) NPC_CountAvailableQuests =
+{
+	string line;
+	string id;
+	float count;
+	float pos;
+
+	count = 0;
+
+	line = npc.npc_quests;
+	while (line != "")
+	{
+		pos = strstrofs(line, "\n", 0);
+
+		if (pos >= 0)
+		{
+			id = substring(line, 0, pos);
+			line = substring(line, pos + 1, strlen(line));
+		}
+		else
+		{
+			id = line;
+			line = "";
+		}
+
+		id = strtolower(id);
+		if (Quest_CanOffer(player, id))
+			count++;
+	}
+
+	return count;
+};
+
+
+float(entity npc, entity player) NPC_CountTurnInQuests =
+{
+	string line;
+	string id;
+	float count;
+	float pos;
+
+	count = 0;
+
+	line = npc.npc_turnins;
+	while (line != "")
+	{
+		pos = strstrofs(line, "\n", 0);
+
+		if (pos >= 0)
+		{
+			id = substring(line, 0, pos);
+			line = substring(line, pos + 1, strlen(line));
+		}
+		else
+		{
+			id = line;
+			line = "";
+		}
+
+		id = strtolower(id);
+		if (Quest_CanTurnIn(player, id))
+			count++;
+	}
+
+	return count;
 };
 
 //
@@ -89,48 +247,6 @@ void(entity e) NPC_CommitState =
 	e.last_level = e.level;
 	e.last_ai_mode = e.ai_mode;
 	e.last_movetype = e.movetype;
-};
-
-void(entity player, entity npc) NPC_LoadQuestOptions =
-{
-	string available;
-	string turnin;
-	entity q;
-
-
-	player.npc_available_quest = "";
-	player.npc_available_name = "";
-
-	player.npc_turnin_quest = "";
-	player.npc_turnin_name = "";
-
-
-	available = NPC_HasAvailableQuest(npc, player);
-
-	if (available != "")
-	{
-		q = Quest_Find(available);
-
-		if (q)
-		{
-			player.npc_available_quest = available;
-			player.npc_available_name = q.quest_name;
-		}
-	}
-
-
-	turnin = NPC_HasTurnInQuest(npc, player);
-
-	if (turnin != "")
-	{
-		q = Quest_Find(turnin);
-
-		if (q)
-		{
-			player.npc_turnin_quest = turnin;
-			player.npc_turnin_name = q.quest_name;
-		}
-	}
 };
 
 void(string id) CSEv_QuestAccept_s =
@@ -325,44 +441,6 @@ string(entity npc, entity player) NPC_HasAvailableQuest =
 	return "";
 };
 
-
-//
-// Check if NPC has a quest ready for turn in
-//
-// Returns quest id or ""
-//
-
-string(entity npc, entity player) NPC_HasTurnInQuest =
-{
-	string line;
-	float pos;
-	string id;
-
-	line = npc.npc_turnins;
-
-	while (line != "")
-	{
-		pos = strstrofs(line, "\n", 0);
-
-		if (pos >= 0)
-		{
-			id = substring(line, 0, pos);
-			line = substring(line, pos + 1, strlen(line));
-		}
-		else
-		{
-			id = line;
-			line = "";
-		}
-
-		id = strtolower(id);
-
-		if (Quest_CanTurnIn(player, id))
-			return id;
-	}
-
-	return "";
-};
 
 //
 // npc entity
