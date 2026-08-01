@@ -751,8 +751,6 @@ void() CSQC_Parse_Event =
 			npc_turnin_id[b] = "";
 			npc_turnin_name[b] = "";
 		}
-
-		print(sprintf("NPC quests: Available %g / Turnins %g\n", npc_available_count, npc_turnin_count)); // debugging
 	}
 	// inventory update from an NPC
 	if (event == CSQC_INVENTORY_NPC)

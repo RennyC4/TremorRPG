@@ -1,6 +1,10 @@
 //
 // Estimate string width for drawstring alignment
 //
+float quest_visible_count;
+float quest_visible_index[64];
+float quest_abandon_confirm;
+float quest_abandon_index;
 
 float(string text, float size) UI_StringWidth =
 {
@@ -37,6 +41,7 @@ float(string text, float size) UI_StringWidth =
 
 void() User_QuestLogScreen =
 {
+	float i;
     float hp = getstatf(STAT_HEALTH);
 
     if (hp <= 0)
@@ -66,8 +71,19 @@ void() User_QuestLogScreen =
     // Safety selection
     //
 
-    if (quest_selected >= quest_count)
-        quest_selected = 0;
+	quest_visible_count = 0;
+
+	for (i = 0; i < quest_count; i++)
+	{
+		if (quest_log[i].status == QUEST_LOCKED)
+			continue;
+
+		quest_visible_index[quest_visible_count] = i;
+		quest_visible_count++;
+	}
+
+	if (quest_selected >= quest_visible_count)
+		quest_selected = 0;
 
     //
     // Title
@@ -97,40 +113,39 @@ void() User_QuestLogScreen =
     sui_text([UI(5),UI(5)], MENU_TEXT_SMALL * UI_TextScale(), strcat("^5Quests (",ftos(quest_count),")"), MENU_TEXT_1, 1, 0);
 
     vector row = [UI(5),UI(22)];
-    float i;
 
-    for (i = 0; i < quest_count; i++)
-    {
-        string color;
+	for (i = 0; i < quest_visible_count; i++)
+	{
+		float q;
+		string color;
 
-		switch(quest_log[i].status)
+		q = quest_visible_index[i];
+
+		switch(quest_log[q].status)
 		{
 			case QUEST_ACTIVE:
-				color = "^3"; // Yellow - in progress
+				color = "^3";
 				break;
 
 			case QUEST_COMPLETE:
-				color = "^2"; // Green - completed
+				color = "^2";
 				break;
 
 			case QUEST_AVAILABLE:
-				color = "^5"; // Blue (or keep your current choice)
+				color = "^5";
 				break;
 
 			default:
-				color = "^7"; // White
+				color = "^7";
 		}
 
-        //
-        // Highlight selected quest
-        //
+		if (q == quest_selected)
+			sui_fill(row-[UI(2),UI(1)], [UI(140),UI(13)], '0.35 0.3 0', 0.5, 0);
 
-        if (i == quest_selected)
-            sui_fill(row-[UI(2),UI(1)], [UI(140),UI(13)], '0.35 0.3 0', 0.5, 0);
+		my_button(strcat("quest_",ftos(q)), row, [UI(140),UI(12)], strcat(color,quest_log[q].name), "") ? quest_selected = q : 0;
 
-        my_button(strcat("quest_",ftos(i)), row, [UI(140),UI(12)], strcat(color,quest_log[i].name), "") ? quest_selected = i : 0;
-        row_y += UI(14);
-    }
+		row_y += UI(14);
+	}
 
     sui_pop_frame();
 
@@ -146,7 +161,7 @@ void() User_QuestLogScreen =
     sui_fill([0,0],detail_size,MENU_BG_DARK,0.5,0);
     sui_border_box([0,0],detail_size,1,MENU_BORDER,0.3,0);
 
-    if (quest_count > 0 && quest_selected < quest_count)
+    if (quest_visible_count > 0 && quest_selected < quest_count)
 	{
 		float q;
 		float objective;
@@ -258,9 +273,47 @@ void() User_QuestLogScreen =
 			text_y += UI(12);
 			sui_text(text, MENU_TEXT_SMALL * UI_TextScale(), strcat("^7Item: ^5", quest_log[q].reward_item, " x", ftos(quest_log[q].reward_item_count)), MENU_TEXT_1, 1, 0);
 		}
+		
+		//
+		// Abandon Quest
+		//
+
+		if (quest_log[q].status == QUEST_ACTIVE)
+			my_button("abandon_quest", [UI(80), detail_size_y - UI(25)], [UI(100), UI(16)], "^1Abandon", "") ? (quest_abandon_confirm = TRUE, quest_abandon_index = q) : 0;
 	}
 
     sui_pop_frame();
+
+	if (quest_abandon_confirm)
+	{
+		vector confirm_pos = [UI(100), UI(100)];
+		vector confirm_size = [UI(250), UI(100)];
+
+		sui_push_frame(confirm_pos, confirm_size);
+
+		sui_fill([0,0], confirm_size, MENU_BG_DARK, 0.9, 0);
+		sui_border_box([0,0], confirm_size, 1, MENU_BORDER, 0.5, 0);
+
+		sui_set_align([SUI_ALIGN_CENTER,SUI_ALIGN_START]);
+
+		sui_text([0,UI(10)], MENU_TEXT_SMALL * UI_TextScale(), "^1Abandon Quest?", MENU_TEXT_1, 1, 0);
+
+		sui_text([0,UI(32)], MENU_TEXT_SMALL * UI_TextScale(), quest_log[quest_abandon_index].name, MENU_TEXT_1, 1, 0);
+
+		sui_set_align([SUI_ALIGN_START,SUI_ALIGN_START]);
+
+		my_button("abandon_yes", [UI(35),UI(65)], [UI(70),UI(16)], "^2Yes", "") ?
+		(
+			localsound("q_aban.wav"),
+			sendevent("User_AbandonQuest", "s", quest_log[quest_abandon_index].id),
+			quest_abandon_confirm = FALSE
+		) : 0;
+
+		my_button("abandon_no", [UI(145),UI(65)], [UI(70),UI(16)], "^7No", "") ?
+			quest_abandon_confirm = FALSE : 0;
+
+		sui_pop_frame();
+	}
 
     //
     // Close

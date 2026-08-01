@@ -800,6 +800,8 @@ void() Player_Screen =
 		}		
 		if (player_menu == MENU_QUESTPREVIEW)
 		{
+			QuestTracker_Update(); // must be called before Draw_QuestTracker
+			Draw_QuestTracker();
 			User_NPCQuestPreview();
 		}		
 

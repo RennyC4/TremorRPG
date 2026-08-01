@@ -289,6 +289,9 @@ void(entity player) Quest_SendLog =
 		if (player.player_quest_status[i] == QUEST_TURNEDIN)
 			continue;
 
+		if (player.player_quest_status[i] == QUEST_LOCKED)
+			continue;
+
 		send_count++;
 	}
 
@@ -322,6 +325,8 @@ void(entity player) Quest_SendLog =
 		if (player.player_quest_status[i] == QUEST_AVAILABLE)
 			continue;
 		if (player.player_quest_status[i] == QUEST_TURNEDIN)
+			continue;
+		if (player.player_quest_status[i] == QUEST_LOCKED)
 			continue;
 
 		q = Quest_PlayerDefinition(player, i);
@@ -659,16 +664,16 @@ float(entity player, string id) Quest_CanOffer =
 	//
 
 	float slot;
-
 	slot = Quest_PlayerHas(player, id);
 
 	if (slot >= 0)
 	{
-		// Already unlocked but not accepted yet?
 		if (player.player_quest_status[slot] == QUEST_AVAILABLE)
 			return TRUE;
 
-		// Already active, complete, or turned in.
+		if (player.player_quest_status[slot] == QUEST_LOCKED)
+			return TRUE;
+
 		return FALSE;
 	}
 
@@ -679,17 +684,25 @@ float(entity player, string id) Quest_CanOffer =
 // Accept quest
 //
 
+//
+// Accept quest
+//
+
 void(entity player, string id) Quest_Accept =
 {
 	entity q;
 
 	float i;
-	float slot = -1;
+	float slot;
+	float objective;
+
+	slot = -1;
 
 	if (player.classname != "player")
 		return;
 
 	q = Quest_Find(id);
+
 	if (!q)
 	{
 		dprint(sprintf("^1Quest_Accept: Quest not found: %s\n", id));
@@ -707,25 +720,43 @@ void(entity player, string id) Quest_Accept =
 	}
 
 	//
-	// Already accepted?
+	// Check existing quest slots
 	//
 
 	for (i = 0; i < player.player_quest_count; i++)
 	{
-		if (player.player_quest_id[i] == id)
-		{
-			if (player.player_quest_status[i] == QUEST_AVAILABLE)
-			{
-				slot = i;
-				break;
-			}
+		if (player.player_quest_id[i] != id)
+			continue;
 
-			if (player.player_quest_status[i] == QUEST_ACTIVE ||
-				player.player_quest_status[i] == QUEST_COMPLETE)
-			{
-				dprint("^3Quest already active\n");
-				return;
-			}
+		//
+		// Reuse abandoned quest slot
+		//
+
+		if (player.player_quest_status[i] == QUEST_LOCKED)
+		{
+			slot = i;
+			break;
+		}
+
+		//
+		// Accept previously unlocked quest
+		//
+
+		if (player.player_quest_status[i] == QUEST_AVAILABLE)
+		{
+			slot = i;
+			break;
+		}
+
+		//
+		// Already active/completed
+		//
+
+		if (player.player_quest_status[i] == QUEST_ACTIVE ||
+			player.player_quest_status[i] == QUEST_COMPLETE)
+		{
+			dprint("^3Quest already active\n");
+			return;
 		}
 	}
 
@@ -733,31 +764,36 @@ void(entity player, string id) Quest_Accept =
 	// Quest limit
 	//
 
-	if (player.player_quest_count >= 64)
-	{
-		dprint("^1Quest_Accept: Quest limit reached\n");
-		return;
-	}
-
 	if (slot < 0)
-		slot = player.player_quest_count;
-
-	if (slot < 0 || slot >= 64)
 	{
-		dprint("^1Quest_Accept: Invalid quest slot\n");
-		return;
+		if (player.player_quest_count >= MAX_QUESTS)
+		{
+			dprint("^1Quest_Accept: Quest limit reached\n");
+			return;
+		}
+
+		slot = player.player_quest_count;
+		player.player_quest_count++;
 	}
 
 	//
-	// Add quest
+	// Add / reactivate quest
 	//
 
 	player.player_quest_id[slot] = q.quest_id;
 	player.player_quest_status[slot] = QUEST_ACTIVE;
 	player.player_quest_progress[slot] = 0;
 
-	if (slot == player.player_quest_count)
-		player.player_quest_count++;
+	//
+	// Reset objective progress
+	//
+
+	for (objective = 0; objective < MAX_QUEST_OBJECTIVES; objective++)
+		player.player_quest_objective_progress[Quest_ObjectiveIndex(slot, objective)] = 0;
+
+	//
+	// Save and update client
+	//
 
 	Quest_SavePlayer(player);
 	Quest_SendLog(player);
@@ -1289,4 +1325,40 @@ void(entity player) Quest_LoadPlayer =
 		player.player_quest_count++;
 	}
 	fclose(f);
+};
+
+//
+// Abandon Quest
+//
+
+void(string id) CSEv_User_AbandonQuest_s =
+{
+	float i;
+	float objective;
+
+	dprint(sprintf("Abandon Quest: %s\n", id));
+
+	if (self.classname != "player")
+		return;
+
+	for (i = 0; i < self.player_quest_count; i++)
+	{
+		dprint(sprintf("Checking quest: %s\n", self.player_quest_id[i]));
+
+		if (self.player_quest_id[i] != id)
+			continue;
+
+		dprint("Quest found, abandoning\n");
+
+		self.player_quest_status[i] = QUEST_LOCKED;
+		self.player_quest_progress[i] = 0;
+
+		for (objective = 0; objective < MAX_QUEST_OBJECTIVES; objective++)
+			self.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] = 0;
+
+		break;
+	}
+
+	Quest_SavePlayer(self);
+	Quest_SendLog(self);
 };
