@@ -1726,6 +1726,7 @@ const float CSQC_QUESTINFO = 13;
 const float CSQC_QUEST_NOTIFY = 14; // accept quest
 const float CSQC_QUEST_COMPLETE = 15; // finish quest
 const float CSQC_QUEST_PREVIEW = 16; // preview quest accept/decline
+const float CSQC_QUEST_OBJECTIVE_COMPLETE = 17;
 
 // Function defs
 .void()		th_die;

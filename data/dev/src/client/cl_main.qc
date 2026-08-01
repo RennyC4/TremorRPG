@@ -653,6 +653,7 @@ const float CSQC_QUESTINFO = 13;
 const float CSQC_QUEST_NOTIFY = 14; // accept quest
 const float CSQC_QUEST_COMPLETE = 15; // finish quest
 const float CSQC_QUEST_PREVIEW = 16; // preview quest accept/decline
+const float CSQC_QUEST_OBJECTIVE_COMPLETE = 17;
 
 //
 // Quest log - client side
@@ -917,6 +918,12 @@ void() CSQC_Parse_Event =
 
 		quest_preview_reward_item = readstring();
 		quest_preview_reward_item_count = readfloat();
+	}
+	if (event == CSQC_QUEST_OBJECTIVE_COMPLETE)
+	{
+		localsound("objcomplete.wav");
+		quest_objective_notify_text = readstring();
+		quest_objective_notify_time = time + 3;
 	}
 };
 

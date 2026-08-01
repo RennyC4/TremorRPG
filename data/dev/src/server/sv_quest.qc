@@ -881,6 +881,28 @@ float(entity player, string id) Quest_CanTurnIn =
 	return TRUE;
 };
 
+// =================
+// Give Quest Experience
+// =================
+void(entity targ, float amount) GiveQuestExperience =
+{
+    if (amount <= 0)
+        return;
+
+    // Server EXP Multiplier
+    if (exp_multiplier > 0)
+        amount *= exp_multiplier;
+
+    amount = ceil(amount);
+
+    targ.exp += amount;
+
+    string eventlog_print = strcat("^2", ftos(amount), "^7 exp received!\n");
+    stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
+
+    Player_CheckLevelUp(targ);
+};
+
 //
 // Turn in a completed quest
 //
@@ -934,7 +956,7 @@ void(entity player, string id) Quest_TurnIn =
 	//
 
 	if (q.reward_exp > 0)
-		GiveExperience(player, world, q.reward_exp, q.reward_exp);
+		GiveQuestExperience(player, q.reward_exp);
 
 	//
 	// Give gold
@@ -1073,6 +1095,8 @@ void(entity player, string type, string target, float amount) Quest_Event =
 
 			for (obj = quest.quest_objectives; obj; obj = obj.objective_next)
 			{
+				float oldprogress;
+
 				if (strcmp(obj.objective_type, type))
 				{
 					objective++;
@@ -1085,10 +1109,26 @@ void(entity player, string type, string target, float amount) Quest_Event =
 					continue;
 				}
 
+				oldprogress = player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)];
+
 				player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] += amount;
 
 				if (player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] > obj.objective_count)
 					player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] = obj.objective_count;
+
+				//
+				// Objective just completed
+				//
+
+				if (oldprogress < obj.objective_count &&
+					player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] >= obj.objective_count)
+				{
+					msg_entity = player;
+
+					WriteByte(MSG_ONE, SVC_CGAMEPACKET);
+					WriteByte(MSG_ONE, CSQC_QUEST_OBJECTIVE_COMPLETE);
+					WriteString(MSG_ONE, obj.objective_text);
+				}
 
 				changed = TRUE;
 				updated = TRUE;

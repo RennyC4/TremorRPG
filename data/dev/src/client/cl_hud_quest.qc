@@ -1,10 +1,15 @@
 //
 // Estimate string width for drawstring alignment
 //
+
 float quest_visible_count;
 float quest_visible_index[64];
 float quest_abandon_confirm;
 float quest_abandon_index;
+
+string quest_objective_notify_name;
+string quest_objective_notify_text;
+float quest_objective_notify_time;
 
 //
 // Draw centered UI string
@@ -688,4 +693,62 @@ void() Draw_QuestTracker =
 
 		y += UI(4);
 	}
+};
+
+//
+// Quest Objective Complete Notification
+//
+
+void() Draw_QuestObjectiveComplete =
+{
+	if (time >= quest_objective_notify_time)
+		return;
+
+	vector screen;
+	screen_x = g_width;
+	screen_y = g_height;
+
+	float cx = screen_x * 0.5;
+	float duration = 3;
+
+	float t = (quest_objective_notify_time - time) / duration;
+	t = bound(0, t, 1);
+
+	float fade;
+	if (t < 0.33)
+		fade = t / 0.33;
+	else
+		fade = 1;
+
+	string title = "Objective Complete";
+	string msg = quest_objective_notify_text;
+
+	vector title_size = '14 14 0';
+	vector size = '16 16 0';
+
+	float title_width = stringwidth(title, 0, title_size);
+	float text_width = stringwidth(msg, 0, size);
+
+	vector title_pos;
+	title_pos_x = floor(cx - title_width * 0.5);
+	title_pos_y = UI(55);
+
+	vector pos;
+	pos_x = floor(cx - text_width * 0.5);
+	pos_y = UI(75);
+
+	// Title shadow
+	drawstring(title_pos + '2 2 0', title, title_size, '0 0 0', fade * 0.6, 0);
+
+	// Title
+	drawstring(title_pos, title, title_size, '1 1 1', fade, 0);
+
+	// Objective shadow
+	drawstring(pos + '2 0 0', msg, size, '0 0 0', fade * 0.6, 0);
+	drawstring(pos + '-2 0 0', msg, size, '0 0 0', fade * 0.6, 0);
+	drawstring(pos + '0 2 0', msg, size, '0 0 0', fade * 0.6, 0);
+	drawstring(pos + '0 -2 0', msg, size, '0 0 0', fade * 0.6, 0);
+
+	// Objective
+	drawstring(pos, msg, size, '1 0.82 0.15', fade, 0);
 };

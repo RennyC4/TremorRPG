@@ -790,6 +790,8 @@ void() Player_Screen =
 		}
 		if (player_menu == MENU_BANKING)
 		{
+			QuestTracker_Update(); // must be called before Draw_QuestTracker
+			Draw_QuestTracker();
 			User_NPCBanking();
 		}
 		if (player_menu == MENU_QUESTLOG)
@@ -944,6 +946,7 @@ void() Player_Screen =
 
 	Draw_QuestAccepted();
 	Draw_QuestComplete();
+	Draw_QuestObjectiveComplete();
 };
 
 float SERVER_FRAME_INTERVAL = 0.05;
