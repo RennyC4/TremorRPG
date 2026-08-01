@@ -237,7 +237,7 @@ float(entity targ, string itemname, float count) AddToInventory =
         return FALSE;
     }
 
-	Quest_Event(targ, "collect", strtolower(itemname));
+	Quest_Event(targ, "collect", strtolower(itemname), 1);
 
 	targ.inventory[targ.inv_count] = itemname;
 	targ.inventory_count[targ.inv_count] = count;
@@ -432,7 +432,7 @@ void(string itemname) CSEv_UseItem_s =
 	if (itemname == "Bandit Hood")
 		Player_EquipItem(itemname, 3);
 	
-	Quest_Event(self, "use", strtolower(itemname));
+	Quest_Event(self, "use", strtolower(itemname), 1);
 };
 
 // called whenever we need to send player/client ONLY inventory data to CSQC

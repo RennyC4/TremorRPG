@@ -34,6 +34,8 @@ void(string input) CSEv_User_BankDeposit_s =
 	self.gold -= amount;
 	self.gold_bank += amount;
 
+	Quest_Event(self, "bank", "deposit", amount);
+
 	stuffcmd (self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
 	sprint(self, PRINT_HIGH, sprintf("Deposited %g gold.\n", amount));
 };
@@ -65,7 +67,9 @@ void(string input) CSEv_User_BankWithdraw_s =
 	
 	self.gold_bank -= amount;
 	self.gold += amount;
-	
+
+	Quest_Event(self, "bank", "withdraw", amount);
+
 	stuffcmd (self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
 	sprint(self, PRINT_HIGH, sprintf("Withdrew %g gold.\n", amount));
 };
@@ -84,6 +88,8 @@ void(string input) CSEv_User_BankDepositAll_s =
 	self.gold = 0;
 	self.gold_bank += amount;
 
+	Quest_Event(self, "bank", "deposit", amount);
+
 	stuffcmd(self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
 	sprint(self, PRINT_HIGH, sprintf("Deposited all gold: %g\n", amount));
 };
@@ -101,6 +107,8 @@ void(string input) CSEv_User_BankWithdrawAll_s =
 
 	self.gold_bank = 0;
 	self.gold += amount;
+
+	Quest_Event(self, "bank", "withdraw", amount);
 
 	stuffcmd(self, sprintf("play %s\n", "menu/menu_buysell.wav")); // sound
 	sprint(self, PRINT_HIGH, sprintf("Withdrew all bank gold: %g\n", amount));

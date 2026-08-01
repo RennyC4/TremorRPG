@@ -1,0 +1,21 @@
+id=chadvar1
+name=Starting out: Banking
+
+description=Chadvar the banker is asking for a 500 gold banking deposit, he tells me keeping my money in the bank is of upmost importance in this volatile world
+
+giver=Chadvar
+turnin=Chadvar
+
+zone=elderfen
+
+objective=bank,deposit,500,Deposit 500 gold
+
+repeatable=0
+level=1
+
+reward_exp=300
+reward_gold=0
+reward_item=
+reward_item_count=0
+
+next=

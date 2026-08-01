@@ -329,7 +329,7 @@ void() npc_use =
 	else if (self.type == 2)
 		self.user.npc_vendor = 3; // Sell wood button
 
-	Quest_Event(self.user, "talk", strtolower(self.netname)); // quest update tracking
+	Quest_Event(self.user, "talk", strtolower(self.netname), 1); // quest update tracking
 
 	// Open player NPC window
 	NPC_SendDialogue(self, self.user);

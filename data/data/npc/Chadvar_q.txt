@@ -1,0 +1,2 @@
+offer=chadvar1
+turnin=chadvar1

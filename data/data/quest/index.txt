@@ -3,3 +3,4 @@ bandit_leader
 halvar1
 keldran1
 keldran2
+chadvar1

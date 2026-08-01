@@ -154,7 +154,7 @@ void() Fishing_Bobber_SearchNode =
 				else
 					item_name = "Small Fish"; // fallback (or higher tier later)
 
-				Quest_Event(self.owner, "fish", strtolower(item_name)); // quest tracking
+				Quest_Event(self.owner, "fish", strtolower(item_name), 1); // quest tracking
 			}
 			else // junk list, all these items are garbage
 			{

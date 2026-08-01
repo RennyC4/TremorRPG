@@ -87,7 +87,7 @@ void(entity player) Quest_SavePlayer;
 void(entity player, string id) Quest_Accept;
 void(entity player, string id) Quest_Complete;
 void(entity player, string id) Quest_TurnIn;
-void(entity player, string type, string target) Quest_Event;
+void(entity player, string type, string target, float amount) Quest_Event;
 void(entity player, string id) Quest_Unlock;
 float(entity player, string id) Quest_Completed;
 float(entity player, string id) Quest_CanOffer;
@@ -994,11 +994,11 @@ void(entity player, string id) Quest_TurnIn =
 //
 // Called when a gameplay event happens
 // Examples:
-//   Quest_Event(player, "kill", "bandit");
-//   Quest_Event(player, "collect", "herb");
+//   Quest_Event(player, "kill", "bandit", 1);
+//   Quest_Event(player, "collect", "herb", 1);
 //
 
-void(entity player, string type, string target) Quest_Event =
+void(entity player, string type, string target, float amount) Quest_Event =
 {
 	entity quest;
 	entity obj;
@@ -1014,6 +1014,9 @@ void(entity player, string type, string target) Quest_Event =
 	if (player.classname != "player")
 		return;
 
+	if (amount <= 0)
+		amount = 1;
+
 	updated = FALSE;
 
 	//
@@ -1024,60 +1027,74 @@ void(entity player, string type, string target) Quest_Event =
 	{
 		changed = FALSE;
 
-
 		if (player.player_quest_status[i] != QUEST_ACTIVE)
 			continue;
-
 
 		quest = Quest_PlayerDefinition(player, i);
 
 		if (!quest)
 			continue;
 
-		// Debugging
-		/*
-		dprint(sprintf("^5Quest_Event: %s loaded\n", quest.quest_id));
+		//
+		// Special handling:
+		// Bank withdrawals reduce bank deposit objectives
+		//
 
-		for (obj = quest.quest_objectives; obj; obj = obj.objective_next)
+		if (!strcmp(type, "bank") && !strcmp(target, "withdraw"))
 		{
-			dprint(sprintf("^5Objective: type=%s target=%s count=%g\n",
-				obj.objective_type,
-				obj.objective_target,
-				obj.objective_count
-			));
+			objective = 0;
+
+			for (obj = quest.quest_objectives; obj; obj = obj.objective_next)
+			{
+				if (!strcmp(obj.objective_type, "bank") &&
+					!strcmp(obj.objective_target, "deposit"))
+				{
+					player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] -= amount;
+
+					if (player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] < 0)
+						player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] = 0;
+
+					changed = TRUE;
+					updated = TRUE;
+
+					break;
+				}
+
+				objective++;
+			}
 		}
-		*/
-		// Debugging
-
-		//
-		// Find matching objective
-		//
-
-		objective = 0;
-
-		for (obj = quest.quest_objectives; obj; obj = obj.objective_next)
+		else
 		{
-			if (strcmp(obj.objective_type, type))
+			//
+			// Find matching objective
+			//
+
+			objective = 0;
+
+			for (obj = quest.quest_objectives; obj; obj = obj.objective_next)
 			{
-				objective++;
-				continue;
+				if (strcmp(obj.objective_type, type))
+				{
+					objective++;
+					continue;
+				}
+
+				if (strcmp(obj.objective_target, target))
+				{
+					objective++;
+					continue;
+				}
+
+				player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] += amount;
+
+				if (player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] > obj.objective_count)
+					player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] = obj.objective_count;
+
+				changed = TRUE;
+				updated = TRUE;
+
+				break;
 			}
-
-			if (strcmp(obj.objective_target, target))
-			{
-				objective++;
-				continue;
-			}
-
-			player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)]++;
-
-			if (player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] > obj.objective_count)
-				player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)] = obj.objective_count;
-
-			changed = TRUE;
-			updated = TRUE;
-
-			break;
 		}
 
 		if (!changed)

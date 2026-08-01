@@ -324,7 +324,7 @@ void(float id, string itemname) CSEv_Player_UseItem_fs =
 		else
 			sprint(self, PRINT_HIGH, "You do not posses ", strcat(itemname, " \n"));
 	}
-	else if (id == 3) // Add magic spell to magic screen			RemoveFromInventory(self, itemname, 1);	
+	else if (id == 3) // Add magic spell to magic screen
 	{
 		LearnSpell(itemname);
 		RemoveFromInventory(self, itemname, 1);
