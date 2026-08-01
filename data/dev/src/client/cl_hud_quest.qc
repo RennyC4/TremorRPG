@@ -6,33 +6,64 @@ float quest_visible_index[64];
 float quest_abandon_confirm;
 float quest_abandon_index;
 
+//
+// Draw centered UI string
+//
+
+//
+// String width for drawstring alignment
+// Ignores Quake color codes
+//
+
 float(string text, float size) UI_StringWidth =
 {
-    float i;
-    float width;
+	float width;
 
-    width = 0;
+	text = StripColors(text);
+	width = strlen(text) * (size * 0.5);
 
-    for (i = 0; i < strlen(text); i++)
-    {
-        //
-        // Skip Quake color codes
-        //
+	return width;
+};
 
-        if (substring(text, i, 1) == "^")
-        {
-            i++;
-            continue;
-        }
+//
+// Get string width ignoring Quake color codes
+//
 
-        //
-        // Quake console font is roughly 8 pixels per character
-        //
+float(string str, float fontsize) UI_StringWidthClean =
+{
+	return UI_StringWidth(StripColors(str), fontsize);
+};
 
-        width += size * 0.5;
-    }
+//
+// Draw centered UI string
+//
 
-    return width;
+void(vector center, string text, float fontsize, float alpha, float xoffset) UI_DrawCenteredString =
+{
+	float width;
+	float chars;
+
+	vector pos;
+
+	width = UI_StringWidthClean(text, 16);
+
+	//
+	// Proportional font correction
+	// Long strings need slightly less width
+	//
+
+	chars = strlen(StripColors(text));
+
+	if (chars > 20)
+		width *= 0.92;
+	else if (chars > 10)
+		width *= 0.96;
+
+
+	pos_x = center_x - (width * 0.5) + xoffset;
+	pos_y = center_y;
+
+	drawstring(pos, text, [fontsize, fontsize, 0], '1 1 1', alpha, 0);
 };
 
 //
@@ -341,6 +372,10 @@ void() Draw_QuestAccepted =
 	else
 		alpha = 1;
 
+	//
+	// Notification graphic
+	//
+
 	vector size;
 	size_x = UI(300);
 	size_y = UI(200);
@@ -355,18 +390,27 @@ void() Draw_QuestAccepted =
 	// Notification text
 	//
 
-	string text;
-	float width;
-	vector textpos;
+	vector center;
+	float fontsize;
 
-	text = strcat("Accepted ^3", quest_notify_name);
+	fontsize = UI(16);
 
-	width = UI_StringWidth(text, UI(16));
+	center_x = pos_x + (size_x * 0.5);
+	center_y = pos_y + size_y + UI(8);
 
-	textpos_x = pos_x + (size_x - width) * 0.5;
-	textpos_y = pos_y + size_y + UI(8);
+	//
+	// "Accepted"
+	//
 
-	drawstring(textpos, text, '16 16 0', '1 1 1', alpha, 0);
+	UI_DrawCenteredString(center, "Accepted", fontsize, alpha, 0);
+
+	//
+	// Quest name
+	//
+
+	center_y += UI(18);
+
+	UI_DrawCenteredString(center, strcat("^3", quest_notify_name), fontsize, alpha, 0);
 };
 
 //
@@ -385,6 +429,10 @@ void() Draw_QuestComplete =
 	else
 		alpha = 1;
 
+	//
+	// Notification graphic
+	//
+
 	vector size;
 	size_x = UI(300);
 	size_y = UI(200);
@@ -399,18 +447,27 @@ void() Draw_QuestComplete =
 	// Notification text
 	//
 
-	string text;
-	float width;
-	vector textpos;
+	vector center;
+	float fontsize;
 
-	text = strcat("Completed ^3", quest_complete_name);
+	fontsize = UI(16);
 
-	width = UI_StringWidth(text, UI(16));
+	center_x = pos_x + (size_x * 0.5);
+	center_y = pos_y + size_y + UI(8);
 
-	textpos_x = pos_x + (size_x - width) * 0.5;
-	textpos_y = pos_y + size_y + UI(8);
+	//
+	// "Completed"
+	//
 
-	drawstring(textpos, text, '16 16 0', '1 1 1', alpha, 0);
+	UI_DrawCenteredString(center, "Completed", fontsize, alpha, 0);
+
+	//
+	// Quest name
+	//
+
+	center_y += UI(18);
+
+	UI_DrawCenteredString(center, strcat("^3", quest_complete_name), fontsize, alpha, 0);
 };
 
 //

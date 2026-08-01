@@ -1336,19 +1336,13 @@ void(string id) CSEv_User_AbandonQuest_s =
 	float i;
 	float objective;
 
-	dprint(sprintf("Abandon Quest: %s\n", id));
-
 	if (self.classname != "player")
 		return;
 
 	for (i = 0; i < self.player_quest_count; i++)
 	{
-		dprint(sprintf("Checking quest: %s\n", self.player_quest_id[i]));
-
 		if (self.player_quest_id[i] != id)
 			continue;
-
-		dprint("Quest found, abandoning\n");
 
 		self.player_quest_status[i] = QUEST_LOCKED;
 		self.player_quest_progress[i] = 0;
