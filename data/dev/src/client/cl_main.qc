@@ -816,6 +816,10 @@ void() CSQC_Parse_Event =
 		float p;
 
 		count = readbyte();
+
+		if (count > MAX_QUESTS)
+			count = MAX_QUESTS;
+
 		quest_count = count;
 
 		//
@@ -826,7 +830,7 @@ void() CSQC_Parse_Event =
 		{
 			quest_log[h].id = "";
 			quest_log[h].name = "";
-			quest_log[h].description = "";
+			//quest_log[h].description = ""; // crashes, needs it's own packet
 
 			quest_log[h].objective_count = 0;
 
@@ -854,7 +858,7 @@ void() CSQC_Parse_Event =
 		{
 			quest_log[h].id = readstring();
 			quest_log[h].name = readstring();
-			quest_log[h].description = readstring();
+			//quest_log[h].description = readstring(); // crashes, needs it's own packet
 
 			//
 			// Objectives
@@ -868,7 +872,7 @@ void() CSQC_Parse_Event =
 			for (p = 0; p < quest_log[h].objective_count; p++)
 			{
 				quest_log[h].objective_text[p] = readstring();
-				quest_log[h].objective_progress[p] = readfloat();
+				quest_log[h].objective_progress[p] = readbyte();
 				quest_log[h].objective_needed[p] = readfloat();
 			}
 

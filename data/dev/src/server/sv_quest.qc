@@ -281,6 +281,7 @@ void(entity player) Quest_SendLog =
 	//
 
 	send_count = 0;
+
 	for (i = 0; i < player.player_quest_count; i++)
 	{
 		if (player.player_quest_status[i] == QUEST_AVAILABLE)
@@ -291,6 +292,13 @@ void(entity player) Quest_SendLog =
 
 		if (player.player_quest_status[i] == QUEST_LOCKED)
 			continue;
+
+		q = Quest_PlayerDefinition(player, i);
+
+		if (!q)
+			continue;
+
+		//dprint(sprintf("quest=%s name=%g desc=%g\n", q.quest_id, strlen(q.quest_name), strlen(q.quest_description)));
 
 		send_count++;
 	}
@@ -307,14 +315,18 @@ void(entity player) Quest_SendLog =
 	// Quest count
 	//
 
-	if (send_count > 64)
-		send_count = 64;
+	if (send_count > MAX_QUESTS)
+		send_count = MAX_QUESTS;
 
 	WriteByte(MSG_ONE, send_count);
 
 	//
 	// Quest data
 	//
+
+	float sent;
+
+	sent = 0;
 
 	for (i = 0; i < player.player_quest_count; i++)
 	{
@@ -334,13 +346,16 @@ void(entity player) Quest_SendLog =
 		if (!q)
 			continue;
 
+		if (sent >= send_count)
+			break;
+
 		//
 		// Basic quest information
 		//
 
 		WriteString(MSG_ONE, q.quest_id);
 		WriteString(MSG_ONE, q.quest_name);
-		WriteString(MSG_ONE, q.quest_description);
+		//WriteString(MSG_ONE, q.quest_description); // crashes, needs it's own packet
 
 		//
 		// Objectives
@@ -361,7 +376,7 @@ void(entity player) Quest_SendLog =
 		for (obj = q.quest_objectives; obj && objective < obj_count; obj = obj.objective_next)
 		{
 			WriteString(MSG_ONE, obj.objective_text);
-			WriteFloat(MSG_ONE, player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)]);
+			WriteByte(MSG_ONE, player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)]);
 			WriteFloat(MSG_ONE, obj.objective_count);
 
 			objective++;
@@ -382,7 +397,13 @@ void(entity player) Quest_SendLog =
 
 		WriteString(MSG_ONE, q.reward_item);
 		WriteFloat(MSG_ONE, q.reward_item_count);
+		
+		sent++;
+		
+		//dprint(sprintf("  %s desc length=%g\n", q.quest_id, strlen(q.quest_description)));
 	}
+
+	//dprint(sprintf("^5Quest_SendLog: sending %g quests\n", send_count));
 
 	multicast(player.origin, MULTICAST_ONE_R);
 };
@@ -679,10 +700,6 @@ float(entity player, string id) Quest_CanOffer =
 
 	return TRUE;
 };	
-
-//
-// Accept quest
-//
 
 //
 // Accept quest
