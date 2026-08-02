@@ -1,14 +1,14 @@
 id=keldran2
 name=Starting out: Mining
 
-description=Keldran is asking me to learn the ropes for mining ore, he's asked me to mine 10 copper ores and return to him
+description=Keldran is asking me to learn the ropes for mining ore, he's asked me to mine 5 copper ores and return to him
 
 giver=Keldran
 turnin=Keldran
 
 zone=elderfen
 
-objective=mine,copper ore,10,Mine 10 copper ore veins
+objective=mine,copper ore,5,Mine 5 copper ore veins
 
 repeatable=0
 level=1

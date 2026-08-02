@@ -1,14 +1,14 @@
 id=keldran1
 name=Starting out: Fishing
 
-description=Keldran wants me to familiarize myself with fishing, he's explained that small fish can be found near Elderfen shorelines and may take a few tries to catch 3 starting out
+description=Keldran wants me to familiarize myself with fishing, he's explained that small fish can be found near Elderfen shorelines and may take a few tries to catch 2 starting out
 
 giver=Keldran
 turnin=Keldran
 
 zone=elderfen
 
-objective=fish,small fish,3,Catch 3 small fish
+objective=fish,small fish,2,Catch 2 small fish
 
 repeatable=0
 level=1
