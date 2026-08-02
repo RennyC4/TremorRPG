@@ -48,29 +48,20 @@ float(string str, float fontsize) UI_StringWidthClean =
 void(vector center, string text, float fontsize, float alpha, float xoffset) UI_DrawCenteredString =
 {
 	float width;
-	float chars;
+
+	vector size;
+	size_x = fontsize;
+	size_y = fontsize;
+	size_z = 0;
+
+	width = stringwidth(text, 0, size);
 
 	vector pos;
-
-	width = UI_StringWidthClean(text, 16);
-
-	//
-	// Proportional font correction
-	// Long strings need slightly less width
-	//
-
-	chars = strlen(StripColors(text));
-
-	if (chars > 20)
-		width *= 0.92;
-	else if (chars > 10)
-		width *= 0.96;
-
 
 	pos_x = center_x - (width * 0.5) + xoffset;
 	pos_y = center_y;
 
-	drawstring(pos, text, [fontsize, fontsize, 0], '1 1 1', alpha, 0);
+	drawstring(pos, text, size, '1 1 1', alpha, 0);
 };
 
 //
@@ -419,7 +410,7 @@ void() Draw_QuestAccepted =
 
 	fontsize = UI(16);
 
-	center_x = pos_x + (size_x * 0.5);
+	center_x = g_width * 0.5;
 	center_y = pos_y + size_y + UI(8);
 
 	//
@@ -434,7 +425,7 @@ void() Draw_QuestAccepted =
 
 	center_y += UI(18);
 
-	UI_DrawCenteredString(center, strcat("^3", quest_notify_name), fontsize, alpha, 0);
+	UI_DrawCenteredString(center, strcat("^3", quest_notify_name), fontsize, alpha, UI(8));
 };
 
 //
@@ -476,7 +467,7 @@ void() Draw_QuestComplete =
 
 	fontsize = UI(16);
 
-	center_x = pos_x + (size_x * 0.5);
+	center_x = g_width * 0.5;
 	center_y = pos_y + size_y + UI(8);
 
 	//
@@ -491,7 +482,7 @@ void() Draw_QuestComplete =
 
 	center_y += UI(18);
 
-	UI_DrawCenteredString(center, strcat("^3", quest_complete_name), fontsize, alpha, 0);
+	UI_DrawCenteredString(center, strcat("^3", quest_complete_name), fontsize, alpha, UI(8));
 };
 
 //
