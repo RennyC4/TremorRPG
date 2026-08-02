@@ -2540,6 +2540,26 @@ float chat_times[MAX_CHAT_LINES];
 .vector last_velocity;
 .float melee_finished;
 
+// CGAMEPACKET events
+const float CSQC_INVENTORY = 1;
+const float CSQC_NPCINFO = 2;
+const float CSQC_INVENTORY_NPC = 3;
+const float CSQC_TIMEOFDAY = 4;
+const float CSQC_MOTD = 5;
+const float CSQC_MAGIC = 6;
+const float CSQC_LASTLOGIN = 7;
+const float CSQC_WRITESPARM = 8;
+const float CSQC_READSPARM = 9;
+const float CSQC_WIPESPARM = 10;
+const float CSQC_SAY = 11;
+const float CSQC_SAY_NEARBY = 12;
+const float CSQC_QUESTINFO = 13;
+const float CSQC_QUEST_NOTIFY = 14; // accept quest
+const float CSQC_QUEST_COMPLETE = 15; // finish quest
+const float CSQC_QUEST_PREVIEW = 16; // preview quest accept/decline
+const float CSQC_QUEST_OBJECTIVE_COMPLETE = 17;
+const float CSQC_QUESTDETAILS = 18; // quest description
+
 float LerpAngle(float a1, float a2, float t)
 {
     float d;

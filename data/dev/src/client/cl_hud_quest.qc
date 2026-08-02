@@ -11,6 +11,8 @@ string quest_objective_notify_name;
 string quest_objective_notify_text;
 float quest_objective_notify_time;
 
+string quest_description_requested;
+
 //
 // Draw centered UI string
 //
@@ -209,6 +211,19 @@ void() User_QuestLogScreen =
 
 		q = quest_selected;
 
+		//
+		// Request description if we don't have it yet
+		//
+
+		if (quest_log[q].description == "")
+		{
+			if (quest_description_requested != quest_log[q].id)
+			{
+				sendevent("QuestDescription", "s", quest_log[q].id);
+				quest_description_requested = quest_log[q].id;
+			}
+		}
+
 		vector text = [UI(8),UI(6)];
 
 		sui_set_align([SUI_ALIGN_START,SUI_ALIGN_START]);
@@ -356,7 +371,11 @@ void() User_QuestLogScreen =
     //
 
     sui_set_align([SUI_ALIGN_END,SUI_ALIGN_START]);
-    my_button("close", [0,0], [UI(15),UI(15)], "X", "") ? sendevent("ShutDownMenus",""): 0;
+	if (my_button("close", [0,0], [UI(15),UI(15)], "X", ""))
+	{
+		quest_description_requested = "";
+		sendevent("ShutDownMenus","");
+	}
 
     sui_pop_frame();
 };

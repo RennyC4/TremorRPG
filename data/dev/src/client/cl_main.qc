@@ -636,25 +636,6 @@ void(entity speaker, string msg) FloatingText_Add =
     speaker.floattext_time = time + 6;
 };
 
-// CGAMEPACKET events
-const float CSQC_INVENTORY = 1;
-const float CSQC_NPCINFO = 2;
-const float CSQC_INVENTORY_NPC = 3;
-const float CSQC_TIMEOFDAY = 4;
-const float CSQC_MOTD = 5;
-const float CSQC_MAGIC = 6;
-const float CSQC_LASTLOGIN = 7;
-const float CSQC_WRITESPARM = 8;
-const float CSQC_READSPARM = 9;
-const float CSQC_WIPESPARM = 10;
-const float CSQC_SAY = 11;
-const float CSQC_SAY_NEARBY = 12;
-const float CSQC_QUESTINFO = 13;
-const float CSQC_QUEST_NOTIFY = 14; // accept quest
-const float CSQC_QUEST_COMPLETE = 15; // finish quest
-const float CSQC_QUEST_PREVIEW = 16; // preview quest accept/decline
-const float CSQC_QUEST_OBJECTIVE_COMPLETE = 17;
-
 //
 // Quest log - client side
 //
@@ -922,12 +903,41 @@ void() CSQC_Parse_Event =
 
 		quest_preview_reward_item = readstring();
 		quest_preview_reward_item_count = readfloat();
+	    //
+		// Request full description separately
+		//
+
+		quest_preview_description = "Loading...";
+		sendevent("QuestDescription", "s", quest_preview_id);
 	}
 	if (event == CSQC_QUEST_OBJECTIVE_COMPLETE)
 	{
 		localsound("objcomplete.wav");
 		quest_objective_notify_text = readstring();
 		quest_objective_notify_time = time + 3;
+	}
+	if (event == CSQC_QUESTDETAILS)
+	{
+		float x;
+		string id;
+		string desc;
+
+		id = readstring();
+		desc = readstring();
+
+		// Quest Log
+		for (x = 0; x < quest_count; x++)
+		{
+			if (quest_log[x].id == id)
+			{
+				quest_log[x].description = desc;
+				break;
+			}
+		}
+
+		// NPC Preview
+		if (quest_preview_id == id)
+			quest_preview_description = desc;
 	}
 };
 

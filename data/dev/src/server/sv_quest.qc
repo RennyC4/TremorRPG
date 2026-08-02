@@ -3,6 +3,7 @@
 //
 
 float(entity targ, string itemname, float count) AddToInventory;
+void(entity player, entity q) Quest_SendDescription;
 
 //
 // Quest status
@@ -250,13 +251,39 @@ void(entity player, string id) Quest_SendPreview =
 
 void(string id) CSEv_QuestPreview_s =
 {
-	Quest_SendPreview(self, id);
-	self.menu = MENU_QUESTPREVIEW;
+    entity q;
+
+    q = Quest_Find(id);
+
+    Quest_SendPreview(self, id);
+
+    if (q)
+        Quest_SendDescription(self, q);
+
+    self.menu = MENU_QUESTPREVIEW;
 };
 
 void() CSEv_QuestPreviewCancel =
 {
 	self.menu = MENU_DIALOGUE;
+};
+
+//
+// Send quest description - needs it's own packet as these can overflow and crash
+//
+
+void(entity player, entity q) Quest_SendDescription =
+{
+    if (!player || !q)
+        return;
+
+    msg_entity = player;
+
+    WriteByte(MSG_ONE, SVC_CGAMEPACKET);
+    WriteByte(MSG_ONE, CSQC_QUESTDETAILS);
+
+    WriteString(MSG_ONE, q.quest_id);
+    WriteString(MSG_ONE, q.quest_description);
 };
 
 //
@@ -406,6 +433,13 @@ void(entity player) Quest_SendLog =
 	//dprint(sprintf("^5Quest_SendLog: sending %g quests\n", send_count));
 
 	multicast(player.origin, MULTICAST_ONE_R);
+
+	//
+	// Descriptions are sent on demand
+	//
+	// Sending all descriptions here can exceed the Quake message limit
+	// when a player has multiple active quests.
+	//
 };
 
 //
@@ -1399,6 +1433,24 @@ void(entity player) Quest_LoadPlayer =
 		player.player_quest_count++;
 	}
 	fclose(f);
+};
+
+void(string id) CSEv_QuestDescription_s =
+{
+	entity q;
+
+	if (self.classname != "player")
+		return;
+
+	q = Quest_Find(id);
+
+	if (!q)
+	{
+		dprint(sprintf("^1Quest description not found: %s\n", id));
+		return;
+	}
+
+	Quest_SendDescription(self, q);
 };
 
 //

@@ -211,6 +211,8 @@ void() User_NPCQuestPreview =
 	{
 		sendevent("QuestAccept", "s", quest_preview_id);
 		localsound("q_acpt.wav");
+
+		quest_preview_description = "";
 	}
 
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
