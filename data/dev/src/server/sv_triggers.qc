@@ -80,12 +80,21 @@ void() trigger_zone_touch =
 		Quest_Event(other, "visit", self.zonename, 1); // quest event tracker
 	}
 
-	// =========================================================
+	//
 	// MUSIC HANDLER
-	// =========================================================
+	//
 
-	if (other.old_music != other.music)
-		other.old_music = other.music; // stash old track
+	// Only replace the saved track while exploring
+	if (!other.incombat)
+	{
+		if (other.music != self.music)
+		{
+			other.old_music = self.music;
+			other.music = self.music;
+		}
+	}
+	// Zone changes during combat should not overwrite combat state
+	// or the saved overworld music
 
 	if (other.music != self.music)	
 		other.music = self.music;

@@ -1342,10 +1342,13 @@ void() PlayerPostThink =
 				self.music = self.old_music;
 		}
 	}
-	else // players incombat
+	else // player in combat
 	{
 		if (self.music != MUSIC_COMBAT)
+		{
+			self.old_music = self.music;
 			self.music = MUSIC_COMBAT;
+		}
 	}
 
 	// mana regeneration
