@@ -4,15 +4,22 @@
 void(entity e) NPC_CommitState;
 void() itemchest_think;
 .float lootmode; // 0 = player item chest, 1 = monster loot chest
+.float loot_amount;
 
 float(entity chest, string lootfile) Loot_FillChest =
 {
     string line;
     string item;
     string chance_str;
+    string amount_str;
+
     float fh;
     float sep;
+    float sep2;
     float chance;
+    float amount_min;
+    float amount_max;
+    float amount;
     float dropped;
 
     dropped = 0;
@@ -25,18 +32,58 @@ float(entity chest, string lootfile) Loot_FillChest =
     while (1)
     {
         line = fgets(fh);
+
         if (!line)
             break;
+
+        line = strtrim(line);
 
         if (line == "")
             continue;
 
+        //
+        // Split item and chance
+        //
         sep = strstrofs(line, "%", 0);
+
         if (sep < 0)
             continue;
 
         item = substring(line, 0, sep);
         chance_str = substring(line, sep + 1, strlen(line));
+
+        //
+        // Default amount
+        //
+        amount_min = 1;
+        amount_max = 1;
+
+        //
+        // Optional amount range
+        // Example: Scrap Arrow %0.6 %1-6
+        //
+        sep2 = strstrofs(chance_str, "%", 0);
+
+        if (sep2 >= 0)
+        {
+            amount_str = substring(chance_str, sep2 + 1, strlen(chance_str));
+            chance_str = substring(chance_str, 0, sep2);
+
+            amount_str = strtrim(amount_str);
+
+            sep2 = strstrofs(amount_str, "-", 0);
+
+            if (sep2 >= 0)
+            {
+                amount_min = stof(substring(amount_str, 0, sep2));
+                amount_max = stof(substring(amount_str, sep2 + 1, strlen(amount_str)));
+            }
+            else
+            {
+                amount_min = stof(amount_str);
+                amount_max = amount_min;
+            }
+        }
 
         item = strtrim(item);
         chance = stof(strtrim(chance_str));
@@ -44,10 +91,12 @@ float(entity chest, string lootfile) Loot_FillChest =
         if (random() <= chance)
         {
             entity it;
+            amount = floor(random_range(amount_min, amount_max + 1));
 
             it = spawn();
             it.classname = "chestloot";
             it.netname = item;
+            it.loot_amount = amount;
             it.owner = chest;
 
             dropped = 1;
@@ -55,6 +104,7 @@ float(entity chest, string lootfile) Loot_FillChest =
     }
 
     fclose(fh);
+
     return dropped;
 };
 
