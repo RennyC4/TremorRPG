@@ -1227,6 +1227,8 @@ void() UI_DrawPlayerSummary =
 void() User_SkillsScreen =
 {
 	float hp = getstatf(STAT_HEALTH);
+	float skillpoints = getstatf(STAT_SKILLPOINTS);
+	float atbonfire = getstatf(STAT_BONFIRE);
 
 	if (hp <= 0)
 		return;
@@ -1305,6 +1307,22 @@ void() User_SkillsScreen =
 			col = "^5";
 
 		sui_text(row, (MENU_TEXT_SMALL + [1,1]) * UI_TextScale(), strcat(col, sname, ": ^7", sval_str), MENU_TEXT_1, 1, 0);
+
+		// =====================================================
+		// SPEND SKILL POINT BUTTON
+		// =====================================================
+
+		if (atbonfire && skillpoints > 0 && !is_passive)
+		{
+			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+
+			vector btn_size = [UI(25), UI(10)];
+
+			my_button(strcat("sp_", ftos(i)), row - [UI(8), UI(1)], btn_size, "+", strcat("^3", sname)) ? sendevent("User_AddSkillPoint", "f", i) : 0;
+
+			// Restore left alignment for the next row
+			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+		}
 
 		// =====================================================
 		// GAP BEFORE PASSIVE SKILLS
