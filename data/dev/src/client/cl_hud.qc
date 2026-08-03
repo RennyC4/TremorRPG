@@ -3,6 +3,7 @@
 //
 
 vector inventory_scroll_offset;
+vector magic_scroll_offset;
 
 // Protos
 float(vector startpos, float max_width, string text) UI_DrawWrappedText;
@@ -166,7 +167,6 @@ void() CSQC_DrawMonsterPlaques =
         // LEVEL (fixed position)
         // -------------------
         string lvl_display = (mon.level >= plyr_level + 6) ? "?" : ftos(mon.level);
-
         vector level_pos = plaque_coord + [48, 6, 0];
 
         drawstring(level_pos + [1,1,0], lvl_display,
@@ -666,14 +666,7 @@ void() Draw_ChatLog =
 		if (!chat_lines[i])
 			continue;
 
-		sui_text(
-			[UI(2), y],
-			MENU_TEXT_SMALL,
-			chat_lines[i],
-			'1 1 1',
-			1,
-			0
-		);
+		sui_text([UI(2), y], MENU_TEXT_SMALL, chat_lines[i], '1 1 1', 1, 0);
 
 		y += line_step;
 	}
@@ -695,27 +688,19 @@ void() Draw_HUDIcons =
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_END]);
 
-	my_button_gfx("button_char", pos, size, "progs/char.png", "Skills")
-		? sendevent("PlayerShowStats", "")
-		: 0;
+	my_button_gfx("button_char", pos, size, "progs/char.png", "Skills") ? sendevent("PlayerShowStats", "") : 0;
 
 	pos_x += UI(38);
 
-	my_button_gfx("button_magic", pos, size, "progs/magic.png", "Magic")
-		? sendevent("PlayerShowMagic", "")
-		: 0;
+	my_button_gfx("button_magic", pos, size, "progs/magic.png", "Magic") ? sendevent("PlayerShowMagic", "") : 0;
 
 	pos_x += UI(38);
 
-	my_button_gfx("button_inventory", pos, size, "progs/inventory.png", "Inventory")
-		? sendevent("PlayerShowInventory", "")
-		: 0;
+	my_button_gfx("button_inventory", pos, size, "progs/inventory.png", "Inventory") ? sendevent("PlayerShowInventory", "") : 0;
 
 	pos_x += UI(38);
 
-	my_button_gfx("button_questlog", pos, size, "progs/questlog.png", "Quest Log")
-		? sendevent("PlayerShowQuestLog", "")
-		: 0;
+	my_button_gfx("button_questlog", pos, size, "progs/questlog.png", "Quest Log") ? sendevent("PlayerShowQuestLog", "") : 0;
 
 	// =========================================================
 	// TOP LEFT BUTTONS (System / PvP)
@@ -727,15 +712,11 @@ void() Draw_HUDIcons =
 	pos_x -= UI(8);
 	pos_y += UI(142);
 
-	my_button_gfx("button_system", pos, size, "progs/gear.png", "System")
-		? localcmd("togglemenu\n")
-		: 0;
+	my_button_gfx("button_system", pos, size, "progs/gear.png", "System") ? localcmd("togglemenu\n") : 0;
 
 	pos_x -= UI(40);
 
-	my_button_gfx("button_pvp", pos, size, "progs/pvp.png", "PvP Toggle")
-		? sendevent("User_TogglePVP", "")
-		: 0;
+	my_button_gfx("button_pvp", pos, size, "progs/pvp.png", "PvP Toggle") ? sendevent("User_TogglePVP", "") : 0;
 };
 
 void() Draw_EventLog =
@@ -757,11 +738,7 @@ void() Draw_EventLog =
 	// =============
 	// TEXT POSITION
 	// =============
-	vector tpos = [
-		UI(5),
-		g_height - UI(146)
-	];
-
+	vector tpos = [UI(5), g_height - UI(146)];
 	vector tsize = [UI(228), UI(100)];
 
 	// ===========
@@ -823,7 +800,6 @@ void() Draw_Health =
 	drawstring(tpos + [UI(1), UI(1)], "Health", MENU_TEXT_SMALL, '0 0 0', 1, 0);
 	drawstring(tpos, "^1Health", MENU_TEXT_SMALL, '1 1 1', 1, 0);
 
-
 	// Bar
 	vector hbarpos = [UI(70), g_height - UI(38)];
 	vector hbar_size = [UI(100), UI(8)];
@@ -837,16 +813,11 @@ void() Draw_Health =
 
 	// Center value on bar
 	float text_width = stringwidth(htext, FALSE, MENU_TEXT_SMALL);
-
-	vector vpos = [
-		hbarpos_x + (hbar_size_x - text_width) * 0.5,
-		g_height - UI(37)
-	];
+	vector vpos = [hbarpos_x + (hbar_size_x - text_width) * 0.5, g_height - UI(37)];
 
 	drawstring(vpos + [UI(1), UI(1)], htext, MENU_TEXT_SMALL, '0 0 0', 1, 0);
 	drawstring(vpos, htext, MENU_TEXT_SMALL, '1 1 1', 1, 0);
 };
-
 
 //
 // Draw Mana
@@ -865,7 +836,6 @@ void() Draw_Mana =
 	drawstring(tpos + [UI(1), UI(1)], "Mana", MENU_TEXT_SMALL, '0 0 0', 1, 0);
 	drawstring(tpos, "^4Mana", MENU_TEXT_SMALL, '1 1 1', 1, 0);
 
-
 	// Bar
 	vector mbarpos = [UI(70), g_height - UI(28)];
 	vector mbar_size = [UI(100), UI(8)];
@@ -877,34 +847,25 @@ void() Draw_Mana =
 
 	drawfill(mbarpos + [UI(1), UI(1)], fill, '0 0 0.5', 1, 0);
 
-
 	// Center value on bar
 	float text_width = stringwidth(mtext, FALSE, MENU_TEXT_SMALL);
 
-	vector vpos = [
-		mbarpos_x + (mbar_size_x - text_width) * 0.5,
-		g_height - UI(27)
-	];
+	vector vpos = [mbarpos_x + (mbar_size_x - text_width) * 0.5, g_height - UI(27)];
 
 	drawstring(vpos + [UI(1), UI(1)], mtext, MENU_TEXT_SMALL, '0 0 0', 1, 0);
 	drawstring(vpos, mtext, MENU_TEXT_SMALL, '1 1 1', 1, 0);
-
 
 	// Spell name
 	string disp_magicspell = getstats(STAT_SPELLEQUIPPED);
 
 	if (disp_magicspell != "")
 	{
-		vector spos = [
-			mbarpos_x + mbar_size_x + UI(8),
-			g_height - UI(26)
-		];
+		vector spos = [mbarpos_x + mbar_size_x + UI(8), g_height - UI(26)];
 
 		drawstring(spos + [UI(1), UI(1)], disp_magicspell, MENU_TEXT_SMALL, '0 0 0', 1, 0);
 		drawstring(spos, disp_magicspell, MENU_TEXT_SMALL, '0 .75 .75', 1, 0);
 	}
 };
-
 
 //
 // Draw Stamina
@@ -937,10 +898,7 @@ void() Draw_Stamina =
 	// Center value on bar
 	float text_width = stringwidth(stext, FALSE, MENU_TEXT_SMALL);
 
-	vector vpos = [
-		sbarpos_x + (sbar_size_x - text_width) * 0.5,
-		g_height - UI(17)
-	];
+	vector vpos = [sbarpos_x + (sbar_size_x - text_width) * 0.5, g_height - UI(17)];
 
 	drawstring(vpos + [UI(1), UI(1)], stext, MENU_TEXT_SMALL, '0 0 0', 1, 0);
 	drawstring(vpos, stext, MENU_TEXT_SMALL, '1 1 1', 1, 0);
@@ -979,7 +937,6 @@ void() Draw_Exp =
 
     // Experience text
     string exp_text = strcat(ftos(e), " / ", ftos(e2));
-
     float text_width = stringwidth(exp_text, FALSE, MENU_TEXT_SMALL);
 
     vector text_pos;
@@ -1067,6 +1024,7 @@ float(float i) SkillValue =
 //
 // Helper DPS Calculation function
 //
+
 void(float atmin, float atmax, float atspd, float atype, float projmin, float projmax, float unarmed, float slash, float pierce, float bash, float archery, float &dps_out, string &type_out) Calc_DPS =
 {
 	float dps = (atmin + atmax * 0.5) / atspd;
@@ -1239,7 +1197,6 @@ void() UI_DrawPlayerSummary =
 
 	info_y += UI_Scale()*2;
 
-
 	// Helmet
 	sui_text(info, MENU_TEXT_SMALL * UI_TextScale(), "^5Helmet", MENU_TEXT_1, 1, 0);
 
@@ -1266,119 +1223,23 @@ void() UI_DrawPlayerSummary =
 //
 // Skills Screen
 //
+
 void() User_SkillsScreen =
 {
 	float hp = getstatf(STAT_HEALTH);
-	float skillpoints = getstatf(STAT_SKILLPOINTS);
-	float atbonfire = getstatf(STAT_BONFIRE);
 
 	if (hp <= 0)
 		return;
 
-	// ========
+	// =========================================================
 	// BACKDROP
-	// ========
+	// =========================================================
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
-	// ============
+	// =========================================================
 	// MAIN WINDOW
-	// ============
-	vector pos = [0, 0];
-	vector size = [UI(450), UI(325)];
-
-	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_push_frame(pos, size);
-
-	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
-
-	UI_DrawPlayerSummary(); // Draw all left side player information + 3d model
-
-	// ============
-	// SKILLS PANEL
-	// ============
-	vector spanel = [UI(75), 0];
-	vector row = [2.5, UI_Scale()*3];
-
-	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_push_frame(spanel, [UI_Scale()*250, UI_Scale()*280]);
-
-	sui_fill([0, 0], [UI_Scale()*250, UI_Scale()*280], MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], [UI_Scale()*250, UI_Scale()*280], 2, MENU_BORDER, 0.3, 0);
-
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-
-	vector title_off = [UI_Scale()*1, UI_Scale()*-20];
-	sui_text(title_off + [0, UI_Scale()*1], MENU_TEXT_MEDIUM * UI_TextScale(), "^2Skills", MENU_TEXT_SHADOW, 1, 0);
-	sui_text(title_off, MENU_TEXT_MEDIUM * UI_TextScale(), "^2Skills", MENU_TEXT_1, 1, 0);
-
-	float i;
-	float MAX_SKILLS = 21;
-	for (i = 0; i < MAX_SKILLS; i++)
-	{
-		string sname = SkillName(i);
-		float sval = SkillValue(i);
-		string sval_str = sprintf("%.1f", sval);
-
-		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-
-		float is_lastactive = (i == 17); // we do a gap here
-		float is_passive = (i > 17);
-		string col;
-
-		if (is_passive)
-		{
-			col = "^8"; // dull grey / muted
-			sui_text(row, MENU_TEXT_SMALL * UI_TextScale(), strcat(col, sname, ": ^7", sval_str), MENU_TEXT_1, 1, 0);
-		}
-		else
-		{
-			col = "^5"; // your normal highlight color
-			sui_text(row, MENU_TEXT_SMALL * UI_TextScale(), strcat(col, sname, ": ^7", ftos(sval)), MENU_TEXT_1, 1, 0);
-		}
-
-		if (atbonfire && skillpoints > 0 && !is_passive)
-		{
-			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-			my_button(strcat("sp_", ftos(i)), row + [UI(-4), UI(-1)],[UI(25), UI(10)], "+", strcat("^3", sname))? sendevent("User_AddSkillPoint", "f", i): 0;
-		}
-
-		if (is_lastactive) // do gap after last active skill
-			row_y += UI(12);
-
-		row_y += UI(10);
-	}
-
-	sui_pop_frame();
-
-	// CLOSE button
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-	my_button("close", [0, 0], [UI(15), UI(15)], "X", "")
-		? sendevent("ShutDownMenus", "")
-		: 0;
-
-	sui_pop_frame();
-};
-
-//
-// Magic Screen
-//
-void() User_MagicScreen =
-{
-	float hp = getstatf(STAT_HEALTH);
-	if (hp <= 0)
-		return;
-
-	// =================
-	// BACKDROP
-	// =================
-	vector scrsz = [g_width, g_height];
-	drawfill('0 0', scrsz, '0 0 0', 0.65);
-
-	// =================
-	// MAIN WINDOW
-	// =================
+	// =========================================================
 	vector pos = [0, 0];
 	vector size = [UI(450), UI(325)];
 
@@ -1390,97 +1251,190 @@ void() User_MagicScreen =
 
 	UI_DrawPlayerSummary();
 
-	// =================
-	// SPELL PANEL
-	// =================
+	// =========================================================
+	// SKILLS PANEL
+	// =========================================================
+
 	vector panel = [UI(75), 0];
-	vector row = [0, UI_Scale() * 2.5];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_push_frame(panel, [UI_Scale() * 250, UI_Scale() * 280]);
+	sui_push_frame(panel, [UI_Scale() * 250, UI_Scale() * 300]);
 
-	sui_fill([0, 0], [UI_Scale() * 250, UI_Scale() * 280], MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], [UI_Scale() * 250, UI_Scale() * 280], 2, MENU_BORDER, 0.3, 0);
+	sui_fill([0, 0], [UI_Scale() * 250, UI_Scale() * 300], MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], [UI_Scale() * 250, UI_Scale() * 300], 2, MENU_BORDER, 0.3, 0);
 
-	// =================
+	// =========================================================
 	// TITLE
-	// =================
+	// =========================================================
+
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
-	vector title_off = [UI_Scale() * 1, UI_Scale() * -20];
+	vector title_off = [UI_Scale() * 1, UI_Scale() * -12];
 
-	sui_text(title_off + [0, UI_Scale() * 1],
-		MENU_TEXT_MEDIUM * UI_TextScale(),
-		"^2Magic",
-		MENU_TEXT_SHADOW,
-		1,
-		0);
+	sui_text(title_off + [0, UI_Scale() * 1], (MENU_TEXT_MEDIUM - [2,2]) * UI_TextScale(), "^2Skills", MENU_TEXT_SHADOW, 1, 0);
+	sui_text(title_off, (MENU_TEXT_MEDIUM - [2,2]) * UI_TextScale(), "^2Skills", MENU_TEXT_1, 1, 0);
 
-	sui_text(title_off,
-		MENU_TEXT_MEDIUM * UI_TextScale(),
-		"^2Magic",
-		MENU_TEXT_1,
-		1,
-		0);
+	// =========================================================
+	// SKILL LIST
+	// =========================================================
 
-	// ==========
-	// SPELL LIST
-	// ==========
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+
+	vector row = [UI(5), UI(2)];
+
 	float i;
+	float MAX_SKILLS = 21;
 
-	for (i = 0; i < spell_count; i++)
+	for (i = 0; i < MAX_SKILLS; i++)
 	{
-		string s = spell[i];
+		string sname = SkillName(i);
+		float sval = SkillValue(i);
+		string sval_str;
+
+		if (i > 17)
+			sval_str = sprintf("%.1f", sval);
+		else
+			sval_str = ftos(sval);
+
+		float is_passive = (i > 17);
+		string col;
+
+		if (is_passive)
+			col = "^8";
+		else
+			col = "^5";
+
+		sui_text(row, (MENU_TEXT_SMALL + [1,1]) * UI_TextScale(), strcat(col, sname, ": ^7", sval_str), MENU_TEXT_1, 1, 0);
+
+		// =====================================================
+		// GAP BEFORE PASSIVE SKILLS
+		// =====================================================
+
+		if (i == 17)
+			row_y += UI(12);
+
+		row_y += UI(11);
+	}
+
+	// =========================================================
+	// CLOSE BUTTON
+	// =========================================================
+
+	sui_pop_frame();
+
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	my_button("close", [0, 0], [UI(15), UI(15)], "X", "") ? sendevent("ShutDownMenus", "") : 0;
+
+	sui_pop_frame();
+};
+
+//
+// Magic Screen
+//
+
+void() User_MagicScreen =
+{
+	float hp = getstatf(STAT_HEALTH);
+	if (hp <= 0)
+		return;
+
+	// =========================================================
+	// BACKDROP
+	// =========================================================
+
+	vector scrsz = [g_width, g_height];
+	drawfill('0 0', scrsz, '0 0 0', 0.65);
+
+	// =========================================================
+	// MAIN WINDOW
+	// =========================================================
+
+	vector pos = [0, 0];
+	vector size = [UI(450), UI(325)];
+
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	sui_push_frame(pos, size);
+
+	sui_fill([0, 0], size, MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], size, 2, MENU_BORDER, 0.3, 0);
+
+	UI_DrawPlayerSummary();
+
+	// =========================================================
+	// MAGIC PANEL
+	// =========================================================
+
+	vector panel = [UI(75), 0];
+
+	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
+	sui_push_frame(panel, [UI_Scale() * 250, UI_Scale() * 300]);
+
+	sui_fill([0, 0], [UI_Scale() * 250, UI_Scale() * 300], MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], [UI_Scale() * 250, UI_Scale() * 300], 2, MENU_BORDER, 0.3, 0);
+
+	// =========================================================
+	// TITLE
+	// =========================================================
+
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+
+	vector title_off = [UI_Scale() * 1, UI_Scale() * -12];
+	sui_text(title_off + [0, UI_Scale() * 1], (MENU_TEXT_MEDIUM - [2,2]) * UI_TextScale(), "^2Magic", MENU_TEXT_SHADOW, 1, 0);
+	sui_text(title_off, (MENU_TEXT_MEDIUM - [2,2]) * UI_TextScale(), "^2Magic", MENU_TEXT_1, 1, 0);
+
+	// =========================================================
+	// SCROLLABLE SPELL LIST
+	// =========================================================
+
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+
+	vector list_pos = [UI(5), UI(2)];
+	vector list_size = [UI(250), UI(300)];
+	vector spell_size = [UI(250), UI(14)];
+
+	sui_list_view_begin("magic_scroll", list_pos, list_size, spell_size, spell_count, magic_scroll_offset, [UI(4), UI(4)]);
+
+	vector row;
+	float list_index;
+	while ((list_index = sui_list_item(row)) >= 0)
+	{
+		string s = spell[list_index];
 
 		if (!s)
 			continue;
 
 		string desc = strcat("desc/", string_remove_spaces(s));
-		string btn  = strcat("spell_", ftos(i));
+		string btn  = strcat("spell_", ftos(list_index));
 
-		// =====================
-		// LABEL
-		// =====================
+		// =====================================================
+		// SPELL NAME + TOOLTIP
+		// =====================================================
+
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
 		float w = stringwidth(s, 1);
+		sui_tooltip(desc, row + [UI(2), UI(1)], [w * 8, UI(10)], strcat("^5", s));
 
-		sui_tooltip(
-			desc,
-			row + [UI(2.5), 0],
-			[w * 8, 8],
-			strcat("^5", s)
-		);
-
-		// =====================
+		// =====================================================
 		// EQUIP BUTTON
-		// =====================
+		// =====================================================
+
 		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
-		my_button(
-			btn,
-			row - [UI(2.5), 0],
-			[UI(32), UI(10)],
-			"Equip",
-			""
-		) ? sendevent("EquipSpell", "s", s) : 0;
-
-		// =====================
-		// ROW SPACING
-		// =====================
-		row += [0, UI(14)];
+		vector btn_size = [UI(32), UI(10)];
+		my_button(btn, row - [UI(8), 0], btn_size, "Equip", "") ? sendevent("EquipSpell", "s", s) : 0;
 	}
+
+	sui_list_view_end();
+
+	// =========================================================
+	// CLOSE BUTTON
+	// =========================================================
 
 	sui_pop_frame();
 
-	// =================
-	// CLOSE BUTTON
-	// =================
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-
-	my_button("close", [0, 0], [UI(15), UI(15)], "X", "")
-		? sendevent("ShutDownMenus", "")
-		: 0;
+	my_button("close", [0, 0], [UI(15), UI(15)], "X", "") ? sendevent("ShutDownMenus", "") : 0;
 
 	sui_pop_frame();
 };
@@ -1488,6 +1442,7 @@ void() User_MagicScreen =
 //
 // Inventory Screen
 //
+
 void() User_InventoryScreen =
 {
 	float hp = getstatf(STAT_HEALTH);
@@ -1497,12 +1452,14 @@ void() User_InventoryScreen =
 	// =========================================================
 	// BACKDROP
 	// =========================================================
+
 	vector scrsz = [g_width, g_height];
 	drawfill('0 0', scrsz, '0 0 0', 0.65);
 
 	// =========================================================
 	// MAIN WINDOW
 	// =========================================================
+
 	vector pos = [0, 0];
 	vector size = [UI(450), UI(325)];
 
@@ -1610,25 +1567,8 @@ void() User_InventoryScreen =
 
 	sui_pop_frame();
 
-
-	sui_set_align([
-		SUI_ALIGN_END,
-		SUI_ALIGN_START
-	]);
-
-
-	my_button(
-		"close",
-		[0, 0],
-		[UI(15), UI(15)],
-		"X",
-		""
-	)
-	?
-		sendevent("ShutDownMenus", "")
-	:
-		0;
-
+	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
+	my_button("close", [0, 0], [UI(15), UI(15)], "X", "" ) ? sendevent("ShutDownMenus", "") : 0;
 
 	sui_pop_frame();
 };
