@@ -145,7 +145,15 @@ void(string track, float pool, float index) Music_Play =
 {
 	float channel;
 
-	if (cl_current_music == track)
+	if (cl_music_fading)
+	{
+		soundupdate(self, cl_music_fade_new_channel, "", 0, 0, 100, 0, 0);
+
+		cl_music_fading = FALSE;
+		cl_next_music = "";
+	}
+
+	if (cl_current_music == track || cl_next_music == track)
 		return;
 
 	if (cl_music_fading && cl_next_music == track)
