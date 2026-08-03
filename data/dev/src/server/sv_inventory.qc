@@ -476,24 +476,36 @@ void(entity targ, entity client) SendNPCInventory =
 
 void() Item_Touch =
 {
-    // =========================
-    // MONSTER LOOT CHEST
-    // =========================
+	// =========================
+	// MONSTER LOOT CHEST
+	// =========================
 	if (self.lootmode)
 	{
 		entity e = find(world, classname, "chestloot");
+
 		while (e)
 		{
 			if (e.owner == self)
 			{
-				AddToInventory(other, e.netname, 1);
+				float amount;
 
-				string eventlog_print = strcat("Acquired ", "1", " ", e.netname, "\n");
+				amount = e.loot_amount;
+
+				if (amount <= 0)
+					amount = 1;
+
+				AddToInventory(other, e.netname, amount);
+
+				string eventlog_print = strcat("Acquired ", ftos(amount), " ", e.netname, "\n");
 				stuffcmd(other, sprintf("conecho event %s\n", eventlog_print));
+
 				sound(other, CHAN_AUTO, "item/get.wav", 1, ATTN_NORM);
+
 				SaveInventory(other);
+
 				remove(e);
 			}
+
 			e = find(e, classname, "chestloot");
 		}
 
