@@ -1162,7 +1162,11 @@ void(string id, vector size, vector contentsize, __inout vector offset, vector s
 			offset_y += (diff * contentsize_y) / size_y; //  * contentsize_y; // (size_y / contentsize_y);
 		}
 
-		sui_fill(barpos, barsize, '0.1 0.1 0.1' * (1 - sui_is_hovered(barname)), 0.66, 0);
+		vector scrollbar_color = '0.8 0.55 0.1';
+
+		sui_fill([0,0], [scrollbar_widths_y, size_y], '0.1 0.2 0.35', 0.5, 0);
+		sui_fill(barpos, barsize, scrollbar_color * (1 - sui_is_hovered(barname) * 0.4), 0.85, 0);
+
 		sui_action_element(barpos, barsize, barname, sui_noop, TRUE);
 		sui_pop_frame();
 	} 

@@ -2,6 +2,8 @@
 // Player HUD
 //
 
+vector inventory_scroll_offset;
+
 // Protos
 float(vector startpos, float max_width, string text) UI_DrawWrappedText;
 void(vector pos) Draw_3DPDoll;
@@ -45,10 +47,7 @@ struct questinfo
 	float reward_item_count;
 };
 
-
-struct questinfo quest_log[MAX_QUESTS];
-float tracker_alpha;
-float tracker_target;
+float g_width, g_height; /* Globals for screen width and height */
 
 float() UI_Scale =
 {
@@ -69,6 +68,10 @@ float() UI_TextScale =
 {
 	return UI_Scale() * 1.0; // tweak this for a slightly smaller/larger UI overall
 };
+
+struct questinfo quest_log[MAX_QUESTS];
+float tracker_alpha;
+float tracker_target;
 
 // ===============
 // Monster Plaques
@@ -1515,38 +1518,32 @@ void() User_InventoryScreen =
 	// INVENTORY PANEL
 	// =========================================================
 	vector panel = [UI(75), 0];
-	vector row = [0, UI_Scale() * 2.5];
 
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-	sui_push_frame(panel, [UI_Scale() * 250, UI_Scale() * 280]);
+	sui_push_frame(panel, [UI_Scale() * 250, UI_Scale() * 300]);
 
-	sui_fill([0, 0], [UI_Scale() * 250, UI_Scale() * 280], MENU_BG, 0.75, 0);
-	sui_border_box([0, 0], [UI_Scale() * 250, UI_Scale() * 280], 2, MENU_BORDER, 0.3, 0);
+	sui_fill([0, 0], [UI_Scale() * 250, UI_Scale() * 300], MENU_BG, 0.75, 0);
+	sui_border_box([0, 0], [UI_Scale() * 250, UI_Scale() * 300], 2, MENU_BORDER, 0.3, 0);
 
 	// =========================================================
 	// TITLE
 	// =========================================================
+
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
-	vector title_off = [UI_Scale() * 1, UI_Scale() * -20];
+	vector title_off = [UI_Scale() * 1, UI_Scale() * - 12];
 
-	sui_text(title_off + [0, UI_Scale() * 1],
-		MENU_TEXT_MEDIUM * UI_TextScale(),
-		"^2Inventory",
-		MENU_TEXT_SHADOW,
-		1,
-		0);
-
-	sui_text(title_off,
-		MENU_TEXT_MEDIUM * UI_TextScale(),
-		"^2Inventory",
-		MENU_TEXT_1,
-		1,
-		0);
+	sui_text(title_off + [0, UI_Scale() * 1], (MENU_TEXT_MEDIUM - [2,2]) * UI_TextScale(), "^2Inventory", MENU_TEXT_SHADOW, 1, 0);
+	sui_text(title_off, (MENU_TEXT_MEDIUM - [2,2]) * UI_TextScale(), "^2Inventory", MENU_TEXT_1, 1, 0);
 
 	// =========================================================
-	// ITEMS
+	// BUILD COMPACT INVENTORY LIST
 	// =========================================================
+
+	string inv_items[256];
+	float inv_amounts[256];
+
+	float item_count = 0;
 	float i;
 
 	for (i = 0; i < inv_count; i++)
@@ -1554,60 +1551,84 @@ void() User_InventoryScreen =
 		if (inventory_count[i] <= 0)
 			continue;
 
-		string item = inventory[i];
+		inv_items[item_count] = inventory[i];
+		inv_amounts[item_count] = inventory_count[i];
+
+		item_count++;
+	}
+
+	// =========================================================
+	// SCROLLABLE INVENTORY LIST
+	// =========================================================
+	
+	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
+
+	vector list_pos = [UI(5), UI(2)];
+	vector list_size = [UI(250), UI(300)];
+	vector item_size = [UI(250), UI(14)];
+
+	sui_list_view_begin("inventory_scroll", list_pos, list_size, item_size, item_count, inventory_scroll_offset, [UI(4), UI(4)]);
+
+	vector row;
+	float list_index;
+
+	while ((list_index = sui_list_item(row)) >= 0)
+	{
+		string item = inv_items[list_index];
 
 		string use_btn  = strcat("u_", item);
 		string drop_btn = strcat("d_", item);
-		string desc     = strcat("desc/", string_remove_spaces(item));
 
-		string label = strcat("^5", item, " ^7[^2", ftos(inventory_count[i]), "^7]");
+		string desc = strcat("desc/", string_remove_spaces(item));
+		string label = strcat("^5", item, " ^7[^2", ftos(inv_amounts[list_index]), "^7]");
 
 		// =====================================================
-		// LABEL SIDE
+		// ITEM NAME + TOOLTIP
 		// =====================================================
+
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-		float w = stringwidth(item, UI_TextScale(), 0);
-
-		vector label_size = [w * UI_TextScale(), UI(10)];
-
-		string hover_btn = strcat("i_", item);
-
-		// text + tooltip
 		float w = stringwidth(item, 1);
-		sui_tooltip(desc, row + [UI(2.5), UI(0)], [w * 8, 8], label);
+		sui_tooltip(desc, row + [UI(2), UI(1)], [w * 8, UI(10)], label);
 
 		// =====================================================
 		// BUTTONS
 		// =====================================================
-		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
+		sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 		vector btn_size = [UI(32), UI(10)];
 
-		my_button(use_btn, row - [UI(2.5), 0], btn_size, "Use", "")
-			? sendevent("UseItem", "s", item)
-			: 0;
-
-		my_button(drop_btn, row - [UI(44), 0], btn_size, "Drop", "")
-			? sendevent("DropItem", "s", item)
-			: 0;
-
-		// =====================================================
-		// ROW SPACING (FIXED)
-		// =====================================================
-		row += [0, UI(14)];
+		my_button(use_btn, row - [UI(8), 0], btn_size, "Use", "") ? sendevent("UseItem", "s", item) : 0;
+		my_button(drop_btn, row - [UI(50), 0], btn_size, "Drop", "") ? sendevent("DropItem", "s", item) : 0;
 	}
 
-	sui_pop_frame();
+	sui_list_view_end();
 
 	// =========================================================
 	// CLOSE BUTTON
 	// =========================================================
-	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
-	my_button("close", [0, 0], [UI(15), UI(15)], "X", "")
-		? sendevent("ShutDownMenus", "")
-		: 0;
+	sui_pop_frame();
+
+
+	sui_set_align([
+		SUI_ALIGN_END,
+		SUI_ALIGN_START
+	]);
+
+
+	my_button(
+		"close",
+		[0, 0],
+		[UI(15), UI(15)],
+		"X",
+		""
+	)
+	?
+		sendevent("ShutDownMenus", "")
+	:
+		0;
+
 
 	sui_pop_frame();
 };

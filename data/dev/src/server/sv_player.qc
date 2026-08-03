@@ -460,6 +460,42 @@ void() Player_DeveloperBind =
 		AddToInventory(self, "Health Potion", 1);
 		AddToInventory(self, "Mana Potion", 1);
 		AddToInventory(self, "Small Fish", 10); // debug item
+
+		AddToInventory(self, "Health Potion", 1);
+		AddToInventory(self, "Mana Potion", 1);
+		AddToInventory(self, "Small Fish", 10); // debug item
+
+		// Inventory scroll test
+		AddToInventory(self, "Debug Sword", 1);
+		AddToInventory(self, "Debug Shield", 1);
+		AddToInventory(self, "Debug Helmet", 1);
+		AddToInventory(self, "Debug Boots", 1);
+		AddToInventory(self, "Debug Ring", 1);
+		AddToInventory(self, "Debug Amulet", 1);
+		AddToInventory(self, "Debug Ruby", 1);
+		AddToInventory(self, "Debug Emerald", 1);
+		AddToInventory(self, "Debug Sapphire", 1);
+		AddToInventory(self, "Debug Scroll", 1);
+		AddToInventory(self, "Debug Torch", 1);
+		AddToInventory(self, "Debug Rope", 1);
+		AddToInventory(self, "Debug Key", 1);
+		AddToInventory(self, "Debug Map", 1);
+		AddToInventory(self, "Debug Gem", 1);
+		AddToInventory(self, "Debug Crystal", 1);
+		AddToInventory(self, "Debug Artifact", 1);
+		AddToInventory(self, "Debug Relic", 1);
+		AddToInventory(self, "Debug Coin", 1);
+		AddToInventory(self, "Debug Medal", 1);
+		AddToInventory(self, "Debug Crown", 1);
+		AddToInventory(self, "Debug Staff", 1);
+		AddToInventory(self, "Debug Axe", 1);
+		AddToInventory(self, "Debug Bow", 1);
+		AddToInventory(self, "Debug Dagger", 1);
+		AddToInventory(self, "Debug Hammer", 1);
+		AddToInventory(self, "Debug Orb", 1);
+		AddToInventory(self, "Debug Stone", 1);
+		AddToInventory(self, "Debug Feather", 1);
+		AddToInventory(self, "Debug Claw", 1);		
 	}
 };
 
