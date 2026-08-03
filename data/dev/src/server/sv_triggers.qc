@@ -84,7 +84,11 @@ void() trigger_zone_touch =
 	// MUSIC HANDLER
 	//
 
-	// Only replace the saved track while exploring
+	// Dungeon music is locked on dungeon maps only
+	if (!is_hmp && other.music == MUSIC_DUNGEON)
+		return;
+
+	// Only update saved music while not in combat
 	if (!other.incombat)
 	{
 		if (other.music != self.music)

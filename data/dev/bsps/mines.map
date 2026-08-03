@@ -28479,7 +28479,7 @@
 {
 "classname" "info_player_start"
 "angle" "0"
-"origin" "176 3680 -24"
+"origin" "208 3680 -24"
 }
 // entity 2
 {
@@ -28514,7 +28514,7 @@
 {
 "classname" "trigger_zone"
 "zonename" "Elderfen Mines"
-"music" "sound/music/dungeon/1.ogg"
+"music" "4"
 "pvp" "2"
 // brush 0
 {

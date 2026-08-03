@@ -1342,9 +1342,9 @@ void() PlayerPostThink =
 				self.music = self.old_music;
 		}
 	}
-	else // player in combat
+	else // players in combat
 	{
-		if (self.music != MUSIC_COMBAT)
+		if (self.music != MUSIC_DUNGEON && self.music != MUSIC_COMBAT)
 		{
 			self.old_music = self.music;
 			self.music = MUSIC_COMBAT;

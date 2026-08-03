@@ -9,6 +9,7 @@
 #define MUSIC_ELDERFEN   1
 #define MUSIC_EXPLORE    2
 #define MUSIC_COMBAT     3
+#define MUSIC_DUNGEON    4
 
 //
 // Active music channel
@@ -61,6 +62,13 @@ string combat_tracks[2] =
 {
 	"music/combat/1.ogg",
 	"music/combat/2.ogg"
+};
+
+#define DUNGEON_TRACK_COUNT 2
+string dungeon_tracks[2] =
+{
+	"music/dungeon/1.ogg",
+	"music/dungeon/1.ogg"
 };
 
 //
@@ -223,6 +231,11 @@ void() Player_Music =
 		track = floor(random() * COMBAT_TRACK_COUNT);
 		Music_Play(combat_tracks[track], MUSIC_COMBAT, track);
 	}
+	else if (music == MUSIC_DUNGEON)
+	{
+		track = floor(random() * DUNGEON_TRACK_COUNT);
+		Music_Play(dungeon_tracks[track], MUSIC_DUNGEON, track);
+	}
 };
 
 //
@@ -254,6 +267,11 @@ void() Music_Update =
 	{
 		next = Music_NextTrack(COMBAT_TRACK_COUNT, cl_current_track_index);
 		Music_Play(combat_tracks[next], MUSIC_COMBAT, next);
+	}
+	else if (cl_current_music_pool == MUSIC_DUNGEON)
+	{
+		next = Music_NextTrack(DUNGEON_TRACK_COUNT, cl_current_track_index);
+		Music_Play(dungeon_tracks[next], MUSIC_DUNGEON, next);
 	}
 };
 

@@ -2069,6 +2069,7 @@ const float ANISTATE_FISHIDLE = 25;
 #define MUSIC_ELDERFEN   1
 #define MUSIC_EXPLORE    2
 #define MUSIC_COMBAT     3
+#define MUSIC_DUNGEON    4
 
 // Define bitmask constants
 #define FLAG_1 (1 << 0)  // 00000001
