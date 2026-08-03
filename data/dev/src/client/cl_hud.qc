@@ -1317,8 +1317,11 @@ void() User_SkillsScreen =
 			sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
 
 			vector btn_size = [UI(25), UI(10)];
-
-			my_button(strcat("sp_", ftos(i)), row - [UI(8), UI(1)], btn_size, "+", strcat("^3", sname)) ? sendevent("User_AddSkillPoint", "f", i) : 0;
+			if (my_button(strcat("sp_", ftos(i)), row - [UI(8), UI(1)], btn_size, "+", strcat("^3", sname)))
+			{
+				localsound("menu/btn_generic.wav");
+				sendevent("User_AddSkillPoint", "f", i);
+			}
 
 			// Restore left alignment for the next row
 			sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
