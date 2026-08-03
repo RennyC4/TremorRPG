@@ -384,14 +384,17 @@ void(vector ang) CSEv_DoAttack_Melee_v =
     if (damage < 1)
         damage = 1;
 
-    // Apply damage
+	// Apply damage
 	if (!blocked)
 	{
-		targ.stagger_finished = time + 0.8; // impact frame on target only
+		if (self.attack_type != 2) // Daggers do not stagger
+			targ.stagger_finished = time + 0.8;
+
 		if (targ.melee_finished > time)
 			targ.melee_finished = time;
 	}
-    DoDamage(targ, self, damage, FALSE);
+
+    DoDamage(targ, self, damage, FALSE); // hit 'em
 
     // FX and hit sounds
     vector mid = targ.origin;
@@ -547,6 +550,7 @@ void() arrow_touch =
 				if (other.melee_finished > time)
 					other.melee_finished = time;
 			}
+			
 			DoDamage(other, self.owner, damage, FALSE);
 			sound(self, CHAN_BODY, "arrow2.wav", 1, ATTN_NORM);
 		}
@@ -945,11 +949,14 @@ float(entity attacker, vector org, float radius, float damage, float diminish, f
 		// Apply damage
 		if (!blocked)
 		{
-			targ.stagger_finished = time + 0.8; // impact frame on target only
+			if (attacker.attack_type != 2) // Daggers do not stagger (although daggers don't do cleave either)
+				targ.stagger_finished = time + 0.8;
+
 			if (targ.melee_finished > time)
 				targ.melee_finished = time;
 		}
-		DoDamage(targ, attacker, dmg, silent);
+		DoDamage(targ, attacker, dmg, silent); // hit 'em
+
         did_damage = TRUE;
 
         // -------------------------------
