@@ -32,6 +32,12 @@ float	RANGE_NEAR				= 2;
 float	RANGE_MID				= 3;
 float	RANGE_FAR				= 4;
 
+void(entity targ) Player_UpdateCombat =
+{
+	targ.incombat = TRUE;
+	targ.incombat_finished = time + 15;
+};
+
 void() monster_death =
 {
 	if (self.loottable != "")
@@ -459,8 +465,7 @@ void() monster_ai_update_state =
 			self.ai_mode = AI_CHASE;
 			self.anistate = ANISTATE_RUN;
 
-			targ.incombat = TRUE;
-			targ.incombat_finished = time + 15;
+			Player_UpdateCombat(targ);
 
 			string eventlog_print = "^1You engage in combat!\n";
 			stuffcmd(targ, sprintf("conecho event %s\n", eventlog_print));
@@ -687,10 +692,8 @@ void() monster_ai_update_state =
 					if (dist > RANGE_MELEE && visible(self.enemy))
 					{
 						if (!self.enemy.incombat)
-						{
-							self.enemy.incombat = TRUE;
-							self.enemy.incombat_finished = time + 15;
-						}
+							Player_UpdateCombat(self.enemy);
+
 						self.ai_attacktriggered = FALSE;
 						self.ai_mode = AI_ATTACK;
 						self.anistate = ANISTATE_NONE;
@@ -706,10 +709,8 @@ void() monster_ai_update_state =
 				else if (dist <= self.attack_length)
 				{
 					if (!self.enemy.incombat)
-					{
-						self.enemy.incombat = TRUE;
-						self.enemy.incombat_finished = time + 15;
-					}
+						Player_UpdateCombat(self.enemy);
+
 					self.ai_attacktriggered = FALSE;
 					self.ai_mode = AI_ATTACK;
 					self.anistate = ANISTATE_NONE;
@@ -718,10 +719,8 @@ void() monster_ai_update_state =
 				else
 				{
 					if (!self.enemy.incombat)
-					{
-						self.enemy.incombat = TRUE;
-						self.enemy.incombat_finished = time + 15;
-					}
+						Player_UpdateCombat(self.enemy);
+
 					self.ai_mode = AI_CHASE;
 					self.anistate = ANISTATE_RUN;
 				}

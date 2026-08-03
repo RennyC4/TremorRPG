@@ -1337,10 +1337,7 @@ void() PlayerPostThink =
 			self.healthregen_finished = time + calc;
 		}
 		if (self.music == MUSIC_COMBAT) // not in combat, return to previous music
-		{
-			if (self.music != self.old_music)
-				self.music = self.old_music;
-		}
+			self.music = self.old_music;
 	}
 	else // players in combat
 	{
@@ -1564,6 +1561,13 @@ void(float type) PlayerSpawn =
 		bprint(PRINT_HIGH, " enters the zone\n");
 
 		stuffcmd (self, sprintf("stopmusic\n")); // stop music playback, CSQC handles the rest
+
+		string mdl = world.model;
+		float len = strlen(mdl);
+		float is_hmp = (len >= 3 && substring(mdl, len - 3, 3) == "hmp");
+
+		if (is_hmp)
+			self.music = 2; // overwrite possible dungeon music, this will be overwritten by a trigger on load if in a town etc
 	}
 	else if (type == 2) // map transition spawn
 	{	
