@@ -1388,7 +1388,7 @@ void() User_MagicScreen =
 
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-	vector list_pos = [UI(5), UI(2)];
+	vector list_pos = [UI(5), UI(0)];
 	vector list_size = [UI(250), UI(300)];
 	vector spell_size = [UI(250), UI(14)];
 
@@ -1520,7 +1520,7 @@ void() User_InventoryScreen =
 	
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
-	vector list_pos = [UI(5), UI(2)];
+	vector list_pos = [UI(5), UI(0)];
 	vector list_size = [UI(250), UI(300)];
 	vector item_size = [UI(250), UI(14)];
 
