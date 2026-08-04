@@ -57,18 +57,20 @@ string exploration_tracks[4] =
 	"music/overworld/4.ogg"
 };
 
-#define COMBAT_TRACK_COUNT 2
-string combat_tracks[2] =
+#define COMBAT_TRACK_COUNT 4
+string combat_tracks[4] =
 {
 	"music/combat/1.ogg",
-	"music/combat/2.ogg"
+	"music/combat/2.ogg",
+	"music/combat/3.ogg",
+	"music/combat/4.ogg"
 };
 
 #define DUNGEON_TRACK_COUNT 2
 string dungeon_tracks[2] =
 {
 	"music/dungeon/1.ogg",
-	"music/dungeon/1.ogg"
+	"music/dungeon/2.ogg"
 };
 
 //
