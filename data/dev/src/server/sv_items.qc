@@ -129,9 +129,6 @@ void(string itemname, float id) Player_EquipItem =
 
 		while ((line = fgets(v)))
 		{
-			string key;
-			string value;
-
 			key = Item_Key(line);
 			value = Item_Value(line);
 

@@ -7,7 +7,6 @@ sui_sys.qc
 math.qc
 enums.qc
 
-client/csaddon/csplat.qc
 client/csaddon/csfixups.qc
 client/csaddon/editor_lights.qc
 client/csaddon/editor_terrain.qc

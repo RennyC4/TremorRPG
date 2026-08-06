@@ -83,7 +83,7 @@ float(float evtype, float scanx, float chary, float devid) Menu_InputEvent =
 	{
 		switch (scanx)
 		{
-			case K_GP_START:
+			case K_GP_MENU:
 				m_close();
 				return TRUE;
 				break;

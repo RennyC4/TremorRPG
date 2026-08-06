@@ -7,6 +7,8 @@
 //thus we use pointers in the addon to refer to that set of globals.
 //this avoids having to make things shared, and having to pay for every transition.
 
+float(optional float timetype) gettime = #519; // rennyc: I'm not sure this is even really used any longer
+
 vector *ptr_trace_endpos;
 #define trace_endpos (*ptr_trace_endpos)
 
