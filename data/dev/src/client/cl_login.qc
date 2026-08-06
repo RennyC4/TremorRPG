@@ -14,9 +14,9 @@ void() User_ResumeCharacter_MapTransfer =
     float v = fopen("sparms", FILE_READ);
     if (v)
     {
-        if (line = fgets(v))
+        if ((line = fgets(v)))
             Send_LastLogin = line;
-        if (line = fgets(v))
+        if ((line = fgets(v)))
             Send_Password = line;
         fclose(v);
     }

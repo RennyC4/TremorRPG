@@ -510,15 +510,14 @@ void() Draw_PlayerAlerts =
 		t = (time - lowmana_display_start) / duration;
 		t = bound(0, t, 1);
 
-		float fade = pow(1 - t, 2);
-		float shake = pow(1 - t, 2) * 1.2;
+		fade = pow(1 - t, 2);
+		shake = pow(1 - t, 2) * 1.2;
 
-		string msg = "LOW MANA";
-		vector size = '16 16 0';
+		msg = "LOW MANA";
+		size = '16 16 0';
 
-		float text_width = stringwidth(msg, 0, size);
+		text_width = stringwidth(msg, 0, size);
 
-		vector pos;
 		pos_x = floor(cx - text_width * 0.5);
 		pos_y = floor(cy);
 
@@ -528,14 +527,12 @@ void() Draw_PlayerAlerts =
 		// -------------------------
 		// ICON (above text)
 		// -------------------------
-		vector icon_pos;
 		icon_pos_x = pos_x + (text_width * 0.5) - 8;
 		icon_pos_y = pos_y - 28;
 
 		drawpic(icon_pos, "progs/lowmana.png", '24 24 0', '1 1 1', fade, 0);
 
 		// shadow
-		vector shadow_pos;
 		shadow_pos_x = pos_x + 1;
 		shadow_pos_y = pos_y + 1;
 		drawstring(shadow_pos, msg, size, '0 0 0', fade, 0);
@@ -1147,7 +1144,7 @@ void() UI_DrawPlayerSummary =
 		info_y += UI_Scale()*10;
 
 	LINE(strcat("^5Skill Points: ^7", ftos(skillpoints)))
-	LINE(strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)));
+	LINE(strcat("^5Gold: ^7", ftos(gold), "^8 Bank: ", ftos(bank)))
 
 	info_y += UI_Scale()*2;
 

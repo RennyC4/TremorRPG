@@ -146,8 +146,7 @@ void(string itemname) CSEv_PlayerSellItem_s =
 	float v = fopen(readfile, FILE_READ);
 	if (v >= 0)
 	{
-		string line;
-		float price = 0;
+		price = 0;
 
 		while ((line = fgets(v)))
 		{
@@ -537,7 +536,7 @@ void() Item_Touch =
     }
 
     // Try adding the item first
-    float amount = self.count;
+    amount = self.count;
     if (amount <= 0)
         amount = 1;
 

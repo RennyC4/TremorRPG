@@ -87,15 +87,15 @@ void() Camera_Third =
 	vector ang = getproperty(VF_ANGLES);
 	makevectors(ang);
 
-    vector campos = getproperty(VF_ORIGIN) - v_forward * thirdcam_dist + v_up * thirdcam_distz;
-    tracebox(plyr_pos, '-16 -16 -16', '16 16 16', campos, MOVE_NOMONSTERS, self);
+    vector cam_pos = getproperty(VF_ORIGIN) - v_forward * thirdcam_dist + v_up * thirdcam_distz;
+    tracebox(plyr_pos, '-16 -16 -16', '16 16 16', cam_pos, MOVE_NOMONSTERS, self);
 
 	self.hitcontentsmaski = CONTENTBIT_BODY|CONTENTBIT_SOLID|CONTENTBIT_PLAYERCLIP|CONTENTBIT_SKY; // Do not go into clip brushes
 
 	if (trace_fraction <= 1) // hit wall
 		setproperty(VF_ORIGIN, trace_endpos);
 	else
-		setproperty(VF_ORIGIN, campos);
+		setproperty(VF_ORIGIN, cam_pos);
 
     setproperty(VF_AFOV, 90);
 

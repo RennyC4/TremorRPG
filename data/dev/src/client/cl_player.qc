@@ -478,17 +478,17 @@ void() sParms_Read =
 	float v = fopen("sparms", FILE_READ); // read sParms
 	if (v)
 	{
-		if (line = fgets(v)) // skip first line
-		if (line = fgets(v)) // skip second line
-		if (line = fgets(v))
+		if ((line = fgets(v))) // skip first line
+		if ((line = fgets(v))) // skip second line
+		if ((line = fgets(v)))
 			sparm1 = line;
-		if (line = fgets(v))
+		if ((line = fgets(v)))
 			sparm2 = line;
-		if (line = fgets(v))
+		if ((line = fgets(v)))
 			sparm3 = line;
-		if (line = fgets(v))
+		if ((line = fgets(v)))
 			sparm4 = line;
-		if (line = fgets(v))
+		if ((line = fgets(v)))
 			sparm5 = line;
 		fclose(v);
 	}
@@ -880,7 +880,7 @@ void() Player_Screen =
 			float twKey   = stringwidth(keyText, 0, [14,14]); // key slightly bigger
 			float twPost  = stringwidth(postText, 0, [12,12]);
 
-			vector txtpos = [(g_width * 0.5) - (twTotal / 2), g_height * 0.65];
+			txtpos = [(g_width * 0.5) - (twTotal / 2), g_height * 0.65];
 
 			// Pulsing yellow for key
 			float pulse = 0.5 + 0.5 * sin(time * 3);
@@ -903,24 +903,24 @@ void() Player_Screen =
 		if (Draw_NPCUse)
 		{
 			// Fetch actual key bound to +use
-			string keyName = "USE";
+			keyName = "USE";
 
 			// Build message parts
-			string preText  = "Press ";
-			string keyText  = strcat("<", keyName, ">");
-			string postText = " to talk ...";
+			preText  = "Press ";
+			keyText  = strcat("<", keyName, ">");
+			postText = " to talk ...";
 
 			// Compute widths for centering
-			float twTotal = stringwidth(strcat(preText, keyText, postText), 0, [12,12]);
-			float twPre   = stringwidth(preText, 0, [12,12]);
-			float twKey   = stringwidth(keyText, 0, [14,14]); // key slightly bigger
-			float twPost  = stringwidth(postText, 0, [12,12]);
+			twTotal = stringwidth(strcat(preText, keyText, postText), 0, [12,12]);
+			twPre   = stringwidth(preText, 0, [12,12]);
+			twKey   = stringwidth(keyText, 0, [14,14]); // key slightly bigger
+			twPost  = stringwidth(postText, 0, [12,12]);
 
-			vector txtpos = [(g_width * 0.5) - (twTotal / 2), g_height * 0.65];
+			txtpos = [(g_width * 0.5) - (twTotal / 2), g_height * 0.65];
 
 			// Pulsing yellow for key
-			float pulse = 0.5 + 0.5 * sin(time * 3);
-			vector keyColour = [1, 1, 0] * pulse;
+			pulse = 0.5 + 0.5 * sin(time * 3);
+			keyColour = [1, 1, 0] * pulse;
 
 			// Draw shadow
 			drawstring(txtpos + [1,1], preText, [12,12], '0 0 0', 1, 0);

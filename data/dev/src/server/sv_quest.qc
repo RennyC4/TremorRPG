@@ -221,12 +221,12 @@ void(entity player, string id) Quest_SendPreview =
 
 	msg_entity = player;
 
-	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
-	WriteByte(MSG_ONE, CSQC_QUEST_PREVIEW);
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_QUEST_PREVIEW);
 
-	WriteString(MSG_ONE, q.quest_id);
-	WriteString(MSG_ONE, q.quest_name);
-	WriteString(MSG_ONE, q.quest_description);
+	WriteString(MSG_MULTICAST, q.quest_id);
+	WriteString(MSG_MULTICAST, q.quest_name);
+	WriteString(MSG_MULTICAST, q.quest_description);
 
 	//
 	// First objective text
@@ -235,18 +235,20 @@ void(entity player, string id) Quest_SendPreview =
 	obj = q.quest_objectives;
 
 	if (obj)
-		WriteString(MSG_ONE, obj.objective_text);
+		WriteString(MSG_MULTICAST, obj.objective_text);
 	else
-		WriteString(MSG_ONE, "");
+		WriteString(MSG_MULTICAST, "");
 
 
-	WriteFloat(MSG_ONE, q.quest_level);
+	WriteFloat(MSG_MULTICAST, q.quest_level);
 
-	WriteFloat(MSG_ONE, q.reward_exp);
-	WriteFloat(MSG_ONE, q.reward_gold);
+	WriteFloat(MSG_MULTICAST, q.reward_exp);
+	WriteFloat(MSG_MULTICAST, q.reward_gold);
 
-	WriteString(MSG_ONE, q.reward_item);
-	WriteFloat(MSG_ONE, q.reward_item_count);
+	WriteString(MSG_MULTICAST, q.reward_item);
+	WriteFloat(MSG_MULTICAST, q.reward_item_count);
+
+	multicast([0,0,0], MULTICAST_ONE_R);
 };
 
 void(string id) CSEv_QuestPreview_s =
@@ -274,16 +276,18 @@ void() CSEv_QuestPreviewCancel =
 
 void(entity player, entity q) Quest_SendDescription =
 {
-    if (!player || !q)
-        return;
+	if (!player || !q)
+		return;
 
-    msg_entity = player;
+	msg_entity = player;
 
-    WriteByte(MSG_ONE, SVC_CGAMEPACKET);
-    WriteByte(MSG_ONE, CSQC_QUESTDETAILS);
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_QUESTDETAILS);
 
-    WriteString(MSG_ONE, q.quest_id);
-    WriteString(MSG_ONE, q.quest_description);
+	WriteString(MSG_MULTICAST, q.quest_id);
+	WriteString(MSG_MULTICAST, q.quest_description);
+
+	multicast([0,0,0], MULTICAST_ONE_R);
 };
 
 //
@@ -335,8 +339,8 @@ void(entity player) Quest_SendLog =
 	//
 
 	msg_entity = player;
-	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
-	WriteByte(MSG_ONE, CSQC_QUESTINFO);
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_QUESTINFO);
 
 	//
 	// Quest count
@@ -345,7 +349,7 @@ void(entity player) Quest_SendLog =
 	if (send_count > MAX_QUESTS)
 		send_count = MAX_QUESTS;
 
-	WriteByte(MSG_ONE, send_count);
+	WriteByte(MSG_MULTICAST, send_count);
 
 	//
 	// Quest data
@@ -380,8 +384,8 @@ void(entity player) Quest_SendLog =
 		// Basic quest information
 		//
 
-		WriteString(MSG_ONE, q.quest_id);
-		WriteString(MSG_ONE, q.quest_name);
+		WriteString(MSG_MULTICAST, q.quest_id);
+		WriteString(MSG_MULTICAST, q.quest_name);
 		//WriteString(MSG_ONE, q.quest_description); // crashes, needs it's own packet
 
 		//
@@ -396,15 +400,15 @@ void(entity player) Quest_SendLog =
 		if (obj_count > 8)
 			obj_count = 8;
 
-		WriteByte(MSG_ONE, obj_count);
+		WriteByte(MSG_MULTICAST, obj_count);
 
 		objective = 0;
 
 		for (obj = q.quest_objectives; obj && objective < obj_count; obj = obj.objective_next)
 		{
-			WriteString(MSG_ONE, obj.objective_text);
-			WriteByte(MSG_ONE, player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)]);
-			WriteFloat(MSG_ONE, obj.objective_count);
+			WriteString(MSG_MULTICAST, obj.objective_text);
+			WriteByte(MSG_MULTICAST, player.player_quest_objective_progress[Quest_ObjectiveIndex(i, objective)]);
+			WriteFloat(MSG_MULTICAST, obj.objective_count);
 
 			objective++;
 		}
@@ -413,17 +417,17 @@ void(entity player) Quest_SendLog =
 		// Status
 		//
 
-		WriteByte(MSG_ONE, player.player_quest_status[i]);
+		WriteByte(MSG_MULTICAST, player.player_quest_status[i]);
 
 		//
 		// Rewards
 		//
 
-		WriteFloat(MSG_ONE, q.reward_exp);
-		WriteFloat(MSG_ONE, q.reward_gold);
+		WriteFloat(MSG_MULTICAST, q.reward_exp);
+		WriteFloat(MSG_MULTICAST, q.reward_gold);
 
-		WriteString(MSG_ONE, q.reward_item);
-		WriteFloat(MSG_ONE, q.reward_item_count);
+		WriteString(MSG_MULTICAST, q.reward_item);
+		WriteFloat(MSG_MULTICAST, q.reward_item_count);
 		
 		sent++;
 		
@@ -912,7 +916,7 @@ float(entity player, string id) Quest_CanTurnIn =
 	float slot;
 
 	if (player.classname != "player")
-		return;
+		return FALSE;
 
 	//
 	// Find player's quest
@@ -1026,7 +1030,7 @@ void(entity player, string id) Quest_TurnIn =
 		{
 			stuffcmd (player, sprintf("play %s\n", "item/get.wav")); // sound
 			AddToInventory(player, q.reward_item, q.reward_item_count);
-			string eventlog_print = strcat("Acquired ", ftos(q.reward_item_count), " ", q.reward_item, "\n");
+			eventlog_print = strcat("Acquired ", ftos(q.reward_item_count), " ", q.reward_item, "\n");
 			stuffcmd(player, sprintf("conecho event %s\n", eventlog_print));
 		}
 	}
@@ -1057,9 +1061,11 @@ void(entity player, string id) Quest_TurnIn =
 
 	msg_entity = player;
 
-	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
-	WriteByte(MSG_ONE, CSQC_QUEST_COMPLETE);
-	WriteString(MSG_ONE, q.quest_name);
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_QUEST_COMPLETE);
+	WriteString(MSG_MULTICAST, q.quest_name);
+
+	multicast([0,0,0], MULTICAST_ONE_R);
 };
 
 //
@@ -1176,9 +1182,11 @@ void(entity player, string type, string target, float amount) Quest_Event =
 				{
 					msg_entity = player;
 
-					WriteByte(MSG_ONE, SVC_CGAMEPACKET);
-					WriteByte(MSG_ONE, CSQC_QUEST_OBJECTIVE_COMPLETE);
-					WriteString(MSG_ONE, obj.objective_text);
+					WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+					WriteByte(MSG_MULTICAST, CSQC_QUEST_OBJECTIVE_COMPLETE);
+					WriteString(MSG_MULTICAST, obj.objective_text);
+
+					multicast([0,0,0], MULTICAST_ONE_R);
 				}
 
 				changed = TRUE;

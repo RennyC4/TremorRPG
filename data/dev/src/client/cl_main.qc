@@ -2,7 +2,7 @@
 // CSQC - Main file
 //
 
-float(void) DrawDynamicLights =
+void() DrawDynamicLights =
 {
 	for (entity f = world; (f = find(f, classname, "dlight"));)
 	{
@@ -87,10 +87,14 @@ void() CSQC_Precache =
 	precache_model("models/walltorch1.glb");
 	precache_model("models/walltorch2.glb");
 	precache_model("models/fishschool.glb");
+	precache_model("models/helmet0.glb");
 
 	precache_sound ("ambience/fountain.wav");
 	precache_sound("bonfire1.wav");
 	precache_sound("bonfire2.wav");
+	precache_sound("lowhealth.wav");
+	precache_sound("lowmana.wav");
+	precache_sound("jump.wav");
 };
 
 void() CSQC_Ent_Remove =
@@ -363,7 +367,7 @@ float(string strCommand) CSQC_ConsoleCommand =
 	if (argv(0) == "show_character")
 	{
 		// turn off cursor mode if user closes menu by quick command
-		float player_menu = getstatf(STAT_MENU);
+		player_menu = getstatf(STAT_MENU);
 		if (!player_menu) cursor_mode = TRUE;
 		else cursor_mode = FALSE;
 
@@ -1012,7 +1016,7 @@ void(float flIsNew) CSQC_Ent_Update =
 	//
 	if (flEntType == ENT_MONSTER)
 	{
-        float deltaFlags = readshort();
+        deltaFlags = readshort();
 
 		if (flIsNew)
 		{
@@ -1223,7 +1227,7 @@ void(float flIsNew) CSQC_Ent_Update =
 	//
 	if (flEntType == ENT_ALLY)
 	{
-        float deltaFlags = readshort();
+        deltaFlags = readshort();
 
 		if (flIsNew)
 		{

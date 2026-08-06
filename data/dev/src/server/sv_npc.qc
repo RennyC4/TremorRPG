@@ -72,21 +72,21 @@ void(entity npc, entity player) NPC_SendDialogue =
 
 	msg_entity = player;
 
-	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
-	WriteByte(MSG_ONE, CSQC_NPCINFO);
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_NPCINFO);
 
 	//
 	// Basic NPC information
 	//
 
-	WriteString(MSG_ONE, npc.netname);
-	WriteString(MSG_ONE, npc.npc_dialog);
+	WriteString(MSG_MULTICAST, npc.netname);
+	WriteString(MSG_MULTICAST, npc.npc_dialog);
 
 	//
 	// Available quests
 	//
 
-	WriteByte(MSG_ONE, available_count);
+	WriteByte(MSG_MULTICAST, available_count);
 
 	line = npc.npc_quests;
 	while (line != "")
@@ -104,9 +104,7 @@ void(entity npc, entity player) NPC_SendDialogue =
 			line = "";
 		}
 
-
 		id = strtolower(id);
-
 
 		if (Quest_CanOffer(player, id))
 		{
@@ -114,8 +112,8 @@ void(entity npc, entity player) NPC_SendDialogue =
 
 			if (q)
 			{
-				WriteString(MSG_ONE, q.quest_id);
-				WriteString(MSG_ONE, q.quest_name);
+				WriteString(MSG_MULTICAST, q.quest_id);
+				WriteString(MSG_MULTICAST, q.quest_name);
 			}
 		}
 	}
@@ -124,7 +122,7 @@ void(entity npc, entity player) NPC_SendDialogue =
 	// Turn-in quests
 	//
 
-	WriteByte(MSG_ONE, turnin_count);
+	WriteByte(MSG_MULTICAST, turnin_count);
 
 	line = npc.npc_turnins;
 	while (line != "")
@@ -143,17 +141,20 @@ void(entity npc, entity player) NPC_SendDialogue =
 		}
 
 		id = strtolower(id);
+
 		if (Quest_CanTurnIn(player, id))
 		{
 			q = Quest_Find(id);
 
 			if (q)
 			{
-				WriteString(MSG_ONE, q.quest_id);
-				WriteString(MSG_ONE, q.quest_name);
+				WriteString(MSG_MULTICAST, q.quest_id);
+				WriteString(MSG_MULTICAST, q.quest_name);
 			}
 		}
 	}
+
+	multicast([0,0,0], MULTICAST_ONE_R);
 };
 
 float(entity npc, entity player) NPC_CountAvailableQuests =
@@ -257,18 +258,21 @@ void(string id) CSEv_QuestAccept_s =
 	q = Quest_Find(id);
 
 	msg_entity = self;
-	WriteByte(MSG_ONE, SVC_CGAMEPACKET);
-	WriteByte(MSG_ONE, CSQC_QUEST_NOTIFY);
-	WriteString(MSG_ONE, "progs/q_acpt.png"); // TODO: Optimize this, strings = expensive
+
+	WriteByte(MSG_MULTICAST, SVC_CGAMEPACKET);
+	WriteByte(MSG_MULTICAST, CSQC_QUEST_NOTIFY);
+	WriteString(MSG_MULTICAST, "progs/q_acpt.png"); // TODO: Optimize this, strings = expensive
 
 	if (q)
-		WriteString(MSG_ONE, q.quest_name);
+		WriteString(MSG_MULTICAST, q.quest_name);
 	else
-		WriteString(MSG_ONE, "");
+		WriteString(MSG_MULTICAST, "");
+
+	multicast([0,0,0], MULTICAST_ONE_R);
 
 	if (self.npc_last_talk)
 		NPC_SendDialogue(self.npc_last_talk, self);
-	
+
 	self.menu = MENU_DIALOGUE;
 };
 
