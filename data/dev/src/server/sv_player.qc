@@ -1410,6 +1410,7 @@ void() PlayerPostThink =
 	if (self.incombat_finished < time && self.incombat)
 	{
 		self.incombat = FALSE;
+		self.incombat_finished = time;
 		eventlog_print = (strcat("^2You've left combat\n"));
 		stuffcmd (self, sprintf("conecho event %s\n", eventlog_print));
 	}
