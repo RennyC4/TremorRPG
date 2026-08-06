@@ -645,6 +645,9 @@ void() CSQC_Input_Frame =
 
 void() Player_DayNightHandler =
 {
+	if (substring(world.model, -3, 3) != "hmp")
+		return;
+
 	static float next_time_update = 0;
 	float do_fog = FALSE;
 
