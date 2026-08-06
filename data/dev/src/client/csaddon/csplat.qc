@@ -329,7 +329,6 @@ int trace_brush_faceid;
 int trace_surface_id;	/* 1-based. 0 if not known. */
 int trace_bone_id;	/* 1-based. 0 if not known. typically needs MOVE_HITMODEL. */
 int trace_triangle_id;	/* 1-based. 0 if not known. */
-int trace_networkentity;	/* Repots which ssqc entnum was hit when a csqc traceline impacts an ssqc-based brush entity. */
 vector global_gravitydir = '0 0 -1';	/* The direction gravity should act in if not otherwise specified per entity. */
 int serverid;	/* The unique id of this server within the server cluster. */
 .vector punchangle;
@@ -391,8 +390,6 @@ int serverid;	/* The unique id of this server within the server cluster. */
 .float subblend2frac;	/* Weird animation value specific to halflife models. I've no idea what this does, probably nothing for most models. */
 .float basesubblendfrac;	/* See basebone */
 .float basesubblend2frac;	/* See basebone */
-void(float reqid, float responsecode, string resourcebody) URI_Get_Callback;	/* Called as an eventual result of the uri_get builtin. */
-void(float apilevel, string enginename, float engineversion) CSQC_Init;	/* Called at startup. enginename and engineversion are arbitary hints and can take any form. enginename should be consistant between revisions, but this cannot truely be relied upon. */
 void() CSQC_WorldLoaded;	/* Called after the server's model+sound precaches have been executed. Gives a chance for the qc to read the entity lump from the bsp (via getentitytoken). */
 void() CSQC_Shutdown;	/* Specifies that the csqc is going down. Save your persistant settings here. */
 void(float vwidth, float vheight, float notmenu) CSQC_UpdateView;	/* Called every single video frame. The CSQC is responsible for rendering the entire screen. */
@@ -880,9 +877,6 @@ entity(vector org, float rad, optional .entity chainfield) findradius = #22; /*
 		Finds all entities within a distance of the 'org' specified. One entity is returned directly, while other entities are returned via that entity's .chain field. */
 
 void(string s, ...) dprint = #25; /*
-		NQ: Prints the given message on the server's console, but only if the developer cvar is set. Arguments will be concatenated into a single message. */
-
-void(string s, ...) dprint = #25; /*
 		QW: Unconditionally prints the given message on the server's console.  Arguments will be concatenated into a single message. */
 
 string(float val) ftos = #26; /*
@@ -1165,8 +1159,6 @@ float(string shadername, optional string defaultshader, ...) shaderforname = #23
 
 void(vector org, optional float count) te_bloodqw = #239; /* Part of FTE_TE_STANDARDEFFECTBUILTINS*/
 float(vector viewpos, entity entity) checkpvs = #240; /* Part of FTE_QC_CHECKPVS*/
-void(string destaddress, string content) sendpacket = #242; /* Part of FTE_QC_SENDPACKET
-		Sends a UDP packet to the specified destination. Note that the payload will be prefixed with four 255 bytes as a sort of security feature. */
 
 vector(entity ent, float tagnum) rotatevectorsbytag = #244;
 float(float dividend, float divisor) mod = #245;
@@ -1184,9 +1176,6 @@ string(int) htos = #262; /* Part of FTE_QC_INTCONV
 
 int(float) ftoi = #0:ftoi; /* Part of FTE_QC_INTCONV
 		Converts the given float into a true integer without depending on extended qcvm instructions. */
-
-float(int) itof = #0:itof; /* Part of FTE_QC_INTCONV
-		Converts the given true integer into a float without depending on extended qcvm instructions. */
 
 float(float modlindex, optional float useabstransforms) skel_create = #263; /* Part of FTE_CSQC_SKELETONOBJECTS
 		Allocates a new uninitiaised skeletal object, with enough bone info to animate the given model.
@@ -1430,9 +1419,6 @@ string(string name, optional float trywad) precache_pic = #317; /*
 //void(string imagename, int width, int height, void *pixeldata, optional int datasize, optional int format) r_uploadimage = #0:r_uploadimage; /* Part of FTE_CSQC_RAWIMAGES
 //		Updates a texture with the specified rgba data. Will be created if needed. If blobsize is specified then the image is decoded (eg .ktx or .dds data) instead of being raw R8G8B8A data. You'll typically want shaderforname to also generate a shader to use the texture. */
 
-int*(string filename, __out int width, __out int height) r_readimage = #0:r_readimage; /* Part of FTE_CSQC_RAWIMAGES
-		Reads and decodes an image from disk, providing raw R8G8B8A pixel data. Should not be used for dds or ktx etc formats. Returns __NULL__ if the image could not be read for any reason. Use memfree to free the data once you're done with it. */
-
 #define draw_getimagesize drawgetimagesize
 vector(string picname) drawgetimagesize = #318; /*
 		Returns the dimensions of the named image. Images specified with .lmp should give the original .lmp's dimensions even if texture replacements use a different resolution. */
@@ -1611,9 +1597,6 @@ string(string key) serverkey = #354; /*
 float(string key, optional float assumevalue) serverkeyfloat = #0:serverkeyfloat; /*
 		Version of serverkey that returns the value as a float (which avoids tempstrings). */
 
-int(int buf, string key, optional void *ptr, int size) serverkeyblob = #0:serverkeyblob; /*
-		Version of serverkey that can obtain entire serverinfo, localinfo, or (local)userinfo blobs. Returns blob size */
-
 string(optional string resetstring) getentitytoken = #355; /*
 		Grab the next token in the map's entity lump.
 		If resetstring is not specified, the next token will be returned with no other sideeffects.
@@ -1683,9 +1666,6 @@ __variant*(int size) memalloc = #384; /* Part of FTE_MEMALLOC
 
 void(__variant *ptr) memfree = #385; /* Part of FTE_MEMALLOC
 		Frees a block of memory that was allocated with memfree */
-
-void(__variant *dst, __variant *src, int size) memcpy = #386; /* Part of FTE_MEMALLOC
-		Copys memory from one location to another */
 
 void(__variant *dst, int val, int size) memfill8 = #387; /* Part of FTE_MEMALLOC
 		Sets an entire block of memory to a specified value. Pretty much always 0. */
