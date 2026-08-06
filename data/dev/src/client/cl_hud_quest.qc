@@ -291,7 +291,7 @@ void() User_QuestLogScreen =
 		// Description
 		//
 
-		desc_lines = UI_DrawWrappedText(text, UI(22), quest_log[q].description);
+		desc_lines = UI_DrawWrappedText(text, UI(300), quest_log[q].description);
 
 		text_y += desc_lines * UI(10);
 		text_y += UI(20);

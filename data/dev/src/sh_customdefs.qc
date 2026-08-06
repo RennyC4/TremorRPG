@@ -1,5 +1,8 @@
 //shared definitions
 
+#pragma warning disable Q302
+#pragma warning disable F302
+
 #define USEDISTANCE 72 // Use button distance, used for flavour text and actual distance to trigger NPC
 #define printf(x, ...) print(sprintf(x, __VA_ARGS__))
 

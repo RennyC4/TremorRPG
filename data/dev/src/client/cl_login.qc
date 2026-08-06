@@ -262,31 +262,15 @@ void() User_LoginScreen =
 
 	float start_x = (size_x - (btn_w * 2 + gap)) * 0.5;
 
-	my_button("login_male",
-		[start_x, y],
-		[btn_w, UI(26)],
-		"Male", "")
-		? SetGender(0)
-		: 0;
-
-	my_button("login_female",
-		[start_x + btn_w + gap, y],
-		[btn_w, UI(26)],
-		"Female", "")
-		? SetGender(1)
-		: 0;
+	my_button("login_male", [start_x, y], [btn_w, UI(26)], "Male", "") ? SetGender(0) : 0;
+	my_button("login_female", [start_x + btn_w + gap, y], [btn_w, UI(26)], "Female", "") ? SetGender(1) : 0;
 
 	y += UI(40);
 
 	// ---- CREATE CHARACTER ----
 	sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_START]);
 
-	my_button("login_newchar",
-		[0, y],
-		[size_x, UI(36)],
-		"Create New Character", "")
-		? User_NewCharacter(LOGIN_GENDER)
-		: 0;
+	my_button("login_newchar", [0, y], [size_x, UI(36)], "Create New Character", "")? User_NewCharacter(LOGIN_GENDER) : 0;
 
 	// ===========
 	// CLOSE PANEL
@@ -298,19 +282,14 @@ void() User_LoginScreen =
 	// =================
 	sui_set_align([SUI_ALIGN_END, SUI_ALIGN_END]);
 
-	my_button("login_quit",
-		UI(-10, -10),
-		UI(70, 16),
-		"Disconnect", "")
-		? localcmd("disconnect\n")
-		: 0;
+	my_button("login_quit", [UI(-10), UI(-10), 0], [UI(70), UI(16), 0], "Disconnect", "") ? localcmd("disconnect\n") : 0;
 
 	// ====
 	// MOTD
 	// ====
 	if (motd != "")
 	{
-		vector msize = UI(500, 70);
+		vector msize = [UI(500), UI(70), 0];
 
 		vector mpos;
 		mpos_x = (g_width - msize_x) * 0.5;

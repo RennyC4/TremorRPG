@@ -739,7 +739,7 @@ float(float keycode) sui_listen_scan =
 
 float(string command) sui_listen_command =
 {
-	float num_binds = tokenize(findkeysforcommand(command));
+	float num_binds = tokenize(findkeysforcommandex(command));
 	for (int i = 0; i < num_binds; i++)
 	{
 		float keycode = stof(argv(i));
@@ -846,36 +846,46 @@ string() sui_listen_text_input =
 	return "";
 };
 
-void(float char, float scan, __inout string text, __inout float cursor) sui_handle_text_input =
+void(float char, float scan, __inout string text, __inout float cursor_pos) sui_handle_text_input =
 {
 	float maxlen = 128;
 	
 	string prev = text;
 	string pre_cursor, post_cursor;
 	float length = strlen(prev);
-	if (char > 31 && char < 128) //an actual input
+
+	if (char > 31 && char < 128) // an actual input
 	{
-		if (length >= maxlen) return;
-		pre_cursor = substring(prev, 0, cursor);
-		post_cursor = substring(prev, cursor, length);
-		
+		if (length >= maxlen)
+			return;
+
+		pre_cursor = substring(prev, 0, cursor_pos);
+		post_cursor = substring(prev, cursor_pos, length);
+
 		text = sprintf("%s%s%s", pre_cursor, chr2str(char), post_cursor);
-		cursor += 1;
+		cursor_pos += 1;
 	}
 	else if (char == 8) // backspace
 	{
-		if (cursor <= 0) return;
-		pre_cursor = substring(prev, 0, cursor - 1);
-		post_cursor = substring(prev, cursor, length);
-		cursor -= 1;
-		cursor = max(0, cursor);
+		if (cursor_pos <= 0)
+			return;
+
+		pre_cursor = substring(prev, 0, cursor_pos - 1);
+		post_cursor = substring(prev, cursor_pos, length);
+
+		cursor_pos -= 1;
+		cursor_pos = max(0, cursor_pos);
+
 		text = strcat(pre_cursor, post_cursor);
 	}
 	else if (scan == K_DEL)
 	{
-		if (cursor >= length) return;
-		pre_cursor = substring(prev, 0, cursor);
-		post_cursor = substring(prev, cursor + 1, length);
+		if (cursor_pos >= length)
+			return;
+
+		pre_cursor = substring(prev, 0, cursor_pos);
+		post_cursor = substring(prev, cursor_pos + 1, length);
+
 		text = strcat(pre_cursor, post_cursor);
 	}
 	else if (char == 13 || char == 27) // enter or escape
@@ -886,28 +896,28 @@ void(float char, float scan, __inout string text, __inout float cursor) sui_hand
 	}
 	else if (scan == K_LEFTARROW)
 	{
-		cursor -= 1;
-		cursor = max(0, cursor);
+		cursor_pos -= 1;
+		cursor_pos = max(0, cursor_pos);
 	}
 	else if (scan == K_RIGHTARROW)
 	{
-		cursor += 1;
-		cursor = min(strlen(prev), cursor);
+		cursor_pos += 1;
+		cursor_pos = min(strlen(prev), cursor_pos);
 	}
 };
 
-void(float maxlen, __inout string text, __inout float cursor) sui_cap_input_length =
+void(float maxlen, __inout string text, __inout float cursor_pos) sui_cap_input_length =
 {
 	if (strlen(text) > maxlen)
 	{
 		text = substring(text, 0, strlen(text));
-		cursor = strlen(text);
+		cursor_pos = strlen(text);
 	}
 };
 
 void(string command) _sui_unbind =
 {
-	tokenize(findkeysforcommand(command));
+	tokenize(findkeysforcommandex(command));
 	string keyname = keynumtostring(stof(argv(0)));
 	string altkeyname = keynumtostring(stof(argv(1)));
 	localcmd(sprintf("unbind %s\n", keyname));
@@ -1120,15 +1130,20 @@ float(string id, vector pos, vector size, vector minmaxsteps, float value, void(
 	return newvalue;
 };
 
-void(string id, vector pos, vector size, __inout string text, __inout float cursor) sui_text_input =
+void(string id, vector pos, vector size, __inout string text, __inout float cursor_pos) sui_text_input =
 {
 	sui_action_element(pos, size, id, sui_noop);
-	if (sui_is_clicked(id)) cursor = strlen(text);
+
+	if (sui_is_clicked(id))
+		cursor_pos = strlen(text);
+
 	if (sui_is_last_clicked(id))
 	{
 		float char = 0;
 		float scan = 0;
-		while(sui_get_input(char, scan)) sui_handle_text_input(char, scan, text, cursor);
+
+		while (sui_get_input(char, scan))
+			sui_handle_text_input(char, scan, text, cursor_pos);
 	}
 };
 
@@ -1271,7 +1286,7 @@ string(string id, vector pos, vector size, string name, string command) sui_bind
 		sui_start_bind(command, name);
 	}
 	
-	tokenize(findkeysforcommand(command));
+	tokenize(findkeysforcommandex(command));
 	string keyname = keynumtostring(stof(argv(0)));
 	if (keyname == "01") keyname = "unbound";
 	

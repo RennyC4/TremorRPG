@@ -1,6 +1,8 @@
 //Various globals that are used in this FTEQW example are defined here, they are not used by the engine itself
 
 #pragma warning disable Q302
+#pragma warning disable F302
+
 vector cursor_pos; /* Current mouse cursor position, updated in csqc_inputevent */
 float g_width, g_height; /* Globals for screen width and height */
 

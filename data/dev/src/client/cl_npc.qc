@@ -55,8 +55,7 @@ float(vector startpos, float max_width, string text) UI_DrawWrappedText =
 		if (split >= 0)
 		{
 			string left  = substring(line, 0, split);
-			string right = substring(line, split + 1,
-                         strlen(line) - split - 1);
+			string right = substring(line, split + 1, strlen(line) - split - 1);
 			//string right = substring(line, split + 1, strlen(line));
 
 			sui_text(pos, MENU_TEXT_SMALL, left, MENU_TEXT_1, 1, 0);
@@ -141,7 +140,7 @@ void() User_NPCQuestPreview =
 	sui_clip_to_frame();
 
 	vector text_pos = [UI(5), UI(5)];
-	float max_width = 38 * UI_Scale();
+	float max_width = 300 * UI_Scale();
 
 	float used = UI_DrawWrappedText(text_pos, max_width, quest_preview_description);
 
@@ -313,7 +312,7 @@ void() User_NPCDialogue =
 	linepos = [UI(2.5), UI(2.5)];
 
 	float max_width;
-	max_width = 36 * UI_Scale();
+	max_width = 300 * UI_Scale();
 
 	float i;
 	float numlines;
@@ -338,10 +337,10 @@ void() User_NPCDialogue =
 	// QUEST PANEL
 	//
 
-	float quest_count;
+	float npc_quest_count;
 
-	quest_count = npc_available_count + npc_turnin_count;
-	if (quest_count > 0)
+	npc_quest_count = npc_available_count + npc_turnin_count;
+	if (npc_quest_count > 0)
 	{
 		vector quest_pos;
 		vector quest_size;
@@ -359,7 +358,7 @@ void() User_NPCDialogue =
 		//
 
 		vector item_pos;
-		sui_list_view_begin("npc_quest_list", [quest_pos_x + UI(2), quest_pos_y + UI(2)], [quest_size_x - UI(4), quest_size_y - UI(4)], [UI(180), UI(25)], quest_count, npc_quest_scroll, [UI(8), UI(8)]);
+		sui_list_view_begin("npc_quest_list", [quest_pos_x + UI(2), quest_pos_y + UI(2)], [quest_size_x - UI(4), quest_size_y - UI(4)], [UI(180), UI(25)], npc_quest_count, npc_quest_scroll, [UI(8), UI(8)]);
 
 		while ((i = sui_list_item(item_pos)) >= 0)
 		{
@@ -536,7 +535,7 @@ void() User_NPCBuySell =
 			float w = stringwidth(item, 1);
 
 			vector tip_size;
-			tip_size_x = UI(w * 8);
+			tip_size_x = UI(w + 2);
 			tip_size_y = UI(8);
 
 			sui_tooltip(desc, linepos, tip_size, item_disp);
@@ -580,7 +579,7 @@ void() User_NPCBuySell =
 			float w = stringwidth(item, 1);
 
 			vector tip_size;
-			tip_size_x = UI(w * 8);
+			tip_size_x = UI(w + 2);
 			tip_size_y = UI(8);
 
 			sui_tooltip(desc, linepos, tip_size, item_disp);

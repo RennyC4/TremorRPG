@@ -564,10 +564,6 @@ void() CSQC_Input_Frame =
 				pointedshadername = "";
 			else
 			{
-				//fixme: no unfocus!
-				pointedshadername = strzone(pointedshadername);
-				//print("sending input to ", pointedshadername, "\n");
-
 				gecko_navigate(pointedshadername, "cmd:focus");
 
 				pointedent = trace_ent;

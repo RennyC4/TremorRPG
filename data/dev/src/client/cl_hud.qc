@@ -11,8 +11,11 @@ void(vector pos) Draw_3DPDoll;
 string(string s) StripColors;
 
 //
-// Quest Log Data
+// Quest log - client side
 //
+
+#define MAX_QUESTS 64
+#define MAX_QUEST_OBJECTIVES 8
 
 #define QUEST_LOCKED    0
 #define QUEST_AVAILABLE 1
@@ -20,12 +23,23 @@ string(string s) StripColors;
 #define QUEST_COMPLETE  3
 #define QUEST_TURNEDIN  4
 
-#define MAX_QUESTS 64
-
 float quest_count;
 float quest_selected;
 
-#define MAX_QUEST_OBJECTIVES 8
+string quest_id[MAX_QUESTS];
+string quest_name[MAX_QUESTS];
+string quest_description[MAX_QUESTS];
+
+float quest_status[MAX_QUESTS];
+
+float quest_progress[MAX_QUESTS];
+float quest_needed[MAX_QUESTS];
+
+float quest_reward_exp[MAX_QUESTS];
+float quest_reward_gold[MAX_QUESTS];
+
+string quest_reward_item[MAX_QUESTS];
+float quest_reward_item_count[MAX_QUESTS];
 
 struct questinfo
 {
@@ -416,32 +430,38 @@ void() Draw_ToolTip =
 	if (!tt_contents)
 		return;
 
-	vector tt_pos = [_cursor_position_x, _cursor_position_y, 0];
+	tt_pos = [_cursor_position_x, _cursor_position_y, 0];
 	tt_pos += [14, 14];
 
-	float i, numlines = 0;
+	float i;
+	float numlines;
+	float largest_x = 0;
 	vector linepos = [0, 0];
+
 	numlines = tokenizebyseparator(tt_contents, "\n");
+
 	for (i = 0; i < numlines; i = i + 1)
 	{
 		string tt_line = argv(i);
 
-		float largest_x; // leave uninitialised
 		float tt_fix_x;
+		tt_fix_x = stringwidth(tt_line, 1);
 
-		tt_fix_x = stringwidth(tt_line, 1); // get length
 		if (tt_fix_x > largest_x)
-			largest_x += tt_fix_x; // record the largest length string in a file
+			largest_x = tt_fix_x;
 
 		linepos_y += 10;
-
-		tt_size[0] = largest_x * 8.75; // 10 is font size?
-		tt_size[1] = linepos_y + 10;
-
-		if (_cursor_position_x > g_width / 1.5) // Tool tip: move position
-			tt_pos_x = _cursor_position_x - (g_width / 12) - tt_size[0];
 	}
-	drawfill(tt_pos, [tt_size[0],tt_size[1]], MENU_BG_DARK, 0.9, 0);
+
+	tt_size[0] = largest_x * 1.7;
+	tt_size[1] = linepos_y + 10;
+
+	if (_cursor_position_x > g_width / 1.5)
+	{
+		tt_pos_x = _cursor_position_x - (g_width / 12) - tt_size[0];
+	}
+
+	drawfill(tt_pos, [tt_size[0], tt_size[1]], MENU_BG_DARK, 0.9, 0);
 	drawtextfield(tt_pos+[2.5,2.5], [tt_size[0],tt_size[1]], 3, tt_contents);
 };
 
@@ -744,7 +764,7 @@ void() Draw_EventLog =
 	if (drawfont != drawfont2)
 		drawfont = drawfont2;
 
-	con_draw("event", tpos, (tsize - 1), UI(12));
+	con_draw("event", tpos, (tsize - [1,1,1]), UI(12));
 
 	if (drawfont != drawfont1)
 		drawfont = drawfont1;
@@ -1085,7 +1105,7 @@ void() UI_DrawPlayerSummary =
 	string helmet = getstats(STAT_HELMETNAME);
 	float helmetval = getstatf(STAT_HELMETVALUE);
 
-	string spell = getstats(STAT_SPELLEQUIPPED);
+	string spell_selected = getstats(STAT_SPELLEQUIPPED);
 	float spmin = getstatf(STAT_SPELLMIN);
 	float spmax = getstatf(STAT_SPELLMAX);
 
@@ -1113,11 +1133,11 @@ void() UI_DrawPlayerSummary =
 	sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
 	// Shadow
-	sui_text(header + [0,1], MENU_TEXT_MEDIUM * UI_TextScale() * UI_TextScale(), headertext, MENU_TEXT_SHADOW, 1, 0);
+	sui_text(header + [0,1], (MENU_TEXT_MEDIUM - [4, 4]) * UI_TextScale(), headertext, MENU_TEXT_SHADOW, 1, 0);
 	sui_text(header + [0, UI_Scale()*14 + 1], MENU_TEXT_SMALL * UI_TextScale() * 0.85, exptext, MENU_TEXT_SHADOW, 1, 0);
 
 	// Text
-	sui_text(header, MENU_TEXT_MEDIUM * UI_TextScale() * UI_TextScale(), headertext, MENU_TEXT_1, 1, 0);
+	sui_text(header, (MENU_TEXT_MEDIUM - [4, 4]) * UI_TextScale(), headertext, MENU_TEXT_1, 1, 0);
 	sui_text(header + [0, UI_Scale()*14], MENU_TEXT_SMALL * UI_TextScale() * 0.85, exptext, MENU_TEXT_2, 1, 0);
 
 	// =================
@@ -1208,7 +1228,7 @@ void() UI_DrawPlayerSummary =
 
 	info_y += UI_Scale()*5;
 
-	LINE(strcat("^5Magic Spell: ^7", spell, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"))
+	LINE(strcat("^5Magic Spell: ^7", spell_selected, " (^8", ftos(spmin), "-", ftos(spmax), "^7)"))
 
 	info_y += UI_Scale()*5;
 
@@ -1431,7 +1451,7 @@ void() User_MagicScreen =
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
 		float w = stringwidth(s, 1);
-		sui_tooltip(desc, row + [UI(2), UI(1)], [w * 8, UI(10)], strcat("^5", s));
+		sui_tooltip(desc, row + [UI(2), UI(1)], [w + 2, UI(10)], strcat("^5", s));
 
 		// =====================================================
 		// EQUIP BUTTON
@@ -1564,7 +1584,7 @@ void() User_InventoryScreen =
 		sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
 
 		float w = stringwidth(item, 1);
-		sui_tooltip(desc, row + [UI(2), UI(1)], [w * 8, UI(10)], label);
+		sui_tooltip(desc, row + [UI(2), UI(1)], [w + 2, UI(10)], label);
 
 		// =====================================================
 		// BUTTONS

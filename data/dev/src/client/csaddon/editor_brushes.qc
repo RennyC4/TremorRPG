@@ -240,9 +240,9 @@ var string	autocvar_ca_newbrushtexture = "metal4_2";
 var float	autocvar_ca_newbrushheight = 64;
 var float	autocvar_ca_grid = 16;
 
-enum int
+enum brush_tool_e:int
 {
-	BT_NONE,	//selection
+	BT_NONE,
 	BT_MOVE = BT_NONE,
 	BT_ROTATE,
 	BT_MERGE,

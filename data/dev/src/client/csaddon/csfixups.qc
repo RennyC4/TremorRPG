@@ -1,6 +1,9 @@
 //addons cannot use certain optimisations - the engine MUST be able to find+fix their string+function indexes.
 #pragma optimise addon	//disables any optimisations that would break addons.
 
+#define strzone strcat
+#define strunzone(x)
+
 //#define CAMQUAKE
 
 //with addons, the engine only tracks one set of globals for most things.

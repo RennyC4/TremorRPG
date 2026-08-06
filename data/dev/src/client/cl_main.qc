@@ -640,29 +640,6 @@ void(entity speaker, string msg) FloatingText_Add =
     speaker.floattext_time = time + 6;
 };
 
-//
-// Quest log - client side
-//
-
-#define MAX_QUESTS 64
-
-float quest_count;
-
-string quest_id[MAX_QUESTS];
-string quest_name[MAX_QUESTS];
-string quest_description[MAX_QUESTS];
-
-float quest_status[MAX_QUESTS];
-
-float quest_progress[MAX_QUESTS];
-float quest_needed[MAX_QUESTS];
-
-float quest_reward_exp[MAX_QUESTS];
-float quest_reward_gold[MAX_QUESTS];
-
-string quest_reward_item[MAX_QUESTS];
-float quest_reward_item_count[MAX_QUESTS];
-
 void() CSQC_Parse_Event =
 {
 	int i;
