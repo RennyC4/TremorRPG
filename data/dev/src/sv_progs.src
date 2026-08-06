@@ -5,6 +5,7 @@ sh_customdefs.qc
 math.qc
 enums.qc
 server/sv_customdefs.qc
+server/sv_areaload.qc
 server/sv_main.qc
 server/sv_expsys.qc
 server/sv_enemy_ai.qc

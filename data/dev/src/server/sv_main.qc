@@ -238,6 +238,9 @@ void() worldspawn =
         motd = "";
 		print ("Optional: motd not set\n");
 	}
+	
+	LoadArea_Elderfen();
+
 };
 
 //

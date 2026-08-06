@@ -1,0 +1,18 @@
+{
+classname "set_prop"
+model "bsps/town1.bsp"
+origin "-2194 -2046 60"
+angles "0 0 0"
+}
+{
+classname "set_prop"
+model "bsps/mill.bsp"
+origin "-2142 -4028 70"
+angles "0 0 0"
+}
+{
+classname "set_prop"
+model "bsps/bridge1.bsp"
+origin "-1125 3535 55"
+angles "0 0 0"
+}

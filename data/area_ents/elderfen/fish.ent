@@ -1,0 +1,25 @@
+{
+classname "misc_fishing_node"
+level "0"
+origin "321 -1066 -30"
+}
+{
+classname "misc_fishing_node"
+level "0"
+origin "1764 722 -28"
+}
+{
+classname "misc_fishing_node"
+level "0"
+origin "783 3216 -28"
+}
+{
+classname "misc_fishing_node"
+level "0"
+origin "-4012 2823 -26"
+}
+{
+classname "misc_fishing_node"
+level "0"
+origin "-4443 2851 -25"
+}

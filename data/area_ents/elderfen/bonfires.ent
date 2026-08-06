@@ -1,0 +1,10 @@
+{
+classname "set_bonfire"
+origin "-2986 -1825 90"
+angles "0 0 0"
+}
+{
+classname "set_bonfire"
+origin "-2449 8673 489"
+angles "0 -59 0"
+}

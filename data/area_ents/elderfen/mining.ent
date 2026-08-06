@@ -1,0 +1,64 @@
+{
+classname "misc_ore_copper"
+origin "555 2525 253"
+}
+{
+classname "misc_ore_copper"
+origin "-2071 -4655 111"
+}
+{
+classname "misc_ore_copper"
+origin "-4713 -1972 81"
+}
+{
+classname "misc_ore_copper"
+origin "-4397 -394 29"
+}
+{
+classname "misc_ore_copper"
+origin "-4534 1687 212"
+}
+{
+classname "misc_ore_copper"
+origin "1777 2099 515"
+}
+{
+classname "misc_ore_copper"
+origin "-623 3915 229"
+}
+{
+classname "misc_ore_copper"
+origin "-2946 5467 1767"
+}
+{
+classname "misc_ore_copper"
+origin "-3258 7663 971"
+}
+{
+classname "misc_ore_copper"
+origin "387 8687 170"
+}
+{
+classname "misc_ore_copper"
+origin "3596 10640 217"
+}
+{
+classname "misc_ore_copper"
+origin "2247 14891 211"
+}
+{
+classname "misc_ore_copper"
+origin "100 15297 464"
+}
+{
+classname "misc_ore_copper"
+origin "-2487 15854 366"
+}
+{
+classname "misc_ore_copper"
+origin "-5414 15121 214"
+}
+{
+classname "misc_ore_copper"
+origin "-8432 13039 678"
+}

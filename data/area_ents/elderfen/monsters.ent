@@ -1,0 +1,554 @@
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-1111 439 150"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "19"
+level "2"
+exp "50"
+exp_min "25"
+gold "10"
+gold_min "3"
+attack_power_min "5"
+attack_power_max "10"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "0.8"
+attack_length "55"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+main_hand "Rusty Dagger"
+attack_type "2"
+dodge_chance "0.35"
+loottable "bandit2" // bandit rusty knife loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-2939 751 45"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "19"
+level "1"
+exp "50"
+exp_min "25"
+gold "10"
+gold_min "3"
+attack_power_min "9"
+attack_power_max "14"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+main_hand "Broken Sword"
+attack_type "1"
+dodge_chance "0.1"
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-592 282 135"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "19"
+level "1"
+exp "50"
+exp_min "25"
+gold "10"
+gold_min "3"
+attack_power_min "9"
+attack_power_max "14"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+main_hand "Broken Sword"
+attack_type "1"
+dodge_chance "0.1"
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-1240 2435 132"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "37"
+level "5"
+exp "70"
+exp_min "38"
+gold "16"
+gold_min "9"
+attack_power_min "13"
+attack_power_max "18"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "500"
+main_hand "Wood Club"
+attack_type "3"
+dodge_chance "0.4"
+loottable "bandit3" // bandit wood club loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-1548 5147 556"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "37"
+level "4"
+exp "70"
+exp_min "38"
+gold "16"
+gold_min "9"
+attack_power_min "13"
+attack_power_max "18"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "1"
+main_hand "Broken Sword"
+attack_type "1"
+dodge_chance "0.1"
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-2335 6188 1256"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "37"
+level "5"
+exp "70"
+exp_min "38"
+gold "16"
+gold_min "9"
+attack_power_min "13"
+attack_power_max "18"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "1"
+main_hand "Scrap Arrow"
+off_hand "Short Bow"
+attack_type "4"
+sight_range "2000"
+dodge_chance "0.6"
+loottable "bandit4" // bandit bow loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-3743 7147 1265"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "55"
+level "6"
+exp "88"
+exp_min "51"
+gold "24"
+gold_min "15"
+attack_power_min "18"
+attack_power_max "26"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "1000"
+main_hand "Short Sword"
+attack_type "1"
+dodge_chance "0.1"
+loottable "bandit" // bandit short sword loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-3036 9858 333"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "55"
+level "5"
+exp "88"
+exp_min "51"
+gold "24"
+gold_min "15"
+attack_power_min "18"
+attack_power_max "26"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "800"
+main_hand "Short Sword"
+off_hand "Broken Buckler"
+blockvalue "4"
+block_chance "0.3"
+attack_type "1"
+dodge_chance "0.1"
+loottable "bandit" // bandit short sword loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "2847 10399 55"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "55"
+level "6"
+exp "88"
+exp_min "51"
+gold "24"
+gold_min "15"
+attack_power_min "18"
+attack_power_max "26"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "800"
+main_hand "Short Sword"
+attack_type "1"
+dodge_chance "0.1"
+loottable "bandit" // bandit short sword loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-5645 7903 205"
+angles "0 46 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "72"
+level "7"
+exp "100"
+exp_min "72"
+gold "30"
+gold_min "22"
+attack_power_min "21"
+attack_power_max "33"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "800"
+main_hand "Short Sword"
+attack_type "1"
+dodge_chance "0.1"
+loottable "bandit" // bandit short sword loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-5220 8188 128"
+angles "0 46 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "72"
+level "9"
+exp "100"
+exp_min "72"
+gold "30"
+gold_min "22"
+attack_power_min "21"
+attack_power_max "33"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "1"
+main_hand "Scrap Arrow"
+off_hand "Short Bow"
+attack_type "4"
+sight_range "1000"
+dodge_chance "0.75"
+loottable "bandit4" // bandit bow loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-8320 8821 156"
+angles "0 17 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "73"
+level "8"
+exp "100"
+exp_min "72"
+gold "30"
+gold_min "22"
+attack_power_min "17"
+attack_power_max "26"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "0.8"
+attack_length "55"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+main_hand "Rusty Dagger"
+off_hand "Broken Buckler"
+blockvalue "4"
+block_chance "0.3"
+attack_type "2"
+dodge_chance "0.5"
+loottable "bandit2" // bandit rusty knife loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-4110 14842 116"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "88"
+level "11"
+exp "110"
+exp_min "83"
+gold "45"
+gold_min "39"
+attack_power_min "24"
+attack_power_max "39"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+main_hand "Wood Club"
+attack_type "3"
+dodge_chance "0.4"
+loottable "bandit3" // bandit wood club loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-6747 14239 312"
+angles "0 46 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "72"
+level "10"
+exp "100"
+exp_min "72"
+gold "30"
+gold_min "22"
+attack_power_min "21"
+attack_power_max "33"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "1"
+main_hand "Scrap Arrow"
+off_hand "Short Bow"
+attack_type "4"
+sight_range "1000"
+dodge_chance "0.75"
+loottable "bandit4" // bandit bow loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "-2701.43188 15215.21875 124"
+angles "0 -11 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "72"
+level "9"
+exp "100"
+exp_min "72"
+gold "30"
+gold_min "22"
+attack_power_min "21"
+attack_power_max "33"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+ai_move_dist "800"
+main_hand "Short Sword"
+off_hand "Broken Buckler"
+blockvalue "4"
+block_chance "0.3"
+attack_type "1"
+dodge_chance "0.1"
+loottable "bandit" // bandit short sword loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "1987 14441 14"
+angles "0 17 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "73"
+level "10"
+exp "100"
+exp_min "72"
+gold "30"
+gold_min "22"
+attack_power_min "17"
+attack_power_max "26"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "0.8"
+attack_length "55"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+main_hand "Rusty Dagger"
+off_hand "Broken Buckler"
+blockvalue "4"
+block_chance "0.3"
+attack_type "2"
+dodge_chance "0.4"
+loottable "bandit2" // bandit rusty knife loot table
+}
+{
+classname "set_monster"
+model "models/bandit_m.glb"
+origin "2633 14804 275"
+angles "0 0 0"
+displayname "Bandit"
+monster_id "bandit" // quest lookup
+max_health "37"
+level "7"
+exp "70"
+exp_min "38"
+gold "16"
+gold_min "9"
+attack_power_min "13"
+attack_power_max "18"
+respawn_finished "20"
+speed "25"
+noise "monsters/sight1.wav" // sight sound
+noise1 "monsters/attack1.wav" // attack sound
+noise2 "monsters/pain1.wav" // pain sound
+noise3 "monsters/death1.wav" // death sound
+attack_speed "2"
+attack_length "64"
+turn_speed "30"
+canbackstab "1"
+gender "Male"
+main_hand "Scrap Arrow"
+off_hand "Short Bow"
+attack_type "4"
+sight_range "750"
+dodge_chance "0.75"
+loottable "bandit4" // bandit bow loot table
+}

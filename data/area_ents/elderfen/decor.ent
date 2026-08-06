@@ -1,0 +1,24 @@
+{
+classname "set_prop"
+model "bsps/rocks1.bsp"
+origin "-3075 -100 47"
+angles "0 0 0"
+}
+{
+classname "set_prop"
+model "bsps/rocks1.bsp"
+origin "-266 908 100"
+angles "0 -83 0"
+}
+{
+classname "set_prop"
+model "bsps/rocks1.bsp"
+origin "-1129 9337 110"
+angles "0 0 0"
+}
+{
+classname "set_prop"
+model "bsps/rocks1.bsp"
+origin "952 9746 0"
+angles "0 45 0"
+}
